@@ -1,0 +1,16 @@
+{
+  "root": true,
+  "extends": ["plugin:prettier/recommended", "@react-native"],
+  "plugins": ["eslint-plugin-simple-import-sort", "prettier"],
+  "rules": {
+    "prettier/prettier": "error",
+    "semi": ["error", "never"],
+    "quotes": ["error", "single"],
+    "indent": ["error", 2, { "SwitchCase": 1 }],
+    "simple-import-sort/imports": "error", // import 문 간소화
+    "simple-import-sort/exports": "error",
+    "eol-last": "error",
+    "no-console": ["error"],
+    "comma-spacing": ["error", { "before": false, "after": true }]
+  }
+}
