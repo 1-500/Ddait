@@ -1,14 +1,14 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import React from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 
 const HomePage = () => {
   return (
     <View>
       <Text>HomePage</Text>
     </View>
-  )
-}
+  );
+};
 
-export default HomePage
+export default HomePage;
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({});

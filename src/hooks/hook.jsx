@@ -1,14 +1,14 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import React from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 
 const hook = () => {
   return (
     <View>
       <Text>hook</Text>
     </View>
-  )
-}
+  );
+};
 
-export default hook
+export default hook;
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({});
