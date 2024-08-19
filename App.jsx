@@ -3,7 +3,7 @@ import './global.css';
 import React from 'react';
 import { SafeAreaView, Text } from 'react-native';
 
-import { GluestackUIProvider } from '@/components/ui/gluestack-ui-provider';
+import { GluestackUIProvider } from './components/ui/gluestack-ui-provider';
 
 function App() {
   return (
