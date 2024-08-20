@@ -130,7 +130,7 @@ module.exports = {
           800: 'rgb(var(--color-typography-800)/<alpha-value>)',
           900: 'rgb(var(--color-typography-900)/<alpha-value>)',
           950: 'rgb(var(--color-typography-950)/<alpha-value>)',
-          white: '#FFFFFF',
+          white: '#E0E0E0',
           gray: '#D4D4D4',
           black: '#181718',
         },
