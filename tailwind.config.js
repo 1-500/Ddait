@@ -184,10 +184,28 @@ module.exports = {
         roboto: ['Pretendard', 'sans-serif'],
       },
       fontWeight: {
-        extrablack: '950',
+        regular: '400',
+        medium: '500',
+        semibold: '600',
+        bold: '700',
       },
       fontSize: {
         '2xs': '10px',
+        xs: '12px',
+        s: '14px',
+        m: '16px',
+        l: '18px',
+        's-header': '20px',
+        'l-header': '28px',
+      },
+      layoutPadding: {
+        // display 좌우 간격
+        horizon: '20px',
+      },
+      elementPadding: {
+        // 요소별 간격
+        horizon: '8px',
+        vertical: '14px',
       },
       boxShadow: {
         'hard-1': '-2px 2px 8px 0px rgba(38, 38, 38, 0.20)',
