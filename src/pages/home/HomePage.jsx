@@ -1,12 +1,19 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
+
+import CustomButton from '../../components/CustomButton';
 
 import DefaultInput from '../../components/CustomInput';
 import { LAYOUT_PADDING } from '../../constants/space';
 
 const HomePage = () => {
   return (
-    <View style={[styles.container, LAYOUT_PADDING]}>
+    <SafeAreaView style={{ flex: 1 }}>
+      <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+        <Text>HomePage</Text>
+        <CustomButton theme="primary" size="medium" text="Press me" />
+      </View>
+<View style={[styles.container, LAYOUT_PADDING]}>
       <Text>input</Text>
       <DefaultInput
         theme="primary"
@@ -38,6 +45,7 @@ const HomePage = () => {
         isError={true}
       />
     </View>
+    </SafeAreaView>
   );
 };
 
