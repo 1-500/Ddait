@@ -11,7 +11,7 @@ import MyPage from './pages/mypage/MyPage';
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
-const renderBottomTabBar = (props) => <BottomTab BottomTab {...props} />;
+const renderBottomTabBar = (props) => <BottomTab {...props} />;
 
 const MainTab = () => {
   return (
