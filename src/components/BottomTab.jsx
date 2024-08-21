@@ -1,11 +1,6 @@
 import React, { useRef } from 'react';
-import { Animated, Dimensions, Image } from 'react-native';
+import { Animated, Dimensions, Image, ImageBackground, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import { Box } from '@/components/ui/box';
-import { HStack } from '@/components/ui/hstack';
-import { Pressable } from '@/components/ui/pressable';
-
-// 아이콘 이미지
 const bottomTabBackground = require('../assets/images/bottomtab_bg.png');
 const homeOnIcon = require('../assets/images/home_on.png');
 const homeOffIcon = require('../assets/images/home_off.png');
@@ -18,8 +13,9 @@ const settingOffIcon = require('../assets/images/setting_off.png');
 const plusButtonIcon = require('../assets/images/plus_button.png');
 
 const { width } = Dimensions.get('window');
+const centerGap = Math.round(width * 0.08);
 
-const BottomTab = ({ state, navigation }) => {
+const BottomTabComponents = ({ state, navigation, insets, descriptors }) => {
   const tab1Value = useRef(new Animated.Value(0)).current;
   const tab2Value = useRef(new Animated.Value(0)).current;
   const tab3Value = useRef(new Animated.Value(0)).current;
@@ -31,7 +27,6 @@ const BottomTab = ({ state, navigation }) => {
       toValue: value,
       duration: 150,
     });
-
   const animatedValues = {
     0: tab1Value,
     1: tab2Value,
@@ -39,27 +34,28 @@ const BottomTab = ({ state, navigation }) => {
     3: tab4Value,
   };
 
-  const iconFlag = (label, bool) => {
-    switch (label) {
-      case 'Home':
-        return bool ? homeOnIcon : homeOffIcon;
-      case 'Competition':
-        return bool ? trophyOnIcon : trophyOffIcon;
-      case 'Friend':
-        return bool ? friendOnIcon : friendOffIcon;
-      default:
-        return bool ? settingOnIcon : settingOffIcon;
-    }
-  };
-
   return (
-    <Box>
-      <Image source={bottomTabBackground} style={{ position: 'absolute', bottom: 0, width: width, height: 100 }} />
-      <Box position="absolute" bottom={0} width="100%" borderColor="gray.200" style={{ paddingBottom: 16 }}>
-        <HStack justifyContent="space-around" alignItems="center">
+    <>
+      <View>
+        <ImageBackground source={bottomTabBackground}>
           {state.routes.map((route, index) => {
+            const { options } = descriptors[route.key];
+            const label = route.name;
             const isFocused = state.index === index;
             const animatedOf = animatedValues[index];
+
+            const iconFlag = (bool) => {
+              switch (label) {
+                case 'Home':
+                  return bool ? homeOnIcon : homeOffIcon;
+                case 'Competition':
+                  return bool ? trophyOnIcon : trophyOffIcon;
+                case 'Friend':
+                  return bool ? friendOnIcon : friendOffIcon;
+                default:
+                  return bool ? settingOnIcon : settingOffIcon;
+              }
+            };
 
             const onPress = () => {
               const event = navigation.emit({
@@ -78,62 +74,78 @@ const BottomTab = ({ state, navigation }) => {
                 }
               });
             };
-
             return (
-              <Pressable
+              <TouchableOpacity
                 key={index}
+                activeOpacity={0.7}
                 onPress={onPress}
-                style={[
-                  { flex: 1, alignItems: 'center' },
-                  index === 1 && { marginRight: width * 0.08 },
-                  index === 2 && { marginLeft: width * 0.08 },
-                ]}
+                // style={[
+                //   { flex: 1, alignItems: 'center' },
+                //   index === 1 && { marginRight: width * 0.08 },
+                //   index === 2 && { marginLeft: width * 0.08 },
+                // ]}
+                className={['flex-1 items-center'].join(' ')}
               >
-                {({ pressed }) => (
-                  <Animated.Image
-                    source={iconFlag(route.name, isFocused)}
-                    resizeMode="contain"
-                    style={[
+                <Animated.Image
+                  source={iconFlag(isFocused)}
+                  resizeMode={'contain'}
+                  style={{
+                    width: 40,
+                    height: 40,
+                    transform: [
                       {
-                        width: 40,
-                        height: 40,
-                        transform: [
-                          {
-                            scale: animatedOf.interpolate({
-                              inputRange: [0, 1],
-                              outputRange: [1, 0.9],
-                            }),
-                          },
-                        ],
+                        scale: animatedOf.interpolate({
+                          inputRange: [0, 1],
+                          outputRange: [1, 0.9],
+                        }),
                       },
-                      pressed && { opacity: 0.6 },
-                    ]}
-                  />
-                )}
-              </Pressable>
+                    ],
+                  }}
+                />
+              </TouchableOpacity>
             );
           })}
-        </HStack>
-        <Pressable
-          style={{
-            position: 'absolute',
-            justifyContent: 'center',
-            alignItems: 'center',
-            left: width / 2 - 25, // Adjust the button to be centered
-            bottom: 55,
-            borderRadius: 50,
+        </ImageBackground>
+        <TouchableOpacity
+          style={styles.addButton}
+          onPress={() => {
+            navigation.navigate('NewCommunityPost');
           }}
         >
-          {({ pressed }) => (
-            <Image
-              source={plusButtonIcon}
-              style={[{ width: 50, height: 50, resizeMode: 'contain' }, pressed && { opacity: 0.6 }]}
-            />
-          )}
-        </Pressable>
-      </Box>
-    </Box>
+          <Image source={plusButtonIcon} style={styles.plusButtonIcon} />
+        </TouchableOpacity>
+      </View>
+    </>
   );
 };
 
-export default BottomTab;
+export default BottomTabComponents;
+
+const styles = StyleSheet.create({
+  bottomTabContainer: {
+    position: 'absolute',
+    bottom: 0,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: width,
+    height: 100,
+    paddingHorizontal: 10,
+    paddingTop: 30,
+  },
+  addButton: {
+    position: 'absolute',
+    justifyContent: 'center',
+    alignItems: 'center',
+    left: width / 2,
+    bottom: 80,
+    borderRadius: 50,
+    width: 1,
+    height: 1,
+  },
+  plusButtonIcon: {
+    width: 50,
+    height: 50,
+    resizeMode: 'contain',
+  },
+});
