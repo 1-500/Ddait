@@ -10,7 +10,7 @@ const KakaoIcon = require('../../assets/images/login/kakaoIcon.png');
 const LoginPage = () => {
   return (
     <SafeAreaView style={styles.container}>
-      <View style={{ padding: 16 }}>
+      <View style={styles.content}>
         <View style={styles.logoContainer}>
           <Image source={ThumbnailLogo} style={styles.logo} />
           <View style={styles.textContainer}>
@@ -69,12 +69,17 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#1C1C1C',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  content: {
+    width: '90%',
+    justifyContent: 'space-between',
+    flex: 1,
   },
   logoContainer: {
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 40,
-    marginBottom: 20,
   },
   logo: {
     width: '100%',
@@ -82,15 +87,16 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
   },
   textContainer: {
-    marginTop: 20,
+    marginVertical: 20,
   },
   headerText: {
     color: 'white',
     fontWeight: 'bold',
     fontSize: 24,
+    textAlign: 'center',
   },
   inputContainer: {
-    marginTop: 40,
+    justifyContent: 'center',
   },
   input: {
     borderBottomWidth: 1,
@@ -98,12 +104,12 @@ const styles = StyleSheet.create({
     padding: 10,
     color: 'white',
     fontSize: 18,
-    marginBottom: 20,
+    marginVertical: 10,
   },
   buttonContainer: {
     alignItems: 'center',
-    marginTop: 20,
-    marginBottom: 20,
+    justifyContent: 'center',
+    flex: 1,
   },
   loginButton: {
     backgroundColor: '#4C4CE8',
@@ -119,7 +125,7 @@ const styles = StyleSheet.create({
   },
   linkContainer: {
     flexDirection: 'row',
-    marginTop: 15,
+    marginVertical: 15,
   },
   linkText: {
     color: '#4C4CE8',
@@ -133,7 +139,8 @@ const styles = StyleSheet.create({
   },
   snsContainer: {
     alignItems: 'center',
-    marginTop: 15,
+    justifyContent: 'center',
+    flex: 1,
   },
   snsText: {
     color: '#4C4CE8',
@@ -141,7 +148,7 @@ const styles = StyleSheet.create({
   },
   iconContainer: {
     flexDirection: 'row',
-    marginTop: 15,
+    marginVertical: 15,
     justifyContent: 'space-between',
     width: '60%',
   },
@@ -152,7 +159,7 @@ const styles = StyleSheet.create({
   viewText: {
     color: 'white',
     textAlign: 'center',
-    marginTop: 20,
+    marginVertical: 10,
   },
 });
 
