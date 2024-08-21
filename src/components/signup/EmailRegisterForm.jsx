@@ -5,7 +5,7 @@ import SignUpInput from './SignUpInput';
 
 const EmailRegisterForm = () => {
   return (
-    <View>
+    <View style={styles.container}>
       <View style={styles.headerContainer}>
         <Text style={styles.headerText}>나라짱짱님의 이메일과 비밀번호를 알려주세요!</Text>
         <Text style={styles.subHeaderText}>이메일 로그인에 사용되어집니다.</Text>
@@ -21,9 +21,12 @@ const EmailRegisterForm = () => {
 };
 
 const styles = StyleSheet.create({
+  container: {
+    marginVertical: 24,
+  },
   headerContainer: {
-    flexDirection: 'column',
-    gap: 8,
+    marginTop: 30,
+    marginBottom: 24,
   },
   headerText: {
     color: 'white',
@@ -34,6 +37,7 @@ const styles = StyleSheet.create({
     color: '#D9D9D9',
     fontSize: 16,
     fontWeight: '600',
+    marginTop: 10,
   },
   inputContainer: {
     flexDirection: 'column',

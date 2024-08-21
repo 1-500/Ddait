@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import EmailRegisterForm from '../../components/signup/EmailRegisterForm';
+import GenderRegisterForm from '../../components/signup/GenderRegisterForm';
 import NicknameRegisterForm from '../../components/signup/NicknameRegisterForm';
 import PreferedSportRegisterForm from '../../components/signup/PreferedSportRegisterForm';
 import ProgressIndicator from '../../components/signup/ProgressIndicator';
@@ -11,7 +12,7 @@ const SignUpPage = () => {
       <View style={styles.content}>
         <ProgressIndicator />
 
-        <PreferedSportRegisterForm />
+        <NicknameRegisterForm />
         <View style={styles.buttonContainer}>
           <TouchableOpacity style={[styles.button, styles.buttonLeftColor]} activeOpacity={0.7}>
             <Text style={styles.buttonText}>바로 따잇하러 가기</Text>
@@ -29,17 +30,21 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#1C1C1C',
-    justifyContent: 'space-between',
   },
   content: {
-    paddingHorizontal: 24,
+    paddingHorizontal: 20,
     marginVertical: 40,
-    flex: 1,
-    justifyContent: 'space-around',
+
+    height: 580,
   },
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    position: 'absolute',
+    paddingHorizontal: 20,
+    bottom: 0,
+    left: 0,
+    right: 0,
   },
   button: {
     display: 'flex',

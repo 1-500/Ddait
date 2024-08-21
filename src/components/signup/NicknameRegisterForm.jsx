@@ -21,7 +21,8 @@ const styles = StyleSheet.create({
     marginVertical: 24,
   },
   headerContainer: {
-    marginBottom: 16,
+    marginTop: 30,
+    marginBottom: 24,
   },
   headerText: {
     color: 'white',
