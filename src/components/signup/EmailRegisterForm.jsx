@@ -1,5 +1,7 @@
 import React from 'react';
-import { StyleSheet, Text, TextInput, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
+
+import SignUpInput from './SignUpInput';
 
 const EmailRegisterForm = () => {
   return (
@@ -10,14 +12,9 @@ const EmailRegisterForm = () => {
       </View>
 
       <View style={styles.inputContainer}>
-        <TextInput placeholder="이메일을 입력해주세요" style={styles.input} placeholderTextColor="#888888" />
-        <TextInput
-          placeholder="비밀번호를 입력해주세요"
-          style={styles.input}
-          secureTextEntry
-          placeholderTextColor="#888888"
-        />
-        <TextInput placeholder="비밀번호 확인" style={styles.input} secureTextEntry placeholderTextColor="#888888" />
+        <SignUpInput placeholder="이메일을 입력해주세요" />
+        <SignUpInput placeholder="비밀번호를 입력해주세요" />
+        <SignUpInput placeholder="비밀번호 확인" />
       </View>
     </View>
   );
@@ -43,14 +40,6 @@ const styles = StyleSheet.create({
     gap: 16,
     marginTop: 30,
     marginBottom: 30,
-  },
-  input: {
-    borderBottomWidth: 1,
-    borderColor: '#4C4CE8',
-    padding: 8,
-    color: 'white',
-    fontSize: 18,
-    fontWeight: '500',
   },
 });
 

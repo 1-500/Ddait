@@ -23,7 +23,7 @@ const MainTab = () => {
         headerShown: false,
       }}
     >
-      <Tab.Screen name="Home" component={LoginPage} />
+      <Tab.Screen name="Home" component={SignUpPage} />
       <Tab.Screen name="Competition" component={Competition} />
       <Tab.Screen name="Friend" component={Friend} />
       <Tab.Screen name="Mypage" component={MyPage} />
