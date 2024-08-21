@@ -3,6 +3,7 @@ import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-na
 
 import EmailRegisterForm from '../../components/signup/EmailRegisterForm';
 import NicknameRegisterForm from '../../components/signup/NicknameRegisterForm';
+import PreferedSportRegisterForm from '../../components/signup/PreferedSportRegisterForm';
 import ProgressIndicator from '../../components/signup/ProgressIndicator';
 const SignUpPage = () => {
   return (
@@ -10,7 +11,7 @@ const SignUpPage = () => {
       <View style={styles.content}>
         <ProgressIndicator />
 
-        <NicknameRegisterForm />
+        <PreferedSportRegisterForm />
         <View style={styles.buttonContainer}>
           <TouchableOpacity style={[styles.button, styles.buttonLeftColor]} activeOpacity={0.7}>
             <Text style={styles.buttonText}>바로 따잇하러 가기</Text>
