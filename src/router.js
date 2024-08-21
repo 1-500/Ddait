@@ -7,6 +7,7 @@ import Competition from './pages/competition/Competition';
 import Friend from './pages/friend/Friend';
 import HomePage from './pages/home/HomePage';
 import MyPage from './pages/mypage/MyPage';
+import SignUpPage from './pages/signup/SignupPage';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -21,7 +22,7 @@ const MainTab = () => {
         headerShown: false,
       }}
     >
-      <Tab.Screen name="Home" component={HomePage} />
+      <Tab.Screen name="Home" component={SignUpPage} />
       <Tab.Screen name="Competition" component={Competition} />
       <Tab.Screen name="Friend" component={Friend} />
       <Tab.Screen name="Mypage" component={MyPage} />
