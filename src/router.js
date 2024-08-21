@@ -6,6 +6,7 @@ import BottomTab from './components/BottomTab';
 import Competition from './pages/competition/Competition';
 import Friend from './pages/friend/Friend';
 import HomePage from './pages/home/HomePage';
+import LoginPage from './pages/login/LoginPage';
 import MyPage from './pages/mypage/MyPage';
 import SignUpPage from './pages/signup/SignupPage';
 
@@ -33,7 +34,7 @@ const MainTab = () => {
 const Router = () => {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="MainTab" component={MainTab} />
+      <Stack.Screen name="Home" component={LoginPage} />
     </Stack.Navigator>
   ); // 라우팅
 };

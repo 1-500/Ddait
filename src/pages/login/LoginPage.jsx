@@ -1,13 +1,5 @@
 import React from 'react';
-import { Image, SafeAreaView } from 'react-native';
-
-import { Box } from '@/components/ui/box';
-import { Divider } from '@/components/ui/divider';
-import { HStack } from '@/components/ui/hstack';
-import { Input, InputField } from '@/components/ui/input';
-import { Pressable } from '@/components/ui/pressable';
-import { Text } from '@/components/ui/text';
-import { VStack } from '@/components/ui/vstack';
+import { Image, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 const ThumbnailLogo = require('../../assets/images/login/thumnailLogo.png');
 const GoogleIcon = require('../../assets/images/login/googleIcon.png');
@@ -17,127 +9,151 @@ const KakaoIcon = require('../../assets/images/login/kakaoIcon.png');
 
 const LoginPage = () => {
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#1C1C1C' }}>
-      <Box className="px-layoutHorizon">
-        <Box className="items-center justify-center mt-10 mb-5">
-          <Image source={ThumbnailLogo} alt="썸네일로고" />
-          <Box className="mt-5">
-            <Text bold size="2xl" className="text-white">
-              따잇과 함께,
-            </Text>
-            <Text bold size="2xl" className="text-white">
-              잇따라 함께하는 운동 습관 ! 게임 어쩌구!
-            </Text>
-          </Box>
-        </Box>
+    <SafeAreaView style={styles.container}>
+      <View style={{ padding: 16 }}>
+        <View style={styles.logoContainer}>
+          <Image source={ThumbnailLogo} style={styles.logo} />
+          <View style={styles.textContainer}>
+            <Text style={styles.headerText}>따잇과 함께,</Text>
+            <Text style={styles.headerText}>잇따라 함께하는 운동 습관 ! 게임 어쩌구!</Text>
+          </View>
+        </View>
 
-        <Box className="flex gap-4 mt-10">
-          <Input
-            variant="underlined"
-            size="md"
-            isDisabled={false}
-            isInvalid={false}
-            isReadOnly={false}
-            className="border-b-[#4C4CE8] p-2"
-          >
-            <InputField placeholder="이메일" className="text-white placeholder:text-white font-bold" />
-          </Input>
-          <Input
-            variant="underlined"
-            size="md"
-            isDisabled={false}
-            isInvalid={false}
-            isReadOnly={false}
-            className="border-b-[#4C4CE8] p-2"
-          >
-            <InputField
-              type="password"
-              placeholder="비밀번호"
-              className="text-white placeholder:text-white font-bold"
-            />
-          </Input>
-        </Box>
-        <Box className="flex items-center mt-10 mb-10 w-full border-white">
-          <Pressable className="w-full">
-            {({ pressed }) => (
-              <Box
-                className={
-                  pressed
-                    ? 'bg-[#4C4CE8] p-4 items-center border-2 border-[#4C4CE8] opacity-70'
-                    : 'bg-[#4C4CE8] p-4 items-center border-2 border-[#4C4CE8] opacity-1'
-                }
-              >
-                <Text className="text-white text-[13px] font-semibold">로그인</Text>
-              </Box>
-            )}
-          </Pressable>
-          <HStack className="mt-4">
-            <Pressable>
-              {({ pressed }) => (
-                <Text className={pressed ? 'text-[#FFFFFF] pr-4' : 'text-[#4C4CE8] pr-4'}>회원가입하기</Text>
-              )}
-            </Pressable>
-            <Divider orientation="vertical" className="mx-1 h-[20px] bg-[#4C4CE8]" />
-            <Pressable>
-              {({ pressed }) => (
-                <Text className={pressed ? 'text-[#FFFFFF] pl-4' : 'text-[#4C4CE8] pl-4'}>비밀번호 찾기</Text>
-              )}
-            </Pressable>
-          </HStack>
-        </Box>
-        <Box className="flex flex-col items-center mt-5">
-          <VStack space="lg">
-            <Text className="text-[#4C4CE8] text-center">SNS 로그인</Text>
-            <HStack space="md">
-              <Pressable>
-                {({ pressed }) => (
-                  <Image
-                    source={NaverIcon}
-                    style={{ width: 40, height: 40 }}
-                    className={pressed ? 'opacity-70' : 'opacity-1'}
-                  />
-                )}
-              </Pressable>
-              <Pressable>
-                {({ pressed }) => (
-                  <Image
-                    source={KakaoIcon}
-                    style={{ width: 40, height: 40 }}
-                    className={pressed ? 'opacity-70' : 'opacity-1'}
-                  />
-                )}
-              </Pressable>
-              <Pressable>
-                {({ pressed }) => (
-                  <Image
-                    source={GoogleIcon}
-                    style={{ width: 40, height: 40 }}
-                    className={pressed ? 'opacity-70' : 'opacity-1'}
-                  />
-                )}
-              </Pressable>
-              <Pressable>
-                {({ pressed }) => (
-                  <Image
-                    source={AppleIcon}
-                    style={{ width: 40, height: 40 }}
-                    className={pressed ? 'opacity-70' : 'opacity-1'}
-                  />
-                )}
-              </Pressable>
-            </HStack>
-            <Pressable>
-              {({ pressed }) => (
-                <Text className={pressed ? 'text-[#4C4CE8] text-center' : 'text-[#FFFFFF] text-center'}>
-                  구경만 할래요
-                </Text>
-              )}
-            </Pressable>
-          </VStack>
-        </Box>
-      </Box>
+        <View style={styles.inputContainer}>
+          <TextInput placeholder="이메일" style={styles.input} placeholderTextColor="white" />
+          <TextInput placeholder="비밀번호" style={styles.input} secureTextEntry placeholderTextColor="white" />
+        </View>
+
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={styles.loginButton}>
+            <Text style={styles.loginButtonText}>로그인</Text>
+          </TouchableOpacity>
+
+          <View style={styles.linkContainer}>
+            <TouchableOpacity>
+              <Text style={styles.linkText}>회원가입하기</Text>
+            </TouchableOpacity>
+            <View style={styles.divider} />
+            <TouchableOpacity>
+              <Text style={styles.linkText}>비밀번호 찾기</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        <View style={styles.snsContainer}>
+          <Text style={styles.snsText}>SNS 로그인</Text>
+          <View style={styles.iconContainer}>
+            <TouchableOpacity>
+              <Image source={NaverIcon} style={styles.snsIcon} />
+            </TouchableOpacity>
+            <TouchableOpacity>
+              <Image source={KakaoIcon} style={styles.snsIcon} />
+            </TouchableOpacity>
+            <TouchableOpacity>
+              <Image source={GoogleIcon} style={styles.snsIcon} />
+            </TouchableOpacity>
+            <TouchableOpacity>
+              <Image source={AppleIcon} style={styles.snsIcon} />
+            </TouchableOpacity>
+          </View>
+          <TouchableOpacity>
+            <Text style={styles.viewText}>구경만 할래요</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
     </SafeAreaView>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#1C1C1C',
+  },
+  logoContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 40,
+    marginBottom: 20,
+  },
+  logo: {
+    width: '100%',
+    height: 100,
+    resizeMode: 'contain',
+  },
+  textContainer: {
+    marginTop: 20,
+  },
+  headerText: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 24,
+  },
+  inputContainer: {
+    marginTop: 40,
+  },
+  input: {
+    borderBottomWidth: 1,
+    borderColor: '#4C4CE8',
+    padding: 10,
+    color: 'white',
+    fontSize: 18,
+    marginBottom: 20,
+  },
+  buttonContainer: {
+    alignItems: 'center',
+    marginTop: 20,
+    marginBottom: 20,
+  },
+  loginButton: {
+    backgroundColor: '#4C4CE8',
+    padding: 12,
+    width: '100%',
+    alignItems: 'center',
+    borderRadius: 4,
+  },
+  loginButtonText: {
+    color: 'white',
+    fontWeight: '600',
+    fontSize: 16,
+  },
+  linkContainer: {
+    flexDirection: 'row',
+    marginTop: 15,
+  },
+  linkText: {
+    color: '#4C4CE8',
+    paddingHorizontal: 10,
+  },
+  divider: {
+    width: 1,
+    height: 20,
+    backgroundColor: '#4C4CE8',
+    marginHorizontal: 10,
+  },
+  snsContainer: {
+    alignItems: 'center',
+    marginTop: 15,
+  },
+  snsText: {
+    color: '#4C4CE8',
+    textAlign: 'center',
+  },
+  iconContainer: {
+    flexDirection: 'row',
+    marginTop: 15,
+    justifyContent: 'space-between',
+    width: '60%',
+  },
+  snsIcon: {
+    width: 40,
+    height: 40,
+  },
+  viewText: {
+    color: 'white',
+    textAlign: 'center',
+    marginTop: 20,
+  },
+});
 
 export default LoginPage;
