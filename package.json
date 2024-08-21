@@ -8,7 +8,7 @@
     "lint": "eslint .",
     "lint:fix": "npm run lint -- --fix",
     "start": "react-native start",
-    "postinstall": "patch-package && npm install --save-dev husky",
+    "postinstall": "npm install --save-dev husky",
     "test": "jest",
     "prepare": "husky",
     "prettier:fix": "prettier --write ."
