@@ -3,9 +3,10 @@ import React from 'react';
 import { FlatList, Image, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import CustomButton from '../../components/CustomButton';
-import { COLORS, TEXT_COLORS } from '../../constants/colors';
+import { COLORS } from '../../constants/colors';
 import { FONT_SIZES, FONT_WEIGHTS, HEADER_FONT_SIZES } from '../../constants/font';
 import { RADIUS } from '../../constants/radius';
+import { LAYOUT_PADDING, SPACING } from '../../constants/space';
 
 const profile = require('../../assets/images/profile.png');
 
@@ -85,16 +86,14 @@ const dummyCompetitions = [
   },
 ];
 
-const Competition = () => {
-  const navigation = useNavigation();
-
+const Competition = ({ navigation }) => {
   const renderCompetitions = ({ item }) => (
     <View style={styles.competitionContainer}>
       <Text style={styles.competitionName}>{item.name}</Text>
       <Text style={styles.competitionDate}>
         {item.start_date} ~ {item.end_date}
       </Text>
-      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: SPACING.xxs }}>
         <Image source={profile} style={{ width: 20, height: 20 }} />
         <Text style={styles.competitionMembers}>
           {item.current_members} / {item.max_members}
@@ -106,7 +105,7 @@ const Competition = () => {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.darkBackground }}>
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ flexGrow: 1 }}>
-        <View style={{ padding: 20, gap: 24 }}>
+        <View style={{ ...LAYOUT_PADDING, gap: SPACING.xl }}>
           <View>
             <View style={styles.header}>
               <Text style={styles.headerText}>따잇님,</Text>
@@ -131,16 +130,16 @@ const Competition = () => {
                 renderItem={renderCompetitions}
                 keyExtractor={(item) => item.id}
                 showsVerticalScrollIndicator={false}
-                contentContainerStyle={{ gap: 16 }}
+                contentContainerStyle={{ gap: SPACING.md }}
                 scrollEnabled={false}
                 nestedScrollEnabled={true}
               />
-              <View style={{ marginTop: 20, marginBottom: 80 }}>
+              <View style={{ marginTop: SPACING.lg, marginBottom: 80 }}>
                 <CustomButton
                   theme="primary"
                   size="large"
                   text="+ 새로운 경쟁"
-                  onPress={() => alert('경쟁방 생성 페이지로 이동')}
+                  onPress={() => navigation.navigate('CreateCompetition')}
                 />
               </View>
             </View>
@@ -151,7 +150,7 @@ const Competition = () => {
                 theme="primary"
                 size="large"
                 text="+ 새로운 경쟁"
-                onPress={() => alert('경쟁방 생성 페이지로 이동')}
+                onPress={() => navigation.navigate('CreateCompetition')}
               />
             </View>
           )}
@@ -163,46 +162,46 @@ const Competition = () => {
 
 const styles = StyleSheet.create({
   headerText: {
-    color: TEXT_COLORS.secondary,
+    color: COLORS.white,
     fontSize: HEADER_FONT_SIZES.lg,
     fontWeight: FONT_WEIGHTS.bold,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'baseline',
-    gap: 4,
+    gap: SPACING.xxs,
   },
   subHeader: {
-    color: TEXT_COLORS.secondary,
+    color: COLORS.white,
     fontSize: FONT_SIZES.md,
-    marginTop: 4,
-    marginBottom: 4,
+    marginTop: SPACING.xxs,
+    marginBottom: SPACING.xxs,
   },
   cardContainer: {
     alignItems: 'center',
     backgroundColor: COLORS.darkGrey,
-    paddingHorizontal: 20,
+    paddingHorizontal: SPACING.lg,
     paddingVertical: 30,
     borderRadius: RADIUS.large,
-    gap: 20,
+    gap: SPACING.lg,
   },
   cardText: {
     textAlign: 'center',
-    color: TEXT_COLORS.secondary,
+    color: COLORS.white,
     fontSize: FONT_SIZES.md,
     fontWeight: FONT_WEIGHTS.semiBold,
-    marginBottom: 4,
+    marginBottom: SPACING.xxs,
     lineHeight: FONT_SIZES.md * 1.3,
   },
   competitionContainer: {
     backgroundColor: COLORS.darkGrey,
-    paddingHorizontal: 20,
-    paddingVertical: 24,
+    paddingHorizontal: SPACING.lg,
+    paddingVertical: SPACING.xl,
     borderRadius: RADIUS.large,
-    gap: 10,
+    gap: SPACING.xs,
   },
   competitionName: {
-    color: TEXT_COLORS.secondary,
+    color: COLORS.white,
     fontSize: FONT_SIZES.md,
     fontWeight: FONT_WEIGHTS.semiBold,
   },
@@ -210,7 +209,7 @@ const styles = StyleSheet.create({
     color: COLORS.semiLightGrey,
   },
   competitionMembers: {
-    color: TEXT_COLORS.secondary,
+    color: COLORS.white,
     fontSize: FONT_SIZES.sm,
   },
 });
