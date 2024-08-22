@@ -1,6 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Modal, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 
+import { COLORS } from '../constants/colors';
+import { FONT_SIZES, FONT_WEIGHTS } from '../constants/font';
+import { RADIUS } from '../constants/radius';
+import { LAYOUT_PADDING, SPACING } from '../constants/space';
+
 const DropdownModal = ({ options = [], onChange = () => {}, value, placeholder }) => {
   const [showDropdown, setShowDropDown] = useState(false);
   const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
@@ -100,57 +105,57 @@ const DropdownModal = ({ options = [], onChange = () => {}, value, placeholder }
 
 const styles = StyleSheet.create({
   dropdownBtn: {
-    paddingHorizontal: 20,
-    paddingVertical: 8,
-    backgroundColor: '#2A2A2A',
-    borderRadius: 16,
+    ...LAYOUT_PADDING,
+    paddingVertical: SPACING.xs,
+    backgroundColor: COLORS.darkGrey,
+    borderRadius: RADIUS.large,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
   },
   dropdownBtnSelected: {
-    backgroundColor: '#5D5DFC',
+    backgroundColor: COLORS.primary,
   },
   dropdownText: {
-    color: '#FFF',
-    fontWeight: '500',
-    fontSize: 16,
+    color: COLORS.white,
+    fontSize: FONT_SIZES.sm,
+    fontWeight: FONT_WEIGHTS.md,
     lineHeight: 17,
   },
   dropdownMenu: {
     position: 'absolute',
-    paddingVertical: 8,
-    backgroundColor: '#2A2A2A',
+    paddingVertical: SPACING.xs,
+    backgroundColor: COLORS.darkGrey,
     borderWidth: 1,
-    borderColor: '#5D5DFC',
-    borderRadius: 12,
+    borderColor: COLORS.primary,
+    borderRadius: RADIUS.large,
   },
   dropdownWrapper: {
     width: '100%',
     alignItems: 'center',
-    gap: 5,
+    gap: SPACING.xxs,
   },
   divider: {
     height: 1,
     width: '100%',
-    backgroundColor: '#5D5DFC',
+    backgroundColor: COLORS.primary,
   },
   optionBtn: {
-    paddingHorizontal: 20,
-    paddingVertical: 5,
+    paddingHorizontal: SPACING.lg,
+    paddingVertical: SPACING.xs,
     width: '100%',
   },
   optionBtnSelected: {
-    backgroundColor: 'rgba(93, 93, 252, 0.20)',
+    backgroundColor: 'rgba(93, 93, 252, 0.8)',
   },
   optionText: {
-    color: '#FFF',
-    fontSize: 16,
-    fontWeight: '500',
+    color: COLORS.white,
+    fontSize: FONT_SIZES.sm,
+    fontWeight: FONT_WEIGHTS.medium,
   },
   selectedOptionText: {
-    color: '#FDA758',
-    fontWeight: '700',
+    color: COLORS.primary,
+    fontWeight: FONT_WEIGHTS.bold,
   },
   modalOverlay: {
     flex: 1,
