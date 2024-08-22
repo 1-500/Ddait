@@ -9,7 +9,7 @@ export const SPACING = {
 };
 
 export const LAYOUT_PADDING = {
-  paddingHorizontal: SPACING.md,
+  paddingHorizontal: SPACING.lg,
 };
 
 export const ELEMENT_VERTICAL_MARGIN = {
