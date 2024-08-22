@@ -4,6 +4,7 @@ import React from 'react';
 
 import BottomTab from './components/BottomTab';
 import Competition from './pages/competition/Competition';
+import CreateCompetition from './pages/competition/createCompetition/CreateCompetition';
 import Friend from './pages/friend/Friend';
 import HomePage from './pages/home/HomePage';
 import MyPage from './pages/mypage/MyPage';
@@ -22,10 +23,23 @@ const MainTab = () => {
       }}
     >
       <Tab.Screen name="Home" component={HomePage} />
-      <Tab.Screen name="Competition" component={Competition} />
+      <Tab.Screen name="Competition" component={CompetitionStack} />
       <Tab.Screen name="Friend" component={Friend} />
       <Tab.Screen name="Mypage" component={MyPage} />
     </Tab.Navigator>
+  );
+};
+
+const CompetitionStack = () => {
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false,
+      }}
+    >
+      <Stack.Screen name="Competition" component={Competition} />
+      <Stack.Screen name="CreateCompetition" component={CreateCompetition} />
+    </Stack.Navigator>
   );
 };
 

@@ -85,9 +85,7 @@ const dummyCompetitions = [
   },
 ];
 
-const Competition = () => {
-  const navigation = useNavigation();
-
+const Competition = ({ navigation }) => {
   const renderCompetitions = ({ item }) => (
     <View style={styles.competitionContainer}>
       <Text style={styles.competitionName}>{item.name}</Text>
@@ -140,7 +138,7 @@ const Competition = () => {
                   theme="primary"
                   size="large"
                   text="+ 새로운 경쟁"
-                  onPress={() => alert('경쟁방 생성 페이지로 이동')}
+                  onPress={() => navigation.navigate('CreateCompetition')}
                 />
               </View>
             </View>
@@ -151,7 +149,7 @@ const Competition = () => {
                 theme="primary"
                 size="large"
                 text="+ 새로운 경쟁"
-                onPress={() => alert('경쟁방 생성 페이지로 이동')}
+                onPress={() => navigation.navigate('CreateCompetition')}
               />
             </View>
           )}

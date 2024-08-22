@@ -4,7 +4,7 @@ import { SafeAreaView, StyleSheet, Text, TextInput, View } from 'react-native';
 import StepIndicator from '../../../components/StepIndicator';
 import TemporaryHeader from '../TemporaryHeader';
 
-const CreateCompetition1 = () => {
+const CreateCompetition = () => {
   return (
     <SafeAreaView style={styles.safeAreaView}>
       <TemporaryHeader title={'경쟁 생성하기'} />
@@ -42,4 +42,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CreateCompetition1;
+export default CreateCompetition;
