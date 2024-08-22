@@ -2,87 +2,12 @@ import React, { useCallback, useMemo } from 'react';
 import { FlatList, Image, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
+import { dummyCompetitions } from '../../apis/dummydata';
 import CustomButton from '../../components/CustomButton';
 import { COLORS } from '../../constants/colors';
 import { FONT_SIZES, FONT_WEIGHTS, HEADER_FONT_SIZES } from '../../constants/font';
 import { RADIUS } from '../../constants/radius';
 import { LAYOUT_PADDING, SPACING } from '../../constants/space';
-
-// 더미 데이터
-const dummyCompetitions = [
-  {
-    id: '1',
-    name: '스쿼트 챌린지 들어오세요!',
-    start_date: '23.08.01',
-    end_date: '23.09.01',
-    current_members: 3,
-    max_members: 10,
-  },
-  {
-    id: '2',
-    name: '30일 플랭크 도전!!!!',
-    start_date: '23.08.15',
-    end_date: '23.09.15',
-    current_members: 5,
-    max_members: 8,
-  },
-  {
-    id: '3',
-    name: '매일 5km 달리기 🏃‍♂️',
-    start_date: '23.09.01',
-    end_date: '23.10.01',
-    current_members: 2,
-    max_members: 15,
-  },
-  {
-    id: '4',
-    name: '스쿼트 챌린지 들어오세요!',
-    start_date: '23.08.01',
-    end_date: '23.09.01',
-    current_members: 3,
-    max_members: 10,
-  },
-  {
-    id: '5',
-    name: '30일 플랭크 도전!!!!',
-    start_date: '23.08.15',
-    end_date: '23.09.15',
-    current_members: 5,
-    max_members: 8,
-  },
-  {
-    id: '6',
-    name: '매일 5km 달리기 🏃‍♂️',
-    start_date: '23.09.01',
-    end_date: '23.10.01',
-    current_members: 2,
-    max_members: 15,
-  },
-  {
-    id: '7',
-    name: '스쿼트 챌린지 들어오세요!',
-    start_date: '23.08.01',
-    end_date: '23.09.01',
-    current_members: 3,
-    max_members: 10,
-  },
-  {
-    id: '8',
-    name: '30일 플랭크 도전!!!!',
-    start_date: '23.08.15',
-    end_date: '23.09.15',
-    current_members: 5,
-    max_members: 8,
-  },
-  {
-    id: '9',
-    name: '매일 5km 달리기 🏃‍♂️',
-    start_date: '23.09.01',
-    end_date: '23.10.01',
-    current_members: 2,
-    max_members: 15,
-  },
-];
 
 const CompetitionItem = React.memo(({ item }) => (
   <View style={styles.competitionContainer}>
