@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
+import BirthDayRegisterForm from '../../components/signup/BirthDayRegisterForm';
 import EmailRegisterForm from '../../components/signup/EmailRegisterForm';
 import GenderRegisterForm from '../../components/signup/GenderRegisterForm';
 import NicknameRegisterForm from '../../components/signup/NicknameRegisterForm';
@@ -12,7 +13,7 @@ const SignUpPage = () => {
       <View style={styles.content}>
         <ProgressIndicator />
 
-        <NicknameRegisterForm />
+        <BirthDayRegisterForm />
         <View style={styles.buttonContainer}>
           <TouchableOpacity style={[styles.button, styles.buttonLeftColor]} activeOpacity={0.7}>
             <Text style={styles.buttonText}>바로 따잇하러 가기</Text>
