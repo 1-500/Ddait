@@ -1,5 +1,7 @@
 import React, { useEffect, useRef } from 'react';
-import { Animated, Dimensions, Pressable, StyleSheet, View } from 'react-native';
+import { Animated, Dimensions, Pressable, StyleSheet } from 'react-native';
+
+import { COLORS } from '../constants/colors';
 
 const { width } = Dimensions.get('window');
 
@@ -23,17 +25,17 @@ const StepIndicator = ({ currentStep, steps, onPress }) => {
   });
   const handlePress = (index) => {
     if (onPress) {
-      onPress(index + 1); // Pass step index starting from 1
+      onPress(index + 1);
     }
   };
   const stepIndicators = Array.from({ length: steps }, (_, index) => (
-    <Pressable key={index} style={styles.step} onPress={() => handlePress(index)} />
+    <Pressable key={index} style={styles.bar} onPress={() => handlePress(index)} />
   ));
 
   return (
     <Pressable style={styles.container}>
       {stepIndicators}
-      <Animated.View style={[styles.activeBar, { transform: [{ translateX }] }, { width: stepWidth }]} />
+      <Animated.View style={[styles.bar, styles.activeBar, { transform: [{ translateX }] }, { width: stepWidth }]} />
     </Pressable>
   );
 };
@@ -46,22 +48,19 @@ const styles = StyleSheet.create({
     position: 'relative',
     gap: 8,
   },
-  step: {
+  bar: {
     height: 7,
     borderRadius: 20,
     flex: 1,
-    backgroundColor: '#000',
+    backgroundColor: COLORS.black,
   },
   activeBar: {
     position: 'absolute',
-    height: 7,
-    borderRadius: 20,
-    backgroundColor: '#5d5dfc',
+    backgroundColor: COLORS.primary,
     shadowColor: 'rgba(255, 255, 255, 0.25)',
     shadowOffset: { width: 0, height: 0 },
-    shadowRadius: 4,
     shadowOpacity: 1,
-    elevation: 4,
+    elevation: 1,
   },
 });
 
