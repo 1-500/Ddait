@@ -5,7 +5,7 @@ import React from 'react';
 import BottomTab from './components/BottomTab';
 import Competition from './pages/competition/Competition';
 import StartWorkout from './pages/diary/workoutDiary/StartWorkout';
-import workoutDiary from './pages/diary/workoutDiary/WorkoutDiary';
+import WorkoutDiary from './pages/diary/workoutDiary/WorkoutDiary';
 import Friend from './pages/friend/Friend';
 import HomePage from './pages/home/HomePage';
 import MyPage from './pages/mypage/MyPage';
@@ -34,7 +34,7 @@ const MainTab = () => {
 const DiaryStack = () => {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="WorkoutDiaryScreen" component={workoutDiary} />
+      <Stack.Screen name="WorkoutDiaryScreen" component={WorkoutDiary} />
       <Stack.Screen name="StartWorkoutScreen" component={StartWorkout} />
     </Stack.Navigator>
   );
