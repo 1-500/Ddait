@@ -2,11 +2,15 @@ import React from 'react';
 import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
 
 import CustomCard from '../../components/CustomCardComponent';
+import CustomInput from '../../components/CustomInput';
+import HeaderComponents from '../../components/HeaderComponents';
+import { COLORS } from '../../constants/colors';
 import { LAYOUT_PADDING } from '../../constants/space';
 
 const HomePage = () => {
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.darkBackground }}>
+      <HeaderComponents icon="none" title="홈" />
       <View style={styles.container}>
         <Text>HomePage</Text>
         <CustomCard
@@ -18,6 +22,7 @@ const HomePage = () => {
           additionalInfo={'3/10'}
           footer={'23.08.01 ~ 23.09.01'}
         />
+        <CustomInput value="hi" />
       </View>
     </SafeAreaView>
   );
