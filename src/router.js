@@ -4,6 +4,7 @@ import React from 'react';
 
 import BottomTab from './components/BottomTab';
 import Competition from './pages/competition/Competition';
+import CreateCompetition from './pages/competition/createCompetition/CreateCompetition';
 import Friend from './pages/friend/Friend';
 import HomePage from './pages/home/HomePage';
 import LoginPage from './pages/login/LoginPage';
@@ -34,6 +35,8 @@ const MainTab = () => {
 const Router = () => {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="MainTab" component={MainTab} />
+      <Stack.Screen name="CreateCompetition" component={CreateCompetition} />
       <Stack.Screen name="SignUp" component={SignUpPage} />
     </Stack.Navigator>
   ); // 라우팅

@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
     borderRadius: RADIUS.large,
   },
   size_medium: {
-    width: '50%',
+    width: '48%',
     borderRadius: RADIUS.large,
   },
   size_small: {
