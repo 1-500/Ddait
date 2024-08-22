@@ -54,3 +54,10 @@ export const CARD_BACKGROUND_COLORS = {
   default: `${COLORS.darkGrey}`,
   primary: `${COLORS.primary}`,
 };
+
+export const INPUT_COLORS = {
+  primary: `${COLORS.primary}`,
+  error: `${COLORS.red}`,
+  success: `${COLORS.secondary}`,
+  block: `${COLORS.grey}`,
+};

@@ -28,6 +28,12 @@ DerivedData
 *.xcuserstate
 **/.xcode.env.local
 */Podfile.lock 
+!**/*.xcodeproj
+!**/*.pbxproj
+!**/*.xcworkspacedata
+!**/*.xcsettings
+!**/*.xcscheme
+
 
 # Android/IntelliJ
 #
