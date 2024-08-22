@@ -1,5 +1,6 @@
+import { BottomSheetModal, BottomSheetModalProvider, BottomSheetView } from '@gorhom/bottom-sheet';
 import { Picker } from '@react-native-picker/picker';
-import React, { useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 const months = [
@@ -21,49 +22,72 @@ const BirthDayRegisterForm = () => {
   const [selectedMonth, setSelectedMonth] = useState('9');
   const [selectedDay, setSelectedDay] = useState('17');
   const [selectedYear, setSelectedYear] = useState('2021');
+  const bottomSheetModalRef = useRef(null);
+  // variables
+  const snapPoints = useMemo(() => ['50%', '100%'], []);
+
+  // callbacks
+  const handlePresentModalPress = useCallback(() => {
+    bottomSheetModalRef.current?.present();
+  }, []);
+
+  const handleCloseModal = () => bottomSheetModalRef.current.close();
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.topText}>나라짱짱님의 생일을 알려주세요!</Text>
-      <Text style={styles.dateText}>
-        {selectedYear} / {selectedMonth} / {selectedDay}
-      </Text>
-      <View style={styles.pickerContainer}>
-        <Text style={styles.headerText}>마감일을 입력해주세요.</Text>
-        <View style={styles.pickersWrapper}>
-          <Picker
-            selectedValue={selectedMonth}
-            style={styles.picker}
-            onValueChange={(itemValue) => setSelectedMonth(itemValue)}
-          >
-            {months.map((month) => (
-              <Picker.Item key={month.value} label={month.label} value={month.value} color="white" />
-            ))}
-          </Picker>
-          <Picker
-            selectedValue={selectedDay}
-            style={styles.picker}
-            onValueChange={(itemValue) => setSelectedDay(itemValue)}
-          >
-            {days.map((day) => (
-              <Picker.Item key={day.value} label={day.label} value={day.value} color="white" />
-            ))}
-          </Picker>
-          <Picker
-            selectedValue={selectedYear}
-            style={styles.picker}
-            onValueChange={(itemValue) => setSelectedYear(itemValue)}
-          >
-            {years.map((year) => (
-              <Picker.Item key={year.value} label={year.label} value={year.value} color="white" />
-            ))}
-          </Picker>
-        </View>
-        <TouchableOpacity style={styles.button}>
-          <Text style={styles.buttonText}>완료</Text>
+    <BottomSheetModalProvider>
+      <View style={styles.container}>
+        <Text style={styles.topText}>나라짱짱님의 생일을 알려주세요!</Text>
+        <TouchableOpacity onPress={handlePresentModalPress}>
+          <Text style={styles.dateText}>
+            {selectedYear} / {selectedMonth} / {selectedDay}
+          </Text>
         </TouchableOpacity>
+        <BottomSheetModal
+          ref={bottomSheetModalRef}
+          index={1}
+          snapPoints={snapPoints}
+          backgroundComponent={({ style }) => <View style={[style, styles.pickerContainer]} />}
+        >
+          <BottomSheetView>
+            <View style={styles.pickerContainer}>
+              <Text style={styles.headerText}>생년월일을 입력해주세요.</Text>
+              <View style={styles.pickersWrapper}>
+                <Picker
+                  selectedValue={selectedMonth}
+                  style={styles.picker}
+                  onValueChange={(itemValue) => setSelectedMonth(itemValue)}
+                >
+                  {months.map((month) => (
+                    <Picker.Item key={month.value} label={month.label} value={month.value} color="white" />
+                  ))}
+                </Picker>
+                <Picker
+                  selectedValue={selectedDay}
+                  style={styles.picker}
+                  onValueChange={(itemValue) => setSelectedDay(itemValue)}
+                >
+                  {days.map((day) => (
+                    <Picker.Item key={day.value} label={day.label} value={day.value} color="white" />
+                  ))}
+                </Picker>
+                <Picker
+                  selectedValue={selectedYear}
+                  style={styles.picker}
+                  onValueChange={(itemValue) => setSelectedYear(itemValue)}
+                >
+                  {years.map((year) => (
+                    <Picker.Item key={year.value} label={year.label} value={year.value} color="white" />
+                  ))}
+                </Picker>
+              </View>
+              <TouchableOpacity style={styles.button} onPress={handleCloseModal}>
+                <Text style={styles.buttonText}>완료</Text>
+              </TouchableOpacity>
+            </View>
+          </BottomSheetView>
+        </BottomSheetModal>
       </View>
-    </View>
+    </BottomSheetModalProvider>
   );
 };
 
