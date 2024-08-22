@@ -208,6 +208,9 @@ const styles = StyleSheet.create({
   size_small: {
     width: '33.33%',
   },
+  size_stretch: {
+    flex: 1,
+  },
   input: {
     flex: 1,
     fontSize: 14,

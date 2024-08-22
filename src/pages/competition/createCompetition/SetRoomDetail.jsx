@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Dimensions, Image, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Dimensions, Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import CustomInput from '../../../components/CustomInput';
 import OptionSelector from '../../../components/OptionSelector';
@@ -49,9 +49,9 @@ const MenuItem = ({ title, component, isLast }) => (
 const PeroidSelector = () => {
   return (
     <View style={styles.periodSelectorContainer}>
-      <CustomInput style={styles.input} size="stretch" theme="primary" placeholder="시작 날짜" />
+      <CustomInput size="stretch" theme="primary" placeholder="시작 날짜" />
       <Text style={{ color: COLORS.white, fontWeight: FONT_WEIGHTS.semiBold }}>~</Text>
-      <CustomInput style={styles.input} size="stretch" theme="primary" placeholder="종료 날짜" />
+      <CustomInput size="stretch" theme="primary" placeholder="종료 날짜" />
       <Pressable>
         <Image source={calendar} />
       </Pressable>
