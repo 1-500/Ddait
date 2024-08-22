@@ -24,7 +24,7 @@ const BirthDayRegisterForm = () => {
   const [selectedYear, setSelectedYear] = useState('2021');
   const bottomSheetModalRef = useRef(null);
   // variables
-  const snapPoints = useMemo(() => ['50%', '100%'], []);
+  const snapPoints = useMemo(() => ['50%', '80%'], []);
 
   // callbacks
   const handlePresentModalPress = useCallback(() => {
@@ -131,7 +131,7 @@ const styles = StyleSheet.create({
     flex: 1,
     color: 'white',
     backgroundColor: 'transparent',
-    height: 200,
+    height: 150,
   },
   button: {
     backgroundColor: '#5D5DFC',
