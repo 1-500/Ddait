@@ -31,7 +31,7 @@ export const TAG_COLORS = {
   walking: `${COLORS.secondary}`,
   runnging: `${COLORS.purple}`,
   climb: `${COLORS.brown}`,
-  weight: `${COLORS.white}`,
+  weight: `${COLORS.lightGrey}`,
   competition: `${COLORS.grey}`,
   black: `${COLORS.black}`,
 };
