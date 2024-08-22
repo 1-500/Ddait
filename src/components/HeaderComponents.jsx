@@ -1,3 +1,4 @@
+import { useNavigation } from '@react-navigation/native';
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
@@ -20,6 +21,8 @@ import { SPACING } from '../constants/space';
  */
 
 const HeaderComponents = ({ icon = 'none', title = '', onRightBtnPress = () => {}, onDatePress = () => {} }) => {
+  const navigation = useNavigation();
+
   const getRightBtn = () => {
     switch (icon) {
       case 'btn':
@@ -71,22 +74,28 @@ const HeaderComponents = ({ icon = 'none', title = '', onRightBtnPress = () => {
 
   return (
     <View>
-      {icon !== 'date' ? (
-        <View style={styles.headerContainer}>
-          <TouchableOpacity style={styles.btnWrapper} activeOpacity={0.6}>
-            <FontAwesome name="angle-left" size={24} color={COLORS.white} />
-          </TouchableOpacity>
+      <View style={styles.headerContainer}>
+        <TouchableOpacity
+          style={styles.btnWrapper}
+          activeOpacity={0.6}
+          onPress={() => {
+            if (navigation.canGoBack()) {
+              navigation.goBack();
+            }
+          }}
+        >
+          <FontAwesome name="angle-left" size={24} color={COLORS.white} />
+        </TouchableOpacity>
+        {icon !== 'date' ? (
           <Text style={styles.titleText}>{title}</Text>
-          {getRightBtn()}
-        </View>
-      ) : (
-        <View style={[styles.headerContainer, { justifyContent: 'center' }]}>
+        ) : (
           <TouchableOpacity style={styles.dateWrapper} onPress={onDatePress} activeOpacity={0.6}>
             <Text style={styles.titleText}>{title}</Text>
             <FontAwesome name="angle-down" size={24} color={COLORS.white} />
           </TouchableOpacity>
-        </View>
-      )}
+        )}
+        {getRightBtn()}
+      </View>
     </View>
   );
 };
@@ -101,6 +110,7 @@ const styles = StyleSheet.create({
     padding: SPACING.xs,
     borderBottomWidth: 1,
     borderBottomColor: COLORS.primary,
+    backgroundColor: COLORS.darkBackground,
   },
   btnWrapper: {
     width: 44,
