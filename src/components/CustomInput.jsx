@@ -146,6 +146,7 @@ const CustomInput = ({
         autoFocus={autoFocus}
         secureTextEntry={secureTextEntry}
         autoCapitalize="none"
+        autoCorrect="none"
       />
       {theme === 'search' && (
         <View style={styles.iconWrapper}>
@@ -157,7 +158,7 @@ const CustomInput = ({
           {secureTextEntry ? <OnEye /> : <OffEye />}
         </TouchableOpacity>
       ) : (
-        value.length > 0 &&
+        value?.length > 0 &&
         !isPassword && (
           <TouchableOpacity activeOpacity={0.5} onPress={() => onChangeText('')}>
             <XIcon />
@@ -209,11 +210,11 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    color: COLORS.darkGrey,
     fontSize: 14,
     height: '100%',
     width: 'auto',
     marginRight: 16,
+    color: COLORS.white,
   },
   inputWithIcon: {
     marginRight: 40,
