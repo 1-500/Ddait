@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { FlatList, Image, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import CustomButton from '../../components/CustomButton';
@@ -85,76 +85,89 @@ const dummyCompetitions = [
   },
 ];
 
-const Competition = ({ navigation }) => {
-  const renderCompetitions = ({ item }) => (
-    <View style={styles.competitionContainer}>
-      <Text style={styles.competitionName}>{item.name}</Text>
-      <Text style={styles.competitionDate}>
-        {item.start_date} ~ {item.end_date}
+const CompetitionItem = React.memo(({ item }) => (
+  <View style={styles.competitionContainer}>
+    <Text style={styles.competitionName}>{item.name}</Text>
+    <Text style={styles.competitionDate}>
+      {item.start_date} ~ {item.end_date}
+    </Text>
+    <View style={{ flexDirection: 'row', alignItems: 'center', gap: SPACING.xxs }}>
+      <Image source={profile} style={{ width: 20, height: 20 }} />
+      <Text style={styles.competitionMembers}>
+        {item.current_members} / {item.max_members}
       </Text>
-      <View style={{ flexDirection: 'row', alignItems: 'center', gap: SPACING.xxs }}>
-        <Image source={profile} style={{ width: 20, height: 20 }} />
-        <Text style={styles.competitionMembers}>
-          {item.current_members} / {item.max_members}
-        </Text>
-      </View>
     </View>
+  </View>
+));
+
+const Competition = ({ navigation }) => {
+  const renderCompetitions = useCallback(({ item }) => <CompetitionItem item={item} />, []);
+
+  const ListHeader = useMemo(
+    () => (
+      <View style={{ marginTop: SPACING.lg }}>
+        <View style={styles.header}>
+          <Text style={styles.headerText}>따잇님,</Text>
+          <Text style={{ fontSize: 50 }}>🏋️</Text>
+        </View>
+        <Text style={styles.subHeader}>오늘의 경쟁 상황을 확인해보세요!</Text>
+
+        <View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginBottom: SPACING.xs }}>
+          <CustomButton
+            theme="primary"
+            size="medium"
+            text="+ 다른 경쟁도 볼래요"
+            onPress={() => navigation.navigate('SearchCompetition')}
+          />
+        </View>
+      </View>
+    ),
+    [navigation],
+  );
+
+  const ListFooter = useCallback(
+    () => (
+      <View ew style={{ marginTop: SPACING.sm, marginBottom: 100 }}>
+        <CustomButton
+          theme="primary"
+          size="large"
+          text="+ 새로운 경쟁"
+          onPress={() => navigation.navigate('CreateCompetition')}
+        />
+      </View>
+    ),
+    [navigation],
+  );
+
+  const ListEmpty = useCallback(
+    () => (
+      <View style={styles.cardContainer}>
+        <Text style={styles.cardText}>아직 경쟁이 없네요...{'\n'}얼른 따잇! 하러 가보실까요?</Text>
+        <CustomButton
+          theme="primary"
+          size="large"
+          text="+ 새로운 경쟁"
+          onPress={() => navigation.navigate('CreateCompetition')}
+        />
+      </View>
+    ),
+    [navigation],
   );
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.darkBackground }}>
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ flexGrow: 1 }}>
-        <View style={{ ...LAYOUT_PADDING, gap: SPACING.xl }}>
-          <View>
-            <View style={styles.header}>
-              <Text style={styles.headerText}>따잇님,</Text>
-              <Text style={{ fontSize: 50 }}>🏋️</Text>
-            </View>
-            <Text style={styles.subHeader}>오늘의 경쟁 상황을 확인해보세요!</Text>
-          </View>
-
-          <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
-            <CustomButton
-              theme="primary"
-              size="medium"
-              text="+ 다른 경쟁도 볼래요"
-              onPress={() => navigation.navigate('SearchCompetition')}
-            />
-          </View>
-
-          {dummyCompetitions.length > 0 ? (
-            <View>
-              <FlatList
-                data={dummyCompetitions}
-                renderItem={renderCompetitions}
-                keyExtractor={(item) => item.id}
-                showsVerticalScrollIndicator={false}
-                contentContainerStyle={{ gap: SPACING.md }}
-                scrollEnabled={false}
-                nestedScrollEnabled={true}
-              />
-              <View style={{ marginTop: SPACING.lg, marginBottom: 80 }}>
-                <CustomButton
-                  theme="primary"
-                  size="large"
-                  text="+ 새로운 경쟁"
-                  onPress={() => navigation.navigate('CreateCompetition')}
-                />
-              </View>
-            </View>
-          ) : (
-            <View style={styles.cardContainer}>
-              <Text style={styles.cardText}>아직 경쟁이 없네요...{'\n'}얼른 따잇! 하러 가보실까요?</Text>
-              <CustomButton
-                theme="primary"
-                size="large"
-                text="+ 새로운 경쟁"
-                onPress={() => navigation.navigate('CreateCompetition')}
-              />
-            </View>
-          )}
-        </View>
-      </ScrollView>
+      <View style={{ ...LAYOUT_PADDING }}>
+        <FlatList
+          ListHeaderComponent={ListHeader}
+          data={dummyCompetitions}
+          renderItem={renderCompetitions}
+          keyExtractor={(item) => item.id}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ gap: SPACING.md }}
+          ListFooterComponent={dummyCompetitions.length > 0 ? ListFooter : null}
+          ListEmptyComponent={ListEmpty}
+        />
+      </View>
     </SafeAreaView>
   );
 };
@@ -174,7 +187,7 @@ const styles = StyleSheet.create({
     color: COLORS.white,
     fontSize: FONT_SIZES.md,
     marginTop: SPACING.xxs,
-    marginBottom: SPACING.xxs,
+    marginBottom: SPACING.xl,
   },
   cardContainer: {
     alignItems: 'center',
