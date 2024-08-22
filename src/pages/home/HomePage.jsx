@@ -1,50 +1,28 @@
 import React from 'react';
 import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
 
-import CustomButton from '../../components/CustomButton';
-
-import DefaultInput from '../../components/CustomInput';
-import { LAYOUT_PADDING } from '../../constants/space';
+import CustomCard from '../../components/CustomCardComponent';
+import { TAG_COLORS, TEXT_COLORS } from '../../constants/colors';
 
 const HomePage = () => {
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+      <View style={styles.container}>
         <Text>HomePage</Text>
-        <CustomButton theme="primary" size="medium" text="Press me" />
+        <CustomCard
+          title="스쿼트 챌린지 들어오세요!"
+          tags={[
+            { label: '헬스', color: TAG_COLORS.weight },
+            { label: '스쿼트', color: TAG_COLORS.runnging },
+          ]}
+          additionalInfo={
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Text style={{ color: TEXT_COLORS.primary, marginLeft: 4 }}>3/10</Text>
+            </View>
+          }
+          footer={<Text style={{ color: TEXT_COLORS.primary }}>23.08.01 ~ 23.09.01</Text>}
+        />
       </View>
-<View style={[styles.container, LAYOUT_PADDING]}>
-      <Text>input</Text>
-      <DefaultInput
-        theme="primary"
-        size="medium"
-        value=""
-        placeholder="플레이스홀더야"
-        secureTextEntry={false}
-        isPassword={true}
-        isError={true}
-      />
-      <Text>input</Text>
-      <DefaultInput
-        theme="user"
-        size="medium"
-        value=""
-        placeholder="플레이스홀더야"
-        secureTextEntry={false}
-        isPassword={true}
-        isError={true}
-      />
-      <Text>input</Text>
-      <DefaultInput
-        theme="search"
-        size="medium"
-        value=""
-        placeholder="플레이스홀더야"
-        secureTextEntry={false}
-        isPassword={true}
-        isError={true}
-      />
-    </View>
     </SafeAreaView>
   );
 };

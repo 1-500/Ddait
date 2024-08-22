@@ -44,8 +44,8 @@ export const BUTTON_COLORS = {
 };
 
 export const TEXT_COLORS = {
-  primary: `${COLORS.black}`,
-  secondary: `${COLORS.white}`,
+  primary: `${COLORS.white}`,
+  secondary: `${COLORS.semiLightGrey}`,
   error: `${COLORS.red}`,
   balck: `${COLORS.black}`,
 };
