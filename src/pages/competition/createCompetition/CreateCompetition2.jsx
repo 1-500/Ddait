@@ -1,17 +1,23 @@
-import React from 'react';
-import { Image, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
+import React, { useState } from 'react';
+import { Image, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import StepIndicator from '../../../components/StepIndicator';
+import { COLORS } from '../../../constants/colors';
 import TemporaryHeader from '../TemporaryHeader';
 
 const sportsCategory = [
-  { text: '웨이트트레이닝', imgSource: require('../../../assets/images/lifting-weights.png') },
-  { text: '등산', imgSource: require('../../../assets/images/mountain.png') },
-  { text: '산책', imgSource: require('../../../assets/images/runner-man.png') },
-  { text: '다이어트', imgSource: require('../../../assets/images/avocado.png') },
+  { title: '웨이트트레이닝', imgSource: require('../../../assets/images/lifting-weights.png') },
+  { title: '등산', imgSource: require('../../../assets/images/mountain.png') },
+  { title: '산책', imgSource: require('../../../assets/images/runner-man.png') },
+  { title: '다이어트', imgSource: require('../../../assets/images/avocado.png') },
 ];
 
 const CreateCompetition2 = () => {
+  const [selectedCard, setSelectedCard] = useState(null);
+
+  const handlePress = (title) => {
+    setSelectedCard(title);
+  };
   return (
     <SafeAreaView style={styles.safeAreaView}>
       <TemporaryHeader title={'경쟁 생성하기'} />
@@ -21,7 +27,13 @@ const CreateCompetition2 = () => {
         <ScrollView>
           <View style={styles.boxWrapper}>
             {sportsCategory.map((item, index) => (
-              <Box key={index} text={item.text} imgSource={item.imgSource} />
+              <Box
+                key={index}
+                title={item.title}
+                imgSource={item.imgSource}
+                onPress={handlePress}
+                isSelected={selectedCard === item.title}
+              />
             ))}
           </View>
         </ScrollView>
@@ -30,12 +42,12 @@ const CreateCompetition2 = () => {
   );
 };
 
-const Box = ({ text, imgSource }) => {
+const Box = ({ title, imgSource, onPress, isSelected }) => {
   return (
-    <View style={styles.boxContainer}>
-      <Text style={styles.boxText}>{text}</Text>
+    <Pressable onPress={() => onPress(title)} style={[styles.boxContainer, isSelected && styles.selected]}>
+      <Text style={styles.boxText}>{title}</Text>
       <Image style={styles.icon} source={imgSource} />
-    </View>
+    </Pressable>
   );
 };
 
@@ -79,6 +91,9 @@ const styles = StyleSheet.create({
   icon: {
     width: 100,
     height: 100,
+  },
+  selected: {
+    backgroundColor: COLORS.primary,
   },
 });
 

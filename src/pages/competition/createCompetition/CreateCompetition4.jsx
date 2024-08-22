@@ -20,6 +20,12 @@ const themeList = [
 ];
 
 const CreateCompetition4 = () => {
+  const [selectedCard, setSelectedCard] = useState(null);
+
+  const handlePress = (title) => {
+    setSelectedCard(title);
+  };
+
   return (
     <SafeAreaView style={styles.safeAreaView}>
       <TemporaryHeader title={'경쟁 생성하기'} />
@@ -28,7 +34,14 @@ const CreateCompetition4 = () => {
         <Text style={styles.stepText}>4. 테마를 선택하세요.</Text>
         <ScrollView contentContainerStyle={styles.scrollViewContent}>
           {themeList.map((item) => (
-            <ThemeCard title={item.title} description={item.description} imgSource={item.imgSource} />
+            <ThemeCard
+              key={item.title}
+              title={item.title}
+              description={item.description}
+              imgSource={item.imgSource}
+              onPress={handlePress}
+              isSelected={selectedCard === item.title}
+            />
           ))}
         </ScrollView>
       </View>
@@ -36,15 +49,15 @@ const CreateCompetition4 = () => {
   );
 };
 
-const ThemeCard = ({ title, imgSource, description }) => {
+const ThemeCard = ({ title, imgSource, description, onPress, isSelected }) => {
   return (
-    <View style={styles.cardContainer}>
+    <Pressable onPress={() => onPress(title)} style={[styles.cardContainer, isSelected && styles.selected]}>
       <Image style={styles.cardImg} source={imgSource} />
       <View style={styles.textContainer}>
         <Text style={styles.titleText}>{title}</Text>
         <Text style={styles.descriptionText}>{description}</Text>
       </View>
-    </View>
+    </Pressable>
   );
 };
 
@@ -65,9 +78,9 @@ const styles = StyleSheet.create({
     borderRadius: 24,
     flexDirection: 'row',
     padding: 30,
-    gap: 20,
     marginBottom: 20,
     alignItems: 'center',
+    gap: 20,
   },
   cardImg: {
     width: 64,
@@ -87,6 +100,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '300',
     fontFamily: 'Pretendard',
+  },
+  selected: {
+    backgroundColor: COLORS.primary,
   },
 });
 
