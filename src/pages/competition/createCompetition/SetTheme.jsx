@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
 import { Image, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 
-import StepIndicator from '../../../components/StepIndicator';
 import { BACKGROUND_COLORS, COLORS } from '../../../constants/colors';
-import { ELEMENT_VERTICAL_MARGIN, LAYOUT_PADDING } from '../../../constants/space';
-import TemporaryHeader from '../TemporaryHeader';
+import { FONT_SIZES, FONT_WEIGHTS } from '../../../constants/font';
 
 const themeList = [
   {
@@ -19,7 +17,7 @@ const themeList = [
   },
 ];
 
-const CreateCompetition4 = () => {
+const SetTheme = () => {
   const [selectedCard, setSelectedCard] = useState(null);
 
   const handlePress = (title) => {
@@ -27,25 +25,18 @@ const CreateCompetition4 = () => {
   };
 
   return (
-    <SafeAreaView style={styles.safeAreaView}>
-      <TemporaryHeader title={'경쟁 생성하기'} />
-      <View style={[LAYOUT_PADDING, ELEMENT_VERTICAL_MARGIN]}>
-        <StepIndicator currentStep={4} steps={5} />
-        <Text style={styles.stepText}>4. 테마를 선택하세요.</Text>
-        <ScrollView contentContainerStyle={styles.scrollViewContent}>
-          {themeList.map((item) => (
-            <ThemeCard
-              key={item.title}
-              title={item.title}
-              description={item.description}
-              imgSource={item.imgSource}
-              onPress={handlePress}
-              isSelected={selectedCard === item.title}
-            />
-          ))}
-        </ScrollView>
-      </View>
-    </SafeAreaView>
+    <ScrollView contentContainerStyle={styles.scrollViewContent}>
+      {themeList.map((item) => (
+        <ThemeCard
+          key={item.title}
+          title={item.title}
+          description={item.description}
+          imgSource={item.imgSource}
+          onPress={handlePress}
+          isSelected={selectedCard === item.title}
+        />
+      ))}
+    </ScrollView>
   );
 };
 
@@ -62,17 +53,6 @@ const ThemeCard = ({ title, imgSource, description, onPress, isSelected }) => {
 };
 
 const styles = StyleSheet.create({
-  safeAreaView: {
-    flex: 1,
-    backgroundColor: BACKGROUND_COLORS.dark,
-  },
-  stepText: {
-    fontSize: 20,
-    fontWeight: '700',
-    fontFamily: 'Pretendard',
-    color: COLORS.white,
-    marginVertical: 20,
-  },
   cardContainer: {
     backgroundColor: BACKGROUND_COLORS.greyDark,
     borderRadius: 24,
@@ -91,14 +71,14 @@ const styles = StyleSheet.create({
   },
   titleText: {
     color: COLORS.white,
-    fontSize: 20,
-    fontWeight: '700',
+    fontSize: FONT_SIZES.lg,
+    fontWeight: FONT_WEIGHTS.bold,
     fontFamily: 'Pretendard',
   },
   descriptionText: {
     color: COLORS.white,
-    fontSize: 16,
-    fontWeight: '300',
+    fontSize: FONT_SIZES.sm,
+    fontWeight: FONT_WEIGHTS.regular,
     fontFamily: 'Pretendard',
   },
   selected: {
@@ -106,4 +86,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CreateCompetition4;
+export default SetTheme;

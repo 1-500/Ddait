@@ -23,23 +23,10 @@ const MainTab = () => {
       }}
     >
       <Tab.Screen name="Home" component={HomePage} />
-      <Tab.Screen name="Competition" component={CompetitionStack} />
+      <Tab.Screen name="Competition" component={Competition} />
       <Tab.Screen name="Friend" component={Friend} />
       <Tab.Screen name="Mypage" component={MyPage} />
     </Tab.Navigator>
-  );
-};
-
-const CompetitionStack = () => {
-  return (
-    <Stack.Navigator
-      screenOptions={{
-        headerShown: false,
-      }}
-    >
-      <Stack.Screen name="Competition" component={Competition} />
-      <Stack.Screen name="CreateCompetition" component={CreateCompetition} />
-    </Stack.Navigator>
   );
 };
 
@@ -47,6 +34,7 @@ const Router = () => {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="MainTab" component={MainTab} />
+      <Stack.Screen name="CreateCompetition" component={CreateCompetition} />
     </Stack.Navigator>
   ); // 라우팅
 };

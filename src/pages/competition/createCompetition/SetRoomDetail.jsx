@@ -1,17 +1,16 @@
 import React, { useState } from 'react';
-import { Image, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Dimensions, Image, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 
+import CustomInput from '../../../components/CustomInput';
 import OptionSelector from '../../../components/OptionSelector';
-import StepIndicator from '../../../components/StepIndicator';
 import Toggle from '../../../components/Toggle';
-import { BACKGROUND_COLORS, COLORS } from '../../../constants/colors';
-import { ELEMENT_VERTICAL_MARGIN, LAYOUT_PADDING } from '../../../constants/space';
-import TemporaryHeader from '../TemporaryHeader';
-
+import { COLORS } from '../../../constants/colors';
+import { FONT_SIZES, FONT_WEIGHTS } from '../../../constants/font';
 const calendar = require('../../../assets/images/calendar.png');
 const options = [2, 5, 10, 20];
 
-const CreateCompetition3 = () => {
+const { width } = Dimensions.get('window');
+const SetRoomDetail = () => {
   const [isPublicToggleOn, setIsPublicToggleOn] = useState(false);
   const [isWatchToggleOn, setIsWatchToggleOn] = useState(false);
 
@@ -32,18 +31,11 @@ const CreateCompetition3 = () => {
   ];
 
   return (
-    <SafeAreaView style={styles.safeAreaView}>
-      <TemporaryHeader title={'경쟁 생성하기'} />
-      <View style={[LAYOUT_PADDING, ELEMENT_VERTICAL_MARGIN]}>
-        <StepIndicator currentStep={3} steps={5} />
-        <Text style={styles.stepText}>3. 세부 사항들을 설정해주세요.</Text>
-      </View>
-      <ScrollView>
-        {menuItems.map((item, index) => (
-          <MenuItem key={index} title={item.title} component={item.component} isLast={index === menuItems.length - 1} />
-        ))}
-      </ScrollView>
-    </SafeAreaView>
+    <ScrollView style={styles.scrollView}>
+      {menuItems.map((item, index) => (
+        <MenuItem key={index} title={item.title} component={item.component} isLast={index === menuItems.length - 1} />
+      ))}
+    </ScrollView>
   );
 };
 
@@ -57,9 +49,9 @@ const MenuItem = ({ title, component, isLast }) => (
 const PeroidSelector = () => {
   return (
     <View style={styles.periodSelectorContainer}>
-      <TextInput style={styles.input} placeholder="시작 날짜" placeholderTextColor={COLORS.placeholder} />
-      <Text style={styles.inputText}>~</Text>
-      <TextInput style={styles.input} placeholder="종료 날짜" placeholderTextColor={COLORS.placeholder} />
+      <CustomInput style={styles.input} size="stretch" theme="primary" placeholder="시작 날짜" />
+      <Text style={{ color: COLORS.white, fontWeight: FONT_WEIGHTS.semiBold }}>~</Text>
+      <CustomInput style={styles.input} size="stretch" theme="primary" placeholder="종료 날짜" />
       <Pressable>
         <Image source={calendar} />
       </Pressable>
@@ -68,16 +60,9 @@ const PeroidSelector = () => {
 };
 
 const styles = StyleSheet.create({
-  safeAreaView: {
-    flex: 1,
-    backgroundColor: BACKGROUND_COLORS.dark,
-  },
-  stepText: {
-    fontSize: 20,
-    fontWeight: '700',
-    fontFamily: 'Pretendard',
-    color: COLORS.white,
-    marginVertical: 20,
+  scrollView: {
+    width,
+    alignSelf: 'center',
   },
   menuContainer: {
     flexDirection: 'row',
@@ -88,6 +73,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   flexColumn: {
+    //기간은 세로로 나열
     flexDirection: 'colomn',
     alignItems: 'flex-start',
   },
@@ -96,34 +82,18 @@ const styles = StyleSheet.create({
     borderBottomColor: 'rgba(255, 255, 255, 0.1)',
   },
   menuText: {
-    fontSize: 20,
-    fontWeight: '300',
+    fontSize: FONT_SIZES.lg,
+    fontWeight: FONT_WEIGHTS.medium,
     fontFamily: 'Pretendard',
     color: COLORS.white,
     flex: 1,
   },
-  //peroidSelector
   periodSelectorContainer: {
     flexDirection: 'row',
     marginTop: 10,
     gap: 10,
     alignItems: 'center',
   },
-  input: {
-    flex: 1,
-    borderRadius: 8,
-    borderColor: '#5d5dfc',
-    borderWidth: 1,
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    color: '#e0e0e0',
-    textAlign: 'center',
-  },
-  inputText: {
-    fontSize: 18,
-    fontFamily: 'Pretendard',
-    color: COLORS.white,
-  },
 });
 
-export default CreateCompetition3;
+export default SetRoomDetail;

@@ -1,17 +1,59 @@
-import React from 'react';
-import { SafeAreaView, StyleSheet, Text, TextInput, View } from 'react-native';
+import React, { useState } from 'react';
+import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
 
+import CustomButton from '../../../components/CustomButton';
 import StepIndicator from '../../../components/StepIndicator';
+import { BACKGROUND_COLORS, COLORS } from '../../../constants/colors';
+import { FONT_WEIGHTS, HEADER_FONT_SIZES } from '../../../constants/font';
+import { ELEMENT_VERTICAL_MARGIN, LAYOUT_PADDING } from '../../../constants/space';
 import TemporaryHeader from '../TemporaryHeader';
+import SetDetailTheme from './SetDetailTheme';
+import SetRoomDetail from './SetRoomDetail';
+import SetRoomTitle from './SetRoomTitle';
+import SetSportsCategory from './SetSportsCategory';
+import SetTheme from './SetTheme';
+
+const stepDescriptionList = [
+  { step: 1, description: '어떤 경쟁을 하고 싶나요?' },
+  { step: 2, description: '원하는 운동 카테고리를 선택하세요.' },
+  { step: 3, description: '세부 사항들을 설정해주세요.' },
+  { step: 4, description: '테마를 선택하세요.' },
+  { step: 5, description: '상세테마를 선택하세요.' },
+];
 
 const CreateCompetition = () => {
+  // const [competitonRoomData, setCompetitionRoomData] = useState(); //추후 사용
+  const [step, setStep] = useState(1);
+
+  const handleNextStep = () => {
+    if (step < 5) {
+      setStep(step + 1);
+    }
+  };
+
+  const handlePrevStep = () => {
+    if (step > 1) {
+      setStep(step - 1);
+    }
+  };
+
   return (
     <SafeAreaView style={styles.safeAreaView}>
       <TemporaryHeader title={'경쟁 생성하기'} />
-      <View style={styles.container}>
-        <StepIndicator currentStep={1} steps={5} />
-        <Text style={styles.stepText}>1. 어떤 경쟁을 하고 싶나요?</Text>
-        <TextInput style={styles.input} placeholder="경쟁방 이름을 입력하세요." placeholderTextColor="#888" />
+      <View style={[LAYOUT_PADDING, ELEMENT_VERTICAL_MARGIN, styles.container]}>
+        <StepIndicator currentStep={step} steps={5} />
+        <Text style={[styles.stepText, ELEMENT_VERTICAL_MARGIN]}>
+          {step}. {stepDescriptionList.find((item) => item.step === step).description}
+        </Text>
+        {step === 1 && <SetRoomTitle />}
+        {step === 2 && <SetSportsCategory />}
+        {step === 3 && <SetRoomDetail />}
+        {step === 4 && <SetTheme />}
+        {step === 5 && <SetDetailTheme />}
+        <View style={styles.btnWrapper}>
+          <CustomButton theme="primary" size="medium" text="이전" onPress={handlePrevStep} />
+          <CustomButton theme="primary" size="medium" text="다음" onPress={handleNextStep} />
+        </View>
       </View>
     </SafeAreaView>
   );
@@ -20,25 +62,22 @@ const CreateCompetition = () => {
 const styles = StyleSheet.create({
   safeAreaView: {
     flex: 1,
-    backgroundColor: '#1C1C1C',
+    backgroundColor: BACKGROUND_COLORS.dark,
   },
   container: {
-    padding: 20,
+    flex: 1,
   },
   stepText: {
-    fontSize: 20,
-    fontWeight: '700',
+    fontSize: HEADER_FONT_SIZES.sm,
+    fontWeight: FONT_WEIGHTS.bold,
     fontFamily: 'Pretendard',
-    color: '#e0e0e0',
-    marginVertical: 20,
+    color: COLORS.white,
   },
-  input: {
-    borderRadius: 16,
-    borderColor: '#5d5dfc',
-    borderWidth: 1,
-    paddingHorizontal: 20,
-    paddingVertical: 14,
-    color: '#e0e0e0',
+  btnWrapper: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 'auto',
+    gap: 10,
   },
 });
 
