@@ -5,7 +5,8 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 
 import CustomButton from '../../../components/CustomButton';
 import HeaderComponents from '../../../components/HeaderComponents';
-import { BACKGROUND_COLORS, BUTTON_COLORS, COLORS, TEXT_COLORS } from '../../../constants/colors';
+import { BACKGROUND_COLORS, COLORS, TEXT_COLORS } from '../../../constants/colors';
+import { BODY_FONT_SIZES, HEADER_FONT_SIZES } from '../../../constants/font';
 import { RADIUS } from '../../../constants/radius';
 import { ELEMENT_VERTICAL_MARGIN, LAYOUT_PADDING } from '../../../constants/space';
 
@@ -58,13 +59,14 @@ const StartWorkout = () => {
   const navigation = useNavigation();
   const [myCompetition, setMyCompetition] = useState('참여한 경쟁방 중 하나');
   const [hasWorkout, sethasWorkout] = useState(true);
+
   const handleStartWorkout = () => {};
 
   const renderWorkoutCard = ({ item }) => {
     return (
       <View style={styles.card}>
         <View style={styles.header}>
-          <Text style={styles.title}>{item.title}</Text>
+          <Text style={styles.titleText}>{item.title}</Text>
           <TouchableOpacity style={styles.startButton}>
             <Text style={styles.startButtonText}>시작</Text>
           </TouchableOpacity>
@@ -78,9 +80,11 @@ const StartWorkout = () => {
           </View>
           {item.workoutSet.map((set, index) => (
             <View key={set.id} style={styles.workoutSetRow}>
-              <Text style={styles.workoutSetText}>{index + 1}</Text>
-              <Text style={styles.workoutSetText}>{set.weight} kg</Text>
-              <Text style={styles.workoutSetText}>{set.reps} 회</Text>
+              <View style={styles.workoutSetInfo}>
+                <Text style={styles.workoutSetText}>{index + 1}</Text>
+                <Text style={styles.workoutSetText}>{set.weight} kg</Text>
+                <Text style={styles.workoutSetText}>{set.reps} 회</Text>
+              </View>
               <View style={{ flexDirection: 'row', gap: 16 }}>
                 <MaterialCommunityIcons name="check-circle-outline" size={24} color={COLORS.primary} />
                 <MaterialCommunityIcons name="minus-circle-outline" size={24} color={TEXT_COLORS.secondary} />
@@ -95,40 +99,55 @@ const StartWorkout = () => {
     );
   };
 
+  const renderFooter = () => {
+    return (
+      <View style={{ marginVertical: 16 }}>
+        <View style={{ marginBottom: 24 }}>
+          <CustomButton
+            theme="primary"
+            size="large"
+            states="enabled"
+            onPress={handleStartWorkout}
+            text="운동 추가하기"
+          />
+        </View>
+        <CustomButton theme="secondary" size="large" states="enabled" onPress={() => {}} text="운동 완료" />
+      </View>
+    );
+  };
+
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.darkBackground }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: BACKGROUND_COLORS.dark }}>
       <HeaderComponents title="운동 시작" icon="timer" />
       <View style={styles.timerContainer}>
         <MaterialCommunityIcons name="timer-outline" size={24} color={COLORS.white} />
+        <Text style={{ color: COLORS.white, marginLeft: 16 }}>01:23</Text>
         {/* 타이머 컴포넌트 자리 */}
       </View>
-      <View style={{ flex: 1, ...LAYOUT_PADDING }}>
+      {hasWorkout ? (
+        <FlatList
+          data={dummyWorkoutData}
+          renderItem={renderWorkoutCard}
+          ListFooterComponent={renderFooter}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingBottom: 16, paddingHorizontal: 16 }}
+          keyExtractor={(item) => item.id}
+        />
+      ) : (
         <View style={styles.diaryContentContainer}>
-          {hasWorkout ? (
-            <FlatList
-              data={dummyWorkoutData}
-              renderItem={renderWorkoutCard}
-              showsVerticalScrollIndicator={false}
-              contentContainerStyle={{ gap: 16 }}
-            />
-          ) : (
-            <View style={styles.messageContainer}>
-              <Text style={styles.messageText}>"{myCompetition}" 경쟁을 위해</Text>
-              <Text style={styles.messageText}>오늘은 바벨스쿼트 먼저 해보는 건 어때요?</Text>
-            </View>
-          )}
-          <View style={{ marginVertical: 16 }}>
-            <CustomButton
-              theme="primary"
-              size="large"
-              states="enabled"
-              onPress={handleStartWorkout}
-              text="운동 추가하기"
-            />
+          <View style={styles.messageContainer}>
+            <Text style={styles.messageText}>"{myCompetition}" 경쟁을 위해</Text>
+            <Text style={styles.messageText}>오늘은 바벨스쿼트 먼저 해보는 건 어때요?</Text>
           </View>
-          <CustomButton theme="secondary" size="large" states="enabled" onPress={() => {}} text="운동 완료" />
+          <CustomButton
+            theme="primary"
+            size="large"
+            states="enabled"
+            onPress={handleStartWorkout}
+            text="운동 추가하기"
+          />
         </View>
-      </View>
+      )}
     </SafeAreaView>
   );
 };
@@ -137,36 +156,35 @@ export default StartWorkout;
 
 const styles = StyleSheet.create({
   timerContainer: {
+    flexDirection: 'row',
     height: 60,
     paddingVertical: 16,
-    ...LAYOUT_PADDING,
     alignItems: 'center',
     justifyContent: 'center',
   },
   diaryContentContainer: {
-    backgroundColor: BACKGROUND_COLORS.greyDark,
     paddingTop: 16,
     flex: 1,
     ...LAYOUT_PADDING,
   },
-  messageContainer: {
-    borderRadius: 10,
-    paddingVertical: 21,
-    paddingHorizontal: 20,
-    alignItems: 'center',
-    marginVertical: ELEMENT_VERTICAL_MARGIN,
-    backgroundColor: BACKGROUND_COLORS.dark,
-  },
-  messageText: {
-    color: TEXT_COLORS.primary,
-    fontSize: 16,
-    textAlign: 'center',
-  },
   card: {
-    backgroundColor: BACKGROUND_COLORS.dark,
+    backgroundColor: BACKGROUND_COLORS.greyDark,
     borderRadius: RADIUS.large,
     padding: 16,
     marginBottom: 16,
+  },
+  messageContainer: {
+    borderRadius: 10,
+    paddingVertical: 21,
+    alignItems: 'center',
+    marginBottom: 16,
+    backgroundColor: BACKGROUND_COLORS.greyDark,
+    ...LAYOUT_PADDING,
+  },
+  messageText: {
+    color: TEXT_COLORS.primary,
+    fontSize: BODY_FONT_SIZES.md,
+    textAlign: 'center',
   },
   header: {
     flexDirection: 'row',
@@ -174,8 +192,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 8,
   },
-  title: {
-    fontSize: 16,
+  titleText: {
+    fontSize: HEADER_FONT_SIZES.sm,
     fontWeight: 'bold',
     color: TEXT_COLORS.primary,
   },
@@ -183,11 +201,11 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.primary,
     paddingHorizontal: 16,
     paddingVertical: 8,
-    borderRadius: RADIUS.medium,
+    borderRadius: RADIUS.small,
   },
   startButtonText: {
     color: TEXT_COLORS.primary,
-    fontSize: 14,
+    fontSize: BODY_FONT_SIZES.md,
   },
   divider: {
     height: 1,
@@ -199,7 +217,7 @@ const styles = StyleSheet.create({
   },
   workoutSetHeader: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    gap: 64,
     marginBottom: 8,
   },
   workoutSetRow: {
@@ -208,13 +226,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginVertical: 4,
   },
+  workoutSetInfo: {
+    flexDirection: 'row',
+    gap: 64,
+  },
   workoutSetText: {
     color: TEXT_COLORS.primary,
-    fontSize: 14,
+    fontSize: BODY_FONT_SIZES.md,
   },
   addSetButton: {
     marginTop: 16,
-    backgroundColor: BACKGROUND_COLORS.greyDark,
+    backgroundColor: COLORS.grey,
     paddingVertical: 10,
     alignItems: 'center',
     justifyContent: 'center',
@@ -222,6 +244,6 @@ const styles = StyleSheet.create({
   },
   addSetButtonText: {
     color: TEXT_COLORS.secondary,
-    fontSize: 14,
+    fontSize: BODY_FONT_SIZES.md,
   },
 });
