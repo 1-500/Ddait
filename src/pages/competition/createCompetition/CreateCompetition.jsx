@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import { Alert, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 
 import CustomButton from '../../../components/CustomButton';
+import HeaderComponents from '../../../components/HeaderComponents';
 import StepIndicator from '../../../components/StepIndicator';
 import { BACKGROUND_COLORS, COLORS } from '../../../constants/colors';
 import { FONT_WEIGHTS, HEADER_FONT_SIZES } from '../../../constants/font';
 import { ELEMENT_VERTICAL_MARGIN, LAYOUT_PADDING } from '../../../constants/space';
-import TemporaryHeader from '../TemporaryHeader';
 import SetDetailTheme from './SetDetailTheme';
 import SetRoomDetail from './SetRoomDetail';
 import SetRoomTitle from './SetRoomTitle';
@@ -39,10 +39,13 @@ const CreateCompetition = () => {
   const handleStepChange = (newStep) => {
     setStep(newStep);
   };
+  const handleSubmit = () => {
+    alert('경쟁방이 생성되었습니다!');
+  };
 
   return (
     <SafeAreaView style={styles.safeAreaView}>
-      <TemporaryHeader title={'경쟁 생성하기'} />
+      <HeaderComponents title={'경쟁 생성하기'} />
       <View style={[LAYOUT_PADDING, ELEMENT_VERTICAL_MARGIN, styles.container]}>
         <StepIndicator currentStep={step} steps={5} onPress={handleStepChange} />
         <Text style={[styles.stepText, ELEMENT_VERTICAL_MARGIN]}>
@@ -55,7 +58,11 @@ const CreateCompetition = () => {
         {step === 5 && <SetDetailTheme />}
         <View style={styles.btnWrapper}>
           <CustomButton theme="primary" size="medium" text="이전" onPress={handlePrevStep} />
-          <CustomButton theme="primary" size="medium" text="다음" onPress={handleNextStep} />
+          {step === 5 ? (
+            <CustomButton theme="secondary" size="medium" text="다음" onPress={handleSubmit} />
+          ) : (
+            <CustomButton theme="primary" size="medium" text="다음" onPress={handleNextStep} />
+          )}
         </View>
       </View>
     </SafeAreaView>
