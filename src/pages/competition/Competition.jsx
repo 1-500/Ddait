@@ -1,4 +1,3 @@
-import { useNavigation } from '@react-navigation/native';
 import React from 'react';
 import { FlatList, Image, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 
@@ -119,7 +118,7 @@ const Competition = ({ navigation }) => {
               theme="primary"
               size="medium"
               text="+ 다른 경쟁도 볼래요"
-              onPress={() => alert('경쟁방 찾기 페이지로 이동')}
+              onPress={() => navigation.navigate('SearchCompetition')}
             />
           </View>
 
