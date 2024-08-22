@@ -24,7 +24,7 @@ const BirthDayRegisterForm = () => {
   const [selectedYear, setSelectedYear] = useState('2021');
   const bottomSheetModalRef = useRef(null);
   // variables
-  const snapPoints = useMemo(() => ['50%', '80%'], []);
+  const snapPoints = useMemo(() => ['50%', '60%'], []);
 
   // callbacks
   const handlePresentModalPress = useCallback(() => {

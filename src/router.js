@@ -23,7 +23,7 @@ const MainTab = () => {
         headerShown: false,
       }}
     >
-      <Tab.Screen name="Home" component={SignUpPage} />
+      <Tab.Screen name="SignUp" component={SignUpPage} />
       <Tab.Screen name="Competition" component={Competition} />
       <Tab.Screen name="Friend" component={Friend} />
       <Tab.Screen name="Mypage" component={MyPage} />
@@ -34,7 +34,7 @@ const MainTab = () => {
 const Router = () => {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="MainTab" component={MainTab} />
+      <Stack.Screen name="SignUp" component={SignUpPage} />
     </Stack.Navigator>
   ); // 라우팅
 };

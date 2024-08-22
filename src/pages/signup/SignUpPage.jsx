@@ -1,20 +1,32 @@
-import React, { useState } from 'react';
-import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React from 'react';
+import {
+  KeyboardAvoidingView,
+  Platform,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
 import BirthDayRegisterForm from '../../components/signup/BirthDayRegisterForm';
 import EmailRegisterForm from '../../components/signup/EmailRegisterForm';
 import GenderRegisterForm from '../../components/signup/GenderRegisterForm';
 import MyPositionRegisterForm from '../../components/signup/MyPositionRegisterForm';
-import NicknameRegisterForm from '../../components/signup/NicknameRegisterForm';
 import PreferedSportRegisterForm from '../../components/signup/PreferedSportRegisterForm';
 import ProgressIndicator from '../../components/signup/ProgressIndicator';
+
 const SignUpPage = () => {
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.content}>
-        <ProgressIndicator />
-
-        <MyPositionRegisterForm />
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.keyboardAvoidingView}>
+        <ScrollView contentContainerStyle={styles.scrollView}>
+          <View style={styles.content}>
+            <ProgressIndicator />
+            <BirthDayRegisterForm />
+          </View>
+        </ScrollView>
         <View style={styles.buttonContainer}>
           <TouchableOpacity style={[styles.button, styles.buttonLeftColor]} activeOpacity={0.7}>
             <Text style={styles.buttonText}>바로 따잇하러 가기</Text>
@@ -23,7 +35,7 @@ const SignUpPage = () => {
             <Text style={styles.buttonText}>다음</Text>
           </TouchableOpacity>
         </View>
-      </View>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };
@@ -33,27 +45,30 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#1C1C1C',
   },
+  keyboardAvoidingView: {
+    flex: 1,
+  },
+  scrollView: {
+    flexGrow: 1,
+  },
   content: {
-    paddingHorizontal: 20,
-    marginVertical: 40,
-
-    height: 580,
+    flex: 1,
+    paddingHorizontal: '5%',
+    paddingTop: '10%',
+    paddingBottom: '5%',
   },
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    position: 'absolute',
-    paddingHorizontal: 20,
-    bottom: 0,
-    left: 0,
-    right: 0,
+    paddingHorizontal: '5%',
+    paddingVertical: '5%',
+    backgroundColor: '#1C1C1C',
   },
   button: {
-    display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    width: 148,
-    height: 40,
+    width: '45%',
+    paddingVertical: 12,
     borderRadius: 12,
   },
   buttonLeftColor: {
@@ -64,7 +79,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: 'white',
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: 'bold',
   },
 });
