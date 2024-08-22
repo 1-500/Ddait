@@ -1,9 +1,9 @@
 import React, { useEffect, useRef } from 'react';
-import { Animated, Dimensions, StyleSheet, View } from 'react-native';
+import { Animated, Dimensions, Pressable, StyleSheet, View } from 'react-native';
 
 const { width } = Dimensions.get('window');
 
-const StepIndicator = ({ currentStep, steps }) => {
+const StepIndicator = ({ currentStep, steps, onPress }) => {
   const animatedValue = useRef(new Animated.Value(0)).current;
 
   const stepWidth = (width - 40 - (steps - 2) * 8) / steps;
@@ -21,14 +21,20 @@ const StepIndicator = ({ currentStep, steps }) => {
     inputRange: Array.from({ length: steps }, (_, index) => index),
     outputRange: Array.from({ length: steps }, (_, index) => index * (stepWidth + stepGap)),
   });
-
-  const stepIndicators = Array.from({ length: steps }, (_, index) => <View key={index} style={styles.step} />);
+  const handlePress = (index) => {
+    if (onPress) {
+      onPress(index + 1); // Pass step index starting from 1
+    }
+  };
+  const stepIndicators = Array.from({ length: steps }, (_, index) => (
+    <Pressable key={index} style={styles.step} onPress={() => handlePress(index)} />
+  ));
 
   return (
-    <View style={styles.container}>
+    <Pressable style={styles.container}>
       {stepIndicators}
       <Animated.View style={[styles.activeBar, { transform: [{ translateX }] }, { width: stepWidth }]} />
-    </View>
+    </Pressable>
   );
 };
 

@@ -36,12 +36,15 @@ const CreateCompetition = () => {
       setStep(step - 1);
     }
   };
+  const handleStepChange = (newStep) => {
+    setStep(newStep);
+  };
 
   return (
     <SafeAreaView style={styles.safeAreaView}>
       <TemporaryHeader title={'경쟁 생성하기'} />
       <View style={[LAYOUT_PADDING, ELEMENT_VERTICAL_MARGIN, styles.container]}>
-        <StepIndicator currentStep={step} steps={5} />
+        <StepIndicator currentStep={step} steps={5} onPress={handleStepChange} />
         <Text style={[styles.stepText, ELEMENT_VERTICAL_MARGIN]}>
           {step}. {stepDescriptionList.find((item) => item.step === step).description}
         </Text>
