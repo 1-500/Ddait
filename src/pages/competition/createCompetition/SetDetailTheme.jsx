@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text } from 'react-native';
 
 import { BACKGROUND_COLORS, COLORS } from '../../../constants/colors';
@@ -16,18 +16,28 @@ const themeList = [
 ];
 
 const SetDetailTheme = () => {
+  const [selectedCard, setSelectedCard] = useState(null);
+
+  const handlePress = (title) => {
+    setSelectedCard(title);
+  };
   return (
     <ScrollView contentContainerStyle={styles.scrollViewContent}>
       {themeList.map((item) => (
-        <DatailThemeCard title={item.title} description={item.description} />
+        <DatailThemeCard
+          title={item.title}
+          description={item.description}
+          onPress={handlePress}
+          isSelected={selectedCard === item.title}
+        />
       ))}
     </ScrollView>
   );
 };
 
-const DatailThemeCard = ({ title, description }) => {
+const DatailThemeCard = ({ title, description, onPress, isSelected }) => {
   return (
-    <Pressable style={styles.cardContainer}>
+    <Pressable onPress={() => onPress(title)} style={[styles.cardContainer, isSelected && styles.selected]}>
       <Text style={styles.titleText}>{title}</Text>
       <Text style={styles.descriptionText}>{description}</Text>
     </Pressable>
@@ -54,6 +64,9 @@ const styles = StyleSheet.create({
     fontSize: FONT_SIZES.sm,
     fontWeight: FONT_WEIGHTS.regularu,
     fontFamily: 'Pretendard',
+  },
+  selected: {
+    backgroundColor: COLORS.primary,
   },
 });
 
