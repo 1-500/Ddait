@@ -2,6 +2,11 @@ import React, { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { COLORS } from '../constants/colors';
+/**
+ * @param {{
+ * options: number[];
+ * }}
+ */
 
 const OptionSelector = ({ options }) => {
   const [selectedOption, setSelectedOption] = useState(null);

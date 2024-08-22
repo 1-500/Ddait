@@ -4,6 +4,13 @@ import { Animated, Dimensions, Pressable, StyleSheet } from 'react-native';
 import { COLORS } from '../constants/colors';
 
 const { width } = Dimensions.get('window');
+/**
+ * @param {{
+ *   currentStep: number;
+ *   steps: number;
+ *   onPress: (step: number) => void;
+ * }}
+ */
 
 const StepIndicator = ({ currentStep, steps, onPress }) => {
   const animatedValue = useRef(new Animated.Value(0)).current;
