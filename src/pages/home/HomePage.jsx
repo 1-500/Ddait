@@ -2,11 +2,14 @@ import React from 'react';
 import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
 
 import CustomCard from '../../components/CustomCardComponent';
+import HeaderComponents from '../../components/HeaderComponents';
+import { COLORS } from '../../constants/colors';
 import { LAYOUT_PADDING } from '../../constants/space';
 
 const HomePage = () => {
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.darkBackground }}>
+      <HeaderComponents icon="none" title="홈" />
       <View style={styles.container}>
         <Text>HomePage</Text>
         <CustomCard
