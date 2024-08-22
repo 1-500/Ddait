@@ -26,7 +26,7 @@ const MainTab = () => {
       }}
     >
       <Tab.Screen name="SignUp" component={SignUpPage} />
-      <Tab.Screen name="CompetitionTab" component={CompetitionStack} />
+      <Tab.Screen name="Competition" component={CompetitionStack} />
       <Tab.Screen name="Friend" component={Friend} />
       <Tab.Screen name="Mypage" component={MyPage} />
     </Tab.Navigator>
@@ -36,7 +36,7 @@ const MainTab = () => {
 const CompetitionStack = () => {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="Competition" component={Competition} />
+      <Stack.Screen name="MyCompetition" component={Competition} />
       <Stack.Screen name="SearchCompetition" component={SearchCompetition} />
     </Stack.Navigator>
   );
