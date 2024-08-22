@@ -24,7 +24,7 @@ const SignUpPage = () => {
         <ScrollView contentContainerStyle={styles.scrollView}>
           <View style={styles.content}>
             <ProgressIndicator />
-            <BirthDayRegisterForm />
+            <MyPositionRegisterForm />
           </View>
         </ScrollView>
         <View style={styles.buttonContainer}>
