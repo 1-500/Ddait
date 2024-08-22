@@ -59,7 +59,7 @@ const CreateCompetition = () => {
         <View style={styles.btnWrapper}>
           <CustomButton theme="primary" size="medium" text="이전" onPress={handlePrevStep} />
           {step === 5 ? (
-            <CustomButton theme="secondary" size="medium" text="다음" onPress={handleSubmit} />
+            <CustomButton theme="secondary" size="medium" text="경쟁방 생성" onPress={handleSubmit} />
           ) : (
             <CustomButton theme="primary" size="medium" text="다음" onPress={handleNextStep} />
           )}
