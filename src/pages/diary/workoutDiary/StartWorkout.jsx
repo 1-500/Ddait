@@ -4,6 +4,7 @@ import { FlatList, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import CustomButton from '../../../components/CustomButton';
+import CustomInput from '../../../components/CustomInput';
 import HeaderComponents from '../../../components/HeaderComponents';
 import { BACKGROUND_COLORS, COLORS, TEXT_COLORS } from '../../../constants/colors';
 import { BODY_FONT_SIZES, HEADER_FONT_SIZES } from '../../../constants/font';
@@ -56,65 +57,86 @@ const dummyWorkoutData = [
 ];
 
 const StartWorkout = () => {
-  const navigation = useNavigation();
-  const [myCompetition, setMyCompetition] = useState('참여한 경쟁방 중 하나');
-  const [hasWorkout, sethasWorkout] = useState(true);
-
-  const handleStartWorkout = () => {};
-
-  const renderWorkoutCard = ({ item }) => {
-    return (
-      <View style={styles.card}>
-        <View style={styles.header}>
-          <Text style={styles.titleText}>{item.title}</Text>
-          <TouchableOpacity style={styles.startButton}>
-            <Text style={styles.startButtonText}>시작</Text>
-          </TouchableOpacity>
+  const [workoutData, setWorkoutData] = useState([
+    {
+      id: '1',
+      title: '바벨 스쿼트',
+      workoutSet: [
+        { id: '1', weight: '20', reps: '10' },
+        { id: '2', weight: '40', reps: '10' },
+        { id: '3', weight: '60', reps: '10' },
+      ],
+    },
+    {
+      id: '2',
+      title: '레그 프레스',
+      workoutSet: [
+        { id: '1', weight: '20', reps: '10' },
+        { id: '2', weight: '40', reps: '10' },
+        { id: '3', weight: '60', reps: '10' },
+      ],
+    },
+  ]);
+  /* eslint-disable */
+  const handleInputChange = (workoutId, setId, field, value) => {
+    setWorkoutData((prevData) =>
+      prevData.map((workout) =>
+        workout.id === workoutId
+          ? {
+              ...workout,
+              workoutSet: workout.workoutSet.map((set) => (set.id === setId ? { ...set, [field]: value } : set)),
+            }
+          : workout,
+      ),
+    );
+  };
+  /* eslint-enable */
+  const renderWorkoutCard = ({ item }) => (
+    <View style={styles.card}>
+      <View style={styles.header}>
+        <Text style={styles.titleText}>{item.title}</Text>
+        <TouchableOpacity style={styles.startButton}>
+          <Text style={styles.startButtonText}>시작</Text>
+        </TouchableOpacity>
+      </View>
+      <View style={styles.divider} />
+      <View style={styles.workoutSetContainer}>
+        <View style={styles.workoutSetHeader}>
+          <Text style={styles.workoutSetText}>세트</Text>
+          <Text style={styles.workoutSetText}>무게</Text>
+          <Text style={styles.workoutSetText}>횟수</Text>
         </View>
-        <View style={styles.divider} />
-        <View style={styles.workoutSetContainer}>
-          <View style={styles.workoutSetHeader}>
-            <Text style={styles.workoutSetText}>세트</Text>
-            <Text style={styles.workoutSetText}>무게</Text>
-            <Text style={styles.workoutSetText}>횟수</Text>
-          </View>
-          {item.workoutSet.map((set, index) => (
-            <View key={set.id} style={styles.workoutSetRow}>
-              <View style={styles.workoutSetInfo}>
-                <Text style={styles.workoutSetText}>{index + 1}</Text>
-                <Text style={styles.workoutSetText}>{set.weight} kg</Text>
-                <Text style={styles.workoutSetText}>{set.reps} 회</Text>
-              </View>
-              <View style={{ flexDirection: 'row', gap: 16 }}>
-                <MaterialCommunityIcons name="check-circle-outline" size={24} color={COLORS.primary} />
-                <MaterialCommunityIcons name="minus-circle-outline" size={24} color={TEXT_COLORS.secondary} />
-              </View>
+        {item.workoutSet.map((set) => (
+          <View key={set.id} style={styles.workoutSetRow}>
+            <View style={styles.workoutSetInfo}>
+              <Text style={styles.workoutSetText}>{set.id}</Text>
+              <CustomInput
+                size="small"
+                theme="primary"
+                value={set.weight}
+                placeholder={set.weight}
+                onChangeText={(value) => handleInputChange(item.id, set.id, 'weight', value)}
+              />
+              <CustomInput
+                size="small"
+                theme="primary"
+                value={set.reps}
+                placeholder={set.reps}
+                onChangeText={(value) => handleInputChange(item.id, set.id, 'reps', value)}
+              />
             </View>
-          ))}
-          <TouchableOpacity style={styles.addSetButton}>
-            <Text style={styles.addSetButtonText}>세트 추가</Text>
-          </TouchableOpacity>
-        </View>
+            <View style={{ flexDirection: 'row', gap: 16 }}>
+              <MaterialCommunityIcons name="check-circle-outline" size={24} color={COLORS.primary} />
+              <MaterialCommunityIcons name="minus-circle-outline" size={24} color={TEXT_COLORS.secondary} />
+            </View>
+          </View>
+        ))}
+        <TouchableOpacity style={styles.addSetButton}>
+          <Text style={styles.addSetButtonText}>세트 추가</Text>
+        </TouchableOpacity>
       </View>
-    );
-  };
-
-  const renderFooter = () => {
-    return (
-      <View style={{ marginVertical: 16 }}>
-        <View style={{ marginBottom: 24 }}>
-          <CustomButton
-            theme="primary"
-            size="large"
-            states="enabled"
-            onPress={handleStartWorkout}
-            text="운동 추가하기"
-          />
-        </View>
-        <CustomButton theme="secondary" size="large" states="enabled" onPress={() => {}} text="운동 완료" />
-      </View>
-    );
-  };
+    </View>
+  );
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: BACKGROUND_COLORS.dark }}>
@@ -122,32 +144,14 @@ const StartWorkout = () => {
       <View style={styles.timerContainer}>
         <MaterialCommunityIcons name="timer-outline" size={24} color={COLORS.white} />
         <Text style={{ color: COLORS.white, marginLeft: 16 }}>01:23</Text>
-        {/* 타이머 컴포넌트 자리 */}
       </View>
-      {hasWorkout ? (
-        <FlatList
-          data={dummyWorkoutData}
-          renderItem={renderWorkoutCard}
-          ListFooterComponent={renderFooter}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingBottom: 16, paddingHorizontal: 16 }}
-          keyExtractor={(item) => item.id}
-        />
-      ) : (
-        <View style={styles.diaryContentContainer}>
-          <View style={styles.messageContainer}>
-            <Text style={styles.messageText}>"{myCompetition}" 경쟁을 위해</Text>
-            <Text style={styles.messageText}>오늘은 바벨스쿼트 먼저 해보는 건 어때요?</Text>
-          </View>
-          <CustomButton
-            theme="primary"
-            size="large"
-            states="enabled"
-            onPress={handleStartWorkout}
-            text="운동 추가하기"
-          />
-        </View>
-      )}
+      <FlatList
+        data={workoutData}
+        renderItem={renderWorkoutCard}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 16, paddingHorizontal: 16 }}
+        keyExtractor={(item) => item.id}
+      />
     </SafeAreaView>
   );
 };
@@ -209,7 +213,7 @@ const styles = StyleSheet.create({
   },
   divider: {
     height: 1,
-    backgroundColor: TEXT_COLORS.secondary,
+    backgroundColor: COLORS.primary,
     marginVertical: 8,
   },
   workoutSetContainer: {
@@ -217,20 +221,24 @@ const styles = StyleSheet.create({
   },
   workoutSetHeader: {
     flexDirection: 'row',
-    gap: 64,
+    gap: 35,
     marginBottom: 8,
   },
   workoutSetRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginVertical: 4,
+    marginVertical: 10,
   },
   workoutSetInfo: {
     flexDirection: 'row',
-    gap: 64,
+    gap: 16,
   },
   workoutSetText: {
+    width: 50,
+    height: 24,
+    paddingTop: 4,
+    textAlign: 'center',
     color: TEXT_COLORS.primary,
     fontSize: BODY_FONT_SIZES.md,
   },
@@ -240,7 +248,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: RADIUS.medium,
+    borderRadius: RADIUS.large,
   },
   addSetButtonText: {
     color: TEXT_COLORS.secondary,

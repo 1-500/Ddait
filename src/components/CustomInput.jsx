@@ -1,8 +1,8 @@
 import React from 'react';
-import { StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import { Dimensions, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 import Svg, { Circle, ClipPath, Defs, G, Path, Rect } from 'react-native-svg';
 
-import { COLORS, INPUT_COLORS } from '../constants/colors';
+import { COLORS, INPUT_COLORS, TEXT_COLORS } from '../constants/colors';
 import { RADIUS } from '../constants/radius';
 
 const XIcon = () => (
@@ -115,11 +115,24 @@ const CustomInput = ({
   isPassword = false,
   onPressShowPassword = () => {},
 }) => {
+  const windowWidth = Dimensions.get('window').width;
+
+  const dynamicStyles = StyleSheet.create({
+    size_small: {
+      width: windowWidth / 5,
+      height: 40,
+    },
+    inputContainer: {
+      flex: 1,
+      minWidth: windowWidth / 5,
+    },
+  });
+
   return (
     <View
       style={[
         styles.container,
-        styles[`size_${size}`],
+        size === 'small' ? dynamicStyles.size_small : styles[`size_${size}`],
         theme === 'user'
           ? isError
             ? styles.errorUserInputBox
@@ -158,7 +171,8 @@ const CustomInput = ({
         </TouchableOpacity>
       ) : (
         value.length > 0 &&
-        !isPassword && (
+        !isPassword &&
+        size !== 'small' && (
           <TouchableOpacity activeOpacity={0.5} onPress={() => onChangeText('')}>
             <XIcon />
           </TouchableOpacity>
@@ -204,12 +218,9 @@ const styles = StyleSheet.create({
   size_medium: {
     width: '50%',
   },
-  size_small: {
-    width: '33.33%',
-  },
   input: {
     flex: 1,
-    color: COLORS.darkGrey,
+    color: TEXT_COLORS.primary,
     fontSize: 14,
     height: '100%',
     width: 'auto',
