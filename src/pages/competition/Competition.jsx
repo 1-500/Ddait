@@ -1,13 +1,12 @@
 import React, { useCallback, useMemo } from 'react';
 import { FlatList, Image, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import CustomButton from '../../components/CustomButton';
 import { COLORS } from '../../constants/colors';
 import { FONT_SIZES, FONT_WEIGHTS, HEADER_FONT_SIZES } from '../../constants/font';
 import { RADIUS } from '../../constants/radius';
 import { LAYOUT_PADDING, SPACING } from '../../constants/space';
-
-const profile = require('../../assets/images/profile.png');
 
 // 더미 데이터
 const dummyCompetitions = [
@@ -91,8 +90,8 @@ const CompetitionItem = React.memo(({ item }) => (
     <Text style={styles.competitionDate}>
       {item.start_date} ~ {item.end_date}
     </Text>
-    <View style={{ flexDirection: 'row', alignItems: 'center', gap: SPACING.xxs }}>
-      <Image source={profile} style={{ width: 20, height: 20 }} />
+    <View style={{ flexDirection: 'row', alignItems: 'center', gap: SPACING.xs }}>
+      <Ionicons name="person" size={16} color={COLORS.semiLightGrey} />
       <Text style={styles.competitionMembers}>
         {item.current_members} / {item.max_members}
       </Text>
