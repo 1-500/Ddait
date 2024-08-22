@@ -5,7 +5,7 @@ export const COLORS = {
   white: '#E0E0E0',
   black: '#000000',
   grey: '#3C3C3C',
-  semiLightGrey: 'A5A5A5', // 자기소개
+  semiLightGrey: '#A5A5A5', // 자기소개
   lightGrey: '#878787',
   darkGrey: '#2A2A2A', // 목록 배경, 바텀시트 배경
   red: '#DB4242', // 경고
