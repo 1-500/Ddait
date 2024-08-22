@@ -5,13 +5,14 @@ export const COLORS = {
   white: '#E0E0E0',
   black: '#000000',
   grey: '#3C3C3C',
-  semiLightGrey: 'A5A5A5', // 자기소개
+  semiLightGrey: '#A5A5A5', // 자기소개
   lightGrey: '#878787',
   darkGrey: '#2A2A2A', // 목록 배경, 바텀시트 배경
+  warmGrey: '#8D8995',
   red: '#DB4242', // 경고
   purple: '#9747FF',
   blue: '#2196F3',
-  brown: '8E6A33',
+  brown: '#8E6A33',
 
   placeholder: '#888888',
 
@@ -31,7 +32,7 @@ export const TAG_COLORS = {
   walking: `${COLORS.secondary}`,
   runnging: `${COLORS.purple}`,
   climb: `${COLORS.brown}`,
-  weight: `${COLORS.white}`,
+  weight: `${COLORS.warmGrey}`,
   competition: `${COLORS.grey}`,
   black: `${COLORS.black}`,
 };
@@ -44,8 +45,8 @@ export const BUTTON_COLORS = {
 };
 
 export const TEXT_COLORS = {
-  primary: `${COLORS.black}`,
-  secondary: `${COLORS.white}`,
+  primary: `${COLORS.white}`,
+  secondary: `${COLORS.semiLightGrey}`,
   error: `${COLORS.red}`,
   balck: `${COLORS.black}`,
 };

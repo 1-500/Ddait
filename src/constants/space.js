@@ -8,6 +8,14 @@ export const SPACING = {
   xxl: 48,
 };
 
-export const LAYOUT_PADDING = `paddingHorizontal: ${SPACING.md}px;`;
-export const ELEMENT_VERTICAL_MARGIN = `margin: ${SPACING.md}px 0;`;
-export const ELEMENT_HORIZONTAL_MARGIN = `margin: 0 ${SPACING.xs}px;`;
+export const LAYOUT_PADDING = {
+  paddingHorizontal: SPACING.md,
+};
+
+export const ELEMENT_VERTICAL_MARGIN = {
+  marginVertical: SPACING.md,
+};
+
+export const ELEMENT_HORIZONTAL_MARGIN = {
+  marginHorizontal: SPACING.xs,
+};

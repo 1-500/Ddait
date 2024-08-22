@@ -1,8 +1,7 @@
 import React from 'react';
 import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
 
-import CustomButton from '../../components/CustomButton';
-import DefaultInput from '../../components/CustomInput';
+import CustomCard from '../../components/CustomCardComponent';
 import HeaderComponents from '../../components/HeaderComponents';
 import { COLORS } from '../../constants/colors';
 import { LAYOUT_PADDING } from '../../constants/space';
@@ -11,40 +10,16 @@ const HomePage = () => {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.darkBackground }}>
       <HeaderComponents icon="none" title="홈" />
-      <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+      <View style={styles.container}>
         <Text>HomePage</Text>
-        <CustomButton theme="primary" size="medium" text="Press me" />
-      </View>
-      <View style={[styles.container, LAYOUT_PADDING]}>
-        <Text>input</Text>
-        <DefaultInput
-          theme="primary"
-          size="medium"
-          value=""
-          placeholder="플레이스홀더야"
-          secureTextEntry={false}
-          isPassword={true}
-          isError={true}
-        />
-        <Text>input</Text>
-        <DefaultInput
-          theme="user"
-          size="medium"
-          value=""
-          placeholder="플레이스홀더야"
-          secureTextEntry={false}
-          isPassword={true}
-          isError={true}
-        />
-        <Text>input</Text>
-        <DefaultInput
-          theme="search"
-          size="medium"
-          value=""
-          placeholder="플레이스홀더야"
-          secureTextEntry={false}
-          isPassword={true}
-          isError={true}
+        <CustomCard
+          title="스쿼트 챌린지 들어오세요!"
+          tags={[
+            { label: '헬스', category: 'weight' },
+            { label: '스쿼트', category: 'runnging' },
+          ]}
+          additionalInfo={'3/10'}
+          footer={'23.08.01 ~ 23.09.01'}
         />
       </View>
     </SafeAreaView>
@@ -58,5 +33,6 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    ...LAYOUT_PADDING,
   },
 });
