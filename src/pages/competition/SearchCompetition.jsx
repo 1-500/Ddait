@@ -97,7 +97,7 @@ const SearchCompetition = ({ navigation }) => {
           {/* 태그 필터 */}
           <View style={{ flexDirection: 'row', gap: 8 }}>
             {['웨이트', '러닝', '다이어트'].map((tag) => (
-              <TouchableOpacity key={tag} onPress={() => toggleTag(tag)}>
+              <TouchableOpacity key={tag} onPress={() => toggleTag(tag)} activeOpacity={0.6}>
                 <CustomTag
                   size="big"
                   text={tag}
