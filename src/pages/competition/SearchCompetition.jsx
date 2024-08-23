@@ -13,6 +13,7 @@ import { RADIUS } from '../../constants/radius';
 import { LAYOUT_PADDING, SPACING } from '../../constants/space';
 import { formDate } from '../../utils/date';
 
+// 경쟁방 아이템 컴포넌트
 const CompetitionItem = React.memo(({ item }) => (
   <View style={styles.competitionContainer}>
     <View style={{ gap: SPACING.xs }}>
@@ -41,6 +42,7 @@ const SearchCompetition = ({ navigation }) => {
   const [selectedTags, setSelectedTags] = useState([]);
   const [sortedCompetitions, setSortedCompetitions] = useState(dummyCompetitions);
 
+  // 경쟁방 정렬 및 필터링
   const sortCompetitions = useCallback((competitions, sortBy) => {
     if (sortBy === '최신순') {
       return [...competitions].sort((a, b) => {
@@ -69,6 +71,7 @@ const SearchCompetition = ({ navigation }) => {
     setSelectedTags((prevTags) => (prevTags.includes(tag) ? prevTags.filter((t) => t !== tag) : [...prevTags, tag]));
   };
 
+  // 랜더링 관련
   const renderCompetitions = useCallback(({ item }) => <CompetitionItem item={item} />, []);
 
   const ListEmpty = useCallback(
@@ -91,6 +94,7 @@ const SearchCompetition = ({ navigation }) => {
       <HeaderComponents title="경쟁 찾기" />
       <View style={{ ...LAYOUT_PADDING, flex: 1 }}>
         <View style={styles.sortContainer}>
+          {/* 태그 필터 */}
           <View style={{ flexDirection: 'row', gap: 8 }}>
             {['웨이트', '러닝', '다이어트'].map((tag) => (
               <TouchableOpacity key={tag} onPress={() => toggleTag(tag)}>
@@ -102,6 +106,7 @@ const SearchCompetition = ({ navigation }) => {
               </TouchableOpacity>
             ))}
           </View>
+          {/* 정렬 옵션 */}
           <DropdownModal
             options={['최신순', '인기순']}
             onChange={setSortBy}
@@ -110,7 +115,7 @@ const SearchCompetition = ({ navigation }) => {
             showIcon={true}
           />
         </View>
-
+        {/* 경쟁 목록 */}
         <FlatList
           data={sortedCompetitions}
           renderItem={renderCompetitions}
