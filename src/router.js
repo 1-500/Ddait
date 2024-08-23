@@ -33,6 +33,14 @@ const MainTab = () => {
     </Tab.Navigator>
   );
 };
+const SignStack = () => {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="Login" component={LoginPage} />
+      <Stack.Screen name="SignUp" component={SignUpPage} />
+    </Stack.Navigator>
+  );
+};
 
 const CompetitionStack = () => {
   return (
@@ -49,7 +57,7 @@ const Router = () => {
       <Stack.Screen name="MainTab" component={MainTab} />
       <Stack.Screen name="CompetitionRoom1V1" component={CompetitionRoom1V1} />
       <Stack.Screen name="CreateCompetition" component={CreateCompetition} />
-      <Stack.Screen name="SignUp" component={SignUpPage} />
+      <Stack.Screen name="Sign" component={SignStack} />
     </Stack.Navigator>
   ); // 라우팅
 };

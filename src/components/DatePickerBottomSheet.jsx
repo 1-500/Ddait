@@ -46,7 +46,9 @@ const DatePickerBottomSheet = forwardRef(({ snapPoints, title, selectedDate, set
             <Picker
               selectedValue={selectedDate.year}
               style={styles.picker}
-              onValueChange={(year) => setSelectedDate((prev) => ({ ...prev, year }))}
+              onValueChange={(year) =>
+                setSelectedDate({ month: selectedDate.month, year: year, day: selectedDate.day })
+              }
             >
               {years.map((year) => (
                 <Picker.Item key={year.value} label={year.label} value={year.value} color="white" />
@@ -55,7 +57,9 @@ const DatePickerBottomSheet = forwardRef(({ snapPoints, title, selectedDate, set
             <Picker
               selectedValue={selectedDate.month}
               style={styles.picker}
-              onValueChange={(month) => setSelectedDate((prev) => ({ ...prev, month }))}
+              onValueChange={(month) =>
+                setSelectedDate({ month: month, year: selectedDate.year, day: selectedDate.day })
+              }
             >
               {months.map((month) => (
                 <Picker.Item key={month.value} label={month.label} value={month.value} color="white" />
@@ -64,7 +68,7 @@ const DatePickerBottomSheet = forwardRef(({ snapPoints, title, selectedDate, set
             <Picker
               selectedValue={selectedDate.day}
               style={styles.picker}
-              onValueChange={(day) => setSelectedDate((prev) => ({ ...prev, day }))}
+              onValueChange={(day) => setSelectedDate({ month: selectedDate.month, year: selectedDate.year, day: day })}
             >
               {days.map((day) => (
                 <Picker.Item key={day.value} label={day.label} value={day.value} color="white" />
