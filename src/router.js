@@ -5,6 +5,7 @@ import React from 'react';
 import BottomTab from './components/BottomTab';
 import Competition from './pages/competition/Competition';
 import StartWorkout from './pages/diary/workoutDiary/StartWorkout';
+import WorkoutDatePick from './pages/diary/workoutDiary/WorkoutDatePick';
 import WorkoutDiary from './pages/diary/workoutDiary/WorkoutDiary';
 import Friend from './pages/friend/Friend';
 import HomePage from './pages/home/HomePage';
@@ -36,6 +37,7 @@ const DiaryStack = () => {
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="WorkoutDiaryScreen" component={WorkoutDiary} />
       <Stack.Screen name="StartWorkoutScreen" component={StartWorkout} />
+      <Stack.Screen name="WorkoutDatePickScreen" component={WorkoutDatePick} />
     </Stack.Navigator>
   );
 };

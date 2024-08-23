@@ -20,7 +20,13 @@ const WorkoutDiary = () => {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.darkBackground }}>
       <View style={{ height: 60, backgroundColor: '#fff' }}>
-        <HeaderComponents title="운동일지" />
+        <HeaderComponents
+          icon="date"
+          title="오늘 날짜 데이터를 기준 주"
+          onDatePress={() => {
+            navigation.navigate('WorkoutDatePickScreen');
+          }}
+        />
       </View>
 
       <View style={styles.dateContainer}>
