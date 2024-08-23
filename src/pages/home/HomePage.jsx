@@ -10,7 +10,7 @@ import { LAYOUT_PADDING } from '../../constants/space';
 const HomePage = () => {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.darkBackground }}>
-      <HeaderComponents icon="none" title="홈" />
+      <HeaderComponents icon="home" />
       <View style={styles.container}>
         <Text>HomePage</Text>
         <CustomCard

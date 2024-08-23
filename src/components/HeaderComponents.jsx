@@ -1,6 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -10,10 +10,12 @@ import { COLORS } from '../constants/colors';
 import { FONT_WEIGHTS, HEADER_FONT_SIZES } from '../constants/font';
 import { SPACING } from '../constants/space';
 
+const appLogoImage = require('../assets/images/app-logo.png');
+
 /**
  *
  * @param {{
- * icon: 'none' | 'btn' | 'search' | 'setting' | 'timer' | 'scrap_on' | 'scrap_off' | 'menu' | 'date';
+ * icon: 'none' | 'home' | 'btn' | 'search' | 'setting' | 'timer' | 'scrap_on' | 'scrap_off' | 'menu' | 'date';
  * title: string
  * onRightBtnPress: () => void;
  * onDatePress: () => void;
@@ -25,6 +27,12 @@ const HeaderComponents = ({ icon = 'none', title = '', onRightBtnPress = () => {
 
   const getRightBtn = () => {
     switch (icon) {
+      case 'home':
+        return (
+          <TouchableOpacity style={styles.btnWrapper} onPress={onRightBtnPress} activeOpacity={0.6}>
+            <MaterialCommunityIcons name="bell" size={24} color={COLORS.white} />
+          </TouchableOpacity>
+        );
       case 'btn':
         return (
           <TouchableOpacity style={styles.btnWrapper} onPress={onRightBtnPress} activeOpacity={0.6}>
@@ -74,28 +82,35 @@ const HeaderComponents = ({ icon = 'none', title = '', onRightBtnPress = () => {
 
   return (
     <View>
-      <View style={styles.headerContainer}>
-        <TouchableOpacity
-          style={styles.btnWrapper}
-          activeOpacity={0.6}
-          onPress={() => {
-            if (navigation.canGoBack()) {
-              navigation.goBack();
-            }
-          }}
-        >
-          <FontAwesome name="angle-left" size={24} color={COLORS.white} />
-        </TouchableOpacity>
-        {icon !== 'date' ? (
-          <Text style={styles.titleText}>{title}</Text>
-        ) : (
-          <TouchableOpacity style={styles.dateWrapper} onPress={onDatePress} activeOpacity={0.6}>
-            <Text style={styles.titleText}>{title}</Text>
-            <FontAwesome name="angle-down" size={24} color={COLORS.white} />
+      {icon !== 'home' ? (
+        <View style={styles.headerContainer}>
+          <TouchableOpacity
+            style={styles.btnWrapper}
+            activeOpacity={0.6}
+            onPress={() => {
+              if (navigation.canGoBack()) {
+                navigation.goBack();
+              }
+            }}
+          >
+            <FontAwesome name="angle-left" size={24} color={COLORS.white} />
           </TouchableOpacity>
-        )}
-        {getRightBtn()}
-      </View>
+          {icon !== 'date' ? (
+            <Text style={styles.titleText}>{title}</Text>
+          ) : (
+            <TouchableOpacity style={styles.dateWrapper} onPress={onDatePress} activeOpacity={0.6}>
+              <Text style={styles.titleText}>{title}</Text>
+              <FontAwesome name="angle-down" size={24} color={COLORS.white} />
+            </TouchableOpacity>
+          )}
+          {getRightBtn()}
+        </View>
+      ) : (
+        <View style={styles.headerContainer}>
+          <Image style={{ width: 125, height: 50 }} source={appLogoImage} />
+          {getRightBtn()}
+        </View>
+      )}
     </View>
   );
 };

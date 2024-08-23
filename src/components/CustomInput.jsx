@@ -147,7 +147,7 @@ const CustomInput = ({
         autoFocus={autoFocus}
         secureTextEntry={secureTextEntry}
         autoCapitalize="none"
-        autoCorrect="none"
+        autoCorrect={false}
       />
       {theme === 'search' && (
         <View style={styles.iconWrapper}>
