@@ -54,7 +54,6 @@ const WorkoutDatePick = () => {
       </View>
 
       <Calendar
-        // Customize the appearance of the calendar
         style={{
           borderWidth: 1,
           borderColor: '#1C1C1C',
@@ -91,15 +90,17 @@ const WorkoutDatePick = () => {
         }}
       />
 
-      <CustomButton
-        theme="primary"
-        size="large"
-        states="enabled"
-        onPress={() => {
-          navigation.navigate('WorkoutDiaryScreen');
-        }}
-        text="해당 날짜 운동 기록 보러가기"
-      />
+      <View style={{ ...LAYOUT_PADDING }}>
+        <CustomButton
+          theme="primary"
+          size="large"
+          states="enabled"
+          onPress={() => {
+            navigation.navigate('WorkoutDiaryScreen');
+          }}
+          text="해당 날짜 운동 기록 보러가기"
+        />
+      </View>
     </SafeAreaView>
   );
 };

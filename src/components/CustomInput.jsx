@@ -3,6 +3,7 @@ import { Dimensions, StyleSheet, TextInput, TouchableOpacity, View } from 'react
 import Svg, { Circle, ClipPath, Defs, G, Path, Rect } from 'react-native-svg';
 
 import { COLORS, INPUT_COLORS, TEXT_COLORS } from '../constants/colors';
+import { FONT_SIZES } from '../constants/font';
 import { RADIUS } from '../constants/radius';
 
 const XIcon = () => (
@@ -227,7 +228,7 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    fontSize: 14,
+    fontSize: FONT_SIZES.md,
     height: '100%',
     width: 'auto',
     marginRight: 16,
