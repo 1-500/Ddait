@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { FlatList, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
@@ -11,6 +11,7 @@ import { COLORS } from '../../constants/colors';
 import { FONT_SIZES, FONT_WEIGHTS } from '../../constants/font';
 import { RADIUS } from '../../constants/radius';
 import { LAYOUT_PADDING, SPACING } from '../../constants/space';
+import { formDate } from '../../utils/date';
 
 const CompetitionItem = React.memo(({ item }) => (
   <View style={styles.competitionContainer}>
@@ -22,7 +23,7 @@ const CompetitionItem = React.memo(({ item }) => (
         ))}
       </View>
       <Text style={styles.competitionDate}>
-        {item.start_date} ~ {item.end_date}
+        {formDate(item.start_date)} ~ {formDate(item.end_date)}
       </Text>
     </View>
 
@@ -37,6 +38,23 @@ const CompetitionItem = React.memo(({ item }) => (
 
 const SearchCompetition = ({ navigation }) => {
   const [sortBy, setSortBy] = useState('');
+  const [sortedCompetitions, setSortedCompetitions] = useState(dummyCompetitions);
+
+  const sortCompetitions = useCallback((competitions, sortBy) => {
+    if (sortBy === '최신순') {
+      return [...competitions].sort((a, b) => {
+        return new Date(b.start_date) - new Date(a.start_date);
+      });
+    } else if (sortBy === '인기순') {
+      return [...competitions].sort((a, b) => b.current_members - a.current_members);
+    }
+    return competitions;
+  }, []);
+
+  useEffect(() => {
+    setSortedCompetitions(sortCompetitions(dummyCompetitions, sortBy));
+  }, [sortBy, sortCompetitions]);
+
   const renderCompetitions = useCallback(({ item }) => <CompetitionItem item={item} />, []);
 
   const ListEmpty = useCallback(
@@ -69,7 +87,7 @@ const SearchCompetition = ({ navigation }) => {
         </View>
 
         <FlatList
-          data={dummyCompetitions}
+          data={sortedCompetitions}
           renderItem={renderCompetitions}
           keyExtractor={(item) => item.id}
           showsVerticalScrollIndicator={false}
