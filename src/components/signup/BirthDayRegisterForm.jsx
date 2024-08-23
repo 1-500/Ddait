@@ -1,39 +1,23 @@
-import { BottomSheetModal, BottomSheetModalProvider, BottomSheetView } from '@gorhom/bottom-sheet';
-import { Picker } from '@react-native-picker/picker';
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-const months = [
-  { label: '7', value: '7' },
-  { label: '8', value: '8' },
-  { label: '9', value: '9' },
-];
-
-const days = Array.from({ length: 31 }, (_, i) => ({ label: `${i + 1}`, value: `${i + 1}` }));
-
-const years = Array.from({ length: 10 }, (_, i) => {
-  const year = 2020 + i;
-  return { label: `${year}`, value: `${year}` };
-});
+import { FONT_SIZES, HEADER_FONT_SIZES } from '../../constants/font';
+import DatePickerBottomSheet from '../DatePickerBottomSheet';
 
 const windowWidth = Dimensions.get('window').width;
 
 const BirthDayRegisterForm = () => {
-  const [selectedMonth, setSelectedMonth] = useState('9');
-  const [selectedDay, setSelectedDay] = useState('17');
-  const [selectedYear, setSelectedYear] = useState('2021');
+  const [selectedDate, setSelectedDate] = useState({
+    month: '9',
+    day: '17',
+    year: '2021',
+  });
   const bottomSheetModalRef = useRef(null);
-  const snapPoints = useMemo(() => ['50%', '60%'], []);
-
-  useEffect(() => {
-    bottomSheetModalRef.current?.present();
-  }, []);
-
+  const snapPoints = useMemo(() => ['50%', '70%'], []);
   const handlePresentModalPress = useCallback(() => {
     bottomSheetModalRef.current?.present();
   }, []);
-
-  const handleCloseModal = () => bottomSheetModalRef.current.close();
 
   return (
     <BottomSheetModalProvider>
@@ -41,53 +25,16 @@ const BirthDayRegisterForm = () => {
         <Text style={styles.topText}>나라짱짱님의 생일을 알려주세요!</Text>
         <TouchableOpacity onPress={handlePresentModalPress}>
           <Text style={styles.dateText}>
-            {selectedYear} / {selectedMonth} / {selectedDay}
+            {selectedDate.year} / {selectedDate.month} / {selectedDate.day}
           </Text>
         </TouchableOpacity>
-        <BottomSheetModal
+        <DatePickerBottomSheet
+          selectedDate={selectedDate}
+          setSelectedDate={setSelectedDate}
+          title="생년월일 입력해주세요"
           ref={bottomSheetModalRef}
-          index={1}
           snapPoints={snapPoints}
-          backgroundComponent={({ style }) => <View style={[style, styles.pickerContainer]} />}
-        >
-          <BottomSheetView>
-            <View style={styles.pickerContainer}>
-              <Text style={styles.headerText}>생년월일을 입력해주세요.</Text>
-              <View style={styles.pickersWrapper}>
-                <Picker
-                  selectedValue={selectedMonth}
-                  style={styles.picker}
-                  onValueChange={(itemValue) => setSelectedMonth(itemValue)}
-                >
-                  {months.map((month) => (
-                    <Picker.Item key={month.value} label={month.label} value={month.value} color="white" />
-                  ))}
-                </Picker>
-                <Picker
-                  selectedValue={selectedDay}
-                  style={styles.picker}
-                  onValueChange={(itemValue) => setSelectedDay(itemValue)}
-                >
-                  {days.map((day) => (
-                    <Picker.Item key={day.value} label={day.label} value={day.value} color="white" />
-                  ))}
-                </Picker>
-                <Picker
-                  selectedValue={selectedYear}
-                  style={styles.picker}
-                  onValueChange={(itemValue) => setSelectedYear(itemValue)}
-                >
-                  {years.map((year) => (
-                    <Picker.Item key={year.value} label={year.label} value={year.value} color="white" />
-                  ))}
-                </Picker>
-              </View>
-              <TouchableOpacity style={styles.button} onPress={handleCloseModal}>
-                <Text style={styles.buttonText}>완료</Text>
-              </TouchableOpacity>
-            </View>
-          </BottomSheetView>
-        </BottomSheetModal>
+        />
       </View>
     </BottomSheetModalProvider>
   );
@@ -120,7 +67,7 @@ const styles = StyleSheet.create({
   },
   headerText: {
     color: 'white',
-    fontSize: 20,
+    fontSize: HEADER_FONT_SIZES.sm,
     fontWeight: '600',
     marginBottom: 20,
   },
