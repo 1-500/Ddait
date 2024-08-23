@@ -6,6 +6,7 @@ import BottomTab from './components/BottomTab';
 import Competition from './pages/competition/Competition';
 import CompetitionRoom1V1 from './pages/competition/CompetitionRoom1V1';
 import CreateCompetition from './pages/competition/createCompetition/CreateCompetition';
+import SearchCompetition from './pages/competition/SearchCompetition';
 import Friend from './pages/friend/Friend';
 import HomePage from './pages/home/HomePage';
 import LoginPage from './pages/login/LoginPage';
@@ -26,10 +27,19 @@ const MainTab = () => {
       }}
     >
       <Tab.Screen name="SignUp" component={SignUpPage} />
-      <Tab.Screen name="Competition" component={Competition} />
+      <Tab.Screen name="Competition" component={CompetitionStack} />
       <Tab.Screen name="Friend" component={Friend} />
       <Tab.Screen name="Mypage" component={MyPage} />
     </Tab.Navigator>
+  );
+};
+
+const CompetitionStack = () => {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="MyCompetition" component={Competition} />
+      <Stack.Screen name="SearchCompetition" component={SearchCompetition} />
+    </Stack.Navigator>
   );
 };
 
