@@ -82,25 +82,23 @@ const SignUpPage = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.keyboardAvoidingView}>
-        <View style={styles.headerContainer}>
-          <TouchableOpacity onPress={handleBackButton}>
-            <FontAwesome name="angle-left" size={24} color={COLORS.white} />
-          </TouchableOpacity>
-          <Text style={styles.headerText}>{registrationForms[step].title}</Text>
-          <Text style={{ width: 1 }} />
+      <View style={styles.headerContainer}>
+        <TouchableOpacity onPress={handleBackButton}>
+          <FontAwesome name="angle-left" size={24} color={COLORS.white} />
+        </TouchableOpacity>
+        <Text style={styles.headerText}>{registrationForms[step].title}</Text>
+        <Text style={{ width: 1 }} />
+      </View>
+      <ScrollView contentContainerStyle={styles.scrollView}>
+        <View style={styles.content}>
+          <StepIndicator currentStep={step} steps={6} onPress={handleStepChange} />
+          {registrationForms[step].component}
         </View>
-        <ScrollView contentContainerStyle={styles.scrollView}>
-          <View style={styles.content}>
-            <StepIndicator currentStep={step} steps={6} onPress={handleStepChange} />
-            {registrationForms[step].component}
-          </View>
-        </ScrollView>
-        <View style={styles.buttonContainer}>
-          <CustomButton theme="secondary" size="medium" text="바로 따잇 하러가기" />
-          <CustomButton theme="primary" size="medium" text="다음" onPress={handleNextStep} />
-        </View>
-      </KeyboardAvoidingView>
+      </ScrollView>
+      <View style={styles.buttonContainer}>
+        <CustomButton theme="secondary" size="medium" text="바로 따잇 하러가기" />
+        <CustomButton theme="primary" size="medium" text="다음" onPress={handleNextStep} />
+      </View>
     </SafeAreaView>
   );
 };

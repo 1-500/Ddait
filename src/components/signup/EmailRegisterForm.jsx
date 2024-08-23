@@ -1,10 +1,31 @@
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useState } from 'react';
+import { KeyboardAvoidingView, StyleSheet, Text, View } from 'react-native';
 
 import CustomInput from '../../components/CustomInput';
-import SignUpInput from './SignUpInput';
+import { FONT_SIZES } from '../../constants/font';
+import { validateEmail } from '../../utils/validate';
 
 const EmailRegisterForm = () => {
+  const [isEmailValid, setIsEmailValid] = useState(true);
+  const [isConfirmPasswordValid, setIsConfirmPasswordValid] = useState(true);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+
+  const handleEmailInput = (text) => {
+    setEmail(text);
+    setIsEmailValid(validateEmail(text));
+  };
+
+  const handlePasswordInput = (text) => {
+    setPassword(text);
+  };
+
+  const handleConfirmPasswordInput = (text) => {
+    setConfirmPassword(text);
+    return text !== password ? setIsConfirmPasswordValid(false) : setIsConfirmPasswordValid(true);
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.headerContainer}>
@@ -13,10 +34,45 @@ const EmailRegisterForm = () => {
       </View>
 
       <View style={styles.inputContainer}>
-        {/* <CustomInput size="large" theme="user" placeholder="이메일을 입력해주세요" /> */}
-        <SignUpInput placeholder="이메일을 입력해주세요" />
-        <SignUpInput placeholder="비밀번호를 입력해주세요" />
-        <SignUpInput placeholder="비밀번호 확인" />
+        <View>
+          <CustomInput
+            size="large"
+            theme="user"
+            placeholder="이메일을 입력해주세요"
+            style={{ fontSize: FONT_SIZES.md }}
+            onChangeText={handleEmailInput}
+          />
+          {!isEmailValid && (
+            <View style={{ marginTop: 5 }}>
+              <Text style={{ fontSize: FONT_SIZES.xs, color: 'red' }}>이메일 형식이 올바르지 않습니다. </Text>
+            </View>
+          )}
+        </View>
+        <View>
+          <CustomInput
+            size="large"
+            theme="user"
+            placeholder="비밀번호를 입력해주세요"
+            secureTextEntry={true}
+            style={{ fontSize: FONT_SIZES.md }}
+            onChangeText={handlePasswordInput}
+          />
+        </View>
+        <View>
+          <CustomInput
+            size="large"
+            theme="user"
+            placeholder="비밀번호 확인"
+            secureTextEntry={true}
+            style={{ fontSize: FONT_SIZES.md }}
+            onChangeText={handleConfirmPasswordInput}
+          />
+          {!isConfirmPasswordValid && (
+            <View style={{ marginTop: 5 }}>
+              <Text style={{ fontSize: FONT_SIZES.xs, color: 'red' }}>비밀번호가 일치하지 않습니다. </Text>
+            </View>
+          )}
+        </View>
       </View>
     </View>
   );

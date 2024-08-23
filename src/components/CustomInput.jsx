@@ -103,6 +103,7 @@ const CustomInput = ({
   size,
   theme,
   ref,
+  style,
   placeholder,
   keyboardType = 'default',
   textContentType = 'none',
@@ -135,7 +136,7 @@ const CustomInput = ({
     >
       <TextInput
         ref={ref}
-        style={[styles.input, theme === 'search' && styles.inputWithIcon]}
+        style={[styles.input, theme === 'search' && styles.inputWithIcon, style]}
         placeholder={placeholder}
         placeholderTextColor={`${COLORS.placeholder}`}
         keyboardType={keyboardType}

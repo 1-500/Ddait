@@ -1,6 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native';
 
-import SignUpInput from './SignUpInput';
+import { FONT_SIZES } from '../../constants/font';
+import CustomInput from '../CustomInput';
 
 const NicknameRegisterForm = () => {
   return (
@@ -10,7 +11,12 @@ const NicknameRegisterForm = () => {
         <Text style={styles.headerText}>어떻게 불러드릴까요?</Text>
       </View>
       <View style={styles.inputContainer}>
-        <SignUpInput placeholder="닉네임을 입력해주세요" />
+        <CustomInput
+          size="large"
+          theme="user"
+          placeholder="닉네임을 입력해주세요"
+          style={{ fontSize: FONT_SIZES.md }}
+        />
       </View>
     </View>
   );
