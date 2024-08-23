@@ -6,6 +6,7 @@ import BottomTab from './components/BottomTab';
 import Competition from './pages/competition/Competition';
 import CompetitionRoom1V1 from './pages/competition/CompetitionRoom1V1';
 import CreateCompetition from './pages/competition/createCompetition/CreateCompetition';
+import SearchCompetition from './pages/competition/SearchCompetition';
 import StartWorkout from './pages/diary/workoutDiary/StartWorkout';
 import WorkoutDatePick from './pages/diary/workoutDiary/WorkoutDatePick';
 import WorkoutDiary from './pages/diary/workoutDiary/WorkoutDiary';
@@ -29,7 +30,7 @@ const MainTab = () => {
       }}
     >
       <Tab.Screen name="SignUp" component={SignUpPage} />
-      <Tab.Screen name="Competition" component={Competition} />
+      <Tab.Screen name="Competition" component={CompetitionStack} />
       <Tab.Screen name="Friend" component={Friend} />
       <Tab.Screen name="Mypage" component={MyPage} />
     </Tab.Navigator>
@@ -42,6 +43,15 @@ const DiaryStack = () => {
       <Stack.Screen name="WorkoutDiaryScreen" component={WorkoutDiary} />
       <Stack.Screen name="StartWorkoutScreen" component={StartWorkout} />
       <Stack.Screen name="WorkoutDatePickScreen" component={WorkoutDatePick} />
+    </Stack.Navigator>
+  );
+};
+
+const CompetitionStack = () => {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="MyCompetition" component={Competition} />
+      <Stack.Screen name="SearchCompetition" component={SearchCompetition} />
     </Stack.Navigator>
   );
 };
