@@ -1,9 +1,11 @@
+import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { SafeAreaView, ScrollView, StyleSheet, View } from 'react-native';
 
 import CustomButton from '../../components/CustomButton';
 import HeaderComponents from '../../components/HeaderComponents';
 import BirthDayRegisterForm from '../../components/signup/BirthDayRegisterForm';
+import CompleteRegisterForm from '../../components/signup/CompleteRegisterForm';
 import EmailRegisterForm from '../../components/signup/EmailRegisterForm';
 import GenderRegisterForm from '../../components/signup/GenderRegisterForm';
 import MyPositionRegisterForm from '../../components/signup/MyPositionRegisterForm';
@@ -37,17 +39,23 @@ const registrationForms = {
     component: <GenderRegisterForm />,
     title: '성별 선택',
   },
+  7: {
+    component: <CompleteRegisterForm />,
+    title: '따잇',
+  },
 };
 
 const SignUpPage = () => {
   const [step, setStep] = useState(1);
+
+  const navigation = useNavigation();
 
   const handleStepChange = (newStep) => {
     setStep(newStep);
   };
 
   const handleNextStep = () => {
-    if (step < 6) {
+    if (step < 7) {
       setStep(step + 1);
     }
   };
@@ -63,13 +71,28 @@ const SignUpPage = () => {
       <HeaderComponents title={registrationForms[step].title} />
       <ScrollView contentContainerStyle={styles.scrollView}>
         <View style={styles.content}>
-          <StepIndicator currentStep={step} steps={6} onPress={handleStepChange} />
+          <StepIndicator currentStep={step} steps={7} onPress={handleStepChange} />
           {registrationForms[step].component}
         </View>
       </ScrollView>
       <View style={styles.buttonContainer}>
-        <CustomButton theme="secondary" size="medium" text="이전" onPress={handlePrevStep} />
-        <CustomButton theme="primary" size="medium" text="다음" onPress={handleNextStep} />
+        {step !== 7 ? (
+          <>
+            <CustomButton theme="secondary" size="medium" text="이전" onPress={handlePrevStep} />
+            <CustomButton theme="primary" size="medium" text="다음" onPress={handleNextStep} />
+          </>
+        ) : (
+          <CustomButton
+            theme="primary"
+            size="large"
+            text="바로 따잇하러 가기"
+            onPress={() =>
+              navigation.navigate('Sign', {
+                screen: 'Login',
+              })
+            }
+          />
+        )}
       </View>
     </SafeAreaView>
   );
