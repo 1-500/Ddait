@@ -1,18 +1,8 @@
-import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
-import {
-  KeyboardAvoidingView,
-  Platform,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import { SafeAreaView, ScrollView, StyleSheet, View } from 'react-native';
 
 import CustomButton from '../../components/CustomButton';
+import HeaderComponents from '../../components/HeaderComponents';
 import BirthDayRegisterForm from '../../components/signup/BirthDayRegisterForm';
 import EmailRegisterForm from '../../components/signup/EmailRegisterForm';
 import GenderRegisterForm from '../../components/signup/GenderRegisterForm';
@@ -20,9 +10,7 @@ import MyPositionRegisterForm from '../../components/signup/MyPositionRegisterFo
 import NicknameRegisterForm from '../../components/signup/NicknameRegisterForm';
 import PreferedSportRegisterForm from '../../components/signup/PreferedSportRegisterForm';
 import StepIndicator from '../../components/StepIndicator';
-import { BACKGROUND_COLORS, COLORS } from '../../constants/colors';
-import { FONT_WEIGHTS, HEADER_FONT_SIZES } from '../../constants/font';
-import { SPACING } from '../../constants/space';
+import { BACKGROUND_COLORS } from '../../constants/colors';
 
 const registrationForms = {
   1: {
@@ -54,7 +42,6 @@ const registrationForms = {
 const SignUpPage = () => {
   const [step, setStep] = useState(1);
 
-  const navigation = useNavigation();
   const handleStepChange = (newStep) => {
     setStep(newStep);
   };
@@ -70,25 +57,10 @@ const SignUpPage = () => {
       setStep(step - 1);
     }
   };
-  const handleBackButton = () => {
-    if (step !== 1) {
-      handlePrevStep();
-      return;
-    }
-    if (navigation.canGoBack()) {
-      navigation.goBack();
-    }
-  };
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.headerContainer}>
-        <TouchableOpacity onPress={handleBackButton}>
-          <FontAwesome name="angle-left" size={24} color={COLORS.white} />
-        </TouchableOpacity>
-        <Text style={styles.headerText}>{registrationForms[step].title}</Text>
-        <Text style={{ width: 1 }} />
-      </View>
+      <HeaderComponents title={registrationForms[step].title} />
       <ScrollView contentContainerStyle={styles.scrollView}>
         <View style={styles.content}>
           <StepIndicator currentStep={step} steps={6} onPress={handleStepChange} />
@@ -96,7 +68,7 @@ const SignUpPage = () => {
         </View>
       </ScrollView>
       <View style={styles.buttonContainer}>
-        <CustomButton theme="secondary" size="medium" text="바로 따잇 하러가기" />
+        <CustomButton theme="secondary" size="medium" text="이전" onPress={handlePrevStep} />
         <CustomButton theme="primary" size="medium" text="다음" onPress={handleNextStep} />
       </View>
     </SafeAreaView>
@@ -108,23 +80,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: BACKGROUND_COLORS.dark,
   },
-  headerContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: SPACING.md,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.primary,
-    backgroundColor: COLORS.darkBackground,
-  },
-  headerText: {
-    color: COLORS.white,
-    fontSize: HEADER_FONT_SIZES.sm,
-    fontWeight: FONT_WEIGHTS.bold,
-  },
-  keyboardAvoidingView: {
-    flex: 1,
-  },
+
   scrollView: {
     flexGrow: 1,
   },
