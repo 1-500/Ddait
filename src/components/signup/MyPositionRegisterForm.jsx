@@ -1,20 +1,19 @@
-import { useState } from 'react';
 import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import { WebView } from 'react-native-webview';
 
+import useUserFormStore from '../../store/sign';
+
 const MyPositionRegisterForm = () => {
-  const [latitude, setLatitude] = useState();
-  const [longitude, setLongitude] = useState();
+  const { setPosition, nickName } = useUserFormStore();
 
   const handleMessage = (event) => {
     const { lat, lng } = JSON.parse(event.nativeEvent.data);
-    setLatitude(lat);
-    setLongitude(lng);
+    setPosition(lat, lng);
   };
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.headerContainer}>
-        <Text style={styles.headerText}>나라짱짱님의 위치는 어디신가요?</Text>
+        <Text style={styles.headerText}>{nickName}님의 위치는 어디신가요?</Text>
         <Text style={styles.subHeaderText}>주변 유저들을 추천해드릴게요!</Text>
       </View>
       <WebView
