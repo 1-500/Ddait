@@ -38,7 +38,7 @@ const CompetitionRoomHeader = ({ data }) => {
       <View style={styles.tagsWrapper}>
         <CustomTag size="big" text={data.competition_type} />
         <CustomTag size="big" text={data.competition_theme} />
-        <CustomTag size="big" text="1:1" />
+        <CustomTag size="big" text={data.max_members > 2 ? '랭킹전' : '1:1'} />
       </View>
       <View style={styles.periodWrapper}>
         <Text style={styles.periodText}>{`${startDate.format('YY.MM.DD')}~${endDate.format('YY.MM.DD')}`}</Text>

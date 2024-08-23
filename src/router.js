@@ -5,6 +5,7 @@ import React from 'react';
 import BottomTab from './components/BottomTab';
 import Competition from './pages/competition/Competition';
 import CompetitionRoom1V1 from './pages/competition/CompetitionRoom1V1';
+import CompetitionRoomRanking from './pages/competition/CompetitionRoomRanking';
 import CreateCompetition from './pages/competition/createCompetition/CreateCompetition';
 import Friend from './pages/friend/Friend';
 import HomePage from './pages/home/HomePage';
@@ -38,6 +39,7 @@ const Router = () => {
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="MainTab" component={MainTab} />
       <Stack.Screen name="CompetitionRoom1V1" component={CompetitionRoom1V1} />
+      <Stack.Screen name="CompetitionRoomRanking" component={CompetitionRoomRanking} />
       <Stack.Screen name="CreateCompetition" component={CreateCompetition} />
       <Stack.Screen name="SignUp" component={SignUpPage} />
     </Stack.Navigator>
