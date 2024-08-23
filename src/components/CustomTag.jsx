@@ -25,12 +25,12 @@ const TEXT_TO_TYPE = {
  * }} param0
  */
 
-const CustomTag = ({ size, text }) => {
+const CustomTag = ({ size, text, style, textStyle }) => {
   const type = TEXT_TO_TYPE[text] || 'default';
 
   return (
-    <View style={[styles[`container_${size}`], styles[`type_${type}`]]}>
-      <Text style={[styles.text, styles[`text_${size}`]]}>{text}</Text>
+    <View style={[styles[`container_${size}`], styles[`type_${type}`], style]}>
+      <Text style={[styles.text, styles[`text_${size}`], textStyle]}>{text}</Text>
     </View>
   );
 };
