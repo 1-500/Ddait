@@ -24,7 +24,7 @@ export const dummyCompetitions = [
     end_date: '23-10-15',
     current_members: 8,
     max_members: 10,
-    tags: ['다이어트', '웨이트트레이닝', '랭킹전'],
+    tags: ['다이어트', '웨이트', '랭킹전'],
   },
   {
     id: '4',
@@ -51,7 +51,7 @@ export const dummyCompetitions = [
     end_date: '23-10-22',
     current_members: 8,
     max_members: 10,
-    tags: ['다이어트', '웨이트트레이닝', '랭킹전'],
+    tags: ['다이어트', '웨이트', '랭킹전'],
   },
   {
     id: '7',
@@ -60,7 +60,7 @@ export const dummyCompetitions = [
     end_date: '23-09-20',
     current_members: 4,
     max_members: 5,
-    tags: ['웨이트트레이닝', '다이어트', '랭킹전'],
+    tags: ['웨이트', '다이어트', '랭킹전'],
   },
   {
     id: '8',
@@ -96,7 +96,7 @@ export const dummyCompetitions = [
     end_date: '23-09-25',
     current_members: 2,
     max_members: 2,
-    tags: ['웨이트트레이닝', '1:1'],
+    tags: ['웨이트', '1:1'],
   },
   {
     id: '12',
@@ -105,7 +105,7 @@ export const dummyCompetitions = [
     end_date: '23-10-05',
     current_members: 7,
     max_members: 10,
-    tags: ['웨이트트레이닝', '다이어트', '랭킹전'],
+    tags: ['웨이트', '다이어트', '랭킹전'],
   },
   {
     id: '13',
@@ -124,7 +124,7 @@ export const dummyCompetitions = [
     end_date: '23-10-12',
     current_members: 1,
     max_members: 2,
-    tags: ['웨이트트레이닝', '1:1'],
+    tags: ['웨이트', '1:1'],
   },
 
   {
@@ -144,7 +144,7 @@ export const dummyCompetitions = [
     end_date: '23-10-28',
     current_members: 6,
     max_members: 10,
-    tags: ['웨이트트레이닝', '다이어트', '랭킹전'],
+    tags: ['웨이트', '다이어트', '랭킹전'],
   },
   {
     id: '17',
@@ -153,7 +153,7 @@ export const dummyCompetitions = [
     end_date: '23-10-07',
     current_members: 2,
     max_members: 2,
-    tags: ['웨이트트레이닝', '1:1'],
+    tags: ['웨이트', '1:1'],
   },
 
   {
@@ -193,7 +193,7 @@ export const dummyMyCompetitions = [
     end_date: '23-09-01',
     current_members: 3,
     max_members: 10,
-    tags: ['다이어트', '웨이트트레이닝', '랭킹전'],
+    tags: ['다이어트', '웨이트', '랭킹전'],
   },
   {
     id: '2',
