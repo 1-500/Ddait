@@ -8,12 +8,13 @@ import { COLORS } from '../../constants/colors';
 import { FONT_SIZES, FONT_WEIGHTS, HEADER_FONT_SIZES } from '../../constants/font';
 import { RADIUS } from '../../constants/radius';
 import { LAYOUT_PADDING, SPACING } from '../../constants/space';
+import { formDate } from '../../utils/date';
 
 const CompetitionItem = React.memo(({ item }) => (
   <View style={styles.competitionContainer}>
     <Text style={styles.competitionName}>{item.name}</Text>
     <Text style={styles.competitionDate}>
-      {item.start_date} ~ {item.end_date}
+      {formDate(item.start_date)} ~ {formDate(item.end_date)}
     </Text>
     <View style={{ flexDirection: 'row', alignItems: 'center', gap: SPACING.xs }}>
       <Ionicons name="person" size={16} color={COLORS.semiLightGrey} />
