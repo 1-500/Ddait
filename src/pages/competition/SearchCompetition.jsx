@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { FlatList, SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import { FlatList, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import { dummyCompetitions } from '../../apis/dummydata';
@@ -38,6 +38,7 @@ const CompetitionItem = React.memo(({ item }) => (
 
 const SearchCompetition = ({ navigation }) => {
   const [sortBy, setSortBy] = useState('');
+  const [selectedTags, setSelectedTags] = useState([]);
   const [sortedCompetitions, setSortedCompetitions] = useState(dummyCompetitions);
 
   const sortCompetitions = useCallback((competitions, sortBy) => {
@@ -51,9 +52,22 @@ const SearchCompetition = ({ navigation }) => {
     return competitions;
   }, []);
 
+  const filterCompetitions = useCallback((competitions, tags) => {
+    if (tags.length === 0) {
+      return competitions;
+    }
+    return competitions.filter((competition) => tags.every((tag) => competition.tags.includes(tag)));
+  }, []);
+
   useEffect(() => {
-    setSortedCompetitions(sortCompetitions(dummyCompetitions, sortBy));
-  }, [sortBy, sortCompetitions]);
+    let filtered = filterCompetitions(dummyCompetitions, selectedTags);
+    let sorted = sortCompetitions(filtered, sortBy);
+    setSortedCompetitions(sorted);
+  }, [sortBy, sortCompetitions, selectedTags, filterCompetitions]);
+
+  const toggleTag = (tag) => {
+    setSelectedTags((prevTags) => (prevTags.includes(tag) ? prevTags.filter((t) => t !== tag) : [...prevTags, tag]));
+  };
 
   const renderCompetitions = useCallback(({ item }) => <CompetitionItem item={item} />, []);
 
@@ -77,6 +91,17 @@ const SearchCompetition = ({ navigation }) => {
       <HeaderComponents title="경쟁 찾기" />
       <View style={{ ...LAYOUT_PADDING, flex: 1 }}>
         <View style={styles.sortContainer}>
+          <View style={{ flexDirection: 'row', gap: 8 }}>
+            {['웨이트', '러닝', '다이어트'].map((tag) => (
+              <TouchableOpacity key={tag} onPress={() => toggleTag(tag)}>
+                <CustomTag
+                  size="big"
+                  text={tag}
+                  style={[styles.sortTag, selectedTags.includes(tag) && styles.selectedSortTag]}
+                />
+              </TouchableOpacity>
+            ))}
+          </View>
           <DropdownModal
             options={['최신순', '인기순']}
             onChange={setSortBy}
@@ -106,8 +131,16 @@ const styles = StyleSheet.create({
   },
   sortContainer: {
     flexDirection: 'row',
-    justifyContent: 'flex-end',
-    marginVertical: 20,
+    justifyContent: 'space-between',
+    marginVertical: SPACING.lg,
+  },
+  sortTag: {
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.sm,
+    backgroundColor: '#404040',
+  },
+  selectedSortTag: {
+    backgroundColor: COLORS.primary,
   },
   competitionContainer: {
     backgroundColor: COLORS.darkGrey,
