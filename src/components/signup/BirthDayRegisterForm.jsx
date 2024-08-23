@@ -1,6 +1,6 @@
 import { BottomSheetModal, BottomSheetModalProvider, BottomSheetView } from '@gorhom/bottom-sheet';
 import { Picker } from '@react-native-picker/picker';
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 const months = [
@@ -23,10 +23,12 @@ const BirthDayRegisterForm = () => {
   const [selectedDay, setSelectedDay] = useState('17');
   const [selectedYear, setSelectedYear] = useState('2021');
   const bottomSheetModalRef = useRef(null);
-  // variables
   const snapPoints = useMemo(() => ['50%', '60%'], []);
 
-  // callbacks
+  useEffect(() => {
+    bottomSheetModalRef.current?.present();
+  }, []);
+
   const handlePresentModalPress = useCallback(() => {
     bottomSheetModalRef.current?.present();
   }, []);

@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
+import CustomInput from '../../components/CustomInput';
 import SignUpInput from './SignUpInput';
 
 const EmailRegisterForm = () => {
@@ -12,6 +13,7 @@ const EmailRegisterForm = () => {
       </View>
 
       <View style={styles.inputContainer}>
+        {/* <CustomInput size="large" theme="user" placeholder="이메일을 입력해주세요" /> */}
         <SignUpInput placeholder="이메일을 입력해주세요" />
         <SignUpInput placeholder="비밀번호를 입력해주세요" />
         <SignUpInput placeholder="비밀번호 확인" />
