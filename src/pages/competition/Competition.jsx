@@ -2,7 +2,7 @@ import React, { useCallback, useMemo } from 'react';
 import { FlatList, Image, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
-import { dummyCompetitions } from '../../apis/dummydata';
+import { dummyMyCompetitions } from '../../apis/dummydata';
 import CustomButton from '../../components/CustomButton';
 import { COLORS } from '../../constants/colors';
 import { FONT_SIZES, FONT_WEIGHTS, HEADER_FONT_SIZES } from '../../constants/font';
@@ -51,7 +51,7 @@ const Competition = ({ navigation }) => {
 
   const ListFooter = useCallback(
     () => (
-      <View ew style={{ marginTop: SPACING.sm, marginBottom: 100 }}>
+      <View style={{ marginTop: SPACING.sm, marginBottom: 100 }}>
         <CustomButton
           theme="primary"
           size="large"
@@ -83,12 +83,12 @@ const Competition = ({ navigation }) => {
       <View style={{ ...LAYOUT_PADDING }}>
         <FlatList
           ListHeaderComponent={ListHeader}
-          data={dummyCompetitions}
+          data={dummyMyCompetitions}
           renderItem={renderCompetitions}
           keyExtractor={(item) => item.id}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ gap: SPACING.md }}
-          ListFooterComponent={dummyCompetitions.length > 0 ? ListFooter : null}
+          ListFooterComponent={dummyMyCompetitions.length > 0 ? ListFooter : null}
           ListEmptyComponent={ListEmpty}
         />
       </View>
