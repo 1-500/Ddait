@@ -15,7 +15,7 @@ export const BODY_FONT_SIZES = {
   sm: 14,
   md: 16,
   lg: 28,
-  xl: 20,
+  xl: 30,
   xxl: 32,
 };
 

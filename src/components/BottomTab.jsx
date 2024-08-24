@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useCallback, useRef } from 'react';
 import { Animated, Dimensions, Image, ImageBackground, StyleSheet, TouchableOpacity, View } from 'react-native';
 
 const bottomTabBackground = require('../assets/images/bottomtab_bg.png');
@@ -20,18 +20,23 @@ const BottomTabComponents = ({ state, navigation, insets, descriptors }) => {
   const tab3Value = useRef(new Animated.Value(0)).current;
   const tab4Value = useRef(new Animated.Value(0)).current;
 
-  const scaleAnimated = (value, animatedValue) =>
-    Animated.timing(animatedValue, {
-      useNativeDriver: true,
-      toValue: value,
-      duration: 150,
-    });
   const animatedValues = {
     0: tab1Value,
     1: tab2Value,
     2: tab3Value,
     3: tab4Value,
   };
+
+  const scaleAnimated = (value, animatedValue) =>
+    Animated.timing(animatedValue, {
+      useNativeDriver: true,
+      toValue: value,
+      duration: 150,
+    });
+
+  const handlePressPlus = useCallback(() => {
+    navigation.navigate('WorkoutDiary');
+  }, [navigation]);
 
   return (
     <View>
@@ -72,6 +77,7 @@ const BottomTabComponents = ({ state, navigation, insets, descriptors }) => {
               }
             });
           };
+
           return (
             <TouchableOpacity
               key={index}
@@ -104,7 +110,7 @@ const BottomTabComponents = ({ state, navigation, insets, descriptors }) => {
           );
         })}
       </ImageBackground>
-      <TouchableOpacity style={styles.addButton} activeOpacity={0.6}>
+      <TouchableOpacity style={styles.addButton} activeOpacity={0.6} onPress={handlePressPlus}>
         <Image source={plusButtonIcon} style={styles.plusButtonIcon} />
       </TouchableOpacity>
     </View>
