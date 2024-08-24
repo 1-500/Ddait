@@ -8,13 +8,13 @@ import { RADIUS } from '../constants/radius';
 
 // prettier-ignore
 const TEXT_TO_TYPE = {
-  '다이어트': 'diet',
-  '걷기': 'walking',
-  '러닝': 'running',
-  '등산': 'climb',
-  '웨이트트레이닝': 'weight',
+  다이어트: 'diet',
+  걷기: 'walking',
+  러닝: 'running',
+  등산: 'climb',
+  웨이트: 'weight',
   '1:1': 'competition',
-  '랭킹전': 'competition',
+  랭킹전: 'competition',
   '경쟁 세부 테마': 'diet',
 };
 
@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
   },
   container_big: {
     paddingHorizontal: 10,
-    paddingVertical: 5,
+    paddingVertical: 8,
     borderRadius: RADIUS.small,
   },
   text: {
