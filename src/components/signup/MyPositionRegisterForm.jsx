@@ -18,6 +18,7 @@ const MyPositionRegisterForm = () => {
       </View>
       <WebView
         originWhitelist={['*']}
+        scrollEnabled={false}
         source={{ uri: 'https://develop.d1u3k3rakqogc7.amplifyapp.com/myPostion' }}
         style={{ flex: 1, width: '100%', height: 500 }}
         onMessage={handleMessage}

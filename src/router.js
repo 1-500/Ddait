@@ -16,6 +16,7 @@ import HomePage from './pages/home/HomePage';
 import LoginPage from './pages/login/LoginPage';
 import MyPage from './pages/mypage/MyPage';
 import SignUpPage from './pages/signup/SignUpPage';
+import SocialLogin from './pages/socialLogin/SocialLogin';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -42,6 +43,7 @@ const SignStack = () => {
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="Login" component={LoginPage} />
       <Stack.Screen name="SignUp" component={SignUpPage} />
+      <Stack.Screen name="SocialLogin" component={SocialLogin} />
     </Stack.Navigator>
   );
 };

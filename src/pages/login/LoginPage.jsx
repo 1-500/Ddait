@@ -24,8 +24,7 @@ const LoginPage = () => {
             <Text style={styles.headerText}>따잇과 함께, 잇따라 함께하는 운동 습관 ! 게임 어쩌구!</Text>
           </View>
         </View>
-
-        <View style={styles.inputContainer}>
+        <View style={styles.formContainer}>
           <CustomInput
             size="large"
             theme="user"
@@ -39,10 +38,9 @@ const LoginPage = () => {
             secureTextEntry={true}
             style={{ fontSize: FONT_SIZES.sm }}
           />
-        </View>
-
-        <View style={styles.buttonContainer}>
-          <CustomButton size="large" text="로그인" theme="primary" />
+          <View style={{ marginVertical: 20, width: '100%' }}>
+            <CustomButton size="large" text="로그인" theme="primary" />
+          </View>
           <View style={styles.linkContainer}>
             <TouchableOpacity
               activeOpacity={0.6}
@@ -64,13 +62,43 @@ const LoginPage = () => {
         <View style={styles.snsContainer}>
           <Text style={styles.snsText}>SNS 로그인</Text>
           <View style={styles.iconContainer}>
-            <TouchableOpacity activeOpacity={0.6}>
+            <TouchableOpacity
+              activeOpacity={0.6}
+              onPress={() =>
+                navigation.navigate('Sign', {
+                  screen: 'SocialLogin',
+                  params: {
+                    provider: 'naver',
+                  },
+                })
+              }
+            >
               <Image source={NaverIcon} style={styles.snsIcon} />
             </TouchableOpacity>
-            <TouchableOpacity activeOpacity={0.6}>
+            <TouchableOpacity
+              activeOpacity={0.6}
+              onPress={() =>
+                navigation.navigate('Sign', {
+                  screen: 'SocialLogin',
+                  params: {
+                    provider: 'kakao',
+                  },
+                })
+              }
+            >
               <Image source={KakaoIcon} style={styles.snsIcon} />
             </TouchableOpacity>
-            <TouchableOpacity activeOpacity={0.6}>
+            <TouchableOpacity
+              activeOpacity={0.6}
+              onPress={() =>
+                navigation.navigate('Sign', {
+                  screen: 'SocialLogin',
+                  params: {
+                    provider: 'google',
+                  },
+                })
+              }
+            >
               <Image source={GoogleIcon} style={styles.snsIcon} />
             </TouchableOpacity>
             <TouchableOpacity activeOpacity={0.6}>
@@ -118,6 +146,13 @@ const styles = StyleSheet.create({
     fontSize: HEADER_FONT_SIZES.sm,
     textAlign: 'center',
   },
+  formContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginVertical: 15,
+  },
+
   inputContainer: {
     justifyContent: 'center',
     marginVertical: 10,
@@ -132,7 +167,6 @@ const styles = StyleSheet.create({
 
   linkContainer: {
     flexDirection: 'row',
-    marginVertical: 15,
   },
   linkText: {
     color: COLORS.primary,
