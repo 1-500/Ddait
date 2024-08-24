@@ -1,10 +1,20 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
-import { FlatList, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+  FlatList,
+  Modal,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
+} from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import CustomButton from '../../../components/CustomButton';
 import CustomInput from '../../../components/CustomInput';
+import CustomTimer from '../../../components/CustomTimer';
 import HeaderComponents from '../../../components/HeaderComponents';
 import { BACKGROUND_COLORS, COLORS, TEXT_COLORS } from '../../../constants/colors';
 import { BODY_FONT_SIZES, HEADER_FONT_SIZES } from '../../../constants/font';
@@ -77,6 +87,12 @@ const StartWorkout = () => {
       ],
     },
   ]);
+  const [time, setTime] = useState({ minutes: 0, seconds: 0 });
+  const [isTimerVisible, setIsTimerVisible] = useState(false);
+
+  const handleTimerVisible = () => {
+    setIsTimerVisible(!isTimerVisible);
+  };
   /* eslint-disable */
   const handleInputChange = (workoutId, setId, field, value) => {
     setWorkoutData((prevData) =>
@@ -95,7 +111,7 @@ const StartWorkout = () => {
     <View style={styles.card}>
       <View style={styles.header}>
         <Text style={styles.titleText}>{item.title}</Text>
-        <TouchableOpacity style={styles.startButton}>
+        <TouchableOpacity style={styles.startButton} onPress={handleTimerVisible}>
           <Text style={styles.startButtonText}>시작</Text>
         </TouchableOpacity>
       </View>
@@ -140,10 +156,12 @@ const StartWorkout = () => {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: BACKGROUND_COLORS.dark }}>
-      <HeaderComponents title="운동 시작" icon="timer" />
+      <HeaderComponents title="운동 시작" icon="timer" onRightBtnPress={handleTimerVisible} />
       <View style={styles.timerContainer}>
         <MaterialCommunityIcons name="timer-outline" size={24} color={COLORS.white} />
-        <Text style={{ color: COLORS.white, marginLeft: 16 }}>01:23</Text>
+        <Text style={{ color: COLORS.white, marginLeft: 16 }}>
+          {String(time.minutes).padStart(2, '0')}:{String(time.seconds).padStart(2, '0')}
+        </Text>
       </View>
       <FlatList
         data={workoutData}
@@ -152,6 +170,20 @@ const StartWorkout = () => {
         contentContainerStyle={{ paddingBottom: 16, paddingHorizontal: 16 }}
         keyExtractor={(item) => item.id}
       />
+
+      <Modal visible={isTimerVisible} animationType="slide" transparent={true} onRequestClose={handleTimerVisible}>
+        <TouchableWithoutFeedback onPress={handleTimerVisible}>
+          <View style={styles.modalBackground}>
+            <View style={styles.modalContainer}>
+              <Text style={styles.modalTitle}>타이머</Text>
+              <TouchableOpacity style={{ position: 'absolute', top: 10, right: 15 }} onPress={handleTimerVisible}>
+                <MaterialCommunityIcons name="close" size={24} color={COLORS.primary} />
+              </TouchableOpacity>
+              <CustomTimer time={time} setTime={setTime} handleTimerVisible={handleTimerVisible} />
+            </View>
+          </View>
+        </TouchableWithoutFeedback>
+      </Modal>
     </SafeAreaView>
   );
 };
@@ -253,5 +285,23 @@ const styles = StyleSheet.create({
   addSetButtonText: {
     color: TEXT_COLORS.secondary,
     fontSize: BODY_FONT_SIZES.md,
+  },
+  modalBackground: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContainer: {
+    width: '80%',
+    backgroundColor: COLORS.darkBackground,
+    borderRadius: RADIUS.large,
+    padding: 16,
+    alignItems: 'center',
+  },
+  modalTitle: {
+    fontSize: HEADER_FONT_SIZES.md,
+    color: TEXT_COLORS.primary,
+    marginBottom: 16,
   },
 });
