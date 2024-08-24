@@ -1,5 +1,5 @@
-import React, { useCallback, useState } from 'react';
-import { FlatList, SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { FlatList, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import { dummyCompetitions } from '../../apis/dummydata';
@@ -11,7 +11,9 @@ import { COLORS } from '../../constants/colors';
 import { FONT_SIZES, FONT_WEIGHTS } from '../../constants/font';
 import { RADIUS } from '../../constants/radius';
 import { LAYOUT_PADDING, SPACING } from '../../constants/space';
+import { formDate } from '../../utils/date';
 
+// 경쟁방 아이템 컴포넌트
 const CompetitionItem = React.memo(({ item }) => (
   <View style={styles.competitionContainer}>
     <View style={{ gap: SPACING.xs }}>
@@ -22,7 +24,7 @@ const CompetitionItem = React.memo(({ item }) => (
         ))}
       </View>
       <Text style={styles.competitionDate}>
-        {item.start_date} ~ {item.end_date}
+        {formDate(item.start_date)} ~ {formDate(item.end_date)}
       </Text>
     </View>
 
@@ -37,6 +39,39 @@ const CompetitionItem = React.memo(({ item }) => (
 
 const SearchCompetition = ({ navigation }) => {
   const [sortBy, setSortBy] = useState('');
+  const [selectedTags, setSelectedTags] = useState([]);
+  const [sortedCompetitions, setSortedCompetitions] = useState(dummyCompetitions);
+
+  // 경쟁방 정렬 및 필터링
+  const sortCompetitions = useCallback((competitions, sortBy) => {
+    if (sortBy === '최신순') {
+      return [...competitions].sort((a, b) => {
+        return new Date(b.start_date) - new Date(a.start_date);
+      });
+    } else if (sortBy === '인기순') {
+      return [...competitions].sort((a, b) => b.current_members - a.current_members);
+    }
+    return competitions;
+  }, []);
+
+  const filterCompetitions = useCallback((competitions, tags) => {
+    if (tags.length === 0) {
+      return competitions;
+    }
+    return competitions.filter((competition) => tags.every((tag) => competition.tags.includes(tag)));
+  }, []);
+
+  useEffect(() => {
+    let filtered = filterCompetitions(dummyCompetitions, selectedTags);
+    let sorted = sortCompetitions(filtered, sortBy);
+    setSortedCompetitions(sorted);
+  }, [sortBy, sortCompetitions, selectedTags, filterCompetitions]);
+
+  const toggleTag = (tag) => {
+    setSelectedTags((prevTags) => (prevTags.includes(tag) ? prevTags.filter((t) => t !== tag) : [...prevTags, tag]));
+  };
+
+  // 랜더링 관련
   const renderCompetitions = useCallback(({ item }) => <CompetitionItem item={item} />, []);
 
   const ListEmpty = useCallback(
@@ -59,6 +94,19 @@ const SearchCompetition = ({ navigation }) => {
       <HeaderComponents title="경쟁 찾기" />
       <View style={{ ...LAYOUT_PADDING, flex: 1 }}>
         <View style={styles.sortContainer}>
+          {/* 태그 필터 */}
+          <View style={{ flexDirection: 'row', gap: 8 }}>
+            {['웨이트', '러닝', '다이어트'].map((tag) => (
+              <TouchableOpacity key={tag} onPress={() => toggleTag(tag)} activeOpacity={0.6}>
+                <CustomTag
+                  size="big"
+                  text={tag}
+                  style={[styles.sortTag, selectedTags.includes(tag) && styles.selectedSortTag]}
+                />
+              </TouchableOpacity>
+            ))}
+          </View>
+          {/* 정렬 옵션 */}
           <DropdownModal
             options={['최신순', '인기순']}
             onChange={setSortBy}
@@ -67,9 +115,9 @@ const SearchCompetition = ({ navigation }) => {
             showIcon={true}
           />
         </View>
-
+        {/* 경쟁 목록 */}
         <FlatList
-          data={dummyCompetitions}
+          data={sortedCompetitions}
           renderItem={renderCompetitions}
           keyExtractor={(item) => item.id}
           showsVerticalScrollIndicator={false}
@@ -88,8 +136,16 @@ const styles = StyleSheet.create({
   },
   sortContainer: {
     flexDirection: 'row',
-    justifyContent: 'flex-end',
-    marginVertical: 20,
+    justifyContent: 'space-between',
+    marginVertical: SPACING.lg,
+  },
+  sortTag: {
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.sm,
+    backgroundColor: '#404040',
+  },
+  selectedSortTag: {
+    backgroundColor: COLORS.primary,
   },
   competitionContainer: {
     backgroundColor: COLORS.darkGrey,
