@@ -57,6 +57,7 @@ const SignUpPage = () => {
   const handleNextStep = () => {
     if (step < 7) {
       setStep(step + 1);
+    } else if (step === 6) {
     }
   };
 
