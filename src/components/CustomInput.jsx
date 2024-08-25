@@ -1,8 +1,9 @@
 import React from 'react';
-import { StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import { Dimensions, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 import Svg, { Circle, ClipPath, Defs, G, Path, Rect } from 'react-native-svg';
 
-import { COLORS, INPUT_COLORS } from '../constants/colors';
+import { COLORS, INPUT_COLORS, TEXT_COLORS } from '../constants/colors';
+import { FONT_SIZES } from '../constants/font';
 import { RADIUS } from '../constants/radius';
 
 const XIcon = () => (
@@ -104,6 +105,7 @@ const CustomInput = ({
   size,
   theme,
   ref,
+  style,
   placeholder,
   keyboardType = 'default',
   textContentType = 'none',
@@ -117,11 +119,24 @@ const CustomInput = ({
   onPressShowPassword = () => {},
   onPress,
 }) => {
+  const windowWidth = Dimensions.get('window').width;
+
+  const dynamicStyles = StyleSheet.create({
+    size_small: {
+      width: windowWidth / 5,
+      height: 40,
+    },
+    inputContainer: {
+      flex: 1,
+      minWidth: windowWidth / 5,
+    },
+  });
+
   return (
     <View
       style={[
         styles.container,
-        styles[`size_${size}`],
+        size === 'small' ? dynamicStyles.size_small : styles[`size_${size}`],
         theme === 'user'
           ? isError
             ? styles.errorUserInputBox
@@ -137,7 +152,7 @@ const CustomInput = ({
     >
       <TextInput
         ref={ref}
-        style={[styles.input, theme === 'search' && styles.inputWithIcon]}
+        style={[styles.input, theme === 'search' && styles.inputWithIcon, style]}
         placeholder={placeholder}
         placeholderTextColor={`${COLORS.placeholder}`}
         keyboardType={keyboardType}
@@ -148,8 +163,8 @@ const CustomInput = ({
         autoFocus={autoFocus}
         secureTextEntry={secureTextEntry}
         autoCapitalize="none"
-        autoCorrect="none"
         onPress={onPress}
+        autoCorrect={false}
       />
       {theme === 'search' && (
         <View style={styles.iconWrapper}>
@@ -162,7 +177,8 @@ const CustomInput = ({
         </TouchableOpacity>
       ) : (
         value?.length > 0 &&
-        !isPassword && (
+        !isPassword &&
+        size !== 'small' && (
           <TouchableOpacity activeOpacity={0.5} onPress={() => onChangeText('')}>
             <XIcon />
           </TouchableOpacity>
@@ -216,7 +232,7 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    fontSize: 14,
+    fontSize: FONT_SIZES.md,
     height: '100%',
     width: 'auto',
     marginRight: 16,

@@ -3,16 +3,14 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { FONT_SIZES, HEADER_FONT_SIZES } from '../../constants/font';
+import useUserFormStore from '../../store/sign/index';
 import DatePickerBottomSheet from '../DatePickerBottomSheet';
 
 const windowWidth = Dimensions.get('window').width;
 
 const BirthDayRegisterForm = () => {
-  const [selectedDate, setSelectedDate] = useState({
-    month: '9',
-    day: '17',
-    year: '2021',
-  });
+  const { selectedDate, setSelectedDate, nickName } = useUserFormStore();
+
   const bottomSheetModalRef = useRef(null);
   const snapPoints = useMemo(() => ['50%', '70%'], []);
   const handlePresentModalPress = useCallback(() => {
@@ -22,7 +20,7 @@ const BirthDayRegisterForm = () => {
   return (
     <BottomSheetModalProvider>
       <View style={styles.container}>
-        <Text style={styles.topText}>나라짱짱님의 생일을 알려주세요!</Text>
+        <Text style={styles.topText}>{nickName}님의 생일을 알려주세요!</Text>
         <TouchableOpacity onPress={handlePresentModalPress}>
           <Text style={styles.dateText}>
             {selectedDate.year} / {selectedDate.month} / {selectedDate.day}
