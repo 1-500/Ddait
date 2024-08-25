@@ -1,14 +1,13 @@
 import { BottomSheetModal, BottomSheetView } from '@gorhom/bottom-sheet';
 import { Picker } from '@react-native-picker/picker';
+import React, { forwardRef, useMemo } from 'react';
 import { Dimensions, StyleSheet, Text, View } from 'react-native';
-
-const windowWidth = Dimensions.get('window');
-import React, { forwardRef, useCallback, useEffect, useMemo } from 'react';
 
 import { HEADER_FONT_SIZES } from '../constants/font';
 import { getDays, getMonths, getYears } from '../utils/date';
 import CustomButton from './CustomButton';
 
+const windowWidth = Dimensions.get('window').width;
 const months = getMonths();
 const years = getYears();
 const days = getDays();
@@ -23,12 +22,9 @@ const days = getDays();
 //   });
 //
 // title 은 헤더 text
+
 const DatePickerBottomSheet = forwardRef(({ snapPoints, title, selectedDate, setSelectedDate }, ref) => {
   const snapPointsValue = useMemo(() => snapPoints, [snapPoints]);
-
-  useEffect(() => {
-    ref.current?.present();
-  }, [ref]);
 
   const handleCloseModal = () => ref.current?.close();
 
@@ -44,7 +40,7 @@ const DatePickerBottomSheet = forwardRef(({ snapPoints, title, selectedDate, set
           <Text style={styles.headerText}>{title}</Text>
           <View style={styles.pickersWrapper}>
             <Picker
-              selectedValue={selectedDate.year}
+              selectedValue={selectedDate?.year}
               style={styles.picker}
               onValueChange={(year) => setSelectedDate((prev) => ({ ...prev, year }))}
             >
@@ -53,7 +49,7 @@ const DatePickerBottomSheet = forwardRef(({ snapPoints, title, selectedDate, set
               ))}
             </Picker>
             <Picker
-              selectedValue={selectedDate.month}
+              selectedValue={selectedDate?.month}
               style={styles.picker}
               onValueChange={(month) => setSelectedDate((prev) => ({ ...prev, month }))}
             >
@@ -62,7 +58,7 @@ const DatePickerBottomSheet = forwardRef(({ snapPoints, title, selectedDate, set
               ))}
             </Picker>
             <Picker
-              selectedValue={selectedDate.day}
+              selectedValue={selectedDate?.day}
               style={styles.picker}
               onValueChange={(day) => setSelectedDate((prev) => ({ ...prev, day }))}
             >
@@ -93,7 +89,7 @@ const styles = StyleSheet.create({
   },
   headerText: {
     color: 'white',
-    fontSize: 20,
+    fontSize: HEADER_FONT_SIZES.lg,
     fontWeight: '600',
     marginBottom: 20,
   },

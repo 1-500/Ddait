@@ -85,6 +85,7 @@ const SearchIcon = () => (
  * theme: 'primary' | 'search' | 'user' | 'success' | 'error';
  * isSuccess: boolean;
  * onPressShowPassword?: () => {};
+ * onPress?: () => {};
  * autoFocus: boolean;
  * ref?: React.LegacyRef<null>;
  * isPassword: boolean;
@@ -114,6 +115,7 @@ const CustomInput = ({
   secureTextEntry = false,
   isPassword = false,
   onPressShowPassword = () => {},
+  onPress,
 }) => {
   return (
     <View
@@ -147,6 +149,7 @@ const CustomInput = ({
         secureTextEntry={secureTextEntry}
         autoCapitalize="none"
         autoCorrect="none"
+        onPress={onPress}
       />
       {theme === 'search' && (
         <View style={styles.iconWrapper}>
