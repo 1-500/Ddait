@@ -4,8 +4,8 @@ import React from 'react';
 
 import BottomTab from './components/BottomTab';
 import Competition from './pages/competition/Competition';
+import CompetitionCreation from './pages/competition/CompetitionCreation/CompetitionCreation';
 import CompetitionRoom1V1 from './pages/competition/CompetitionRoom1V1';
-import CreateCompetition from './pages/competition/createCompetition/CreateCompetition';
 import Friend from './pages/friend/Friend';
 import HomePage from './pages/home/HomePage';
 import LoginPage from './pages/login/LoginPage';
@@ -38,7 +38,7 @@ const Router = () => {
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="MainTab" component={MainTab} />
       <Stack.Screen name="CompetitionRoom1V1" component={CompetitionRoom1V1} />
-      <Stack.Screen name="CreateCompetition" component={CreateCompetition} />
+      <Stack.Screen name="CompetitionCreation" component={CompetitionCreation} />
       <Stack.Screen name="SignUp" component={SignUpPage} />
     </Stack.Navigator>
   ); // 라우팅
