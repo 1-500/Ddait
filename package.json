@@ -27,6 +27,7 @@
     "react": "18.2.0",
     "react-native": "0.74.3",
     "react-native-calendars": "^1.1306.0",
+    "react-native-dotenv": "^3.4.11",
     "react-native-gesture-handler": "^2.18.1",
     "react-native-progress": "^5.0.1",
     "react-native-reanimated": "^3.14.0",
@@ -63,6 +64,7 @@
     "jscodeshift": "^0.15.2",
     "prettier": "^3.3.3",
     "react-test-renderer": "18.2.0",
+    "reactotron-react-native": "^5.1.7",
     "typescript": "5.0.4"
   },
   "engines": {

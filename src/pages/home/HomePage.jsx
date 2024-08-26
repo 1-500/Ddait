@@ -1,6 +1,8 @@
-import React from 'react';
-import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import axios from 'axios';
+import React, { useEffect } from 'react';
+import { processColor, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 
+import { getTest } from '../../apis/home';
 import CustomCard from '../../components/CustomCardComponent';
 import CustomInput from '../../components/CustomInput';
 import HeaderComponents from '../../components/HeaderComponents';
@@ -8,6 +10,21 @@ import { COLORS } from '../../constants/colors';
 import { LAYOUT_PADDING } from '../../constants/space';
 
 const HomePage = () => {
+  /* eslint-disable */
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await getTest();
+        console.log(res);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchData();
+    /* eslint-enable */
+  }, []);
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.darkBackground }}>
       <HeaderComponents icon="home" />
