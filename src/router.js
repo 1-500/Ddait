@@ -8,6 +8,7 @@ import CompetitionRoom1V1 from './pages/competition/CompetitionRoom1V1';
 import CompetitionRoomRanking from './pages/competition/CompetitionRoomRanking';
 import CreateCompetition from './pages/competition/createCompetition/CreateCompetition';
 import SearchCompetition from './pages/competition/SearchCompetition';
+import DietDiary from './pages/diary/dietDiary/DietDiary';
 import StartWorkout from './pages/diary/workoutDiary/StartWorkout';
 import WorkoutDatePick from './pages/diary/workoutDiary/WorkoutDatePick';
 import WorkoutDiary from './pages/diary/workoutDiary/WorkoutDiary';
@@ -58,6 +59,14 @@ const DiaryStack = () => {
   );
 };
 
+const DietDiaryStack = () => {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="DietDiaryScreen" component={DietDiary} />
+    </Stack.Navigator>
+  );
+};
+
 const CompetitionStack = () => {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
@@ -76,6 +85,7 @@ const Router = () => {
       <Stack.Screen name="CompetitionRoomRanking" component={CompetitionRoomRanking} />
       <Stack.Screen name="CreateCompetition" component={CreateCompetition} />
       <Stack.Screen name="Sign" component={SignStack} />
+      <Stack.Screen name="DietDiary" component={DietDiaryStack} />
     </Stack.Navigator>
   ); // 라우팅
 };
