@@ -14,8 +14,8 @@ import { LAYOUT_PADDING, SPACING } from '../../constants/space';
 import { formDate } from '../../utils/date';
 
 // 경쟁방 아이템 컴포넌트
-const CompetitionItem = React.memo(({ item }) => (
-  <View style={styles.competitionContainer}>
+const CompetitionItem = React.memo(({ item, onPress }) => (
+  <TouchableOpacity onPress={() => onPress(item)} style={styles.competitionContainer}>
     <View style={{ gap: SPACING.xs }}>
       <Text style={styles.competitionName}>{item.name}</Text>
       <View style={{ flexDirection: 'row', gap: SPACING.xxs }}>
@@ -34,13 +34,24 @@ const CompetitionItem = React.memo(({ item }) => (
         {item.current_members} / {item.max_members}
       </Text>
     </View>
-  </View>
+  </TouchableOpacity>
 ));
 
 const SearchCompetition = ({ navigation }) => {
   const [sortBy, setSortBy] = useState('');
   const [selectedTags, setSelectedTags] = useState([]);
   const [sortedCompetitions, setSortedCompetitions] = useState(dummyCompetitions);
+
+  const handleCompetitionPress = useCallback(
+    (item) => {
+      if (item.max_members === 2) {
+        navigation.navigate('CompetitionRoom1V1', { competitionId: item.id });
+      } else {
+        navigation.navigate('CompetitionRoomRanking', { competitionId: item.id });
+      }
+    },
+    [navigation],
+  );
 
   // 경쟁방 정렬 및 필터링
   const sortCompetitions = useCallback((competitions, sortBy) => {
@@ -72,7 +83,10 @@ const SearchCompetition = ({ navigation }) => {
   };
 
   // 랜더링 관련
-  const renderCompetitions = useCallback(({ item }) => <CompetitionItem item={item} />, []);
+  const renderCompetitions = useCallback(
+    ({ item }) => <CompetitionItem item={item} onPress={handleCompetitionPress} />,
+    [handleCompetitionPress],
+  );
 
   const ListEmpty = useCallback(
     () => (
