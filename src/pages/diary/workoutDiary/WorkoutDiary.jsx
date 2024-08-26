@@ -2,7 +2,7 @@ import BottomSheet, { BottomSheetModal, BottomSheetModalProvider, BottomSheetVie
 import { useNavigation } from '@react-navigation/native';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { Calendar, LocaleConfig } from 'react-native-calendars';
+import { Calendar } from 'react-native-calendars';
 
 import { getDiaryList } from '../../../apis/diary';
 import CustomButton from '../../../components/CustomButton';
@@ -11,41 +11,7 @@ import { BACKGROUND_COLORS, BUTTON_COLORS, COLORS, TEXT_COLORS } from '../../../
 import { FONT_SIZES } from '../../../constants/font';
 import { RADIUS } from '../../../constants/radius';
 import { LAYOUT_PADDING } from '../../../constants/space';
-
-LocaleConfig.locales.fr = {
-  monthNames: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
-  monthNamesShort: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
-  dayNames: ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'],
-  dayNamesShort: ['일', '월', '화', '수', '목', '금', '토'],
-  today: 'Aujourd hui',
-};
-
-LocaleConfig.defaultLocale = 'fr';
-
-const getWeekOfMonth = (date) => {
-  const startWeekDayIndex = 0; // 일요일 0, 월요일 1
-  const firstDate = new Date(date.getFullYear(), date.getMonth(), 1);
-  const lastDate = new Date(date.getFullYear(), date.getMonth() + 1, 0);
-  const numOfDays = lastDate.getDate();
-  const weekInMonth = Math.ceil((date.getDate() + firstDate.getDay() - startWeekDayIndex) / 7);
-
-  return weekInMonth;
-};
-
-const getStartOfWeek = (date) => {
-  const startOfWeek = new Date(date.setDate(date.getDate() - date.getDay() + 1));
-  return startOfWeek;
-};
-
-const getEndOfWeek = (date) => {
-  const endOfWeek = new Date(date.setDate(date.getDate() - date.getDay() + 7)); // 일요일 끝
-  return endOfWeek;
-};
-
-const formatDate = (date) => {
-  const day = date.getDate();
-  return day;
-};
+import { formatDate, getEndOfWeek, getStartOfWeek, getWeekOfMonth } from '../../../utils/date';
 
 const WorkoutDiary = () => {
   const navigation = useNavigation();
