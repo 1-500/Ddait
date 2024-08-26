@@ -1,13 +1,23 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
-import { Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+  Image,
+  Modal,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
+} from 'react-native';
 import * as Progress from 'react-native-progress';
 
 import CustomButton from '../../../components/CustomButton';
 import CustomInput from '../../../components/CustomInput';
 import HeaderComponents from '../../../components/HeaderComponents';
 import { BACKGROUND_COLORS, COLORS, TEXT_COLORS } from '../../../constants/colors';
-import { FONT_SIZES, FONT_WEIGHTS } from '../../../constants/font';
+import { FONT_SIZES, FONT_WEIGHTS, HEADER_FONT_SIZES } from '../../../constants/font';
 import { RADIUS } from '../../../constants/radius';
 import { LAYOUT_PADDING } from '../../../constants/space';
 
@@ -27,6 +37,8 @@ const DietDiary = () => {
   const [workoutTypes, setWorkoutTypes] = useState(['웨이트', '러닝', '식단', '등산']);
   const [activeWorkoutType, setActiveWorkoutType] = useState('식단');
 
+  const [isVisibleModal, setIsVisibleModal] = useState(false);
+
   const navigation = useNavigation();
   const handleWorkoutTypePress = (type) => {
     if (type === '식단') {
@@ -37,6 +49,9 @@ const DietDiary = () => {
     setActiveWorkoutType(type);
   };
 
+  const handleModal = () => {
+    setIsVisibleModal(!isVisibleModal);
+  };
   return (
     <SafeAreaView style={styles.container}>
       <HeaderComponents title="식단 일지" icon="date" />
@@ -102,7 +117,7 @@ const DietDiary = () => {
           </View>
 
           <View style={styles.buttonContainer}>
-            <CustomButton theme="primary" size="large" text="목표 칼로리 설정" />
+            <CustomButton theme="primary" size="large" text="목표 칼로리 설정" onPress={handleModal} />
           </View>
         </View>
         <View style={styles.mealItemsContainer}>
@@ -117,6 +132,51 @@ const DietDiary = () => {
           ))}
         </View>
       </ScrollView>
+      <Modal visible={isVisibleModal} animationType="slide" transparent={true} onRequestClose={handleModal}>
+        <TouchableWithoutFeedback onPress={handleModal}>
+          <View style={styles.modalBackground}>
+            <View style={styles.modalContainer}>
+              <View
+                style={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  marginVertical: 10,
+                  gap: 20,
+                }}
+              >
+                <View style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+                  <Text style={{ color: COLORS.white, fontSize: FONT_SIZES.md }}>탄수화물</Text>
+                  <CustomInput size="small" theme="primary" value="" />
+                </View>
+                <View style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+                  <Text style={{ color: COLORS.white, fontSize: FONT_SIZES.md }}>단백질</Text>
+                  <CustomInput size="small" theme="primary" value="" />
+                </View>
+                <View style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+                  <Text style={{ color: COLORS.white, fontSize: FONT_SIZES.md }}>지방</Text>
+                  <CustomInput size="small" theme="primary" value="" />
+                </View>
+              </View>
+              <View
+                style={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  gap: 10,
+                  alignSelf: 'flex-end',
+                  marginVertical: 20,
+                }}
+              >
+                <Text style={{ color: COLORS.white, fontSize: FONT_SIZES.md }}>총</Text>
+                <CustomInput size="small" theme="primary" value="" />
+
+                <Text style={{ color: COLORS.white, fontSize: FONT_SIZES.md }}>kcal</Text>
+              </View>
+              <CustomButton theme="primary" size="large" text="설정 완료" />
+            </View>
+          </View>
+        </TouchableWithoutFeedback>
+      </Modal>
     </SafeAreaView>
   );
 };
@@ -295,6 +355,19 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: FONT_SIZES.xs,
     fontWeight: FONT_WEIGHTS.semiBold,
+  },
+  modalBackground: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+  },
+  modalContainer: {
+    width: '90%',
+    backgroundColor: COLORS.darkBackground,
+    borderRadius: RADIUS.large,
+    padding: 20,
+    alignItems: 'center',
   },
 });
 
