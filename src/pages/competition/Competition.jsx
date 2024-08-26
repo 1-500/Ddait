@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from 'react';
-import { FlatList, Image, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { FlatList, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import { dummyMyCompetitions } from '../../apis/dummydata';
@@ -10,8 +10,8 @@ import { RADIUS } from '../../constants/radius';
 import { LAYOUT_PADDING, SPACING } from '../../constants/space';
 import { formDate } from '../../utils/date';
 
-const CompetitionItem = React.memo(({ item }) => (
-  <View style={styles.competitionContainer}>
+const CompetitionItem = React.memo(({ item, onPress }) => (
+  <TouchableOpacity onPress={() => onPress(item)} style={styles.competitionContainer}>
     <Text style={styles.competitionName}>{item.name}</Text>
     <Text style={styles.competitionDate}>
       {formDate(item.start_date)} ~ {formDate(item.end_date)}
@@ -22,46 +22,54 @@ const CompetitionItem = React.memo(({ item }) => (
         {item.current_members} / {item.max_members}
       </Text>
     </View>
-  </View>
+  </TouchableOpacity>
 ));
 
 const Competition = ({ navigation }) => {
-  const renderCompetitions = useCallback(({ item }) => <CompetitionItem item={item} />, []);
-
-  const ListHeader = useMemo(
-    () => (
-      <View style={{ marginTop: SPACING.lg }}>
-        <View style={styles.header}>
-          <Text style={styles.headerText}>따잇님,</Text>
-          <Text style={{ fontSize: 50 }}>🏋️</Text>
-        </View>
-        <Text style={styles.subHeader}>오늘의 경쟁 상황을 확인해보세요!</Text>
-
-        <View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginBottom: SPACING.xs }}>
-          <CustomButton
-            theme="primary"
-            size="medium"
-            text="+ 다른 경쟁도 볼래요"
-            onPress={() => navigation.navigate('SearchCompetition')}
-          />
-        </View>
-      </View>
-    ),
+  const handleCompetitionPress = useCallback(
+    (item) => {
+      if (item.max_members === 2) {
+        navigation.navigate('CompetitionRoom1V1', { competitionId: item.id });
+      } else {
+        navigation.navigate('CompetitionRoomRanking', { competitionId: item.id });
+      }
+    },
     [navigation],
   );
 
-  const ListFooter = useCallback(
-    () => (
-      <View style={{ marginTop: SPACING.sm, marginBottom: 100 }}>
+  const renderCompetitions = useCallback(
+    ({ item }) => <CompetitionItem item={item} onPress={handleCompetitionPress} />,
+    [handleCompetitionPress],
+  );
+
+  const ListHeader = () => (
+    <View style={{ marginTop: SPACING.lg }}>
+      <View style={styles.header}>
+        <Text style={styles.headerText}>따잇님,</Text>
+        <Text style={{ fontSize: 50 }}>🏋️</Text>
+      </View>
+      <Text style={styles.subHeader}>오늘의 경쟁 상황을 확인해보세요!</Text>
+
+      <View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginBottom: SPACING.xs }}>
         <CustomButton
           theme="primary"
-          size="large"
-          text="+ 새로운 경쟁"
-          onPress={() => navigation.navigate('CreateCompetition')}
+          size="medium"
+          text="+ 다른 경쟁도 볼래요"
+          onPress={() => navigation.navigate('SearchCompetition')}
         />
       </View>
-    ),
-    [navigation],
+    </View>
+  );
+
+  const ListFooter = () => (
+    <View style={{ marginTop: SPACING.sm, marginBottom: 100 }}>
+      <CustomButton
+        theme="primary"
+        size="large"
+        text="+ 새로운 경쟁"
+        onPress={() => navigation.navigate('CreateCompetition')}
+      />
+    </View>
   );
 
   const ListEmpty = useCallback(
