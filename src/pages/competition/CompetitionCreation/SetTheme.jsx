@@ -19,10 +19,10 @@ const themeList = [
 ];
 
 const SetTheme = () => {
-  const { competitionType, setCompetitionType } = useCreateRoomStateStore();
+  const { theme, setTheme } = useCreateRoomStateStore();
 
   const handlePress = (title) => {
-    setCompetitionType(title);
+    setTheme(title);
   };
 
   return (
@@ -34,7 +34,7 @@ const SetTheme = () => {
           description={item.description}
           imgSource={item.imgSource}
           onPress={handlePress}
-          isSelected={competitionType === item.title}
+          isSelected={theme === item.title}
         />
       ))}
     </ScrollView>

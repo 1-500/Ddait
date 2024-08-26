@@ -17,9 +17,11 @@ interface CreateRoomState {
   };
   isPrivate: boolean;
   hasSmartWatch: boolean;
+  theme: string;
 
   setTitle: (title: string) => void;
   setMaxMembers: (maxMembers: number) => void;
+  setTheme: (theme: string) => void;
   setCompetitionType: (competitionType: string) => void;
   setCompetitionTheme: (competitionTheme: string) => void;
   setStartDate: (startDate: { year: string; month: string; day: string }) => void;
@@ -31,6 +33,7 @@ interface CreateRoomState {
 const useCreateRoomStateStore = create<CreateRoomState>((set) => ({
   title: '',
   maxMembers: 0,
+  theme: '',
   competitionType: '',
   competitionTheme: '',
   startDate: { year: '2024', month: '8', day: '30' },
@@ -40,6 +43,7 @@ const useCreateRoomStateStore = create<CreateRoomState>((set) => ({
 
   setTitle: (title) => set({ title }),
   setMaxMembers: (maxMembers) => set({ maxMembers }),
+  setTheme: (theme) => set({ theme }),
   setCompetitionType: (competitionType) => set({ competitionType }),
   setCompetitionTheme: (competitionTheme) => set({ competitionTheme }),
   setStartDate: (startDate) => set({ startDate }),
