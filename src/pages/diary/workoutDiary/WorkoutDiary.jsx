@@ -52,6 +52,15 @@ const WorkoutDiary = () => {
   };
 
   const handleWorkoutTypePress = (type) => {
+    if (type === '식단') {
+      navigation.navigate('DietDiary', {
+        screen: 'DietDiaryScreen',
+      });
+    } else if (type === '웨이트') {
+      navigation.navigate('WorkoutDiary', {
+        screen: 'WorkoutDiaryScreen',
+      });
+    }
     setActiveWorkoutType(type);
   };
 

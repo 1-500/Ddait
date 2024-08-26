@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
-import { Image, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
+import React from 'react';
+import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { BACKGROUND_COLORS, COLORS } from '../../../constants/colors';
 import { FONT_SIZES, FONT_WEIGHTS } from '../../../constants/font';
+import useCreateRoomStateStore from '../../../store/competition/index';
 
 const themeList = [
   {
@@ -18,10 +19,10 @@ const themeList = [
 ];
 
 const SetTheme = () => {
-  const [selectedCard, setSelectedCard] = useState(null);
+  const { competitionType, setCompetitionType } = useCreateRoomStateStore();
 
   const handlePress = (title) => {
-    setSelectedCard(title);
+    setCompetitionType(title);
   };
 
   return (
@@ -33,7 +34,7 @@ const SetTheme = () => {
           description={item.description}
           imgSource={item.imgSource}
           onPress={handlePress}
-          isSelected={selectedCard === item.title}
+          isSelected={competitionType === item.title}
         />
       ))}
     </ScrollView>

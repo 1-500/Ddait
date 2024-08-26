@@ -67,7 +67,7 @@ const Competition = ({ navigation }) => {
         theme="primary"
         size="large"
         text="+ 새로운 경쟁"
-        onPress={() => navigation.navigate('CreateCompetition')}
+        onPress={() => navigation.navigate('CompetitionCreation')}
       />
     </View>
   );
@@ -80,7 +80,7 @@ const Competition = ({ navigation }) => {
           theme="primary"
           size="large"
           text="+ 새로운 경쟁"
-          onPress={() => navigation.navigate('CreateCompetition')}
+          onPress={() => navigation.navigate('CompetitionCreation')}
         />
       </View>
     ),

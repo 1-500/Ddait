@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Alert, SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
 
 import CustomButton from '../../../components/CustomButton';
 import HeaderComponents from '../../../components/HeaderComponents';
@@ -7,11 +7,11 @@ import StepIndicator from '../../../components/StepIndicator';
 import { BACKGROUND_COLORS, COLORS } from '../../../constants/colors';
 import { FONT_WEIGHTS, HEADER_FONT_SIZES } from '../../../constants/font';
 import { ELEMENT_VERTICAL_MARGIN, LAYOUT_PADDING } from '../../../constants/space';
+import SetRoomDetail from '../CompetitionCreation/SetRoomDetail';
+import SetRoomTitle from '../CompetitionCreation/SetRoomTitle';
+import SetSportsCategory from '../CompetitionCreation/SetSportsCategory';
+import SetTheme from '../CompetitionCreation/SetTheme';
 import SetDetailTheme from './SetDetailTheme';
-import SetRoomDetail from './SetRoomDetail';
-import SetRoomTitle from './SetRoomTitle';
-import SetSportsCategory from './SetSportsCategory';
-import SetTheme from './SetTheme';
 
 const stepDescriptionList = [
   { step: 1, description: '어떤 경쟁을 하고 싶나요?' },
@@ -21,8 +21,7 @@ const stepDescriptionList = [
   { step: 5, description: '상세테마를 선택하세요.' },
 ];
 
-const CreateCompetition = () => {
-  // const [competitonRoomData, setCompetitionRoomData] = useState(); //추후 사용
+const CompetitionCreation = () => {
   const [step, setStep] = useState(1);
 
   const handleNextStep = () => {
@@ -91,4 +90,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CreateCompetition;
+export default CompetitionCreation;
