@@ -3,9 +3,8 @@ import { Picker } from '@react-native-picker/picker';
 import { Dimensions, StyleSheet, Text, View } from 'react-native';
 
 const windowWidth = Dimensions.get('window');
-import React, { forwardRef, useCallback, useEffect, useMemo } from 'react';
+import React, { forwardRef, useMemo } from 'react';
 
-import { HEADER_FONT_SIZES } from '../constants/font';
 import { getDays, getMonths, getYears } from '../utils/date';
 import CustomButton from './CustomButton';
 
@@ -25,11 +24,6 @@ const days = getDays();
 // title 은 헤더 text
 const DatePickerBottomSheet = forwardRef(({ snapPoints, title, selectedDate, setSelectedDate }, ref) => {
   const snapPointsValue = useMemo(() => snapPoints, [snapPoints]);
-
-  useEffect(() => {
-    ref.current?.present();
-  }, [ref]);
-
   const handleCloseModal = () => ref.current?.close();
 
   return (

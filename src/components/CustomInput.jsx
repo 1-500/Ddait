@@ -1,8 +1,8 @@
 import React from 'react';
 import { Dimensions, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
-import Svg, { Circle, ClipPath, Defs, G, Path, Rect } from 'react-native-svg';
+import Svg, { ClipPath, Defs, G, Path, Rect } from 'react-native-svg';
 
-import { COLORS, INPUT_COLORS, TEXT_COLORS } from '../constants/colors';
+import { COLORS, INPUT_COLORS } from '../constants/colors';
 import { FONT_SIZES } from '../constants/font';
 import { RADIUS } from '../constants/radius';
 
@@ -86,6 +86,7 @@ const SearchIcon = () => (
  * theme: 'primary' | 'search' | 'user' | 'success' | 'error';
  * isSuccess: boolean;
  * onPressShowPassword?: () => {};
+ * onPress?: () => {};
  * autoFocus: boolean;
  * ref?: React.LegacyRef<null>;
  * isPassword: boolean;
@@ -116,6 +117,7 @@ const CustomInput = ({
   secureTextEntry = false,
   isPassword = false,
   onPressShowPassword = () => {},
+  onPress,
 }) => {
   const windowWidth = Dimensions.get('window').width;
 
@@ -161,6 +163,7 @@ const CustomInput = ({
         autoFocus={autoFocus}
         secureTextEntry={secureTextEntry}
         autoCapitalize="none"
+        onPress={onPress}
         autoCorrect={false}
       />
       {theme === 'search' && (
@@ -173,7 +176,7 @@ const CustomInput = ({
           {secureTextEntry ? <OnEye /> : <OffEye />}
         </TouchableOpacity>
       ) : (
-        value.length > 0 &&
+        value?.length > 0 &&
         !isPassword &&
         size !== 'small' && (
           <TouchableOpacity activeOpacity={0.5} onPress={() => onChangeText('')}>
