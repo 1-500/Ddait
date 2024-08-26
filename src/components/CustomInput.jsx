@@ -1,8 +1,8 @@
 import React from 'react';
 import { Dimensions, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
-import Svg, { Circle, ClipPath, Defs, G, Path, Rect } from 'react-native-svg';
+import Svg, { ClipPath, Defs, G, Path, Rect } from 'react-native-svg';
 
-import { COLORS, INPUT_COLORS, TEXT_COLORS } from '../constants/colors';
+import { COLORS, INPUT_COLORS } from '../constants/colors';
 import { FONT_SIZES } from '../constants/font';
 import { RADIUS } from '../constants/radius';
 

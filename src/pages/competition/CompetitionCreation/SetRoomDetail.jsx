@@ -1,5 +1,5 @@
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef } from 'react';
 import { Dimensions, Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import CustomInput from '../../../components/CustomInput';
@@ -8,33 +8,37 @@ import OptionSelector from '../../../components/OptionSelector';
 import Toggle from '../../../components/Toggle';
 import { COLORS } from '../../../constants/colors';
 import { FONT_SIZES, FONT_WEIGHTS } from '../../../constants/font';
-const calendar = require('../../../assets/images/calendar.png');
-const options = [2, 5, 10, 20];
+import useCreateRoomStateStore from '../../../store/competition/index';
 
+const calendar = require('../../../assets/images/calendar.png');
+const maxMembersOptions = [2, 5, 10, 20];
 const { width } = Dimensions.get('window');
 
 const SetRoomDetail = () => {
-  // 토글 상태 관리
-  const [isPublicToggleOn, setIsPublicToggleOn] = useState(false);
-  const [isWatchToggleOn, setIsWatchToggleOn] = useState(false);
+  const {
+    isPrivate,
+    hasSmartWatch,
+    maxMembers,
+    startDate,
+    endDate,
+    setIsPrivate,
+    setHasSmartWatch,
+    setMaxMembers,
+    setStartDate,
+    setEndDate,
+  } = useCreateRoomStateStore((state) => ({
+    isPrivate: state.isPrivate,
+    hasSmartWatch: state.hasSmartWatch,
+    maxMembers: state.maxMembers,
+    startDate: state.startDate,
+    endDate: state.endDate,
+    setIsPrivate: state.setIsPrivate,
+    setHasSmartWatch: state.setHasSmartWatch,
+    setMaxMembers: state.setMaxMembers,
+    setStartDate: state.setStartDate,
+    setEndDate: state.setEndDate,
+  }));
 
-  // 날짜 선택 상태 관리
-  const [startDate, setStartDate] = useState(null);
-  const [endDate, setEndDate] = useState(null);
-
-  // 페이지 로드 시 초기 날짜 설정
-  useEffect(() => {
-    const formattedDate = {
-      year: '2023',
-      month: '8',
-      day: '30',
-    };
-    // 초기 날짜 설정 (필요시 주석 해제)
-    // setStartDate(formattedDate);
-    // setEndDate(formattedDate);
-  }, []);
-
-  // 바텀시트 참조 및 설정
   const snapPoints = useMemo(() => ['50%', '70%'], []);
   const startDateBottomSheetRef = useRef(null);
   const endDateBottomSheetRef = useRef(null);
@@ -47,16 +51,35 @@ const SetRoomDetail = () => {
     endDateBottomSheetRef.current?.present();
   }, []);
 
+  const handleStartDateChange = (text) => {
+    const [year, month, day] = text.split('/').map(Number);
+    if (year && month && day) {
+      setStartDate({ year: year.toString(), month: month.toString(), day: day.toString() });
+    }
+  };
+
+  const handleEndDateChange = (text) => {
+    const [year, month, day] = text.split('/').map(Number);
+    if (year && month && day) {
+      setEndDate({ year: year.toString(), month: month.toString(), day: day.toString() });
+    }
+  };
+
   const menuItems = [
     {
       title: '공개 여부',
-      component: <Toggle isOn={isPublicToggleOn} onToggle={() => setIsPublicToggleOn(!isPublicToggleOn)} />,
+      component: <Toggle isOn={isPrivate} onToggle={() => setIsPrivate(!isPrivate)} />,
     },
     {
       title: '스마트 워치',
-      component: <Toggle isOn={isWatchToggleOn} onToggle={() => setIsWatchToggleOn(!isWatchToggleOn)} />,
+      component: <Toggle isOn={hasSmartWatch} onToggle={() => setHasSmartWatch(!hasSmartWatch)} />,
     },
-    { title: '인원', component: <OptionSelector options={options} /> },
+    {
+      title: '인원',
+      component: (
+        <OptionSelector options={maxMembersOptions} selectedOption={maxMembers} setSelectedOption={setMaxMembers} />
+      ),
+    },
     {
       title: '기간',
       component: (
@@ -65,8 +88,8 @@ const SetRoomDetail = () => {
           onPressEndInput={openEndDatePicker}
           startDate={startDate}
           endDate={endDate}
-          setStartDate={setStartDate}
-          setEndDate={setEndDate}
+          onStartDateChange={handleStartDateChange}
+          onEndDateChange={handleEndDateChange}
         />
       ),
     },
@@ -78,21 +101,21 @@ const SetRoomDetail = () => {
         {menuItems.map((item, index) => (
           <MenuItem key={index} title={item.title} component={item.component} isLast={index === menuItems.length - 1} />
         ))}
+        <DatePickerBottomSheet
+          ref={startDateBottomSheetRef}
+          selectedDate={startDate}
+          setSelectedDate={setStartDate}
+          title="시작 날짜를 선택하세요"
+          snapPoints={snapPoints}
+        />
+        <DatePickerBottomSheet
+          ref={endDateBottomSheetRef}
+          selectedDate={endDate}
+          setSelectedDate={setEndDate}
+          title="종료 날짜를 선택하세요"
+          snapPoints={snapPoints}
+        />
       </ScrollView>
-      <DatePickerBottomSheet
-        ref={startDateBottomSheetRef}
-        selectedDate={startDate}
-        setSelectedDate={setStartDate}
-        title="시작 날짜를 선택하세요"
-        snapPoints={snapPoints}
-      />
-      <DatePickerBottomSheet
-        ref={endDateBottomSheetRef}
-        selectedDate={endDate}
-        setSelectedDate={setEndDate}
-        title="종료 날짜를 선택하세요"
-        snapPoints={snapPoints}
-      />
     </BottomSheetModalProvider>
   );
 };
@@ -104,13 +127,20 @@ const MenuItem = ({ title, component, isLast }) => (
   </View>
 );
 
-const PeroidSelector = ({ onPressStartInput, onPressEndInput, startDate, endDate, setStartDate, setEndDate }) => {
+const PeroidSelector = ({
+  onPressStartInput,
+  onPressEndInput,
+  startDate,
+  endDate,
+  onStartDateChange,
+  onEndDateChange,
+}) => {
   const formatDateString = (date) => {
     if (!date) {
       return '';
     }
     const { year, month, day } = date;
-    return `${year}-${month}-${day}`;
+    return `${year}/${month}/${day}`;
   };
 
   return (
@@ -120,8 +150,8 @@ const PeroidSelector = ({ onPressStartInput, onPressEndInput, startDate, endDate
         theme="primary"
         placeholder="시작 날짜"
         value={formatDateString(startDate)}
-        onChangeText={(text) => setStartDate({ ...startDate, day: text })}
         onPress={onPressStartInput}
+        onChangeText={onStartDateChange}
       />
       <Text style={{ color: COLORS.white, fontWeight: FONT_WEIGHTS.semiBold }}>~</Text>
       <CustomInput
@@ -129,8 +159,8 @@ const PeroidSelector = ({ onPressStartInput, onPressEndInput, startDate, endDate
         theme="primary"
         placeholder="종료 날짜"
         value={formatDateString(endDate)}
-        onChangeText={(text) => setEndDate({ ...endDate, day: text })}
         onPress={onPressEndInput}
+        onChangeText={onEndDateChange}
       />
       <Pressable>
         <Image source={calendar} />

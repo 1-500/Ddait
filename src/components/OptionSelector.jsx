@@ -1,27 +1,23 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { COLORS } from '../constants/colors';
+
 /**
  * @param {{
  * options: number[];
+ * selectedOption: number | null;
+ * setSelectedOption: (value: number | null) => void;
  * }}
  */
-
-const OptionSelector = ({ options }) => {
-  const [selectedOption, setSelectedOption] = useState(null);
-
-  const handlePress = (option) => {
-    setSelectedOption(option);
-  };
-
+const OptionSelector = ({ options, selectedOption, setSelectedOption }) => {
   return (
     <View style={styles.optionsContainer}>
       {options.map((item) => (
         <Pressable
           key={item}
           style={[styles.optionWrapper, selectedOption === item && styles.selected]}
-          onPress={() => handlePress(item)}
+          onPress={() => setSelectedOption(item)}
         >
           <Text style={styles.optionText}>{item}</Text>
         </Pressable>

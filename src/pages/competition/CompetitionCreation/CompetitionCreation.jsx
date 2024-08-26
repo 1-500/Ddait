@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Alert, SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
 
 import CustomButton from '../../../components/CustomButton';
 import HeaderComponents from '../../../components/HeaderComponents';
@@ -22,7 +22,6 @@ const stepDescriptionList = [
 ];
 
 const CompetitionCreation = () => {
-  // const [competitonRoomData, setCompetitionRoomData] = useState(); //추후 사용
   const [step, setStep] = useState(1);
 
   const handleNextStep = () => {

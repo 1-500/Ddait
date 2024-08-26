@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { BACKGROUND_COLORS, COLORS } from '../../../constants/colors';
 import { FONT_SIZES, FONT_WEIGHTS } from '../../../constants/font';
+import useCompetitionRoomStore from '../../../store/competition/index'; // Zustand 스토어를 가져옵니다
 
 const sportsCategory = [
   { title: '웨이트트레이닝', imgSource: require('../../../assets/images/lifting-weights.png') },
@@ -12,10 +13,13 @@ const sportsCategory = [
 ];
 
 const SetSportsCategory = () => {
-  const [selectedCard, setSelectedCard] = useState(null);
+  const { competitionType, setCompetitionType } = useCompetitionRoomStore((state) => ({
+    competitionType: state.competitionType,
+    setCompetitionType: state.setCompetitionType,
+  }));
 
   const handlePress = (title) => {
-    setSelectedCard(title);
+    setCompetitionType(title);
   };
   return (
     <View style={styles.boxWrapper}>
@@ -25,7 +29,7 @@ const SetSportsCategory = () => {
           title={item.title}
           imgSource={item.imgSource}
           onPress={handlePress}
-          isSelected={selectedCard === item.title}
+          isSelected={competitionType === item.title}
         />
       ))}
     </View>

@@ -1,13 +1,13 @@
 import { BottomSheetModal, BottomSheetView } from '@gorhom/bottom-sheet';
 import { Picker } from '@react-native-picker/picker';
-import React, { forwardRef, useMemo } from 'react';
 import { Dimensions, StyleSheet, Text, View } from 'react-native';
 
-import { HEADER_FONT_SIZES } from '../constants/font';
+const windowWidth = Dimensions.get('window');
+import React, { forwardRef, useMemo } from 'react';
+
 import { getDays, getMonths, getYears } from '../utils/date';
 import CustomButton from './CustomButton';
 
-const windowWidth = Dimensions.get('window').width;
 const months = getMonths();
 const years = getYears();
 const days = getDays();
@@ -22,10 +22,8 @@ const days = getDays();
 //   });
 //
 // title 은 헤더 text
-
 const DatePickerBottomSheet = forwardRef(({ snapPoints, title, selectedDate, setSelectedDate }, ref) => {
   const snapPointsValue = useMemo(() => snapPoints, [snapPoints]);
-
   const handleCloseModal = () => ref.current?.close();
 
   return (
@@ -40,27 +38,31 @@ const DatePickerBottomSheet = forwardRef(({ snapPoints, title, selectedDate, set
           <Text style={styles.headerText}>{title}</Text>
           <View style={styles.pickersWrapper}>
             <Picker
-              selectedValue={selectedDate?.year}
+              selectedValue={selectedDate.year}
               style={styles.picker}
-              onValueChange={(year) => setSelectedDate((prev) => ({ ...prev, year }))}
+              onValueChange={(year) =>
+                setSelectedDate({ month: selectedDate.month, year: year, day: selectedDate.day })
+              }
             >
               {years.map((year) => (
                 <Picker.Item key={year.value} label={year.label} value={year.value} color="white" />
               ))}
             </Picker>
             <Picker
-              selectedValue={selectedDate?.month}
+              selectedValue={selectedDate.month}
               style={styles.picker}
-              onValueChange={(month) => setSelectedDate((prev) => ({ ...prev, month }))}
+              onValueChange={(month) =>
+                setSelectedDate({ month: month, year: selectedDate.year, day: selectedDate.day })
+              }
             >
               {months.map((month) => (
                 <Picker.Item key={month.value} label={month.label} value={month.value} color="white" />
               ))}
             </Picker>
             <Picker
-              selectedValue={selectedDate?.day}
+              selectedValue={selectedDate.day}
               style={styles.picker}
-              onValueChange={(day) => setSelectedDate((prev) => ({ ...prev, day }))}
+              onValueChange={(day) => setSelectedDate({ month: selectedDate.month, year: selectedDate.year, day: day })}
             >
               {days.map((day) => (
                 <Picker.Item key={day.value} label={day.label} value={day.value} color="white" />
@@ -89,7 +91,7 @@ const styles = StyleSheet.create({
   },
   headerText: {
     color: 'white',
-    fontSize: HEADER_FONT_SIZES.lg,
+    fontSize: 20,
     fontWeight: '600',
     marginBottom: 20,
   },
