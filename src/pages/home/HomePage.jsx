@@ -2,6 +2,7 @@ import axios from 'axios';
 import React, { useEffect } from 'react';
 import { processColor, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 
+import { getTest } from '../../apis/home';
 import CustomCard from '../../components/CustomCardComponent';
 import CustomInput from '../../components/CustomInput';
 import HeaderComponents from '../../components/HeaderComponents';
@@ -13,8 +14,8 @@ const HomePage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await axios.get('http://localhost:3000/api/workout-record?user_id=2');
-        console.log(res.data); // 응답 데이터에 접근
+        const res = await getTest();
+        console.log(res);
       } catch (error) {
         console.log(error);
       }
