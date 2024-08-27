@@ -1,19 +1,21 @@
 import { API } from '..';
 
 export const createCompetition = async (data) => {
-  const userId = 2;
-
-  const payload = {
-    ...data,
-    user_id: userId,
-  };
+  const userId = 2; // 하드코딩해두고 추후 수정
 
   try {
-    const response = await API.post('/competition', payload);
+    const response = await API.post('/competition', data);
+    const postRecordData = {
+      room_id: response.data.room_id,
+      user_id: userId,
+    };
+    await API.post('/record', postRecordData); //기록 생성 바로 요청
+
     return response.data;
   } catch (error) {
     // eslint-disable-next-line no-console
-    console.error('Error creating competition:', error);
-    throw error;
+    console.error('Server responded with status:', error.response.status);
+    // eslint-disable-next-line no-console
+    console.error('Response data:', error.response.data);
   }
 };
