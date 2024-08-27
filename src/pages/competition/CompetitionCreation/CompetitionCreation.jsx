@@ -9,6 +9,7 @@ import { BACKGROUND_COLORS, COLORS } from '../../../constants/colors';
 import { FONT_WEIGHTS, HEADER_FONT_SIZES } from '../../../constants/font';
 import { ELEMENT_VERTICAL_MARGIN, LAYOUT_PADDING } from '../../../constants/space';
 import useCreateRoomStateStore from '../../../store/competition/index';
+import { formatDate_ISO8601 } from '../../../utils/date';
 import SetRoomDetail from '../CompetitionCreation/SetRoomDetail';
 import SetRoomTitle from '../CompetitionCreation/SetRoomTitle';
 import SetSportsCategory from '../CompetitionCreation/SetSportsCategory';
@@ -23,7 +24,7 @@ const steps = [
   { step: 5, component: SetDetailTheme, description: '상세테마를 선택하세요.' },
 ];
 
-const CompetitionCreation = () => {
+const CompetitionCreation = ({ navigation }) => {
   const [currentStep, setCurrentStep] = useState(1);
 
   const { title, maxMembers, competitionType, competitionTheme, startDate, endDate, isPrivate, hasSmartWatch } =
@@ -48,23 +49,23 @@ const CompetitionCreation = () => {
       max_members: maxMembers,
       competition_type: competitionType,
       competition_theme: competitionTheme,
-      start_date: formatDate(startDate),
-      end_date: formatDate(endDate, true),
+      start_date: formatDate_ISO8601(startDate),
+      end_date: formatDate_ISO8601(endDate, true),
       is_private: isPrivate,
       smartwatch: hasSmartWatch,
     };
 
     try {
-      await createCompetition(data);
+      const response = await createCompetition(data);
       Alert.alert('경쟁방 생성', `'${title}' 경쟁방이 생성되었습니다!`);
+      if (maxMembers === 2) {
+        navigation.navigate('CompetitionRoom1V1', { competitionId: response.room_id });
+      } else {
+        navigation.navigate('CompetitionRoomRanking', { competitionId: response.room_id });
+      }
     } catch (error) {
       Alert.alert('Error', 'Failed to create competition');
     }
-  };
-
-  const formatDate = (date, isEnd = false) => {
-    const dayTime = isEnd ? '23:59:59' : '00:00:00';
-    return `${date.year}-${String(date.month).padStart(2, '0')}-${String(date.day).padStart(2, '0')}T${dayTime}Z`;
   };
 
   const currentStepData = steps.find((step) => step.step === currentStep);
@@ -80,7 +81,12 @@ const CompetitionCreation = () => {
         </Text>
         <CurrentStepComponent />
         <View style={styles.btnWrapper}>
-          <CustomButton theme="primary" size="medium" text="이전" onPress={goToPrevStep} />
+          <CustomButton
+            theme={currentStep === 1 ? 'block' : 'primary'}
+            size="medium"
+            text="이전"
+            onPress={goToPrevStep}
+          />
           {currentStep === steps.length ? (
             <CustomButton theme="secondary" size="medium" text="경쟁방 생성" onPress={handleSubmit} />
           ) : (

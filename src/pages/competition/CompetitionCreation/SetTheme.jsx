@@ -19,12 +19,14 @@ const themeList = [
 ];
 
 const SetTheme = () => {
-  const { theme, setTheme } = useCreateRoomStateStore();
+  const { theme, setTheme, setMaxMembers } = useCreateRoomStateStore();
 
   const handlePress = (title) => {
     setTheme(title);
+    if (title === '1:1') {
+      setMaxMembers(2);
+    }
   };
-
   return (
     <ScrollView contentContainerStyle={styles.scrollViewContent}>
       {themeList.map((item) => (

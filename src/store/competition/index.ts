@@ -36,8 +36,8 @@ const useCreateRoomStateStore = create<CreateRoomState>((set) => ({
   theme: '',
   competitionType: '',
   competitionTheme: '',
-  startDate: { year: '2024', month: '8', day: '30' },
-  endDate: { year: '0000', month: '0', day: '0' },
+  startDate: { year: '', month: '', day: '' },
+  endDate: { year: '', month: '', day: '' },
   isPrivate: false,
   hasSmartWatch: false,
 

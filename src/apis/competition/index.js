@@ -6,10 +6,10 @@ export const createCompetition = async (data) => {
   try {
     const response = await API.post('/competition', data);
     const postRecordData = {
-      room_id: response.data.room_id,
-      user_id: userId,
+      competition_room_id: response.data.room_id,
+      member_id: userId,
     };
-    await API.post('/record', postRecordData); //기록 생성 바로 요청
+    await API.post('/competition/record', postRecordData); //기록 생성 바로 요청
 
     return response.data;
   } catch (error) {
