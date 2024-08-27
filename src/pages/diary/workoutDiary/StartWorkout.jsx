@@ -1,5 +1,5 @@
-import { useNavigation } from '@react-navigation/native';
-import React, { useState } from 'react';
+import { BottomSheetModal, BottomSheetModalProvider, BottomSheetView } from '@gorhom/bottom-sheet';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   FlatList,
   Modal,
@@ -12,83 +12,65 @@ import {
 } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
+import CustomTag from '../../../../src/components/CustomTag';
 import CustomButton from '../../../components/CustomButton';
 import CustomInput from '../../../components/CustomInput';
 import CustomTimer from '../../../components/CustomTimer';
 import HeaderComponents from '../../../components/HeaderComponents';
 import { BACKGROUND_COLORS, COLORS, TEXT_COLORS } from '../../../constants/colors';
-import { BODY_FONT_SIZES, HEADER_FONT_SIZES } from '../../../constants/font';
+import { BODY_FONT_SIZES, FONT_SIZES, HEADER_FONT_SIZES } from '../../../constants/font';
 import { RADIUS } from '../../../constants/radius';
 import { LAYOUT_PADDING } from '../../../constants/space';
 
-const dummyWorkoutData = [
+const exerciseData = [
   {
     id: '1',
     title: '바벨 스쿼트',
-    workoutSet: [
-      {
-        id: '1',
-        weight: 20,
-        reps: 10,
-      },
-      {
-        id: '2',
-        weight: 40,
-        reps: 10,
-      },
-      {
-        id: '3',
-        weight: 60,
-        reps: 10,
-      },
-    ],
   },
   {
     id: '2',
     title: '레그 프레스',
-    workoutSet: [
-      {
-        id: '1',
-        weight: 20,
-        reps: 10,
-      },
-      {
-        id: '2',
-        weight: 40,
-        reps: 10,
-      },
-      {
-        id: '3',
-        weight: 60,
-        reps: 10,
-      },
-    ],
+  },
+  {
+    id: '3',
+    title: '레그 익스텐션',
   },
 ];
-
 const StartWorkout = () => {
-  const [workoutData, setWorkoutData] = useState([
-    {
-      id: '1',
-      title: '바벨 스쿼트',
-      workoutSet: [
-        { id: '1', weight: '20', reps: '10' },
-        { id: '2', weight: '40', reps: '10' },
-        { id: '3', weight: '60', reps: '10' },
-      ],
-    },
-    {
-      id: '2',
-      title: '레그 프레스',
-      workoutSet: [
-        { id: '1', weight: '20', reps: '10' },
-        { id: '2', weight: '40', reps: '10' },
-        { id: '3', weight: '60', reps: '10' },
-      ],
-    },
-  ]);
+  // const [workoutData, setWorkoutData] = useState([
+  //   {
+  //     id: '1',
+  //     title: '바벨 스쿼트',
+  //     workoutSet: [
+  //       { id: '1', weight: '20', reps: '10' },
+  //       { id: '2', weight: '40', reps: '10' },
+  //       { id: '3', weight: '60', reps: '10' },
+  //     ],
+  //   },
+  //   {
+  //     id: '2',
+  //     title: '레그 프레스',
+  //     workoutSet: [
+  //       { id: '1', weight: '20', reps: '10' },
+  //       { id: '2', weight: '40', reps: '10' },
+  //       { id: '3', weight: '60', reps: '10' },
+  //     ],
+  //   },
+  // ]);
+  const [workoutData, setWorkoutData] = useState([]);
   const [time, setTime] = useState({ minutes: 0, seconds: 0 });
   const [isTimerVisible, setIsTimerVisible] = useState(false);
+
+  const bottomSheetModalRef = useRef(null);
+  const snapPoints = useMemo(() => ['80%', '80%'], []);
+
+  const handlePresentModalPress = useCallback(() => {
+    bottomSheetModalRef.current?.present();
+  }, []);
+
+  const handleSheetChanges = useCallback((index) => {
+    // console.log('handleSheetChanges', index);
+  }, []);
 
   const handleTimerVisible = () => {
     setIsTimerVisible(!isTimerVisible);
@@ -106,6 +88,11 @@ const StartWorkout = () => {
       ),
     );
   };
+
+  const handleStartWorkout = () => {
+    console.log('모달등장');
+  };
+
   /* eslint-enable */
   const renderWorkoutCard = ({ item }) => (
     <View style={styles.card}>
@@ -154,6 +141,16 @@ const StartWorkout = () => {
     </View>
   );
 
+  const renderExerciseList = ({ item }) => (
+    <TouchableOpacity style={styles.exerciseItemContainer}>
+      <View style={styles.exerciseCheckboxContainer}>
+        <MaterialCommunityIcons name="checkbox-marked" size={24} color={COLORS.primary} />
+      </View>
+      <Text style={styles.exerciseItemText}>{item.title}</Text>
+      <MaterialCommunityIcons name="bookmark-outline" size={24} color={TEXT_COLORS.secondary} />
+    </TouchableOpacity>
+  );
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: BACKGROUND_COLORS.dark }}>
       <HeaderComponents title="운동 시작" icon="timer" onRightBtnPress={handleTimerVisible} />
@@ -163,12 +160,45 @@ const StartWorkout = () => {
           {String(time.minutes).padStart(2, '0')}:{String(time.seconds).padStart(2, '0')}
         </Text>
       </View>
+      {workoutData.length === 0 && (
+        <View style={styles.workoutContainer}>
+          <View style={styles.messageContainer}>
+            <Text style={styles.messageText}>완료한 운동이 없네요!</Text>
+            <Text style={styles.messageText}>오늘 운동하러 가볼까요?</Text>
+          </View>
+          <CustomButton
+            theme="primary"
+            size="large"
+            states="enabled"
+            onPress={handlePresentModalPress}
+            text="운동 추가하기"
+          />
+        </View>
+      )}
       <FlatList
         data={workoutData}
         renderItem={renderWorkoutCard}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 16, paddingHorizontal: 16 }}
         keyExtractor={(item) => item.id}
+        ListFooterComponent={
+          <View style={{ gap: 16 }}>
+            <CustomButton
+              theme="primary"
+              size="large"
+              states="enabled"
+              onPress={handlePresentModalPress}
+              text="운동 추가하기"
+            />
+            <CustomButton
+              theme="secondary"
+              size="large"
+              states="enabled"
+              onPress={handleStartWorkout}
+              text="운동 추가하기"
+            />
+          </View>
+        }
       />
 
       <Modal visible={isTimerVisible} animationType="slide" transparent={true} onRequestClose={handleTimerVisible}>
@@ -184,6 +214,34 @@ const StartWorkout = () => {
           </View>
         </TouchableWithoutFeedback>
       </Modal>
+
+      <BottomSheetModalProvider>
+        <BottomSheetModal
+          ref={bottomSheetModalRef}
+          onChange={handleSheetChanges}
+          enablePanDownToClose
+          snapPoints={snapPoints}
+        >
+          <BottomSheetView style={styles.bottomSheetContainer}>
+            <Text style={{ color: TEXT_COLORS.primary, fontSize: HEADER_FONT_SIZES.sm }}>운동 추가</Text>
+            <View>
+              <CustomInput placeholder="하고자 하는 운동을 검색해보세요." theme="search" />
+            </View>
+            <View style={{ flexDirection: 'row', marginVertical: 16 }}>
+              <CustomTag size="small" text="부위" />
+              <CustomTag size="small" text="무게" />
+              <CustomTag size="small" text="도구" />
+            </View>
+            <FlatList
+              data={exerciseData}
+              renderItem={renderExerciseList}
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={{ paddingBottom: 16, paddingHorizontal: 16 }}
+              keyExtractor={(item) => item.id}
+            />
+          </BottomSheetView>
+        </BottomSheetModal>
+      </BottomSheetModalProvider>
     </SafeAreaView>
   );
 };
@@ -303,5 +361,33 @@ const styles = StyleSheet.create({
     fontSize: HEADER_FONT_SIZES.md,
     color: TEXT_COLORS.primary,
     marginBottom: 16,
+  },
+
+  workoutContainer: {
+    backgroundColor: BACKGROUND_COLORS.dark,
+    height: '100%',
+    ...LAYOUT_PADDING,
+    paddingTop: 20,
+  },
+  bottomSheetContainer: {
+    flex: 1,
+    backgroundColor: BACKGROUND_COLORS.dark,
+  },
+  exerciseItemContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: BACKGROUND_COLORS.greyDark,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: RADIUS.small,
+    marginBottom: 8,
+  },
+  exerciseCheckboxContainer: {
+    marginRight: 12,
+  },
+  exerciseItemText: {
+    flex: 1,
+    fontSize: BODY_FONT_SIZES.md,
+    color: TEXT_COLORS.primary,
   },
 });
