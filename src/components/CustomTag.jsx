@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { TAG_COLORS } from '../constants/colors';
-import { FONT_WEIGHTS } from '../constants/font';
+import { FONT_WEIGHTS, FONTS } from '../constants/font';
 import { FONT_SIZES } from '../constants/font';
 import { RADIUS } from '../constants/radius';
 
@@ -48,8 +48,7 @@ const styles = StyleSheet.create({
   },
   text: {
     color: '#FFF',
-    textAlign: 'center',
-    fontWeight: FONT_WEIGHTS.semiBold,
+    fontFamily: FONTS.PRETENDARD[600],
   },
   text_small: {
     fontSize: FONT_SIZES.xxs,
