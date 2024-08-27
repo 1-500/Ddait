@@ -121,6 +121,48 @@ const dummy_data = {
     },
   ],
   usage_data: ['data1', 'data2'],
+  friends: [
+    {
+      nickname: '따잇1',
+      introduce: '소개글입니다',
+      preferred_sport: '다이어트',
+    },
+    {
+      nickname: '따잇2',
+      introduce: '소개글입니다',
+      preferred_sport: '걷기',
+    },
+    {
+      nickname: '따잇3',
+      introduce: '소개글입니다',
+      preferred_sport: '등산',
+    },
+    {
+      nickname: '따잇4',
+      introduce: '소개글입니다',
+      preferred_sport: '웨이트',
+    },
+    {
+      nickname: '따잇5',
+      introduce: '소개글입니다',
+      preferred_sport: '다이어트',
+    },
+    {
+      nickname: '따잇6',
+      introduce: '소개글입니다',
+      preferred_sport: '걷기',
+    },
+    {
+      nickname: '따잇7',
+      introduce: '소개글입니다',
+      preferred_sport: '등산',
+    },
+    {
+      nickname: '따잇8',
+      introduce: '소개글입니다',
+      preferred_sport: '웨이트',
+    },
+  ],
 };
 
 const renderScene = ({ route, jumpTo }) => {
@@ -130,7 +172,7 @@ const renderScene = ({ route, jumpTo }) => {
     case 'myScore':
       return <MyScore jumpTo={jumpTo} />;
     case 'invite':
-      return <Invite jumpTo={jumpTo} />;
+      return <Invite friends={dummy_data.friends} jumpTo={jumpTo} />;
   }
 };
 
