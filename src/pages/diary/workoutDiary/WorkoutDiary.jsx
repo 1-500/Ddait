@@ -12,7 +12,6 @@ import { FONT_SIZES } from '../../../constants/font';
 import { RADIUS } from '../../../constants/radius';
 import { LAYOUT_PADDING } from '../../../constants/space';
 import { formatDate, getEndOfWeek, getStartOfWeek, getWeekOfMonth } from '../../../utils/date';
-
 const WorkoutDiary = () => {
   const navigation = useNavigation();
   const today = new Date();
@@ -25,6 +24,7 @@ const WorkoutDiary = () => {
   const [selected, setSelected] = useState(today.toISOString().split('T')[0]);
   const [selectedDayInfo, setSelectedDayInfo] = useState(today);
 
+  /* eslint-disable */
   useEffect(() => {
     const startOfWeek = getStartOfWeek(today);
     const endOfWeek = getEndOfWeek(today);
@@ -37,19 +37,17 @@ const WorkoutDiary = () => {
     setWeekDays(days);
     setWeekOfMonth(`${today.getMonth() + 1}월 ${getWeekOfMonth(today)}째주`);
 
-    /* eslint-disable */
     const fetchWorkout = async () => {
       try {
-        const res = await getDiaryList(2);
-        console.log(res);
-        // [{"created_at": "2024-08-26", "edited_at": null, "id": 21, "member_id": 2, "workout_name": "test", "workout_time": "12:30:00"}, ...]
+        const res = await getDiaryList(2, selected);
+        // console.log(res);
       } catch (error) {
-        console.log('error: ', error);
+        // console.log('error: ', error);
       }
     };
 
     fetchWorkout();
-  }, []);
+  }, [selected]);
   /* eslint-enable */
 
   const bottomSheetModalRef = useRef(null);
@@ -86,6 +84,16 @@ const WorkoutDiary = () => {
     bottomSheetRef.current?.close();
   };
 
+  const handleWeekDayPress = (day) => {
+    const selectedDate = new Date(today.getFullYear(), today.getMonth(), day);
+    const offset = selectedDate.getTimezoneOffset();
+    const selectedDateWithOffset = new Date(selectedDate.getTime() - offset * 60 * 1000);
+    const selectedDateString = selectedDateWithOffset.toISOString().split('T')[0];
+
+    setSelected(selectedDateString);
+    setSelectedDayInfo(selectedDate);
+  };
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.darkBackground }}>
       <View style={{ height: 60, backgroundColor: '#fff' }}>
@@ -99,8 +107,12 @@ const WorkoutDiary = () => {
       <View style={styles.dateContainer}>
         <View style={styles.weekDaysContainer}>
           {weekDays.map((day, index) => (
-            <TouchableOpacity key={index} style={day === todayFormatted ? styles.activeDay : styles.day}>
-              <Text style={day === todayFormatted ? styles.activeDayText : styles.dayText}>{day}</Text>
+            <TouchableOpacity
+              key={index}
+              style={new Date(selected).getDate() === day ? styles.activeDay : styles.day} // 선택된 날짜와 비교
+              onPress={() => handleWeekDayPress(day)}
+            >
+              <Text style={new Date(selected).getDate() === day ? styles.activeDayText : styles.dayText}>{day}</Text>
             </TouchableOpacity>
           ))}
         </View>
