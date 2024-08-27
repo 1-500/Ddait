@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Alert, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 
 import { createCompetition } from '../../../apis/competition/index';
@@ -26,18 +26,46 @@ const steps = [
 
 const CompetitionCreation = ({ navigation }) => {
   const [currentStep, setCurrentStep] = useState(1);
+  const {
+    title,
+    maxMembers,
+    competitionType,
+    competitionTheme,
+    startDate,
+    endDate,
+    isPrivate,
+    hasSmartWatch,
+    resetState,
+  } = useCreateRoomStateStore();
 
-  const { title, maxMembers, competitionType, competitionTheme, startDate, endDate, isPrivate, hasSmartWatch } =
-    useCreateRoomStateStore((state) => ({
-      title: state.title,
-      maxMembers: state.maxMembers,
-      competitionType: state.competitionType,
-      competitionTheme: state.competitionTheme,
-      startDate: state.startDate,
-      endDate: state.endDate,
-      isPrivate: state.isPrivate,
-      hasSmartWatch: state.hasSmartWatch,
-    }));
+  const currentStepData = steps.find((step) => step.step === currentStep);
+  const CurrentStepComponent = currentStepData.component;
+
+  useEffect(() => {
+    const hasExistingData =
+      title ||
+      maxMembers ||
+      competitionType ||
+      competitionTheme ||
+      startDate.year ||
+      endDate.year ||
+      isPrivate ||
+      hasSmartWatch;
+
+    if (hasExistingData) {
+      Alert.alert('생성중이던 방이 있어요.', '생성중이던 방 정보를 불러올까요?', [
+        {
+          text: '네, 불러올게요',
+        },
+        {
+          text: '아니요 초기화할래요.',
+          onPress: () => resetState(),
+          style: 'destructive',
+        },
+      ]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const goToNextStep = () => setCurrentStep((prev) => Math.min(prev + 1, steps.length));
   const goToPrevStep = () => setCurrentStep((prev) => Math.max(prev - 1, 1));
@@ -58,25 +86,21 @@ const CompetitionCreation = ({ navigation }) => {
     try {
       const response = await createCompetition(data);
       Alert.alert('경쟁방 생성', `'${title}' 경쟁방이 생성되었습니다!`);
-      if (maxMembers === 2) {
-        navigation.navigate('CompetitionRoom1V1', { competitionId: response.room_id });
-      } else {
-        navigation.navigate('CompetitionRoomRanking', { competitionId: response.room_id });
-      }
+      maxMembers === 2
+        ? navigation.navigate('CompetitionRoom1V1', { competitionId: response.room_id })
+        : navigation.navigate('CompetitionRoomRanking', { competitionId: response.room_id });
+      resetState();
     } catch (error) {
       Alert.alert('Error', 'Failed to create competition');
     }
   };
 
-  const currentStepData = steps.find((step) => step.step === currentStep);
-  const CurrentStepComponent = currentStepData.component;
-
   return (
     <SafeAreaView style={styles.safeAreaView}>
       <HeaderComponents title="경쟁 생성하기" />
-      <View style={[LAYOUT_PADDING, ELEMENT_VERTICAL_MARGIN, styles.container]}>
+      <View style={styles.container}>
         <StepIndicator currentStep={currentStep} steps={steps.length} onPress={handleStepChange} />
-        <Text style={[styles.stepText, ELEMENT_VERTICAL_MARGIN]}>
+        <Text style={styles.stepText}>
           {currentStep}. {currentStepData.description}
         </Text>
         <CurrentStepComponent />
@@ -105,12 +129,15 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
+    ...LAYOUT_PADDING,
+    ...ELEMENT_VERTICAL_MARGIN,
   },
   stepText: {
     fontSize: HEADER_FONT_SIZES.sm,
     fontWeight: FONT_WEIGHTS.bold,
     fontFamily: 'Pretendard',
     color: COLORS.white,
+    marginVertical: 28,
   },
   btnWrapper: {
     flexDirection: 'row',
