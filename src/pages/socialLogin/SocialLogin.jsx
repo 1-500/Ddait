@@ -1,6 +1,6 @@
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import React, { useEffect, useRef, useState } from 'react';
-import { Alert, Platform, StyleSheet, Text, View } from 'react-native';
+import { Alert, Button, Platform, StyleSheet, Text, View } from 'react-native';
 import UserAgent from 'react-native-user-agent';
 import WebView from 'react-native-webview';
 
@@ -68,6 +68,11 @@ const SocialLogin = ({ route }) => {
       })
       .catch((e) => e);
   };
+  const sendMessageToWeb = (message) => {
+    if (webViewRef.current) {
+      webViewRef.current.postMessage(JSON.stringify(message));
+    }
+  };
 
   return (
     <View style={{ flex: 1 }}>
@@ -79,12 +84,13 @@ const SocialLogin = ({ route }) => {
           userAgent={customUserAgent}
           source={{ uri: 'http://localhost:3000/socialLogin' }}
           onMessage={handleMessage}
-          onLoadStart={() => {
-            if (webViewRef.current) {
-              const message = { type: 'DDait_APP', data: provider };
-              webViewRef.current.postMessage(JSON.stringify(message));
-            }
+          onLoad={() => {
+            sendMessageToWeb({ type: 'DDait_APP', data: provider });
           }}
+          onLoadStart={() => {
+            sendMessageToWeb({ type: 'DDait_APP', data: provider });
+          }}
+          onLoadEnd={() => sendMessageToWeb({ type: 'PAGE_LOADED', data: provider })}
         />
       )}
     </View>

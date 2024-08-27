@@ -1,20 +1,62 @@
 import { useNavigation } from '@react-navigation/native';
-import React from 'react';
-import { Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useState } from 'react';
+import { Alert, Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
+import { emailLogin } from '../../apis/login/index';
 import CustomButton from '../../components/CustomButton';
 import CustomInput from '../../components/CustomInput';
 import { COLORS } from '../../constants/colors';
 import { FONT_SIZES, FONT_WEIGHTS, HEADER_FONT_SIZES } from '../../constants/font';
+import useUserStore from '../../store/sign/login';
 
 const ThumbnailLogo = require('../../assets/images/login/thumnailLogo.png');
 const GoogleIcon = require('../../assets/images/login/googleIcon.png');
 const NaverIcon = require('../../assets/images/login/naverIcon.png');
 const AppleIcon = require('../../assets/images/login/appleIcon.png');
 const KakaoIcon = require('../../assets/images/login/kakaoIcon.png');
-
 const LoginPage = () => {
   const navigation = useNavigation();
+
+  const [emailInput, setEmailInput] = useState();
+  const [passwordInput, setPasswordInput] = useState();
+
+  const { setToken, setUserEmail } = useUserStore();
+
+  const handleEmailInput = (text) => {
+    setEmailInput(text);
+  };
+
+  const handlePasswordInput = (text) => {
+    setPasswordInput(text);
+  };
+
+  const handleLoginButton = async () => {
+    if (emailInput && passwordInput) {
+      let result = await emailLogin(
+        JSON.stringify({
+          email: emailInput,
+          password: passwordInput,
+        }),
+      );
+      if (result) {
+        const { access_token, expires_in, refresh_token, user } = result;
+        setToken({
+          accessToken: access_token,
+          expiresIn: expires_in,
+          refreshToken: refresh_token,
+        });
+        setUserEmail(user.email);
+        Alert.alert('로그인 하였습니다!');
+        navigation.navigate('MainTab', {
+          screen: 'Home',
+        });
+      } else {
+        Alert.alert('로그인을 실패하였습니다!');
+      }
+    } else {
+      Alert.alert('이메일 패스워드를 입력하세요!');
+    }
+  };
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
@@ -29,17 +71,19 @@ const LoginPage = () => {
             size="large"
             theme="user"
             placeholder="이메일을 입력해주세요"
+            onChangeText={handleEmailInput}
             style={{ fontSize: FONT_SIZES.sm }}
           />
           <CustomInput
             size="large"
             theme="user"
             placeholder="비밀번호를 입력해주세요"
+            onChangeText={handlePasswordInput}
             secureTextEntry={true}
             style={{ fontSize: FONT_SIZES.sm }}
           />
           <View style={{ marginVertical: 20, width: '100%' }}>
-            <CustomButton size="large" text="로그인" theme="primary" />
+            <CustomButton size="large" text="로그인" theme="primary" onPress={handleLoginButton} />
           </View>
           <View style={styles.linkContainer}>
             <TouchableOpacity

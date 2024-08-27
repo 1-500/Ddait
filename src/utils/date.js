@@ -14,7 +14,10 @@ export const getMonths = () => {
   const months = [];
 
   for (let month = 1; month <= 12; month++) {
-    months.push({ label: month.toString(), value: month.toString() });
+    months.push({
+      label: month.toString().padStart(2, '0'),
+      value: month.toString().padStart(2, '0'),
+    });
   }
 
   return months;
