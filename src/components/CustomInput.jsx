@@ -1,8 +1,9 @@
 import React from 'react';
-import { StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
-import Svg, { Circle, ClipPath, Defs, G, Path, Rect } from 'react-native-svg';
+import { Dimensions, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import Svg, { ClipPath, Defs, G, Path, Rect } from 'react-native-svg';
 
 import { COLORS, INPUT_COLORS } from '../constants/colors';
+import { FONT_SIZES } from '../constants/font';
 import { RADIUS } from '../constants/radius';
 
 const XIcon = () => (
@@ -85,6 +86,7 @@ const SearchIcon = () => (
  * theme: 'primary' | 'search' | 'user' | 'success' | 'error';
  * isSuccess: boolean;
  * onPressShowPassword?: () => {};
+ * onPress?: () => {};
  * autoFocus: boolean;
  * ref?: React.LegacyRef<null>;
  * isPassword: boolean;
@@ -115,12 +117,26 @@ const CustomInput = ({
   secureTextEntry = false,
   isPassword = false,
   onPressShowPassword = () => {},
+  onPress,
 }) => {
+  const windowWidth = Dimensions.get('window').width;
+
+  const dynamicStyles = StyleSheet.create({
+    size_small: {
+      width: windowWidth / 5,
+      height: 40,
+    },
+    inputContainer: {
+      flex: 1,
+      minWidth: windowWidth / 5,
+    },
+  });
+
   return (
     <View
       style={[
         styles.container,
-        styles[`size_${size}`],
+        size === 'small' ? dynamicStyles.size_small : styles[`size_${size}`],
         theme === 'user'
           ? isError
             ? styles.errorUserInputBox
@@ -147,7 +163,8 @@ const CustomInput = ({
         autoFocus={autoFocus}
         secureTextEntry={secureTextEntry}
         autoCapitalize="none"
-        autoCorrect="none"
+        onPress={onPress}
+        autoCorrect={false}
       />
       {theme === 'search' && (
         <View style={styles.iconWrapper}>
@@ -160,7 +177,8 @@ const CustomInput = ({
         </TouchableOpacity>
       ) : (
         value?.length > 0 &&
-        !isPassword && (
+        !isPassword &&
+        size !== 'small' && (
           <TouchableOpacity activeOpacity={0.5} onPress={() => onChangeText('')}>
             <XIcon />
           </TouchableOpacity>
@@ -214,7 +232,7 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    fontSize: 14,
+    fontSize: FONT_SIZES.md,
     height: '100%',
     width: 'auto',
     marginRight: 16,

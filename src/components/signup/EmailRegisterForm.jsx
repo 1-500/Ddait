@@ -3,7 +3,7 @@ import { KeyboardAvoidingView, StyleSheet, Text, View } from 'react-native';
 
 import CustomInput from '../../components/CustomInput';
 import { FONT_SIZES } from '../../constants/font';
-import useUserFormStore from '../../store/sign/index';
+import useUserFormStore from '../../store/sign/signup';
 import { validateEmail } from '../../utils/validate';
 
 const EmailRegisterForm = () => {

@@ -2,19 +2,19 @@ import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { TAG_COLORS } from '../constants/colors';
-import { FONT_WEIGHTS } from '../constants/font';
+import { FONT_WEIGHTS, FONTS } from '../constants/font';
 import { FONT_SIZES } from '../constants/font';
 import { RADIUS } from '../constants/radius';
 
 // prettier-ignore
 const TEXT_TO_TYPE = {
-  '다이어트': 'diet',
-  '걷기': 'walking',
-  '러닝': 'running',
-  '등산': 'climb',
-  '웨이트트레이닝': 'weight',
+  다이어트: 'diet',
+  걷기: 'walking',
+  러닝: 'running',
+  등산: 'climb',
+  웨이트: 'weight',
   '1:1': 'competition',
-  '랭킹전': 'competition',
+  랭킹전: 'competition',
   '경쟁 세부 테마': 'diet',
 };
 
@@ -43,19 +43,20 @@ const styles = StyleSheet.create({
   },
   container_big: {
     paddingHorizontal: 10,
-    paddingVertical: 5,
+    paddingVertical: 8,
     borderRadius: RADIUS.small,
   },
   text: {
     color: '#FFF',
-    textAlign: 'center',
-    fontWeight: FONT_WEIGHTS.semiBold,
+    fontFamily: FONTS.PRETENDARD[600],
   },
   text_small: {
     fontSize: FONT_SIZES.xxs,
+    lineHeight: FONT_SIZES.xxs * 1.3,
   },
   text_big: {
     fontSize: FONT_SIZES.sm,
+    lineHeight: FONT_SIZES.xxs * 1.5,
   },
   type_diet: {
     backgroundColor: TAG_COLORS.diet,

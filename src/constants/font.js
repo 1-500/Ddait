@@ -15,7 +15,7 @@ export const BODY_FONT_SIZES = {
   sm: 14,
   md: 16,
   lg: 28,
-  xl: 20,
+  xl: 30,
   xxl: 32,
 };
 
@@ -33,4 +33,15 @@ export const FONT_WEIGHTS = {
   medium: '500',
   semiBold: '600',
   bold: '700',
+};
+
+// Pretendard
+export const FONTS = {
+  PRETENDARD: {
+    300: 'Pretendard-Light',
+    400: 'Pretendard-Regular',
+    500: 'Pretendard-Medium',
+    600: 'Pretendard-SemiBold',
+    700: 'Pretendard-Bold',
+  },
 };

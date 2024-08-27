@@ -4,7 +4,7 @@ interface UserFormState {
   email: string;
   password: string;
   confirmPassword: string;
-  nickName: string;
+  nickname: string;
   position: {
     latitude: number;
     longitude: number;
@@ -19,7 +19,7 @@ interface UserFormState {
   setEmail: (email: string) => void;
   setPassword: (password: string) => void;
   setConfirmPassword: (confirmPassword: string) => void;
-  setNickName: (nickName: string) => void;
+  setNickName: (nickname: string) => void;
   setPosition: (latitude: number, longitude: number) => void;
   setPreferredSport: (sport: string) => void;
   setGender: (gender: string) => void;
@@ -30,7 +30,7 @@ const useUserFormStore = create<UserFormState>((set) => ({
   email: '',
   password: '',
   confirmPassword: '',
-  nickName: '',
+  nickname: '',
   position: { latitude: 0, longitude: 0 },
   preferredSport: '',
   gender: '',
@@ -39,7 +39,7 @@ const useUserFormStore = create<UserFormState>((set) => ({
   setEmail: (email) => set({ email }),
   setPassword: (password) => set({ password }),
   setConfirmPassword: (confirmPassword) => set({ confirmPassword }),
-  setNickName: (nickName) => set({ nickName }),
+  setNickName: (nickname) => set({ nickname }),
   setPosition: (latitude, longitude) => set({ position: { latitude, longitude } }),
   setPreferredSport: (preferredSport) => set({ preferredSport }),
   setGender: (gender) => set({ gender }),

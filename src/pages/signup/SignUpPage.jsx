@@ -1,7 +1,8 @@
 import { useNavigation } from '@react-navigation/native';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { SafeAreaView, ScrollView, StyleSheet, View } from 'react-native';
 
+import { emailAccountId } from '../../apis/signup/index';
 import CustomButton from '../../components/CustomButton';
 import HeaderComponents from '../../components/HeaderComponents';
 import BirthDayRegisterForm from '../../components/signup/BirthDayRegisterForm';
@@ -13,6 +14,8 @@ import NicknameRegisterForm from '../../components/signup/NicknameRegisterForm';
 import PreferedSportRegisterForm from '../../components/signup/PreferedSportRegisterForm';
 import StepIndicator from '../../components/StepIndicator';
 import { BACKGROUND_COLORS } from '../../constants/colors';
+import useUserStore from '../../store/sign/login';
+import useUserFormStore from '../../store/sign/signup';
 
 const registrationForms = {
   1: {
@@ -54,7 +57,7 @@ const SignUpPage = () => {
     setStep(newStep);
   };
 
-  const handleNextStep = () => {
+  const handleNextStep = async () => {
     if (step < 7) {
       setStep(step + 1);
     }

@@ -1,11 +1,11 @@
 import { StyleSheet, Text, View } from 'react-native';
 
 import { FONT_SIZES } from '../../constants/font';
-import useUserFormStore from '../../store/sign/index';
+import useUserFormStore from '../../store/sign/signup';
 import CustomInput from '../CustomInput';
 
 const NicknameRegisterForm = () => {
-  const { setNickName, nickName } = useUserFormStore();
+  const { setNickName, nickname } = useUserFormStore();
   const handleNickNameInput = (text) => {
     setNickName(text);
   };
@@ -19,7 +19,7 @@ const NicknameRegisterForm = () => {
         <CustomInput
           size="large"
           theme="user"
-          value={nickName}
+          value={nickname}
           placeholder="닉네임을 입력해주세요"
           style={{ fontSize: FONT_SIZES.md }}
           onChangeText={handleNickNameInput}

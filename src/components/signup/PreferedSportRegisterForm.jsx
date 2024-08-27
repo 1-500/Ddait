@@ -1,7 +1,7 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { COLORS } from '../../constants/colors';
-import useUserFormStore from '../../store/sign/index';
+import useUserFormStore from '../../store/sign/signup';
 
 const MoutainIcon = require('../../assets/images/mountain.png');
 const WeightTrainningIcon = require('../../assets/images/weight.png');

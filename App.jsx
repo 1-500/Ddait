@@ -1,3 +1,6 @@
+if (__DEV__) {
+  require('./ReactotronConfig');
+}
 import { NavigationContainer } from '@react-navigation/native';
 import React from 'react';
 
