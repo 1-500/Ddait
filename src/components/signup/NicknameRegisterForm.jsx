@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native';
 
 import { FONT_SIZES } from '../../constants/font';
-import useUserFormStore from '../../store/sign/index';
+import useUserFormStore from '../../store/sign/signup';
 import CustomInput from '../CustomInput';
 
 const NicknameRegisterForm = () => {

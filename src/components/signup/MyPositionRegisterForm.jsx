@@ -1,7 +1,7 @@
 import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import { WebView } from 'react-native-webview';
 
-import useUserFormStore from '../../store/sign';
+import useUserFormStore from '../../store/sign/signup';
 
 const MyPositionRegisterForm = () => {
   const { setPosition, nickName } = useUserFormStore();

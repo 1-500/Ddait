@@ -41,7 +41,7 @@ const MainTab = () => {
 };
 const SignStack = () => {
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Navigator initialRouteName="Login" screenOptions={{ headerShown: false }}>
       <Stack.Screen name="Login" component={LoginPage} />
       <Stack.Screen name="SignUp" component={SignUpPage} />
       <Stack.Screen name="SocialLogin" component={SocialLogin} />
@@ -78,7 +78,7 @@ const CompetitionStack = () => {
 
 const Router = () => {
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Navigator initialRouteName="Sign" screenOptions={{ headerShown: false }}>
       <Stack.Screen name="MainTab" component={MainTab} />
       <Stack.Screen name="WorkoutDiary" component={DiaryStack} />
       <Stack.Screen name="CompetitionRoom1V1" component={CompetitionRoom1V1} />

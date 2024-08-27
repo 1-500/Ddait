@@ -1,7 +1,7 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { COLORS } from '../../constants/colors';
-import useUserFormStore from '../../store/sign/index';
+import useUserFormStore from '../../store/sign/signup';
 const MaleIcon = require('../../assets/images/maleIcon.png');
 const FemaleIcon = require('../../assets/images/femaleIcon.png');
 const NoneIcon = require('../../assets/images/NoneIcon.png');
