@@ -8,3 +8,11 @@ export const emailAccountId = async (data) => {
     return error;
   }
 };
+export const socialLoginAccountId = async (data) => {
+  try {
+    const response = await API.post('/social/accounts', data);
+    return response;
+  } catch (error) {
+    return error;
+  }
+};

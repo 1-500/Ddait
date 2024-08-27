@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { emailAccountId } from '../../apis/signup/index';
+import { emailAccountId, socialLoginAccountId } from '../../apis/signup/index';
 import useUserStore from '../../store/sign/login';
 import useUserFormStore from '../../store/sign/signup';
 
@@ -13,6 +13,19 @@ const CompleteRegisterForm = () => {
     const postId = async () => {
       try {
         if (socialEmail) {
+          // 소셜로그인이 이메일이 존재한다
+          const result = await socialLoginAccountId(
+            JSON.stringify({
+              email,
+              password,
+              nickname,
+              location: `${position.latitude},${position.longitude}`,
+              preferred_sport: preferredSport,
+              gender: gender,
+              birthdate: `${selectedDate.year}${selectedDate.month}${selectedDate.day}`,
+              social_email: socialEmail,
+            }),
+          );
         } else {
           const result = await emailAccountId(
             JSON.stringify({

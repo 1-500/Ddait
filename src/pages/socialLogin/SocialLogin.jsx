@@ -31,8 +31,9 @@ const SocialLogin = ({ route }) => {
     };
   }, []);
 
-  const handleMessage = (event) => {
+  const handleMessage = async (event) => {
     const { socialEmail, user_level, token } = JSON.parse(event.nativeEvent.data);
+
     if (user_level === 0) {
       setSocialEmail(socialEmail);
       setUserLevel(user_level); // 온보딩 진행
@@ -43,7 +44,6 @@ const SocialLogin = ({ route }) => {
       });
     } else if (user_level >= 1) {
       // 로그인 성공 홈으로 이동 전역상태 관리라이브러리에 email과 user_level, token정보저장
-
       setToken(token);
       setSocialEmail(socialEmail);
       setUserLevel(user_level);
@@ -68,11 +68,11 @@ const SocialLogin = ({ route }) => {
       })
       .catch((e) => e);
   };
-  const sendMessageToWeb = (message) => {
-    if (webViewRef.current) {
-      webViewRef.current.postMessage(JSON.stringify(message));
-    }
-  };
+  // const sendMessageToWeb = (message) => {
+  //   if (webViewRef.current) {
+  //     webViewRef.current.postMessage(JSON.stringify(message));
+  //   }
+  // };
 
   return (
     <View style={{ flex: 1 }}>
@@ -84,13 +84,6 @@ const SocialLogin = ({ route }) => {
           userAgent={customUserAgent}
           source={{ uri: 'http://localhost:3000/socialLogin' }}
           onMessage={handleMessage}
-          onLoad={() => {
-            sendMessageToWeb({ type: 'DDait_APP', data: provider });
-          }}
-          onLoadStart={() => {
-            sendMessageToWeb({ type: 'DDait_APP', data: provider });
-          }}
-          onLoadEnd={() => sendMessageToWeb({ type: 'PAGE_LOADED', data: provider })}
         />
       )}
     </View>
