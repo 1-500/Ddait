@@ -1,7 +1,7 @@
 import BottomSheet, { BottomSheetModal, BottomSheetModalProvider, BottomSheetView } from '@gorhom/bottom-sheet';
 import { useNavigation } from '@react-navigation/native';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { FlatList, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Calendar } from 'react-native-calendars';
 
 import { getDiaryList } from '../../../apis/diary';
@@ -12,43 +12,43 @@ import { FONT_SIZES } from '../../../constants/font';
 import { RADIUS } from '../../../constants/radius';
 import { LAYOUT_PADDING } from '../../../constants/space';
 import { formatDate, getEndOfWeek, getStartOfWeek, getWeekOfMonth } from '../../../utils/date';
+
 const WorkoutDiary = () => {
   const navigation = useNavigation();
   const today = new Date();
   const todayFormatted = formatDate(today);
-  const [weekOfMonth, setWeekOfMonth] = useState('');
+  const [weekOfMonth, setWeekOfMonth] = useState(`${today.getMonth() + 1}월 ${getWeekOfMonth(today)}째주`);
   const [weekDays, setWeekDays] = useState([]);
   const [workoutTypes, setWorkoutTypes] = useState(['웨이트', '러닝', '식단', '등산']);
   const [activeWorkoutType, setActiveWorkoutType] = useState('웨이트');
   const bottomSheetRef = useRef(null);
   const [selected, setSelected] = useState(today.toISOString().split('T')[0]);
-  const [selectedDayInfo, setSelectedDayInfo] = useState(today);
+  const [selectedDayInfo, setSelectedDayInfo] = useState(today); // 자세한 day 정보 2024-08-01T00:00:00.000Z
+  const [selectedDate, setSelectedDate] = useState(today);
+  const [workoutRecords, setWorkoutRecords] = useState([]);
 
   /* eslint-disable */
+
   useEffect(() => {
-    const startOfWeek = getStartOfWeek(today);
-    const endOfWeek = getEndOfWeek(today);
-    const days = [];
-
-    for (let i = startOfWeek; i <= endOfWeek; i.setDate(i.getDate() + 1)) {
-      days.push(formatDate(new Date(i)));
+    if (selectedDate === today) {
+      updateWeekDays(today);
     }
+  }, []);
 
-    setWeekDays(days);
-    setWeekOfMonth(`${today.getMonth() + 1}월 ${getWeekOfMonth(today)}째주`);
-
+  useEffect(() => {
     const fetchWorkout = async () => {
       try {
         const res = await getDiaryList(2, selected);
-        // console.log(res);
+        console.log(res);
+        setWorkoutRecords(res);
       } catch (error) {
-        // console.log('error: ', error);
+        console.log('error: ', error);
       }
     };
 
-    fetchWorkout();
+    // fetchWorkout();
   }, [selected]);
-  /* eslint-enable */
+  /* eslint-disable */
 
   const bottomSheetModalRef = useRef(null);
   const snapPoints = useMemo(() => ['80%', '80%'], []);
@@ -78,21 +78,69 @@ const WorkoutDiary = () => {
     setActiveWorkoutType(type);
   };
 
-  const handleDayPress = (day) => {
-    setSelected(day.dateString);
-    setSelectedDayInfo(day);
-    bottomSheetRef.current?.close();
+  const handleCalendarDayPress = (day) => {
+    //2024-08-01T00:00:00.000Z 이런 형식으로 Date객체 생성
+    const selectedCalendarDate = new Date(day.timestamp);
+    const selectedCalendarDateString = selectedCalendarDate.toISOString().split('T')[0];
+
+    setSelected(selectedCalendarDateString);
+    setSelectedDayInfo(selectedCalendarDate);
+    // setSelectedDayInfo(day);
+    const weekOfMonth = `${selectedCalendarDate.getMonth() + 1}월 ${getWeekOfMonth(selectedCalendarDate)}째주`;
+    setWeekOfMonth(weekOfMonth);
+
+    updateWeekDays(selectedCalendarDate);
+    bottomSheetModalRef.current?.close();
   };
 
   const handleWeekDayPress = (day) => {
+    // 인자값 day를 기준으로 날짜 객체를 생성
     const selectedDate = new Date(today.getFullYear(), today.getMonth(), day);
-    const offset = selectedDate.getTimezoneOffset();
-    const selectedDateWithOffset = new Date(selectedDate.getTime() - offset * 60 * 1000);
-    const selectedDateString = selectedDateWithOffset.toISOString().split('T')[0];
+    // 로컬 시간을 기반으로 날짜를 조정
+    const selectedDateWithOffset = new Date(selectedDate.getTime() - selectedDate.getTimezoneOffset() * 60 * 1000);
+    // ISO형식 날짜 조정하기 => 2024-08-24 형태로
+    const selectedDateDateString = selectedDateWithOffset.toISOString().split('T')[0];
 
-    setSelected(selectedDateString);
-    setSelectedDayInfo(selectedDate);
+    setSelected(selectedDateDateString);
+    setSelectedDayInfo(selectedDateWithOffset);
+
+    const weekOfMonth = `${selectedDateWithOffset.getMonth() + 1}월 ${getWeekOfMonth(selectedDateWithOffset)}째주`;
+    setWeekOfMonth(weekOfMonth);
+
+    updateWeekDays(selectedDateWithOffset);
   };
+
+  const updateWeekDays = (date) => {
+    const startOfWeek = getStartOfWeek(date);
+    const endOfWeek = getEndOfWeek(date);
+    const days = [];
+
+    for (let i = startOfWeek; i <= endOfWeek; i.setDate(i.getDate() + 1)) {
+      days.push(i.getDate()); // 주간 날짜의 '일' 부분만 저장
+    }
+
+    setWeekDays(days);
+  };
+
+  const renderWorkoutRecord = ({ item }) => (
+    <View style={styles.workoutRecordContainer}>
+      <View style={styles.recordHeader}>
+        <Text style={styles.recordText}>{item.workout_name}</Text>
+        <Text style={styles.recordDurationText}>52분</Text>
+      </View>
+      <View style={styles.recordContainer}>
+        <View>
+          {item.exercise_info &&
+            item.exercise_info.map((exercise, index) => (
+              <View key={index} style={styles.exerciseContainer}>
+                <Text style={styles.exerciseHeaderText}>{exercise.exercise_name.name}</Text>
+                <Text style={styles.exerciseText}>{exercise.set}세트</Text>
+              </View>
+            ))}
+        </View>
+      </View>
+    </View>
+  );
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.darkBackground }}>
@@ -132,12 +180,27 @@ const WorkoutDiary = () => {
       </View>
 
       <View style={styles.diaryContentContainer}>
-        <View style={styles.messageContainer}>
-          <Text style={styles.messageText}>완료한 운동이 없네요!</Text>
-          <Text style={styles.messageText}>오늘 운동하러 가볼까요?</Text>
-        </View>
-
-        <CustomButton theme="primary" size="large" states="enabled" onPress={handleStartWorkout} text="운동 시작하기" />
+        {workoutRecords.length === 0 ? (
+          <>
+            <View style={styles.messageContainer}>
+              <Text style={styles.messageText}>완료한 운동이 없네요!</Text>
+              <Text style={styles.messageText}>오늘 운동하러 가볼까요?</Text>
+            </View>
+            <CustomButton
+              theme="primary"
+              size="large"
+              states="enabled"
+              onPress={handleStartWorkout}
+              text="운동 시작하기"
+            />
+          </>
+        ) : (
+          <FlatList
+            data={workoutRecords}
+            renderItem={renderWorkoutRecord}
+            keyExtractor={(item) => item.id.toString()}
+          />
+        )}
       </View>
 
       <BottomSheetModalProvider>
@@ -157,7 +220,7 @@ const WorkoutDiary = () => {
                 color: '#E0E0E0',
               }}
               current={selected}
-              onDayPress={handleDayPress}
+              onDayPress={handleCalendarDayPress}
               markedDates={{
                 [selected]: {
                   selected: true,
@@ -235,6 +298,7 @@ const styles = StyleSheet.create({
     backgroundColor: BACKGROUND_COLORS.greyDark,
     height: '100%',
     ...LAYOUT_PADDING,
+    paddingTop: 20,
   },
   workoutTypesContainer: {
     width: '100%',
@@ -278,6 +342,46 @@ const styles = StyleSheet.create({
     color: TEXT_COLORS.primary,
     fontSize: 16,
     textAlign: 'center',
+  },
+
+  workoutRecordContainer: {
+    paddingVertical: 16,
+    marginBottom: 16,
+    borderBottomWidth: 2,
+    borderBottomColor: COLORS.lightGrey,
+  },
+  recordContainer: {
+    backgroundColor: BACKGROUND_COLORS.dark,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    marginBottom: 16,
+    borderRadius: RADIUS.small,
+  },
+  recordHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 10,
+  },
+  recordText: {
+    color: TEXT_COLORS.secondary,
+    fontSize: FONT_SIZES.md,
+    fontWeight: 'bold',
+  },
+  recordDurationText: {
+    color: TEXT_COLORS.secondary,
+    fontSize: FONT_SIZES.sm,
+  },
+  exerciseContainer: {
+    paddingVertical: 8,
+    gap: 8,
+  },
+  exerciseHeaderText: {
+    color: TEXT_COLORS.primary,
+    fontSize: FONT_SIZES.lg,
+  },
+  exerciseText: {
+    color: TEXT_COLORS.secondary,
+    fontSize: FONT_SIZES.sm,
   },
   startButtonContainer: {
     backgroundColor: BUTTON_COLORS.primary,
