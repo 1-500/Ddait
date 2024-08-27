@@ -34,3 +34,14 @@ export const FONT_WEIGHTS = {
   semiBold: '600',
   bold: '700',
 };
+
+// Pretendard
+export const FONTS = {
+  PRETENDARD: {
+    300: 'Pretendard-Light',
+    400: 'Pretendard-Regular',
+    500: 'Pretendard-Medium',
+    600: 'Pretendard-SemiBold',
+    700: 'Pretendard-Bold',
+  },
+};
