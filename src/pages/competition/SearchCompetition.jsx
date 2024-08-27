@@ -8,7 +8,7 @@ import CustomTag from '../../components/CustomTag';
 import DropdownModal from '../../components/DropdownModal';
 import HeaderComponents from '../../components/HeaderComponents';
 import { COLORS } from '../../constants/colors';
-import { FONT_SIZES, FONT_WEIGHTS } from '../../constants/font';
+import { FONT_SIZES, FONTS } from '../../constants/font';
 import { RADIUS } from '../../constants/radius';
 import { LAYOUT_PADDING, SPACING } from '../../constants/space';
 import { formDate } from '../../utils/date';
@@ -172,14 +172,16 @@ const styles = StyleSheet.create({
   competitionName: {
     color: COLORS.white,
     fontSize: FONT_SIZES.md,
-    fontWeight: FONT_WEIGHTS.semiBold,
+    fontFamily: FONTS.PRETENDARD[600],
   },
   competitionDate: {
     color: COLORS.semiLightGrey,
+    fontFamily: FONTS.PRETENDARD[400],
   },
   competitionMembers: {
     color: COLORS.white,
     fontSize: FONT_SIZES.sm,
+    fontFamily: FONTS.PRETENDARD[400],
   },
   cardContainer: {
     alignItems: 'center',
@@ -193,7 +195,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: COLORS.white,
     fontSize: FONT_SIZES.md,
-    fontWeight: FONT_WEIGHTS.semiBold,
+    fontFamily: FONTS.PRETENDARD[600],
     marginBottom: SPACING.xxs,
     lineHeight: FONT_SIZES.md * 1.3,
   },
