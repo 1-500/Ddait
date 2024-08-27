@@ -31,6 +31,7 @@ const CompetitionCreation = ({ navigation }) => {
     maxMembers,
     competitionType,
     competitionTheme,
+    theme,
     startDate,
     endDate,
     isPrivate,
@@ -67,11 +68,42 @@ const CompetitionCreation = ({ navigation }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const goToNextStep = () => setCurrentStep((prev) => Math.min(prev + 1, steps.length));
   const goToPrevStep = () => setCurrentStep((prev) => Math.max(prev - 1, 1));
+  const goToNextStep = () => setCurrentStep((prev) => Math.min(prev + 1, steps.length));
   const handleStepChange = (newStep) => setCurrentStep(newStep);
 
+  const isStepValid = () => {
+    switch (currentStep) {
+      case 1:
+        return !!title;
+      case 2:
+        return !!competitionType;
+      case 3:
+        return !!theme;
+      case 4:
+        return (
+          maxMembers > 0 &&
+          isPrivate &&
+          hasSmartWatch &&
+          startDate.year &&
+          startDate.month &&
+          startDate.day &&
+          endDate.year &&
+          endDate.month &&
+          endDate.day
+        );
+      case 5:
+        return !!competitionTheme;
+      default:
+        return true;
+    }
+  };
+
   const handleSubmit = async () => {
+    if (!isStepValid()) {
+      Alert.alert('경고', '모든 항목을 기입해야 경쟁방을 생성할 수 있어요.');
+      return;
+    }
     const data = {
       title,
       max_members: maxMembers,

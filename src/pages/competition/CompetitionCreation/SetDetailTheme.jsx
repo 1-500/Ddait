@@ -28,18 +28,23 @@ const SetDetailTheme = () => {
       setCompetitionTheme(selectedTheme.competitionTheme);
     }
   };
-
   return (
     <ScrollView contentContainerStyle={styles.scrollViewContent}>
-      {themeList.map((item, index) => (
-        <DatailThemeCard
-          key={index}
-          title={item.title}
-          description={item.description}
-          onPress={handlePress}
-          isSelected={competitionTheme === item.competitionTheme}
-        />
-      ))}
+      {themeList.length > 0 ? (
+        themeList.map((item, index) => (
+          <DatailThemeCard
+            key={index}
+            title={item.title}
+            description={item.description}
+            onPress={handlePress}
+            isSelected={competitionTheme === item.competitionTheme}
+          />
+        ))
+      ) : (
+        <Text style={styles.descriptionText}>
+          {'선택 가능한 테마가 없어요.🧐\n2단계에서 운동 카테고리를 먼저 선택하세요!'}
+        </Text>
+      )}
     </ScrollView>
   );
 };
