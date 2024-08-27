@@ -307,8 +307,8 @@ const styles = StyleSheet.create({
     marginVertical: 16,
   },
   workoutType: {
-    paddingVertical: 14,
-    paddingHorizontal: 26,
+    paddingVertical: 10,
+    paddingHorizontal: 18,
     borderRadius: RADIUS.small,
     alignItems: 'center',
     justifyContent: 'center',
