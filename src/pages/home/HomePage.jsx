@@ -8,9 +8,12 @@ import CustomInput from '../../components/CustomInput';
 import HeaderComponents from '../../components/HeaderComponents';
 import { COLORS } from '../../constants/colors';
 import { LAYOUT_PADDING } from '../../constants/space';
+import useUserStore from '../../store/sign/login';
 
 const HomePage = () => {
   /* eslint-disable */
+  const { token } = useUserStore();
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -24,7 +27,6 @@ const HomePage = () => {
     fetchData();
     /* eslint-enable */
   }, []);
-
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.darkBackground }}>
       <HeaderComponents icon="home" />
