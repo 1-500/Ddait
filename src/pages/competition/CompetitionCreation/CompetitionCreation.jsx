@@ -15,16 +15,16 @@ import SetSportsCategory from '../CompetitionCreation/SetSportsCategory';
 import SetTheme from '../CompetitionCreation/SetTheme';
 import SetDetailTheme from './SetDetailTheme';
 
-const stepDescriptionList = [
-  { step: 1, description: '어떤 경쟁을 하고 싶나요?' },
-  { step: 2, description: '원하는 운동 카테고리를 선택하세요.' },
-  { step: 3, description: '테마를 선택하세요.' },
-  { step: 4, description: '세부 사항들을 설정해주세요.' },
-  { step: 5, description: '상세테마를 선택하세요.' },
+const steps = [
+  { step: 1, component: SetRoomTitle, description: '어떤 경쟁을 하고 싶나요?' },
+  { step: 2, component: SetSportsCategory, description: '원하는 운동 카테고리를 선택하세요.' },
+  { step: 3, component: SetTheme, description: '테마를 선택하세요.' },
+  { step: 4, component: SetRoomDetail, description: '세부 사항들을 설정해주세요.' },
+  { step: 5, component: SetDetailTheme, description: '상세테마를 선택하세요.' },
 ];
 
 const CompetitionCreation = () => {
-  const [step, setStep] = useState(1);
+  const [currentStep, setCurrentStep] = useState(1);
 
   const { title, maxMembers, competitionType, competitionTheme, startDate, endDate, isPrivate, hasSmartWatch } =
     useCreateRoomStateStore((state) => ({
@@ -38,21 +38,9 @@ const CompetitionCreation = () => {
       hasSmartWatch: state.hasSmartWatch,
     }));
 
-  const handleNextStep = () => {
-    if (step < 5) {
-      setStep(step + 1);
-    }
-  };
-
-  const handlePrevStep = () => {
-    if (step > 1) {
-      setStep(step - 1);
-    }
-  };
-
-  const handleStepChange = (newStep) => {
-    setStep(newStep);
-  };
+  const goToNextStep = () => setCurrentStep((prev) => Math.min(prev + 1, steps.length));
+  const goToPrevStep = () => setCurrentStep((prev) => Math.max(prev - 1, 1));
+  const handleStepChange = (newStep) => setCurrentStep(newStep);
 
   const handleSubmit = async () => {
     const data = {
@@ -60,40 +48,43 @@ const CompetitionCreation = () => {
       max_members: maxMembers,
       competition_type: competitionType,
       competition_theme: competitionTheme,
-      start_date: `${startDate.year}-${startDate.month.padStart(2, '0')}-${startDate.day.padStart(2, '0')}T00:00:00Z`,
-      end_date: `${endDate.year}-${endDate.month.padStart(2, '0')}-${endDate.day.padStart(2, '0')}T23:59:59Z`,
+      start_date: formatDate(startDate),
+      end_date: formatDate(endDate, true),
       is_private: isPrivate,
       smartwatch: hasSmartWatch,
     };
 
     try {
       await createCompetition(data);
-      Alert.alert('Success', 'Competition created successfully');
-      // Navigate or reset state if necessary
+      Alert.alert('경쟁방 생성', `'${title}' 경쟁방이 생성되었습니다!`);
     } catch (error) {
       Alert.alert('Error', 'Failed to create competition');
     }
   };
 
+  const formatDate = (date, isEnd = false) => {
+    const dayTime = isEnd ? '23:59:59' : '00:00:00';
+    return `${date.year}-${String(date.month).padStart(2, '0')}-${String(date.day).padStart(2, '0')}T${dayTime}Z`;
+  };
+
+  const currentStepData = steps.find((step) => step.step === currentStep);
+  const CurrentStepComponent = currentStepData.component;
+
   return (
     <SafeAreaView style={styles.safeAreaView}>
-      <HeaderComponents title={'경쟁 생성하기'} />
+      <HeaderComponents title="경쟁 생성하기" />
       <View style={[LAYOUT_PADDING, ELEMENT_VERTICAL_MARGIN, styles.container]}>
-        <StepIndicator currentStep={step} steps={5} onPress={handleStepChange} />
+        <StepIndicator currentStep={currentStep} steps={steps.length} onPress={handleStepChange} />
         <Text style={[styles.stepText, ELEMENT_VERTICAL_MARGIN]}>
-          {step}. {stepDescriptionList.find((item) => item.step === step).description}
+          {currentStep}. {currentStepData.description}
         </Text>
-        {step === 1 && <SetRoomTitle />}
-        {step === 2 && <SetSportsCategory />}
-        {step === 3 && <SetTheme />}
-        {step === 4 && <SetRoomDetail />}
-        {step === 5 && <SetDetailTheme />}
+        <CurrentStepComponent />
         <View style={styles.btnWrapper}>
-          <CustomButton theme="primary" size="medium" text="이전" onPress={handlePrevStep} />
-          {step === 5 ? (
+          <CustomButton theme="primary" size="medium" text="이전" onPress={goToPrevStep} />
+          {currentStep === steps.length ? (
             <CustomButton theme="secondary" size="medium" text="경쟁방 생성" onPress={handleSubmit} />
           ) : (
-            <CustomButton theme="primary" size="medium" text="다음" onPress={handleNextStep} />
+            <CustomButton theme="primary" size="medium" text="다음" onPress={goToNextStep} />
           )}
         </View>
       </View>
