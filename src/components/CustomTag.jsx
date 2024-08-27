@@ -53,9 +53,11 @@ const styles = StyleSheet.create({
   },
   text_small: {
     fontSize: FONT_SIZES.xxs,
+    lineHeight: FONT_SIZES.xxs * 1.3,
   },
   text_big: {
     fontSize: FONT_SIZES.sm,
+    lineHeight: FONT_SIZES.xxs * 1.5,
   },
   type_diet: {
     backgroundColor: TAG_COLORS.diet,
