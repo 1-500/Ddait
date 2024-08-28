@@ -1,28 +1,43 @@
-import { Image, ImageBackground, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+
+import { COLORS } from '../../constants/colors';
+import useUserFormStore from '../../store/sign/signup';
 const MaleIcon = require('../../assets/images/maleIcon.png');
 const FemaleIcon = require('../../assets/images/femaleIcon.png');
 const NoneIcon = require('../../assets/images/NoneIcon.png');
 
-const items = [{ icon: MaleIcon }, { icon: FemaleIcon }, { icon: NoneIcon }];
+const items = [
+  { title: 'male', icon: MaleIcon },
+  { title: 'female', icon: FemaleIcon },
+  { title: 'none', icon: NoneIcon },
+];
 const GenderRegisterForm = () => {
+  const { setGender, gender, nickName } = useUserFormStore();
+
+  const handleCard = (title) => {
+    setGender(title);
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.headerContainer}>
-        <Text style={styles.headerText}>나라님의 성별은</Text>
+        <Text style={styles.headerText}>{nickName}님의 성별은</Text>
         <Text style={styles.headerText}>무엇인가요?</Text>
         <Text style={styles.subHeaderText}>필수정보가 아닙니다!</Text>
       </View>
       <View style={styles.genderContainer}>
         {items.map((item, index) => (
-          <Card key={index} icon={item.icon} />
+          <Card key={index} icon={item.icon} onPressIn={handleCard} gender={gender} title={item.title} />
         ))}
       </View>
     </View>
   );
 };
-const Card = ({ title, icon }) => {
+const Card = ({ title, icon, onPressIn, gender }) => {
+  const cardStyle = gender === title ? styles.selectedCardContainer : styles.cardContainer;
+
   return (
-    <TouchableOpacity style={styles.cardContainer}>
+    <TouchableOpacity style={cardStyle} onPressIn={() => onPressIn(title)}>
       <Image source={icon} style={styles.icon} />
     </TouchableOpacity>
   );
@@ -47,6 +62,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     marginTop: 15,
   },
+
   genderContainer: {
     backgroundColor: '#1C1C1C',
     flexDirection: 'row',
@@ -54,9 +70,23 @@ const styles = StyleSheet.create({
     marginTop: 15,
     marginBottom: 15,
   },
+  selectedCardContainer: {
+    width: 100,
+    height: 100,
+    borderRadius: 12,
+    padding: 20,
+    backgroundColor: COLORS.primary,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   cardContainer: {
-    width: 83,
-    height: 83,
+    width: 100,
+    height: 100,
+    borderRadius: 12,
+    padding: 20,
+    justifyContent: 'center',
+
+    alignItems: 'center',
   },
   icon: {
     width: 83,

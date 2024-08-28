@@ -1,12 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Modal, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
+import Octicons from 'react-native-vector-icons/Octicons';
 
 import { COLORS } from '../constants/colors';
-import { FONT_SIZES, FONT_WEIGHTS } from '../constants/font';
+import { FONT_SIZES, FONTS } from '../constants/font';
 import { RADIUS } from '../constants/radius';
 import { LAYOUT_PADDING, SPACING } from '../constants/space';
 
-const DropdownModal = ({ options = [], onChange = () => {}, value, placeholder }) => {
+const DropdownModal = ({ options = [], onChange = () => {}, value, placeholder, showIcon = false }) => {
   const [showDropdown, setShowDropDown] = useState(false);
   const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
   const [hoveredOption, setHoveredOption] = useState(null);
@@ -59,6 +60,7 @@ const DropdownModal = ({ options = [], onChange = () => {}, value, placeholder }
         style={[styles.dropdownBtn, showDropdown && styles.dropdownBtnSelected]}
       >
         <Text style={styles.dropdownText}>{value || placeholder}</Text>
+        {showIcon && <Octicons name="triangle-down" size={16} color={COLORS.white} style={{ marginLeft: 8 }} />}
       </TouchableOpacity>
 
       <Modal transparent visible={showDropdown} animationType="none">
@@ -119,7 +121,7 @@ const styles = StyleSheet.create({
   dropdownText: {
     color: COLORS.white,
     fontSize: FONT_SIZES.sm,
-    fontWeight: FONT_WEIGHTS.md,
+    fontFamily: FONTS.PRETENDARD[500],
     lineHeight: 17,
   },
   dropdownMenu: {
@@ -151,11 +153,11 @@ const styles = StyleSheet.create({
   optionText: {
     color: COLORS.white,
     fontSize: FONT_SIZES.sm,
-    fontWeight: FONT_WEIGHTS.medium,
+    fontFamily: FONTS.PRETENDARD[500],
   },
   selectedOptionText: {
     color: COLORS.primary,
-    fontWeight: FONT_WEIGHTS.bold,
+    fontFamily: FONTS.PRETENDARD[700],
   },
   modalOverlay: {
     flex: 1,
