@@ -8,6 +8,7 @@ import CompetitionCreation from './pages/competition/CompetitionCreation/Competi
 import CompetitionRoom1V1 from './pages/competition/CompetitionRoom1V1';
 import CompetitionRoomRanking from './pages/competition/CompetitionRoomRanking';
 import SearchCompetition from './pages/competition/SearchCompetition';
+import DietDetail from './pages/diary/dietDiary/DietDetail';
 import DietDiary from './pages/diary/dietDiary/DietDiary';
 import StartWorkout from './pages/diary/workoutDiary/StartWorkout';
 import WorkoutDatePick from './pages/diary/workoutDiary/WorkoutDatePick';
@@ -63,6 +64,7 @@ const DietDiaryStack = () => {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="DietDiaryScreen" component={DietDiary} />
+      <Stack.Screen name="DietDetailScreen" component={DietDetail} />
     </Stack.Navigator>
   );
 };
@@ -78,7 +80,7 @@ const CompetitionStack = () => {
 
 const Router = () => {
   return (
-    <Stack.Navigator initialRouteName="Sign" screenOptions={{ headerShown: false }}>
+    <Stack.Navigator initialRouteName="DietDiary" screenOptions={{ headerShown: false }}>
       <Stack.Screen name="MainTab" component={MainTab} />
       <Stack.Screen name="WorkoutDiary" component={DiaryStack} />
       <Stack.Screen name="CompetitionRoom1V1" component={CompetitionRoom1V1} />
