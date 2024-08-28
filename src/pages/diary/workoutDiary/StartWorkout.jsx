@@ -13,6 +13,7 @@ import {
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import CustomTag from '../../../../src/components/CustomTag';
+import { getExerciseList } from '../../../apis/diary';
 import CustomButton from '../../../components/CustomButton';
 import CustomInput from '../../../components/CustomInput';
 import CustomTimer from '../../../components/CustomTimer';
@@ -22,41 +23,9 @@ import { BODY_FONT_SIZES, FONT_SIZES, HEADER_FONT_SIZES } from '../../../constan
 import { RADIUS } from '../../../constants/radius';
 import { LAYOUT_PADDING } from '../../../constants/space';
 
-const exerciseData = [
-  {
-    id: '1',
-    title: '바벨 스쿼트',
-  },
-  {
-    id: '2',
-    title: '레그 프레스',
-  },
-  {
-    id: '3',
-    title: '레그 익스텐션',
-  },
-];
 const StartWorkout = () => {
-  // const [workoutData, setWorkoutData] = useState([
-  //   {
-  //     id: '1',
-  //     title: '바벨 스쿼트',
-  //     workoutSet: [
-  //       { id: '1', weight: '20', reps: '10' },
-  //       { id: '2', weight: '40', reps: '10' },
-  //       { id: '3', weight: '60', reps: '10' },
-  //     ],
-  //   },
-  //   {
-  //     id: '2',
-  //     title: '레그 프레스',
-  //     workoutSet: [
-  //       { id: '1', weight: '20', reps: '10' },
-  //       { id: '2', weight: '40', reps: '10' },
-  //       { id: '3', weight: '60', reps: '10' },
-  //     ],
-  //   },
-  // ]);
+  const [exerciseListData, setExerciseListData] = useState([]);
+  const [selectedExercises, setSelectedExercises] = useState([]);
   const [workoutData, setWorkoutData] = useState([]);
   const [time, setTime] = useState({ minutes: 0, seconds: 0 });
   const [isTimerVisible, setIsTimerVisible] = useState(false);
@@ -64,17 +33,52 @@ const StartWorkout = () => {
   const bottomSheetModalRef = useRef(null);
   const snapPoints = useMemo(() => ['80%', '80%'], []);
 
+  /* eslint-disable */
+  useEffect(() => {
+    const fetchExerciseList = async () => {
+      try {
+        const res = await getExerciseList();
+        const nameData = res.map((item) => item.name);
+        setExerciseListData(nameData);
+      } catch (error) {
+        console.log('error', error);
+      }
+    };
+
+    fetchExerciseList();
+  }, []);
+  /* eslint-enable */
+
   const handlePresentModalPress = useCallback(() => {
     bottomSheetModalRef.current?.present();
   }, []);
-
   const handleSheetChanges = useCallback((index) => {
     // console.log('handleSheetChanges', index);
   }, []);
 
+  const handleExerciseSelect = (exercise) => {
+    if (selectedExercises.includes(exercise)) {
+      setSelectedExercises((prev) => prev.filter((item) => item !== exercise));
+    } else {
+      setSelectedExercises((prev) => [...prev, exercise]);
+    }
+  };
+
   const handleTimerVisible = () => {
     setIsTimerVisible(!isTimerVisible);
   };
+
+  const handleSaveSelectedExercises = () => {
+    const newWorkoutData = selectedExercises.map((exerciseName, index) => ({
+      id: index + workoutData.length + 1,
+      title: exerciseName,
+      workoutSet: [{ id: 1, weight: '', reps: '' }],
+    }));
+    setWorkoutData((prev) => [...prev, ...newWorkoutData]);
+    setSelectedExercises([]);
+    bottomSheetModalRef.current?.close();
+  };
+
   /* eslint-disable */
   const handleInputChange = (workoutId, setId, field, value) => {
     setWorkoutData((prevData) =>
@@ -88,12 +92,12 @@ const StartWorkout = () => {
       ),
     );
   };
+  /* eslint-enable */
 
   const handleStartWorkout = () => {
-    console.log('모달등장');
+    // console.log('모달등장');
   };
 
-  /* eslint-enable */
   const renderWorkoutCard = ({ item }) => (
     <View style={styles.card}>
       <View style={styles.header}>
@@ -129,8 +133,12 @@ const StartWorkout = () => {
               />
             </View>
             <View style={{ flexDirection: 'row', gap: 16 }}>
-              <MaterialCommunityIcons name="check-circle-outline" size={24} color={COLORS.primary} />
-              <MaterialCommunityIcons name="minus-circle-outline" size={24} color={TEXT_COLORS.secondary} />
+              <TouchableOpacity>
+                <MaterialCommunityIcons name="check-circle-outline" size={24} color={COLORS.primary} />
+              </TouchableOpacity>
+              <TouchableOpacity>
+                <MaterialCommunityIcons name="minus-circle-outline" size={24} color={TEXT_COLORS.secondary} />
+              </TouchableOpacity>
             </View>
           </View>
         ))}
@@ -142,11 +150,15 @@ const StartWorkout = () => {
   );
 
   const renderExerciseList = ({ item }) => (
-    <TouchableOpacity style={styles.exerciseItemContainer}>
+    <TouchableOpacity style={styles.exerciseItemContainer} onPress={() => handleExerciseSelect(item)}>
       <View style={styles.exerciseCheckboxContainer}>
-        <MaterialCommunityIcons name="checkbox-marked" size={24} color={COLORS.primary} />
+        <MaterialCommunityIcons
+          name={selectedExercises.includes(item) ? 'checkbox-marked' : 'checkbox-blank-outline'}
+          size={24}
+          color={COLORS.primary}
+        />
       </View>
-      <Text style={styles.exerciseItemText}>{item.title}</Text>
+      <Text style={styles.exerciseItemText}>{item}</Text>
       <MaterialCommunityIcons name="bookmark-outline" size={24} color={TEXT_COLORS.secondary} />
     </TouchableOpacity>
   );
@@ -195,7 +207,7 @@ const StartWorkout = () => {
               size="large"
               states="enabled"
               onPress={handleStartWorkout}
-              text="운동 추가하기"
+              text="운동 완료"
             />
           </View>
         }
@@ -223,21 +235,34 @@ const StartWorkout = () => {
           snapPoints={snapPoints}
         >
           <BottomSheetView style={styles.bottomSheetContainer}>
-            <Text style={{ color: TEXT_COLORS.primary, fontSize: HEADER_FONT_SIZES.sm }}>운동 추가</Text>
+            <Text style={styles.exerciseHeader}>운동 추가</Text>
             <View>
               <CustomInput placeholder="하고자 하는 운동을 검색해보세요." theme="search" />
             </View>
             <View style={{ flexDirection: 'row', marginVertical: 16 }}>
-              <CustomTag size="small" text="부위" />
-              <CustomTag size="small" text="무게" />
-              <CustomTag size="small" text="도구" />
+              <TouchableOpacity style={{ marginRight: 16 }}>
+                <CustomTag size="big" text="부위" />
+              </TouchableOpacity>
+              <TouchableOpacity style={{ marginRight: 16 }}>
+                <CustomTag size="big" text="무게" />
+              </TouchableOpacity>
+              <TouchableOpacity style={{ marginRight: 16 }}>
+                <CustomTag size="big" text="도구" />
+              </TouchableOpacity>
             </View>
             <FlatList
-              data={exerciseData}
+              data={exerciseListData}
               renderItem={renderExerciseList}
               showsVerticalScrollIndicator={false}
               contentContainerStyle={{ paddingBottom: 16, paddingHorizontal: 16 }}
-              keyExtractor={(item) => item.id}
+              keyExtractor={(item, index) => index.toString()}
+            />
+            <CustomButton
+              theme="primary"
+              size="large"
+              states="enabled"
+              onPress={handleSaveSelectedExercises}
+              text="운동 추가하기"
             />
           </BottomSheetView>
         </BottomSheetModal>
@@ -372,6 +397,7 @@ const styles = StyleSheet.create({
   bottomSheetContainer: {
     flex: 1,
     backgroundColor: BACKGROUND_COLORS.dark,
+    ...LAYOUT_PADDING,
   },
   exerciseItemContainer: {
     flexDirection: 'row',
@@ -389,5 +415,11 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: BODY_FONT_SIZES.md,
     color: TEXT_COLORS.primary,
+  },
+
+  exerciseHeader: {
+    marginVertical: 16,
+    color: TEXT_COLORS.primary,
+    fontSize: HEADER_FONT_SIZES.sm,
   },
 });

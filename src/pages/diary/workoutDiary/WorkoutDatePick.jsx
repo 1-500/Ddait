@@ -6,7 +6,6 @@ import { Calendar, LocaleConfig } from 'react-native-calendars';
 import CustomButton from '../../../components/CustomButton';
 import HeaderComponents from '../../../components/HeaderComponents';
 import { BACKGROUND_COLORS, COLORS, TEXT_COLORS } from '../../../constants/colors';
-import { RADIUS } from '../../../constants/radius';
 import { LAYOUT_PADDING } from '../../../constants/space';
 
 LocaleConfig.locales.fr = {

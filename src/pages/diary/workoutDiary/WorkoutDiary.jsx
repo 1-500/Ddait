@@ -36,6 +36,7 @@ const WorkoutDiary = () => {
   }, []);
 
   useEffect(() => {
+    console.log(selected);
     const fetchWorkout = async () => {
       try {
         const res = await getDiaryList(2, selected);
@@ -46,7 +47,7 @@ const WorkoutDiary = () => {
       }
     };
 
-    // fetchWorkout();
+    fetchWorkout();
   }, [selected]);
   /* eslint-disable */
 

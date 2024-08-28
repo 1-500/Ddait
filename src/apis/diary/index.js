@@ -18,3 +18,10 @@ export const getDiaryList = async (userId, selected) => {
     return error;
   }
 };
+
+export const getExerciseList = async (userId) => {
+  try {
+    const res = await API.get(`/workout-record/exercise-name?user_id=${userId}`);
+    return res.data;
+  } catch (error) {}
+};
