@@ -41,7 +41,11 @@ const MemberProfileItem = ({ memberData, rightBtn = 'menu', onRightBtnPress = ()
           <Text style={styles.introduceText} ellipsizeMode="tail" numberOfLines={1}>
             {memberData.introduce}
           </Text>
-          <CustomTag size="small" text={memberData.preferred_sport} />
+          <View style={styles.tagsContainer}>
+            {memberData.preferred_sport.map((sport, index) => (
+              <CustomTag key={`${sport}-${index}`} size="small" text={sport} />
+            ))}
+          </View>
         </View>
       </View>
       {renderRightBtn()}
@@ -84,5 +88,10 @@ const styles = StyleSheet.create({
     fontWeight: FONT_WEIGHTS.medium,
     color: COLORS.white,
     marginBottom: SPACING.xs,
+  },
+  tagsContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: SPACING.xxs,
   },
 });
