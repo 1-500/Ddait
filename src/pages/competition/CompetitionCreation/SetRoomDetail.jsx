@@ -1,18 +1,18 @@
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import React, { useCallback, useMemo, useRef } from 'react';
-import { Dimensions, Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Dimensions, ScrollView, StyleSheet, Text, View } from 'react-native';
 
-import CustomInput from '../../../components/CustomInput';
+import OptionSelector from '../../../components/competitionCreation/OptionSelector';
 import DatePickerBottomSheet from '../../../components/DatePickerBottomSheet';
-import OptionSelector from '../../../components/OptionSelector';
 import Toggle from '../../../components/Toggle';
 import { COLORS } from '../../../constants/colors';
 import { FONT_SIZES, FONT_WEIGHTS } from '../../../constants/font';
-import useCreateRoomStateStore from '../../../store/competition/index';
 
-const calendar = require('../../../assets/images/calendar.png');
-const maxMembersOptions = [2, 5, 10, 20];
 const { width } = Dimensions.get('window');
+
+import PeroidSelector from '../../../components/competitionCreation/PeroidSelector';
+import useCreateRoomStateStore from '../../../store/competition/index';
+const maxMembersOptions = [2, 5, 10, 20];
 
 const SetRoomDetail = () => {
   const {
@@ -21,24 +21,15 @@ const SetRoomDetail = () => {
     maxMembers,
     startDate,
     endDate,
+    theme,
     setIsPrivate,
     setHasSmartWatch,
     setMaxMembers,
     setStartDate,
     setEndDate,
-  } = useCreateRoomStateStore((state) => ({
-    isPrivate: state.isPrivate,
-    hasSmartWatch: state.hasSmartWatch,
-    maxMembers: state.maxMembers,
-    startDate: state.startDate,
-    endDate: state.endDate,
-    setIsPrivate: state.setIsPrivate,
-    setHasSmartWatch: state.setHasSmartWatch,
-    setMaxMembers: state.setMaxMembers,
-    setStartDate: state.setStartDate,
-    setEndDate: state.setEndDate,
-  }));
+  } = useCreateRoomStateStore();
 
+  // 바텀 시트
   const snapPoints = useMemo(() => ['50%', '70%'], []);
   const startDateBottomSheetRef = useRef(null);
   const endDateBottomSheetRef = useRef(null);
@@ -51,23 +42,10 @@ const SetRoomDetail = () => {
     endDateBottomSheetRef.current?.present();
   }, []);
 
-  const handleStartDateChange = (text) => {
-    const [year, month, day] = text.split('/').map(Number);
-    if (year && month && day) {
-      setStartDate({ year: year.toString(), month: month.toString(), day: day.toString() });
-    }
-  };
-
-  const handleEndDateChange = (text) => {
-    const [year, month, day] = text.split('/').map(Number);
-    if (year && month && day) {
-      setEndDate({ year: year.toString(), month: month.toString(), day: day.toString() });
-    }
-  };
-
   const menuItems = [
     {
-      title: '공개 여부',
+      title: '비공개 설정',
+      subTitle: isPrivate ? '방이 비공개로 설정됩니다.' : '경쟁방에 모두가 참여할 수 있습니다.',
       component: <Toggle isOn={isPrivate} onToggle={() => setIsPrivate(!isPrivate)} />,
     },
     {
@@ -77,7 +55,12 @@ const SetRoomDetail = () => {
     {
       title: '인원',
       component: (
-        <OptionSelector options={maxMembersOptions} selectedOption={maxMembers} setSelectedOption={setMaxMembers} />
+        <OptionSelector
+          options={maxMembersOptions}
+          selectedOption={maxMembers}
+          setSelectedOption={setMaxMembers}
+          disabledOptions={theme === '1:1' ? [5, 10, 20] : [2]}
+        />
       ),
     },
     {
@@ -88,8 +71,8 @@ const SetRoomDetail = () => {
           onPressEndInput={openEndDatePicker}
           startDate={startDate}
           endDate={endDate}
-          onStartDateChange={handleStartDateChange}
-          onEndDateChange={handleEndDateChange}
+          onStartDateChange={setStartDate}
+          onEndDateChange={setEndDate}
         />
       ),
     },
@@ -99,7 +82,13 @@ const SetRoomDetail = () => {
     <BottomSheetModalProvider>
       <ScrollView style={styles.scrollView}>
         {menuItems.map((item, index) => (
-          <MenuItem key={index} title={item.title} component={item.component} isLast={index === menuItems.length - 1} />
+          <MenuItem
+            key={index}
+            title={item.title}
+            subTitle={item.subTitle}
+            component={item.component}
+            isLast={index === menuItems.length - 1}
+          />
         ))}
         <DatePickerBottomSheet
           ref={startDateBottomSheetRef}
@@ -120,54 +109,15 @@ const SetRoomDetail = () => {
   );
 };
 
-const MenuItem = ({ title, component, isLast }) => (
+const MenuItem = ({ title, subTitle, component, isLast }) => (
   <View style={[styles.menuContainer, isLast && styles.lastMenuItem, title === '기간' ? styles.flexColumn : null]}>
-    <Text style={styles.menuText}>{title}</Text>
+    <View style={{ flex: 1, gap: 4 }}>
+      <Text style={styles.menuText}>{title}</Text>
+      {subTitle && <Text style={[styles.menuText, styles.subText]}>{subTitle}</Text>}
+    </View>
     {component}
   </View>
 );
-
-const PeroidSelector = ({
-  onPressStartInput,
-  onPressEndInput,
-  startDate,
-  endDate,
-  onStartDateChange,
-  onEndDateChange,
-}) => {
-  const formatDateString = (date) => {
-    if (!date) {
-      return '';
-    }
-    const { year, month, day } = date;
-    return `${year}/${month}/${day}`;
-  };
-
-  return (
-    <View style={styles.periodSelectorContainer}>
-      <CustomInput
-        size="stretch"
-        theme="primary"
-        placeholder="시작 날짜"
-        value={formatDateString(startDate)}
-        onPress={onPressStartInput}
-        onChangeText={onStartDateChange}
-      />
-      <Text style={{ color: COLORS.white, fontWeight: FONT_WEIGHTS.semiBold }}>~</Text>
-      <CustomInput
-        size="stretch"
-        theme="primary"
-        placeholder="종료 날짜"
-        value={formatDateString(endDate)}
-        onPress={onPressEndInput}
-        onChangeText={onEndDateChange}
-      />
-      <Pressable>
-        <Image source={calendar} />
-      </Pressable>
-    </View>
-  );
-};
 
 const styles = StyleSheet.create({
   scrollView: {
@@ -195,13 +145,20 @@ const styles = StyleSheet.create({
     fontWeight: FONT_WEIGHTS.medium,
     fontFamily: 'Pretendard',
     color: COLORS.white,
-    flex: 1,
+  },
+  subText: {
+    fontSize: FONT_SIZES.sm,
+    color: COLORS.lightGrey,
   },
   periodSelectorContainer: {
     flexDirection: 'row',
     marginTop: 10,
     gap: 10,
     alignItems: 'center',
+  },
+  dateSeparator: {
+    color: COLORS.white,
+    fontWeight: FONT_WEIGHTS.semiBold,
   },
 });
 
