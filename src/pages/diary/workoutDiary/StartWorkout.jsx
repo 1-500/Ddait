@@ -29,6 +29,7 @@ const StartWorkout = () => {
   const [workoutData, setWorkoutData] = useState([]);
   const [time, setTime] = useState({ minutes: 0, seconds: 0 });
   const [isTimerVisible, setIsTimerVisible] = useState(false);
+  const [isCompleteSet, setIsCompleteSet] = useState(false);
 
   const bottomSheetModalRef = useRef(null);
   const snapPoints = useMemo(() => ['80%', '80%'], []);
@@ -106,11 +107,48 @@ const StartWorkout = () => {
             ? /* eslint-disable */
               {
                 ...workout,
-                workoutSet: [...workout.workoutSet, { id: workout.workoutSet.length + 1, weight: '', reps: '' }],
+                workoutSet: [
+                  ...workout.workoutSet,
+                  { id: workout.workoutSet.length + 1, weight: '', reps: '', isComplete: false },
+                ],
               }
             : workout,
         /* eslint-enable */
       ),
+    );
+  };
+
+  const handleDeleteExerciseSet = (workoutId, setId) => {
+    setWorkoutData((prevData) =>
+      prevData.map(
+        (workout) =>
+          workout.id === workoutId
+            ? /* eslint-disable */
+              {
+                ...workout,
+                workoutSet: workout.workoutSet.filter((set) => set.id !== setId),
+              }
+            : workout,
+        /* eslint-enable */
+      ),
+    );
+  };
+
+  const handleCompleteExerciseSet = (workoutId, setId) => {
+    setWorkoutData(
+      (prevData) =>
+        prevData.map((workout) =>
+          workout.id === workoutId
+            ? /* eslint-disable */
+              {
+                ...workout,
+                workoutSet: workout.workoutSet.map((set) =>
+                  set.id === setId ? { ...set, isComplete: !set.isComplete } : set,
+                ),
+              }
+            : workout,
+        ),
+      /* eslint-enable */
     );
   };
 
@@ -149,10 +187,15 @@ const StartWorkout = () => {
               />
             </View>
             <View style={{ flexDirection: 'row', gap: 16 }}>
-              <TouchableOpacity>
-                <MaterialCommunityIcons name="check-circle-outline" size={24} color={COLORS.primary} />
-              </TouchableOpacity>
-              <TouchableOpacity>
+              {set.isComplete ? (
+                <MaterialCommunityIcons name="check-circle-outline" size={24} color={COLORS.grey} />
+              ) : (
+                <TouchableOpacity onPress={() => handleCompleteExerciseSet(item.id, set.id)}>
+                  <MaterialCommunityIcons name="check-circle-outline" size={24} color={COLORS.primary} />
+                </TouchableOpacity>
+              )}
+
+              <TouchableOpacity onPress={() => handleDeleteExerciseSet(item.id, set.id)}>
                 <MaterialCommunityIcons name="minus-circle-outline" size={24} color={TEXT_COLORS.secondary} />
               </TouchableOpacity>
             </View>
