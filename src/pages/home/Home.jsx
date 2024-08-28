@@ -45,6 +45,8 @@ const dummyMyCompetitions = [
   //   end_date: '2024-08-29T15:00:00', // 경쟁 종료 날짜
   // },
 ];
+import { getTest } from '../../apis/home';
+import useUserStore from '../../store/sign/login';
 
 const Home = () => {
   const [data, setData] = useState(null);
@@ -52,7 +54,21 @@ const Home = () => {
   useEffect(() => {
     setData(dummyMyCompetitions);
   }, []); //더미데이터로 널/널아닐때 일단 구분
+  /* eslint-disable */
+  const { token } = useUserStore();
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await getTest();
+        console.log(res);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    /* eslint-enable */
+    fetchData();
+  }, []);
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.darkBackground }}>
       <HeaderComponents icon="none" title="홈" />
