@@ -1,3 +1,4 @@
+import { useNavigation } from '@react-navigation/native';
 import React from 'react';
 import { Image, Modal, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
@@ -15,6 +16,7 @@ const DietDetail = ({ route }) => {
   const carbPercentage = 30;
   const proteinPercentage = 50;
   const etcPercentage = 20;
+  const navigation = useNavigation();
   return (
     <SafeAreaView style={styles.container}>
       <HeaderComponents title={time} />
@@ -27,34 +29,32 @@ const DietDetail = ({ route }) => {
           <Text style={styles.addPhoto}>사진을 업로드하세요.</Text>
         </View>
 
-        <View style={{ padding: 20 }}>
+        <ScrollView style={{ padding: 20 }}>
           <View style={styles.calorieContainer}>
             <Text style={styles.calorieText}>총 열량</Text>
             <Text style={styles.calorieText}>468kcal</Text>
           </View>
 
-          <View>
-            <View style={styles.macroInfo}>
-              <Text style={styles.macroText}>탄 35.2g</Text>
-              <Text style={styles.macroText}>단 35.2g</Text>
-              <Text style={styles.macroText}>지방 40.g</Text>
+          <View style={styles.macroInfo}>
+            <Text style={styles.macroText}>탄 35.2g</Text>
+            <Text style={styles.macroText}>단 35.2g</Text>
+            <Text style={styles.macroText}>지방 40.g</Text>
+          </View>
+          <View style={styles.progressBar}>
+            <View style={[styles.progressSegment, { width: `${carbPercentage}%`, backgroundColor: COLORS.primary }]}>
+              <Text style={styles.progressText}>{carbPercentage}%</Text>
             </View>
-            <View style={styles.progressBar}>
-              <View style={[styles.progressSegment, { width: `${carbPercentage}%`, backgroundColor: COLORS.primary }]}>
-                <Text style={styles.progressText}>{carbPercentage}%</Text>
-              </View>
-              <View
-                style={[styles.progressSegment, { width: `${proteinPercentage}%`, backgroundColor: COLORS.secondary }]}
-              >
-                <Text style={styles.progressText}>{proteinPercentage}%</Text>
-              </View>
-              <View style={[styles.progressSegment, { width: `${etcPercentage}%` }]}>
-                <Text style={styles.progressText}>{etcPercentage}%</Text>
-              </View>
+            <View
+              style={[styles.progressSegment, { width: `${proteinPercentage}%`, backgroundColor: COLORS.secondary }]}
+            >
+              <Text style={styles.progressText}>{proteinPercentage}%</Text>
+            </View>
+            <View style={[styles.progressSegment, { width: `${etcPercentage}%` }]}>
+              <Text style={styles.progressText}>{etcPercentage}%</Text>
             </View>
           </View>
 
-          <ScrollView style={styles.foodListContainer}>
+          <View style={{ marginVertical: 10 }}>
             <Text style={styles.foodListTitle}>{time}</Text>
             <View style={styles.foodItem}>
               <View>
@@ -68,35 +68,40 @@ const DietDetail = ({ route }) => {
                 </TouchableOpacity>
               </View>
             </View>
-            <View style={styles.foodItem}>
-              <View>
-                <Text style={{ color: 'white', marginBottom: 5 }}>햇반</Text>
-                <Text style={{ color: COLORS.white }}>100g</Text>
-              </View>
-              <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-                <Text style={styles.foodCalories}>132kcal</Text>
-                <TouchableOpacity activeOpacity={0.6}>
-                  <Image source={MinusButtonIcon} style={{ width: 20, height: 20 }} />
-                </TouchableOpacity>
-              </View>
-            </View>
-            <View style={styles.foodItem}>
-              <View>
-                <Text style={{ color: 'white', marginBottom: 5 }}>햇반</Text>
-                <Text style={{ color: COLORS.white }}>100g</Text>
-              </View>
-              <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-                <Text style={styles.foodCalories}>132kcal</Text>
-                <TouchableOpacity activeOpacity={0.6}>
-                  <Image source={MinusButtonIcon} style={{ width: 20, height: 20 }} />
-                </TouchableOpacity>
-              </View>
-            </View>
-          </ScrollView>
-          <View style={styles.buttonContainer}>
-            <CustomButton size="medium" text="추가" theme="primary" />
-            <CustomButton size="medium" text="확인" theme="secondary" />
           </View>
+          <View style={styles.foodItem}>
+            <View>
+              <Text style={{ color: 'white', marginBottom: 5 }}>햇반</Text>
+              <Text style={{ color: COLORS.white }}>100g</Text>
+            </View>
+            <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+              <Text style={styles.foodCalories}>132kcal</Text>
+              <TouchableOpacity activeOpacity={0.6}>
+                <Image source={MinusButtonIcon} style={{ width: 20, height: 20 }} />
+              </TouchableOpacity>
+            </View>
+          </View>
+          <View style={styles.foodItem}>
+            <View>
+              <Text style={{ color: 'white', marginBottom: 5 }}>햇반</Text>
+              <Text style={{ color: COLORS.white }}>100g</Text>
+            </View>
+            <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+              <Text style={styles.foodCalories}>132kcal</Text>
+              <TouchableOpacity activeOpacity={0.6}>
+                <Image source={MinusButtonIcon} style={{ width: 20, height: 20 }} />
+              </TouchableOpacity>
+            </View>
+          </View>
+        </ScrollView>
+        <View style={styles.buttonContainer}>
+          <CustomButton
+            size="medium"
+            text="추가"
+            theme="primary"
+            onPress={() => navigation.navigate('DietDiary', { screen: 'FoodRecordScreen' })}
+          />
+          <CustomButton size="medium" text="확인" theme="secondary" />
         </View>
       </View>
     </SafeAreaView>
@@ -119,7 +124,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: COLORS.black,
-    height: 203,
+    height: 150,
     gap: 15,
   },
   addButton: {
@@ -166,20 +171,17 @@ const styles = StyleSheet.create({
   macroInfo: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 5,
+    marginTop: 10,
   },
   macroText: {
     color: 'white',
   },
-  foodListContainer: {
-    marginVertical: 25,
-    height: 150,
-  },
+
   foodListTitle: {
     color: 'white',
     fontSize: FONT_SIZES.lg,
     fontWeight: FONT_WEIGHTS.bold,
-    marginBottom: 10,
+    marginVertical: 10,
   },
   foodItem: {
     flexDirection: 'row',
@@ -187,7 +189,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#3A3A3A',
     borderRadius: 10,
-    padding: 15,
+    padding: 20,
     marginVertical: 5,
   },
   foodName: {
@@ -212,5 +214,7 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    marginVertical: 10,
+    padding: 10,
   },
 });

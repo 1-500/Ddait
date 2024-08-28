@@ -10,6 +10,7 @@ import CompetitionRoomRanking from './pages/competition/CompetitionRoomRanking';
 import SearchCompetition from './pages/competition/SearchCompetition';
 import DietDetail from './pages/diary/dietDiary/DietDetail';
 import DietDiary from './pages/diary/dietDiary/DietDiary';
+import FoodRecord from './pages/diary/dietDiary/FoodRecord';
 import StartWorkout from './pages/diary/workoutDiary/StartWorkout';
 import WorkoutDatePick from './pages/diary/workoutDiary/WorkoutDatePick';
 import WorkoutDiary from './pages/diary/workoutDiary/WorkoutDiary';
@@ -65,6 +66,7 @@ const DietDiaryStack = () => {
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="DietDiaryScreen" component={DietDiary} />
       <Stack.Screen name="DietDetailScreen" component={DietDetail} />
+      <Stack.Screen name="FoodRecordScreen" component={FoodRecord} />
     </Stack.Navigator>
   );
 };
