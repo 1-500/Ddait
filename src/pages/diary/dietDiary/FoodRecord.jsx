@@ -1,4 +1,3 @@
-import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
 import {
   Image,
@@ -7,8 +6,8 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   TouchableOpacity,
+  TouchableWithoutFeedback,
   View,
 } from 'react-native';
 
@@ -24,11 +23,15 @@ const BookmarkIcon = require('../../../assets/images/dietDiary/bookmark.png');
 
 const FoodRecord = () => {
   const [searchText, setSearchText] = useState('');
-  const [tag, setTag] = useState(['최근', '북마크', '직접 등록']);
+  const [tag, setTag] = useState(['최근', '북마크', '직접등록']);
   const [activeTag, setActiveTag] = useState('최근');
+  const [isVisibleModal, setIsVisibleModal] = useState(false);
 
   const handleTag = (type) => {
     setActiveTag(type);
+  };
+  const handleModal = () => {
+    setIsVisibleModal(!isVisibleModal);
   };
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.darkBackground }}>
@@ -73,8 +76,65 @@ const FoodRecord = () => {
           </View>
         </ScrollView>
 
-        <CustomButton size="large" text="기록하기" theme="primary" />
+        <View style={styles.buttonContainer}>
+          {activeTag === '직접등록' ? (
+            <>
+              <CustomButton size="medium" text="직접 등록하기" theme="secondary" onPress={handleModal} />
+              <CustomButton size="medium" text="기록하기" theme="primary" />
+            </>
+          ) : (
+            <CustomButton size="large" text="기록하기" theme="primary" />
+          )}
+        </View>
       </View>
+      <Modal visible={isVisibleModal} animationType="slide" transparent={true} onRequestClose={handleModal}>
+        <TouchableWithoutFeedback onPress={handleModal}>
+          <View style={styles.modalBackground}>
+            <View style={styles.modalContainer}>
+              <View style={{ marginVertical: 10 }}>
+                <CustomInput size="large" theme="user" placeholder="음식명을 입력하세요" />
+              </View>
+              <View
+                style={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  marginVertical: 20,
+                  gap: 20,
+                }}
+              >
+                <View style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+                  <Text style={{ color: COLORS.white, fontSize: FONT_SIZES.md }}>탄수화물</Text>
+                  <CustomInput size="small" theme="primary" value="" />
+                </View>
+                <View style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+                  <Text style={{ color: COLORS.white, fontSize: FONT_SIZES.md }}>단백질</Text>
+                  <CustomInput size="small" theme="primary" value="" />
+                </View>
+                <View style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+                  <Text style={{ color: COLORS.white, fontSize: FONT_SIZES.md }}>지방</Text>
+                  <CustomInput size="small" theme="primary" value="" />
+                </View>
+              </View>
+              <View
+                style={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  gap: 10,
+                  alignSelf: 'flex-end',
+                  marginVertical: 20,
+                }}
+              >
+                <Text style={{ color: COLORS.white, fontSize: FONT_SIZES.md }}>총</Text>
+                <CustomInput size="small" theme="primary" value="" />
+
+                <Text style={{ color: COLORS.white, fontSize: FONT_SIZES.md }}>kcal</Text>
+              </View>
+              <CustomButton theme="primary" size="large" text="등록하기" />
+            </View>
+          </View>
+        </TouchableWithoutFeedback>
+      </Modal>
     </SafeAreaView>
   );
 };
@@ -134,6 +194,23 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 20,
     marginVertical: 5,
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  modalBackground: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+  },
+  modalContainer: {
+    width: '90%',
+    backgroundColor: COLORS.darkBackground,
+    borderRadius: RADIUS.large,
+    padding: 20,
+    alignItems: 'center',
   },
 });
 
