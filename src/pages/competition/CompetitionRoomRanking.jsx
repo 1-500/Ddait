@@ -163,6 +163,90 @@ const dummy_data = {
       preferred_sport: '웨이트',
     },
   ],
+  my_result: {
+    weight: 75,
+    total_score: 13.74,
+    scores: [
+      {
+        name: '데드리프트',
+        score: 3.82,
+        diary: [
+          {
+            created_at: '2024-08-06',
+            record: [
+              {
+                set: 1,
+                weight: 80,
+                reps: 10,
+              },
+              {
+                set: 2,
+                weight: 80,
+                reps: 10,
+              },
+              {
+                set: 3,
+                weight: 90,
+                reps: 10,
+              },
+            ],
+          },
+        ],
+      },
+      {
+        name: '스쿼트',
+        score: 4.58,
+        diary: [
+          {
+            created_at: '2024-08-06',
+            record: [
+              {
+                set: 1,
+                weight: 80,
+                reps: 10,
+              },
+              {
+                set: 2,
+                weight: 80,
+                reps: 10,
+              },
+              {
+                set: 3,
+                weight: 90,
+                reps: 10,
+              },
+            ],
+          },
+        ],
+      },
+      {
+        name: '벤치프레스',
+        score: 5.34,
+        diary: [
+          {
+            created_at: '2024-08-06',
+            record: [
+              {
+                set: 1,
+                weight: 80,
+                reps: 10,
+              },
+              {
+                set: 2,
+                weight: 80,
+                reps: 10,
+              },
+              {
+                set: 3,
+                weight: 90,
+                reps: 10,
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  },
 };
 
 const renderScene = ({ route, jumpTo }) => {
@@ -170,7 +254,7 @@ const renderScene = ({ route, jumpTo }) => {
     case 'rankList':
       return <RankList data={dummy_data} jumpTo={jumpTo} />;
     case 'myScore':
-      return <MyScore jumpTo={jumpTo} />;
+      return <MyScore data={dummy_data.my_result} jumpTo={jumpTo} />;
     case 'invite':
       return <Invite friends={dummy_data.friends} jumpTo={jumpTo} />;
   }
