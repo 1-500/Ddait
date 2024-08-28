@@ -124,7 +124,17 @@ const DietDiary = () => {
           {items.map((item, index) => (
             <View key={index} style={styles.mealItemWrapper}>
               <Text style={styles.mealItemName}>{item.name}</Text>
-              <TouchableOpacity style={styles.mealItemButton}>
+              <TouchableOpacity
+                style={styles.mealItemButton}
+                onPress={() => {
+                  navigation.navigate('DietDiary', {
+                    screen: 'DietDetailScreen',
+                    params: {
+                      time: `${item.name}`,
+                    },
+                  });
+                }}
+              >
                 <Image source={item.icon} style={styles.icon} />
                 <Text style={styles.mealItemTitle}>{item.title}</Text>
               </TouchableOpacity>

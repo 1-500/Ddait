@@ -3,7 +3,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { FONT_SIZES, HEADER_FONT_SIZES } from '../../constants/font';
-import useUserFormStore from '../../store/sign/index';
+import useUserFormStore from '../../store/sign/signup';
 import DatePickerBottomSheet from '../DatePickerBottomSheet';
 
 const windowWidth = Dimensions.get('window').width;

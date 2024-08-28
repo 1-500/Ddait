@@ -31,18 +31,18 @@
 		<key>NSAllowsLocalNetworking</key>
 		<true/>
 		<key>NSExceptionDomains</key>
+		<dict>
+			<key>http://localhost:3000</key>
 			<dict>
-				<key>http://localhost:3000</key>
-				<dict>
-					<key>NSExceptionAllowsInsecureHTTPLoads</key>
-					<true/>
-				</dict>
-				<key>https://develop.d1u3k3rakqogc7.amplifyapp.com/</key>
-				<dict>
-					<key>NSExceptionAllowsInsecureHTTPLoads</key>
-					<true/>
-				</dict>
+				<key>NSExceptionAllowsInsecureHTTPLoads</key>
+				<true/>
 			</dict>
+			<key>https://develop.d1u3k3rakqogc7.amplifyapp.com/</key>
+			<dict>
+				<key>NSExceptionAllowsInsecureHTTPLoads</key>
+				<true/>
+			</dict>
+		</dict>
 	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>위치 정보를 사용합니다.</string>
@@ -83,6 +83,11 @@
 		<string>Octicons.ttf</string>
 		<string>Zocial.ttf</string>
 		<string>Fontisto.ttf</string>
+		<string>Pretendard-Bold.ttf</string>
+		<string>Pretendard-Medium.ttf</string>
+		<string>Pretendard-Regular.ttf</string>
+		<string>Pretendard-SemiBold.ttf</string>
+		<string>Pretendard-Light.ttf</string>
 	</array>
 </dict>
 </plist>

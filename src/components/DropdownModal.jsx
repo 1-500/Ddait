@@ -3,7 +3,7 @@ import { Animated, Modal, StyleSheet, Text, TouchableOpacity, TouchableWithoutFe
 import Octicons from 'react-native-vector-icons/Octicons';
 
 import { COLORS } from '../constants/colors';
-import { FONT_SIZES, FONT_WEIGHTS } from '../constants/font';
+import { FONT_SIZES, FONTS } from '../constants/font';
 import { RADIUS } from '../constants/radius';
 import { LAYOUT_PADDING, SPACING } from '../constants/space';
 
@@ -121,7 +121,7 @@ const styles = StyleSheet.create({
   dropdownText: {
     color: COLORS.white,
     fontSize: FONT_SIZES.sm,
-    fontWeight: FONT_WEIGHTS.md,
+    fontFamily: FONTS.PRETENDARD[500],
     lineHeight: 17,
   },
   dropdownMenu: {
@@ -153,11 +153,11 @@ const styles = StyleSheet.create({
   optionText: {
     color: COLORS.white,
     fontSize: FONT_SIZES.sm,
-    fontWeight: FONT_WEIGHTS.medium,
+    fontFamily: FONTS.PRETENDARD[500],
   },
   selectedOptionText: {
     color: COLORS.primary,
-    fontWeight: FONT_WEIGHTS.bold,
+    fontFamily: FONTS.PRETENDARD[700],
   },
   modalOverlay: {
     flex: 1,

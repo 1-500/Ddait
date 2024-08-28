@@ -8,7 +8,9 @@ import CompetitionCreation from './pages/competition/CompetitionCreation/Competi
 import CompetitionRoom1V1 from './pages/competition/CompetitionRoom1V1';
 import CompetitionRoomRanking from './pages/competition/CompetitionRoomRanking';
 import SearchCompetition from './pages/competition/SearchCompetition';
+import DietDetail from './pages/diary/dietDiary/DietDetail';
 import DietDiary from './pages/diary/dietDiary/DietDiary';
+import FoodRecord from './pages/diary/dietDiary/FoodRecord';
 import StartWorkout from './pages/diary/workoutDiary/StartWorkout';
 import WorkoutDatePick from './pages/diary/workoutDiary/WorkoutDatePick';
 import WorkoutDiary from './pages/diary/workoutDiary/WorkoutDiary';
@@ -41,7 +43,7 @@ const MainTab = () => {
 };
 const SignStack = () => {
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Navigator initialRouteName="Login" screenOptions={{ headerShown: false }}>
       <Stack.Screen name="Login" component={LoginPage} />
       <Stack.Screen name="SignUp" component={SignUpPage} />
       <Stack.Screen name="SocialLogin" component={SocialLogin} />
@@ -63,6 +65,8 @@ const DietDiaryStack = () => {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="DietDiaryScreen" component={DietDiary} />
+      <Stack.Screen name="DietDetailScreen" component={DietDetail} />
+      <Stack.Screen name="FoodRecordScreen" component={FoodRecord} />
     </Stack.Navigator>
   );
 };
@@ -78,7 +82,7 @@ const CompetitionStack = () => {
 
 const Router = () => {
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Navigator initialRouteName="DietDiary" screenOptions={{ headerShown: false }}>
       <Stack.Screen name="MainTab" component={MainTab} />
       <Stack.Screen name="WorkoutDiary" component={DiaryStack} />
       <Stack.Screen name="CompetitionRoom1V1" component={CompetitionRoom1V1} />

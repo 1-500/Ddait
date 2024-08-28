@@ -4,10 +4,7 @@ import CustomInput from '../../../components/CustomInput';
 import useCompetitionRoomStore from '../../../store/competition/index';
 
 const SetRoomTitle = () => {
-  const { title, setTitle } = useCompetitionRoomStore((state) => ({
-    title: state.title,
-    setTitle: state.setTitle,
-  }));
+  const { title, setTitle } = useCompetitionRoomStore();
 
   const handleTitleChange = (newTitle) => {
     setTitle(newTitle);
