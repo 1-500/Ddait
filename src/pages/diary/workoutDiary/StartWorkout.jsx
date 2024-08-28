@@ -27,9 +27,12 @@ const StartWorkout = () => {
   const [exerciseListData, setExerciseListData] = useState([]);
   const [selectedExercises, setSelectedExercises] = useState([]);
   const [workoutData, setWorkoutData] = useState([]);
-  const [time, setTime] = useState({ minutes: 0, seconds: 0 });
+  const [totalTime, setTotalTime] = useState({ minutes: 0, seconds: 0 });
   const [isTimerVisible, setIsTimerVisible] = useState(false);
   const [isCompleteSet, setIsCompleteSet] = useState(false);
+  const [isRunning, setIsRunning] = useState(false);
+  const [isReset, setIsReset] = useState(false);
+  const [intervalId, setIntervalId] = useState(null);
 
   const bottomSheetModalRef = useRef(null);
   const snapPoints = useMemo(() => ['80%', '80%'], []);
@@ -48,6 +51,12 @@ const StartWorkout = () => {
 
     fetchExerciseList();
   }, []);
+
+  useEffect(() => {
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [intervalId]);
   /* eslint-enable */
 
   const handlePresentModalPress = useCallback(() => {
@@ -118,6 +127,36 @@ const StartWorkout = () => {
     );
   };
 
+  const handleStartPause = () => {
+    if (isRunning) {
+      clearInterval(intervalId);
+      setIsRunning(!isRunning);
+    } else {
+      const id = setInterval(() => {
+        setTotalTime((prevTime) => {
+          const newSeconds = prevTime.seconds + 1;
+          const newMinutes = prevTime.minutes + Math.floor(newSeconds / 60);
+
+          return {
+            minutes: newMinutes,
+            seconds: newSeconds % 60,
+          };
+        });
+      }, 1000);
+
+      setIntervalId(id);
+      setIsRunning(!isRunning);
+      setIsReset(!isReset);
+    }
+  };
+
+  const handleReset = () => {
+    if (isRunning) {
+      clearInterval(intervalId);
+      setIsRunning(!isRunning);
+    }
+  };
+
   const handleDeleteExerciseSet = (workoutId, setId) => {
     setWorkoutData((prevData) =>
       prevData.map(
@@ -156,9 +195,25 @@ const StartWorkout = () => {
     <View style={styles.card}>
       <View style={styles.header}>
         <Text style={styles.titleText}>{item.title}</Text>
-        <TouchableOpacity style={styles.startButton} onPress={handleTimerVisible}>
+        {/* <TouchableOpacity style={styles.startButton} onPress={handleTimerVisible}>
           <Text style={styles.startButtonText}>시작</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
+        <View style={{ flexDirection: 'row', gap: 8 }}>
+          {isRunning ? (
+            <>
+              <TouchableOpacity style={styles.startButton} onPress={handleStartPause}>
+                <Text style={styles.startButtonText}>정지</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.startButton} onPress={handleReset}>
+                <Text style={styles.startButtonText}>휴식</Text>
+              </TouchableOpacity>
+            </>
+          ) : (
+            <TouchableOpacity style={styles.startButton} onPress={handleStartPause}>
+              <Text style={styles.startButtonText}>{isReset ? '재개' : '시작'}</Text>
+            </TouchableOpacity>
+          )}
+        </View>
       </View>
       <View style={styles.divider} />
       <View style={styles.workoutSetContainer}>
@@ -227,8 +282,11 @@ const StartWorkout = () => {
       <HeaderComponents title="운동 시작" icon="timer" onRightBtnPress={handleTimerVisible} />
       <View style={styles.timerContainer}>
         <MaterialCommunityIcons name="timer-outline" size={24} color={COLORS.white} />
-        <Text style={{ color: COLORS.white, marginLeft: 16 }}>
+        {/* <Text style={{ color: COLORS.white, marginLeft: 16 }}>
           {String(time.minutes).padStart(2, '0')}:{String(time.seconds).padStart(2, '0')}
+        </Text> */}
+        <Text style={{ color: COLORS.white, marginLeft: 16 }}>
+          {String(totalTime.minutes).padStart(2, '0')}:{String(totalTime.seconds).padStart(2, '0')}
         </Text>
       </View>
       {workoutData.length === 0 && (
@@ -271,7 +329,7 @@ const StartWorkout = () => {
           </View>
         }
       />
-
+      {/*
       <Modal visible={isTimerVisible} animationType="slide" transparent={true} onRequestClose={handleTimerVisible}>
         <TouchableWithoutFeedback onPress={handleTimerVisible}>
           <View style={styles.modalBackground}>
@@ -284,7 +342,7 @@ const StartWorkout = () => {
             </View>
           </View>
         </TouchableWithoutFeedback>
-      </Modal>
+      </Modal> */}
 
       <BottomSheetModalProvider>
         <BottomSheetModal
@@ -309,20 +367,22 @@ const StartWorkout = () => {
                 <CustomTag size="big" text="도구" />
               </TouchableOpacity>
             </View>
-            <FlatList
-              data={exerciseListData}
-              renderItem={renderExerciseList}
-              showsVerticalScrollIndicator={false}
-              contentContainerStyle={{ paddingBottom: 16, paddingHorizontal: 16 }}
-              keyExtractor={(item, index) => index.toString()}
-            />
-            <CustomButton
-              theme="primary"
-              size="large"
-              states="enabled"
-              onPress={handleSaveSelectedExercises}
-              text="운동 추가하기"
-            />
+            <View>
+              <FlatList
+                data={exerciseListData}
+                renderItem={renderExerciseList}
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={{ paddingBottom: 16, paddingHorizontal: 16 }}
+                keyExtractor={(item, index) => index.toString()}
+              />
+              <CustomButton
+                theme="primary"
+                size="large"
+                states="enabled"
+                onPress={handleSaveSelectedExercises}
+                text="운동 추가하기"
+              />
+            </View>
           </BottomSheetView>
         </BottomSheetModal>
       </BottomSheetModalProvider>
