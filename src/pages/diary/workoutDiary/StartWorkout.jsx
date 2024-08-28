@@ -98,6 +98,22 @@ const StartWorkout = () => {
     // console.log('모달등장');
   };
 
+  const handleAddExerciseSet = (workoutId) => {
+    setWorkoutData((prevData) =>
+      prevData.map(
+        (workout) =>
+          workout.id === workoutId
+            ? /* eslint-disable */
+              {
+                ...workout,
+                workoutSet: [...workout.workoutSet, { id: workout.workoutSet.length + 1, weight: '', reps: '' }],
+              }
+            : workout,
+        /* eslint-enable */
+      ),
+    );
+  };
+
   const renderWorkoutCard = ({ item }) => (
     <View style={styles.card}>
       <View style={styles.header}>
@@ -142,7 +158,7 @@ const StartWorkout = () => {
             </View>
           </View>
         ))}
-        <TouchableOpacity style={styles.addSetButton}>
+        <TouchableOpacity style={styles.addSetButton} onPress={() => handleAddExerciseSet(item.id)}>
           <Text style={styles.addSetButtonText}>세트 추가</Text>
         </TouchableOpacity>
       </View>
