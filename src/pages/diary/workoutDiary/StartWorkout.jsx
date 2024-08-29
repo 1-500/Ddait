@@ -1,41 +1,36 @@
 import { BottomSheetModal, BottomSheetModalProvider, BottomSheetView } from '@gorhom/bottom-sheet';
+import { useNavigation } from '@react-navigation/native';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import {
-  FlatList,
-  Modal,
-  SafeAreaView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-  View,
-} from 'react-native';
+import { Alert, FlatList, Modal, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import CustomTag from '../../../../src/components/CustomTag';
-import { getExerciseList } from '../../../apis/diary';
+import { getExerciseList, postWorkoutRecord } from '../../../apis/diary';
 import CustomButton from '../../../components/CustomButton';
 import CustomInput from '../../../components/CustomInput';
-import CustomTimer from '../../../components/CustomTimer';
 import HeaderComponents from '../../../components/HeaderComponents';
 import { BACKGROUND_COLORS, COLORS, TEXT_COLORS } from '../../../constants/colors';
 import { BODY_FONT_SIZES, FONT_SIZES, HEADER_FONT_SIZES } from '../../../constants/font';
 import { RADIUS } from '../../../constants/radius';
 import { LAYOUT_PADDING } from '../../../constants/space';
+import useUserStore from '../../../store/sign/login';
 
 const StartWorkout = () => {
+  const navigation = useNavigation();
+
   const [exerciseListData, setExerciseListData] = useState([]);
   const [selectedExercises, setSelectedExercises] = useState([]);
   const [workoutData, setWorkoutData] = useState([]);
   const [totalTime, setTotalTime] = useState({ minutes: 0, seconds: 0 });
   const [isTimerVisible, setIsTimerVisible] = useState(false);
-  const [isCompleteSet, setIsCompleteSet] = useState(false);
   const [isRunning, setIsRunning] = useState(false);
   const [isReset, setIsReset] = useState(false);
   const [intervalId, setIntervalId] = useState(null);
 
   const bottomSheetModalRef = useRef(null);
   const snapPoints = useMemo(() => ['80%', '80%'], []);
+
+  const { userId } = useUserStore();
 
   /* eslint-disable */
   useEffect(() => {
@@ -191,13 +186,45 @@ const StartWorkout = () => {
     );
   };
 
+  const handleSaveWorkoutRecord = async () => {
+    try {
+      const workoutName = '아침운동';
+      const workoutTime = `${String(totalTime.minutes).padStart(2, '0')}:${String(totalTime.seconds).padStart(2, '0')}`;
+      const exercises = workoutData.flatMap((workout) =>
+        workout.workoutSet.map((set) => ({
+          exercise_name: workout.title,
+          weight: set.weight,
+          reps: set.reps,
+          set: set.id,
+        })),
+      );
+      const workoutRecord = {
+        member_id: userId,
+        workout_name: workoutName,
+        workout_time: workoutTime,
+        exercises,
+      };
+
+      const res = await postWorkoutRecord(userId, workoutRecord);
+
+      if (res) {
+        Alert.alert('운동 기록', '정상적으로 저장되었습니다');
+        navigation.navigate('WorkoutDiaryScreen');
+      } else {
+        Alert.alert('운동 기록', '기록 저장에 실패했습니다.');
+        // eslint-disable-next-line no-console
+        console.error('기록 저장에 실패했습니다.', res.error);
+      }
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.log('error', error);
+    }
+  };
+
   const renderWorkoutCard = ({ item }) => (
     <View style={styles.card}>
       <View style={styles.header}>
         <Text style={styles.titleText}>{item.title}</Text>
-        {/* <TouchableOpacity style={styles.startButton} onPress={handleTimerVisible}>
-          <Text style={styles.startButtonText}>시작</Text>
-        </TouchableOpacity> */}
         <View style={{ flexDirection: 'row', gap: 8 }}>
           {isRunning ? (
             <>
@@ -282,9 +309,6 @@ const StartWorkout = () => {
       <HeaderComponents title="운동 시작" icon="timer" onRightBtnPress={handleTimerVisible} />
       <View style={styles.timerContainer}>
         <MaterialCommunityIcons name="timer-outline" size={24} color={COLORS.white} />
-        {/* <Text style={{ color: COLORS.white, marginLeft: 16 }}>
-          {String(time.minutes).padStart(2, '0')}:{String(time.seconds).padStart(2, '0')}
-        </Text> */}
         <Text style={{ color: COLORS.white, marginLeft: 16 }}>
           {String(totalTime.minutes).padStart(2, '0')}:{String(totalTime.seconds).padStart(2, '0')}
         </Text>
@@ -323,26 +347,12 @@ const StartWorkout = () => {
               theme="secondary"
               size="large"
               states="enabled"
-              onPress={handleStartWorkout}
+              onPress={handleSaveWorkoutRecord}
               text="운동 완료"
             />
           </View>
         }
       />
-      {/*
-      <Modal visible={isTimerVisible} animationType="slide" transparent={true} onRequestClose={handleTimerVisible}>
-        <TouchableWithoutFeedback onPress={handleTimerVisible}>
-          <View style={styles.modalBackground}>
-            <View style={styles.modalContainer}>
-              <Text style={styles.modalTitle}>타이머</Text>
-              <TouchableOpacity style={{ position: 'absolute', top: 10, right: 15 }} onPress={handleTimerVisible}>
-                <MaterialCommunityIcons name="close" size={24} color={COLORS.primary} />
-              </TouchableOpacity>
-              <CustomTimer time={time} setTime={setTime} handleTimerVisible={handleTimerVisible} />
-            </View>
-          </View>
-        </TouchableWithoutFeedback>
-      </Modal> */}
 
       <BottomSheetModalProvider>
         <BottomSheetModal

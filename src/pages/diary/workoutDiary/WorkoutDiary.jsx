@@ -11,6 +11,7 @@ import { BACKGROUND_COLORS, BUTTON_COLORS, COLORS, TEXT_COLORS } from '../../../
 import { FONT_SIZES } from '../../../constants/font';
 import { RADIUS } from '../../../constants/radius';
 import { LAYOUT_PADDING } from '../../../constants/space';
+import useUserStore from '../../../store/sign/login';
 import { formatDate, getEndOfWeek, getStartOfWeek, getWeekOfMonth } from '../../../utils/date';
 
 const WorkoutDiary = () => {
@@ -27,6 +28,7 @@ const WorkoutDiary = () => {
   const [selectedDate, setSelectedDate] = useState(today);
   const [workoutRecords, setWorkoutRecords] = useState([]);
 
+  const { userId } = useUserStore();
   /* eslint-disable */
 
   useEffect(() => {
@@ -39,7 +41,7 @@ const WorkoutDiary = () => {
     console.log(selected);
     const fetchWorkout = async () => {
       try {
-        const res = await getDiaryList(2, selected);
+        const res = await getDiaryList(userId, selected);
         console.log(res);
         setWorkoutRecords(res);
       } catch (error) {

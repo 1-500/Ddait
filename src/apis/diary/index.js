@@ -23,5 +23,21 @@ export const getExerciseList = async (userId) => {
   try {
     const res = await API.get(`/workout-record/exercise-name?user_id=${userId}`);
     return res.data;
-  } catch (error) {}
+  } catch (error) {
+    return error;
+  }
+};
+
+export const postWorkoutRecord = async (userId, data) => {
+  try {
+    const res = await API.post('/workout-record', data, {
+      headers: {
+        user_Id: userId,
+      },
+      withCredentials: true,
+    });
+    return res.data;
+  } catch (error) {
+    return error;
+  }
 };
