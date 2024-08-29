@@ -20,7 +20,7 @@ const MyPage = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       <HeaderComponents icon="setting" title="마이페이지" />
-      <ScrollView contentContainerStyle={{ flexGrow: 1, paddingBottom: 100 }}>
+      <ScrollView contentContainerStyle={{ flexGrow: 1, paddingBottom: 120 }}>
         {/* 프로필 정보 */}
         <View style={styles.profileContainer}>
           <View style={{ flexDirection: 'row', gap: 16 }}>
