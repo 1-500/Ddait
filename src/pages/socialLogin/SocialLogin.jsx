@@ -19,20 +19,22 @@ const SocialLogin = ({ route }) => {
   const webViewRef = useRef(null);
 
   useEffect(() => {
-    const fetch = async () => {
-      await changeUserAgent();
-    };
-    fetch();
+    initialSetting();
     return () => {
       if (webViewRef.current) {
         // eslint-disable-next-line react-hooks/exhaustive-deps
         webViewRef.current.stopLoading();
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const initialSetting = async () => {
+    await changeUserAgent();
+  };
+
   const handleMessage = async (event) => {
-    const { socialEmail, user_level, token } = JSON.parse(event.nativeEvent.data);
+    const { socialEmail, user_level, token } = JSON.parse(event.natriveEvent.data);
 
     if (user_level === 0) {
       setSocialEmail(socialEmail);
@@ -68,11 +70,11 @@ const SocialLogin = ({ route }) => {
       })
       .catch((e) => e);
   };
-  // const sendMessageToWeb = (message) => {
-  //   if (webViewRef.current) {
-  //     webViewRef.current.postMessage(JSON.stringify(message));
-  //   }
-  // };
+  const sendMessageToWeb = (message) => {
+    if (webViewRef.current) {
+      webViewRef.current.postMessage(JSON.stringify(message));
+    }
+  };
 
   return (
     <View style={{ flex: 1 }}>
@@ -84,6 +86,7 @@ const SocialLogin = ({ route }) => {
           userAgent={customUserAgent}
           source={{ uri: 'http://localhost:3000/socialLogin' }}
           onMessage={handleMessage}
+          onLoadEnd={() => sendMessageToWeb({ type: 'DDait_APP', data: provider })}
         />
       )}
     </View>
