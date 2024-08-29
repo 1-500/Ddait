@@ -16,6 +16,7 @@ const defaultBadge = require('../../assets/images/badge-default.png');
 const MyPage = ({ navigation }) => {
   // 임시 뱃지 배열
   const badges = [defaultBadge, defaultBadge, defaultBadge, defaultBadge, defaultBadge];
+  // 푸시 알림 기본값: On (임시)
   const [isPushOn, setIsPushOn] = useState(true);
 
   return (

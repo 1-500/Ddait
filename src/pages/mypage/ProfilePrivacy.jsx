@@ -6,6 +6,7 @@ import SettingItem from '../../components/SettingItem';
 import { COLORS } from '../../constants/colors';
 
 const ProfilePrivacy = () => {
+  // 기본값 : 전체공개 (임시))
   const [profileScope, setProfileScope] = useState('public');
 
   return (
