@@ -82,7 +82,7 @@ const CompetitionStack = () => {
 
 const Router = () => {
   return (
-    <Stack.Navigator initialRouteName="DietDiary" screenOptions={{ headerShown: false }}>
+    <Stack.Navigator initialRouteName="Sign" screenOptions={{ headerShown: false }}>
       <Stack.Screen name="MainTab" component={MainTab} />
       <Stack.Screen name="WorkoutDiary" component={DiaryStack} />
       <Stack.Screen name="CompetitionRoom1V1" component={CompetitionRoom1V1} />

@@ -24,6 +24,7 @@ interface UserFormState {
   setPreferredSport: (sport: string) => void;
   setGender: (gender: string) => void;
   setSelectedDate: (date: { month: string; day: string; year: string }) => void;
+  clearForm: () => void; // 상태를 클리어하는 메서드 추가
 }
 
 const useUserFormStore = create<UserFormState>((set) => ({
@@ -34,7 +35,7 @@ const useUserFormStore = create<UserFormState>((set) => ({
   position: { latitude: 0, longitude: 0 },
   preferredSport: '',
   gender: '',
-  selectedDate: { month: '9', day: '17', year: '2021' },
+  selectedDate: { month: '09', day: '17', year: '2021' },
 
   setEmail: (email) => set({ email }),
   setPassword: (password) => set({ password }),
@@ -44,6 +45,19 @@ const useUserFormStore = create<UserFormState>((set) => ({
   setPreferredSport: (preferredSport) => set({ preferredSport }),
   setGender: (gender) => set({ gender }),
   setSelectedDate: (selectedDate) => set({ selectedDate }),
+
+  clearForm: () =>
+    set({
+      // 상태를 초기값으로 재설정
+      email: '',
+      password: '',
+      confirmPassword: '',
+      nickname: '',
+      position: { latitude: 0, longitude: 0 },
+      preferredSport: '',
+      gender: '',
+      selectedDate: { month: '09', day: '17', year: '2021' },
+    }),
 }));
 
 export default useUserFormStore;
