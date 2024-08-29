@@ -3,7 +3,7 @@ import { Dimensions, Image, StyleSheet, Text, TouchableOpacity, View } from 'rea
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import { COLORS } from '../constants/colors';
-import { FONT_SIZES, FONT_WEIGHTS } from '../constants/font';
+import { FONT_SIZES, FONT_WEIGHTS, FONTS } from '../constants/font';
 import { SPACING } from '../constants/space';
 import CustomTag from './CustomTag';
 
@@ -41,7 +41,11 @@ const MemberProfileItem = ({ memberData, rightBtn = 'menu', onRightBtnPress = ()
           <Text style={styles.introduceText} ellipsizeMode="tail" numberOfLines={1}>
             {memberData.introduce}
           </Text>
-          <CustomTag size="small" text={memberData.preferred_sport} />
+          <View style={styles.tagsContainer}>
+            {memberData.preferred_sport.map((sport, index) => (
+              <CustomTag key={`${sport}-${index}`} size="small" text={sport} />
+            ))}
+          </View>
         </View>
       </View>
       {renderRightBtn()}
@@ -56,13 +60,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 10,
+    paddingVertical: 14,
     borderBottomWidth: 1,
     borderBottomColor: '#303030',
   },
   profileWrapper: {
     flexDirection: 'row',
-    gap: 10,
+    gap: 16,
     alignItems: 'center',
   },
   profileInfoWrapper: {
@@ -70,19 +74,24 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
   },
   profileImage: {
-    width: 50,
-    height: 50,
+    width: 60,
+    height: 60,
   },
   nicknameText: {
     fontSize: FONT_SIZES.sm,
-    fontWeight: FONT_WEIGHTS.bold,
+    fontFamily: FONTS.PRETENDARD[700],
     color: COLORS.white,
     marginBottom: 2,
   },
   introduceText: {
-    fontSize: FONT_SIZES.xxs,
-    fontWeight: FONT_WEIGHTS.medium,
+    fontSize: FONT_SIZES.xs,
+    fontFamily: FONTS.PRETENDARD[500],
     color: COLORS.white,
     marginBottom: SPACING.xs,
+  },
+  tagsContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 6,
   },
 });

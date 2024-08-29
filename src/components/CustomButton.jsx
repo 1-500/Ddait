@@ -2,6 +2,7 @@ import React, { useRef } from 'react';
 import { ActivityIndicator, Animated, Pressable, StyleSheet, Text } from 'react-native';
 
 import { BUTTON_COLORS } from '../constants/colors';
+import { FONTS } from '../constants/font';
 import { RADIUS } from '../constants/radius';
 
 /**
@@ -86,6 +87,7 @@ const styles = StyleSheet.create({
     lineHeight: 23,
     textAlign: 'center',
     color: '#FFFFFF',
+    fontFamily: FONTS.PRETENDARD[400],
   },
   themes_primary: {
     backgroundColor: BUTTON_COLORS.primary,
