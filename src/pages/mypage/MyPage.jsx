@@ -6,8 +6,9 @@ import CustomTag from '../../components/CustomTag';
 import HeaderComponents from '../../components/HeaderComponents';
 import SettingItem from '../../components/SettingItem';
 import { COLORS } from '../../constants/colors';
-import { FONTS } from '../../constants/font';
+import { FONT_SIZES, FONTS } from '../../constants/font';
 import { LAYOUT_PADDING } from '../../constants/space';
+import { SPACING } from '../../constants/space';
 
 const dummyProfile = require('../../assets/images/profile.png');
 const defaultBadge = require('../../assets/images/badge-default.png');
@@ -23,7 +24,7 @@ const MyPage = ({ navigation }) => {
       <ScrollView contentContainerStyle={{ flexGrow: 1, paddingBottom: 120 }}>
         {/* 프로필 정보 */}
         <View style={styles.profileContainer}>
-          <View style={{ flexDirection: 'row', gap: 16 }}>
+          <View style={{ flexDirection: 'row', gap: SPACING.md }}>
             <Image source={dummyProfile} style={styles.profileImg} />
             <View style={{ gap: 6 }}>
               <Text style={styles.nameText}>따잇</Text>
@@ -59,7 +60,7 @@ const MyPage = ({ navigation }) => {
         {/* 설정 메뉴 */}
         <View>
           <Text style={[styles.subTitle, styles.settingTitle]}>설정</Text>
-          <View style={{ borderTopWidth: 1, borderColor: COLORS.darkGrey }} />
+          <View style={styles.divider} />
           <SettingItem
             title={'프로필 공개 범위'}
             description={'공개하면 친구 추천에 나타납니다'}
@@ -84,7 +85,7 @@ const MyPage = ({ navigation }) => {
         {/* 도움말 */}
         <View>
           <Text style={[styles.subTitle, styles.settingTitle]}>도움말</Text>
-          <View style={{ borderTopWidth: 1, borderColor: COLORS.darkGrey }} />
+          <View style={styles.divider} />
           <SettingItem
             title={'FAQ'}
             description={'자주 묻는 질문'}
@@ -106,7 +107,7 @@ const styles = StyleSheet.create({
   },
   profileContainer: {
     ...LAYOUT_PADDING,
-    marginTop: 20,
+    marginTop: SPACING.lg,
   },
   profileImg: {
     width: 100,
@@ -114,7 +115,7 @@ const styles = StyleSheet.create({
   },
   nameText: {
     color: COLORS.white,
-    fontSize: 20,
+    fontSize: FONT_SIZES.lg,
     fontFamily: FONTS.PRETENDARD[600],
   },
   emailText: {
@@ -130,11 +131,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     gap: 14,
-    marginVertical: 20,
+    marginVertical: SPACING.lg,
   },
   badgeContainer: {
     ...LAYOUT_PADDING,
-    paddingTop: 24,
+    paddingTop: SPACING.xl,
     borderTopWidth: 1,
     borderColor: COLORS.lightGrey,
   },
@@ -145,7 +146,7 @@ const styles = StyleSheet.create({
   },
   subTitle: {
     color: COLORS.white,
-    fontSize: 20,
+    fontSize: FONT_SIZES.lg,
     fontFamily: FONTS.PRETENDARD[700],
   },
   seeMore: {
@@ -156,14 +157,18 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     gap: 14,
-    marginTop: 20,
+    marginTop: SPACING.lg,
     backgroundColor: COLORS.darkGrey,
-    padding: 16,
-    borderRadius: 16,
+    padding: SPACING.md,
+    borderRadius: SPACING.md,
   },
   settingTitle: {
     marginTop: 30,
-    marginLeft: 20,
-    marginBottom: 16,
+    marginLeft: SPACING.lg,
+    marginBottom: SPACING.md,
+  },
+  divider: {
+    borderTopWidth: 1,
+    borderColor: COLORS.darkGrey,
   },
 });

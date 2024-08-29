@@ -4,7 +4,8 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Fontisto from 'react-native-vector-icons/Fontisto';
 
 import { COLORS } from '../constants/colors';
-import { FONTS } from '../constants/font';
+import { FONT_SIZES, FONTS } from '../constants/font';
+import { SPACING } from '../constants/space';
 import Toggle from './Toggle';
 
 const SettingItem = ({ title, description, leftBtn, rightBtn, onPress, onToggle, isToggled, isRadioActive }) => {
@@ -52,11 +53,11 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     borderBottomWidth: 1,
     borderColor: COLORS.darkGrey,
-    padding: 20,
+    padding: SPACING.lg,
   },
   title: {
     color: COLORS.white,
-    fontSize: 16,
+    fontSize: FONT_SIZES.sm,
     fontFamily: FONTS.PRETENDARD[500],
   },
   description: {
