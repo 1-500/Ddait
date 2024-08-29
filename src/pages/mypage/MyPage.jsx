@@ -12,7 +12,7 @@ import { LAYOUT_PADDING } from '../../constants/space';
 const dummyProfile = require('../../assets/images/profile.png');
 const defaultBadge = require('../../assets/images/badge-default.png');
 
-const MyPage = () => {
+const MyPage = ({ navigation }) => {
   // 임시 뱃지 배열
   const badges = [defaultBadge, defaultBadge, defaultBadge, defaultBadge, defaultBadge];
   const [isPushOn, setIsPushOn] = useState(true);
@@ -64,7 +64,7 @@ const MyPage = () => {
             title={'프로필 공개 범위'}
             description={'공개하면 친구 추천에 나타납니다'}
             rightBtn="arrow"
-            onPress={() => Alert.alert('공개 범위 페이지로 이동')}
+            onPress={() => navigation.navigate('ProfilePrivacy')}
           />
           <SettingItem
             title={'푸시알림'}

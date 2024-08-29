@@ -18,6 +18,7 @@ import Friend from './pages/friend/Friend';
 import HomePage from './pages/home/HomePage';
 import LoginPage from './pages/login/LoginPage';
 import MyPage from './pages/mypage/MyPage';
+import ProfilePrivacy from './pages/mypage/ProfilePrivacy';
 import SignUpPage from './pages/signup/SignUpPage';
 import SocialLogin from './pages/socialLogin/SocialLogin';
 
@@ -91,6 +92,7 @@ const Router = () => {
       <Stack.Screen name="CompetitionRoomRanking" component={CompetitionRoomRanking} />
       <Stack.Screen name="Sign" component={SignStack} />
       <Stack.Screen name="DietDiary" component={DietDiaryStack} />
+      <Stack.Screen name="ProfilePrivacy" component={ProfilePrivacy} />
     </Stack.Navigator>
   ); // 라우팅
 };
