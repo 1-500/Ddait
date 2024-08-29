@@ -30,10 +30,12 @@ const SettingItem = ({ title, description, leftBtn, rightBtn, onPress, onToggle,
   return (
     <TouchableOpacity onPress={onPress} activeOpacity={0.6}>
       <View style={styles.container}>
-        {renderLeftBtn()}
-        <View style={{ gap: 12 }}>
-          <Text style={styles.title}>{title}</Text>
-          <Text style={styles.description}>{description}</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+          {renderLeftBtn()}
+          <View style={{ gap: 12 }}>
+            <Text style={styles.title}>{title}</Text>
+            <Text style={styles.description}>{description}</Text>
+          </View>
         </View>
         {renderRightBtn()}
       </View>
