@@ -68,7 +68,7 @@ const MyPage = () => {
           />
           <SettingItem
             title={'푸시알림'}
-            description={'푸시 알림을 켜서 따잇의 소식을 받아보세요'}
+            description={isPushOn ? '따잇의 소식을 받아보고 있습니다' : '푸시 알림을 켜서 따잇의 소식을 받아보세요'}
             rightBtn="toggle"
             isToggled={isPushOn}
             onToggle={() => setIsPushOn(!isPushOn)}
