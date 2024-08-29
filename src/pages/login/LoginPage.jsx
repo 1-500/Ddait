@@ -20,7 +20,7 @@ const LoginPage = () => {
   const [emailInput, setEmailInput] = useState();
   const [passwordInput, setPasswordInput] = useState();
 
-  const { setToken, setUserEmail, clearUser } = useUserStore();
+  const { setToken, setUserEmail, clearUser, setUserId, userId } = useUserStore();
 
   const handleEmailInput = (text) => {
     setEmailInput(text);
@@ -39,7 +39,8 @@ const LoginPage = () => {
         }),
       );
       if (result) {
-        const { access_token, expires_in, refresh_token, user } = result;
+        const { access_token, expires_in, refresh_token, user } = result.session;
+        setUserId(result.userId);
         setToken({
           accessToken: access_token,
           expiresIn: expires_in,
