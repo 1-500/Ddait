@@ -1,15 +1,13 @@
 import { BottomSheetBackdrop, BottomSheetModal } from '@gorhom/bottom-sheet';
-import React, { forwardRef, useCallback, useMemo } from 'react';
+import React, { forwardRef, useCallback } from 'react';
 import { Dimensions, StyleSheet, View } from 'react-native';
 
 import { COLORS } from '../constants/colors';
 import { SPACING } from '../constants/space';
 import CustomButton from './CustomButton';
 
-const { height } = Dimensions.get('window');
-
 const FriendOptionBottomSheet = forwardRef((props, ref) => {
-  const snapPoints = [height * 0.42];
+  const snapPoints = [350];
 
   const renderBackdrop = useCallback(
     (props) => <BottomSheetBackdrop {...props} appearsOnIndex={0} disappearsOnIndex={-1} pressBehavior="close" />,

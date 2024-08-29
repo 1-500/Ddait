@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   switchOn: {
-    backgroundColor: COLORS.grey,
+    backgroundColor: '#8b8bff73',
   },
   switchOff: {
     backgroundColor: COLORS.darkGrey,
