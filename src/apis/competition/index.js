@@ -19,3 +19,63 @@ export const createCompetition = async (data) => {
     console.error('Response data:', error.response.data);
   }
 };
+
+export const getCompetitionRooms = async () => {
+  try {
+    const response = await API.get('/competition/rooms');
+    return response.data;
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error('Server responded with status:', error.response.status);
+    // eslint-disable-next-line no-console
+    console.error('Response data:', error.response.data);
+  }
+};
+
+export const getCompetitionRecord = async (roomId, memberId) => {
+  try {
+    let response;
+
+    if (roomId) {
+      if (memberId) {
+        response = await API.get(`/competition/record?roomId=${roomId}&memberId=${memberId}`);
+      }
+      response = await API.get(`/competition/record?roomId=${roomId}`);
+    } else {
+      response = await API.get('/competition/record');
+    }
+
+    return response.data;
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error('Server responded with status:', error.response.status);
+    // eslint-disable-next-line no-console
+    console.error('Response data:', error.response.data);
+  }
+};
+
+export const patchCompetitionRecord = async (body) => {
+  try {
+    const response = await API.patch('/competition/record', body);
+
+    return response.data;
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error('Server responded with status:', error.response.status);
+    // eslint-disable-next-line no-console
+    console.error('Response data:', error.response.data);
+  }
+};
+
+export const getCompetitionRecordDetail = async (roomId, memberId) => {
+  try {
+    const response = await API.get(`/competition/record/detail?roomId=${roomId}&memberId=${memberId}`);
+
+    return response.data;
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error('Server responded with status:', error.response.status);
+    // eslint-disable-next-line no-console
+    console.error('Response data:', error.response.data);
+  }
+};
