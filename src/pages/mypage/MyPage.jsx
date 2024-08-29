@@ -1,9 +1,10 @@
-import React from 'react';
-import { Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useState } from 'react';
+import { Alert, Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import CustomButton from '../../components/CustomButton';
 import CustomTag from '../../components/CustomTag';
 import HeaderComponents from '../../components/HeaderComponents';
+import SettingItem from '../../components/SettingItem';
 import { COLORS } from '../../constants/colors';
 import { FONTS } from '../../constants/font';
 import { LAYOUT_PADDING } from '../../constants/space';
@@ -14,49 +15,84 @@ const defaultBadge = require('../../assets/images/badge-default.png');
 const MyPage = () => {
   // 임시 뱃지 배열
   const badges = [defaultBadge, defaultBadge, defaultBadge, defaultBadge, defaultBadge];
+  const [isPushOn, setIsPushOn] = useState(true);
 
   return (
     <SafeAreaView style={styles.container}>
       <HeaderComponents icon="setting" title="마이페이지" />
-      {/* 프로필 정보 */}
-      <View style={styles.profileContainer}>
-        <View style={{ flexDirection: 'row', gap: 16 }}>
-          <Image source={dummyProfile} style={styles.profileImg} />
-          <View style={{ gap: 6 }}>
-            <Text style={styles.nameText}>따잇</Text>
-            <Text style={styles.emailText}>testemail@gmail.com</Text>
-            <View style={{ flexDirection: 'row', gap: 6 }}>
-              <CustomTag size="small" text="웨이트" />
-              <CustomTag size="small" text="다이어트" />
+      <ScrollView contentContainerStyle={{ flexGrow: 1, paddingBottom: 100 }}>
+        {/* 프로필 정보 */}
+        <View style={styles.profileContainer}>
+          <View style={{ flexDirection: 'row', gap: 16 }}>
+            <Image source={dummyProfile} style={styles.profileImg} />
+            <View style={{ gap: 6 }}>
+              <Text style={styles.nameText}>따잇</Text>
+              <Text style={styles.emailText}>testemail@gmail.com</Text>
+              <View style={{ flexDirection: 'row', gap: 6 }}>
+                <CustomTag size="small" text="웨이트" />
+                <CustomTag size="small" text="다이어트" />
+              </View>
+              <Text style={styles.introduceText}>소개글입니다</Text>
             </View>
-            <Text style={styles.introduceText}>소개글입니다</Text>
+          </View>
+          <View style={styles.buttonWrapper}>
+            <CustomButton theme="primary" size="medium" text="회원 정보 수정" />
+            <CustomButton theme="primary" size="medium" text="로그아웃" />
           </View>
         </View>
-        <View style={styles.buttonWrapper}>
-          <CustomButton theme="primary" size="medium" text="회원 정보 수정" />
-          <CustomButton theme="primary" size="medium" text="로그아웃" />
-        </View>
-      </View>
 
-      {/* 뱃지 */}
-      <View style={styles.badgeContainer}>
-        <View style={styles.badgeTitleWrapper}>
-          <Text style={styles.subTitle}>획득한 뱃지</Text>
-          <TouchableOpacity activeOpacity={0.6}>
-            <Text style={styles.seeMore}>더보기</Text>
-          </TouchableOpacity>
+        {/* 뱃지 */}
+        <View style={styles.badgeContainer}>
+          <View style={styles.badgeTitleWrapper}>
+            <Text style={styles.subTitle}>획득한 뱃지</Text>
+            <TouchableOpacity onPress={() => Alert.alert('뱃지 상세 페이지로 이동')} activeOpacity={0.6}>
+              <Text style={styles.seeMore}>더보기</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.badgeWrapper}>
+            {badges.map((badge, index) => (
+              <Image source={defaultBadge} style={{ width: 50, height: 50 }} />
+            ))}
+          </View>
         </View>
-        <View style={styles.badgeWrapper}>
-          {badges.map((badge, index) => (
-            <Image source={defaultBadge} style={{ width: 50, height: 50 }} />
-          ))}
-        </View>
-      </View>
 
-      {/* 설정 메뉴 */}
-      <View style={styles.settingContainer}>
-        <Text style={styles.subTitle}>설정</Text>
-      </View>
+        {/* 설정 메뉴 */}
+        <View>
+          <Text style={[styles.subTitle, styles.settingTitle]}>설정</Text>
+          <View style={{ borderTopWidth: 1, borderColor: COLORS.darkGrey }} />
+          <SettingItem
+            title={'프로필 공개 범위'}
+            description={'공개하면 친구 추천에 나타납니다'}
+            rightBtn="arrow"
+            onPress={() => Alert.alert('공개 범위 페이지로 이동')}
+          />
+          <SettingItem
+            title={'푸시알림'}
+            description={'푸시 알림을 켜서 따잇의 소식을 받아보세요'}
+            rightBtn="toggle"
+            isToggled={isPushOn}
+            onToggle={() => setIsPushOn(!isPushOn)}
+          />
+          <SettingItem
+            title={'운동 기록 통계'}
+            description={'운동 통계 데이터 보기'}
+            rightBtn="arrow"
+            onPress={() => Alert.alert('운동 기록 통계 페이지로 이동')}
+          />
+        </View>
+
+        {/* 도움말 */}
+        <View>
+          <Text style={[styles.subTitle, styles.settingTitle]}>도움말</Text>
+          <View style={{ borderTopWidth: 1, borderColor: COLORS.darkGrey }} />
+          <SettingItem
+            title={'FAQ'}
+            description={'자주 묻는 질문'}
+            rightBtn="arrow"
+            onPress={() => Alert.alert('FAQ 페이지로 이동')}
+          />
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -125,8 +161,9 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 16,
   },
-  settingContainer: {
-    ...LAYOUT_PADDING,
+  settingTitle: {
     marginTop: 30,
+    marginLeft: 20,
+    marginBottom: 16,
   },
 });
