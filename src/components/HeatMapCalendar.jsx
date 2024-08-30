@@ -6,40 +6,32 @@ import { FONT_SIZES, FONTS } from '../constants/font';
 import { RADIUS } from '../constants/radius';
 
 // 강조 색상
-const colorLevels = ['#E0E0FF', '#A9A9FF', '#7A7AFF', '#5D5DFC', '#3A3ADC'];
+const colorLevels = [
+  { threshold: 80, color: '#3A3ADC' },
+  { threshold: 60, color: '#5D5DFC' },
+  { threshold: 40, color: '#7A7AFF' },
+  { threshold: 20, color: '#A9A9FF' },
+  { threshold: 0, color: '#E0E0FF' },
+];
+const getColorForValue = (value) => colorLevels.find(({ threshold }) => value >= threshold).color;
 
-// 수치 기준
-const getColorForValue = (value) => {
-  if (value >= 80) {
-    return colorLevels[4];
-  }
-  if (value >= 60) {
-    return colorLevels[3];
-  }
-  if (value >= 40) {
-    return colorLevels[2];
-  }
-  if (value >= 20) {
-    return colorLevels[1];
-  }
-  return colorLevels[0];
-};
-
+// 달의 첫 요일
 const getFirstDayOfMonth = (year, month) => new Date(year, month - 1, 1).getDay();
+// 달의 마지막날
 const getDaysInMonth = (year, month) => new Date(year, month, 0).getDate();
 
 const HeatmapCalendar = ({ year, month, squareGap = 5, highlightData = [] }) => {
   const firstDayOfMonth = getFirstDayOfMonth(year, month);
   const daysInMonth = getDaysInMonth(year, month);
-  // 빈 공간을 포함한 전체 날짜 배열 생성
+
+  // 월 전체 날짜 배열 (빈 날짜 포함)
   const daysArray = [...Array(firstDayOfMonth).fill(null), ...Array.from({ length: daysInMonth }, (_, i) => i + 1)];
-  // 주별로 나누기 위한 배열
-  const weeks = [];
-  for (let i = 0; i < daysArray.length; i += 7) {
-    weeks.push(daysArray.slice(i, i + 7));
-  }
-  // 날짜를 문자열 형태로 변환하는 함수
-  const formatDate = (day) => `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+
+  //주별로 나누기
+  const weeks = Array.from({ length: Math.ceil(daysArray.length / 7) }, (_, i) => daysArray.slice(i * 7, i * 7 + 7));
+
+  //YYYY-MM-DD
+  const formatDate = (day) => `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
 
   const weekDays = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
 
@@ -47,7 +39,7 @@ const HeatmapCalendar = ({ year, month, squareGap = 5, highlightData = [] }) => 
     <View style={styles.container}>
       <View style={styles.row}>
         {weekDays.map((day, index) => (
-          <View key={index} style={[styles.square]}>
+          <View key={index} style={styles.square}>
             <Text style={styles.weekDayText}>{day}</Text>
           </View>
         ))}
@@ -57,7 +49,7 @@ const HeatmapCalendar = ({ year, month, squareGap = 5, highlightData = [] }) => 
           {week.map((day, index) => {
             const dateString = day ? formatDate(day) : '';
             const highlight = highlightData.find((item) => item.date === dateString);
-            const color = highlight ? getColorForValue(highlight.value) : COLORS.grey; // 기본 색상
+            const color = highlight ? getColorForValue(highlight.value) : COLORS.grey;
 
             return (
               <View key={index} style={[styles.square, { backgroundColor: color, marginHorizontal: squareGap / 2 }]}>
