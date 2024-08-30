@@ -1,18 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import { Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import CalendarHeatmap from 'react-native-calendar-heatmap';
-import { ScrollView } from 'react-native-gesture-handler';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import React from 'react';
+import { Image, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 
-import CustomButton from '../../components/CustomButton';
-import CustomCard from '../../components/CustomCardComponent';
 import HeaderComponents from '../../components/HeaderComponents';
 import HeatmapCalendar from '../../components/HeatMapCalendar';
+import MyCompetitionItem from '../../components/MyCompetitionItem';
+import NoOngoingCompetitions from '../../components/NoOngoingCompetitions';
 import { BACKGROUND_COLORS, COLORS } from '../../constants/colors';
 import { FONT_SIZES, FONT_WEIGHTS, HEADER_FONT_SIZES } from '../../constants/font';
+import { RADIUS } from '../../constants/radius';
 import { ELEMENT_VERTICAL_MARGIN, LAYOUT_PADDING, SPACING } from '../../constants/space';
-import useUserStore from '../../store/sign/login';
-import { formDate } from '../../utils/date';
 
 const userData = {
   nickname: '따잇',
@@ -23,16 +19,16 @@ const dummyMyCompetitions = [
   {
     id: 1,
     title: '1:1 헬스 대결 붙을사람!!',
-    max_members: 2, // 1:1 경쟁
+    max_members: 2,
     current_members: 2,
     competition_type: '헬스',
     competition_theme: '스쿼트 내기',
-    start_date: '2024-08-25T09:00:00', // 경쟁 시작 날짜 (시간)
-    end_date: '2024-08-30T18:00:00', // 경쟁 종료 날짜
+    start_date: '2024-08-25T09:00:00',
+    end_date: '2024-08-30T18:00:00',
   },
 ];
 
-const highlightData = [
+const dummyDates = [
   { date: '2024-08-05', value: 50 },
   { date: '2024-08-10', value: 80 },
   { date: '2024-08-15', value: 30 },
@@ -41,62 +37,44 @@ const highlightData = [
 ];
 
 const Home = () => {
-  const [data, setData] = useState(null);
-
-  useEffect(() => {
-    setData(dummyMyCompetitions);
-  }, []);
-
+  const data = dummyMyCompetitions;
+  const handleCompetitionPress = (item) => {
+    //페이지 이동
+  };
   return (
     <SafeAreaView style={styles.safeArea}>
       <HeaderComponents icon="home" />
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
-        <View style={styles.profileContainer}>
-          <Image style={styles.profileImg} source={{ uri: userData.profile }} />
-          <View style={styles.textWrapper}>
-            <Text style={styles.lgBoldText}>{`${userData.nickname}님,`}</Text>
-            <Text style={styles.mdText}>안녕하세요</Text>
-          </View>
-        </View>
-        <Text style={styles.titleText}>진행중인 경쟁</Text>
-        {data?.length > 0 ? (
-          data.map((item) => <CompetitionItem key={item.id} item={item} onPress={() => {}} />)
+        <ProfileSection data={userData} />
+        <SectionTitle title="진행중인 경쟁" />
+        {data.length > 0 ? (
+          data.map((item) => <MyCompetitionItem key={item.id} item={item} onPress={handleCompetitionPress} />)
         ) : (
           <NoOngoingCompetitions />
         )}
-        <Text style={styles.titleText}> 운동 요약 </Text>
-        <View style={styles.cardContainer}>
-          <Text style={styles.mdBoldText}>8월에는 운동을 얼마나 했을까요? </Text>
-          <HeatmapCalendar year={2024} month={8} squareGap={8} highlightData={highlightData} />
-        </View>
+        <SectionTitle title="운동 요약" />
+        <ExerciseSummary data={dummyDates} />
       </ScrollView>
     </SafeAreaView>
   );
 };
 
-const CompetitionItem = React.memo(({ item, onPress }) => (
-  <TouchableOpacity onPress={() => onPress(item)} style={styles.competitionContainer}>
-    <Text style={styles.competitionName}>{item.title}</Text>
-    <Text style={styles.competitionDate}>
-      {formDate(item.start_date)} ~ {formDate(item.end_date)}
-    </Text>
-    <View style={{ flexDirection: 'row', alignItems: 'center', gap: SPACING.xs }}>
-      <Ionicons name="person" size={16} color={COLORS.semiLightGrey} />
-      <Text style={styles.competitionMembers}>
-        {item.current_members} / {item.max_members}
-      </Text>
+const ProfileSection = ({ data }) => (
+  <View style={styles.profileContainer}>
+    <Image style={styles.profileImg} source={{ uri: data.profile }} />
+    <View style={styles.textWrapper}>
+      <Text style={styles.lgBoldText}>{`${data.nickname}님,`}</Text>
+      <Text style={styles.mdText}>안녕하세요</Text>
     </View>
-  </TouchableOpacity>
-));
+  </View>
+);
 
-const NoOngoingCompetitions = () => (
+const SectionTitle = ({ title }) => <Text style={styles.titleText}>{title}</Text>;
+
+const ExerciseSummary = ({ data }) => (
   <View style={styles.cardContainer}>
-    <Text style={styles.boldText}>
-      {'아직 진행중인 경쟁이 없네요..\n언른 '}
-      <Text style={styles.highlightText}>따잇</Text>
-      {'하러 가보실까요?'}
-    </Text>
-    <CustomButton text="+ 새로운 경쟁" theme="primary" size="medium" />
+    <Text style={styles.mdBoldText}>8월에는 운동을 얼마나 했을까요?</Text>
+    <HeatmapCalendar year={2024} month={8} squareGap={8} highlightData={data} />
   </View>
 );
 
@@ -106,14 +84,15 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.darkBackground,
   },
   scrollViewContent: {
-    paddingBottom: 120, //바텀탭
+    paddingBottom: 120,
     ...LAYOUT_PADDING,
     ...ELEMENT_VERTICAL_MARGIN,
   },
   profileContainer: {
     flexDirection: 'row',
-    gap: 14,
+    gap: SPACING.md,
     alignItems: 'center',
+    marginBottom: SPACING.md,
   },
   profileImg: {
     height: 80,
@@ -132,12 +111,6 @@ const styles = StyleSheet.create({
     color: COLORS.white,
     fontSize: FONT_SIZES.md,
   },
-  mdBoldText: {
-    alignSelf: 'stretch',
-    color: COLORS.white,
-    fontSize: FONT_SIZES.md,
-    fontWeight: FONT_WEIGHTS.bold,
-  },
   titleText: {
     fontSize: HEADER_FONT_SIZES.sm,
     fontWeight: FONT_WEIGHTS.bold,
@@ -146,43 +119,17 @@ const styles = StyleSheet.create({
   },
   cardContainer: {
     backgroundColor: BACKGROUND_COLORS.greyDark,
-    borderRadius: 24,
-    padding: 20,
+    borderRadius: RADIUS.large,
+    padding: SPACING.lg,
     alignItems: 'center',
-    gap: 16,
-    marginBottom: 20,
+    gap: SPACING.md,
+    marginBottom: SPACING.lg,
   },
-  boldText: {
+  mdBoldText: {
     alignSelf: 'stretch',
     color: COLORS.white,
     fontSize: FONT_SIZES.md,
     fontWeight: FONT_WEIGHTS.bold,
-    paddingHorizontal: 40,
-    textAlign: 'center',
-  },
-  highlightText: {
-    color: COLORS.primary,
-  },
-  competitionContainer: {
-    backgroundColor: COLORS.darkGrey,
-    paddingHorizontal: SPACING.lg,
-    paddingVertical: SPACING.xl,
-    borderRadius: 24,
-    gap: SPACING.xs,
-    marginBottom: SPACING.md,
-  },
-  competitionName: {
-    color: COLORS.white,
-    fontSize: FONT_SIZES.md,
-    fontWeight: FONT_WEIGHTS.bold,
-  },
-  competitionDate: {
-    color: COLORS.semiLightGrey,
-    fontSize: FONT_SIZES.sm,
-  },
-  competitionMembers: {
-    color: COLORS.white,
-    fontSize: FONT_SIZES.sm,
   },
 });
 

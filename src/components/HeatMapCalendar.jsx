@@ -2,7 +2,8 @@ import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { COLORS } from '../constants/colors';
-import { FONTS } from '../constants/font';
+import { FONT_SIZES, FONTS } from '../constants/font';
+import { RADIUS } from '../constants/radius';
 
 // 강조 색상
 const colorLevels = ['#E0E0FF', '#A9A9FF', '#7A7AFF', '#5D5DFC', '#3A3ADC'];
@@ -37,7 +38,6 @@ const HeatmapCalendar = ({ year, month, squareGap = 5, highlightData = [] }) => 
   for (let i = 0; i < daysArray.length; i += 7) {
     weeks.push(daysArray.slice(i, i + 7));
   }
-
   // 날짜를 문자열 형태로 변환하는 함수
   const formatDate = (day) => `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
 
@@ -85,16 +85,16 @@ const styles = StyleSheet.create({
     aspectRatio: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 10,
+    borderRadius: RADIUS.small,
   },
   text: {
     color: COLORS.white,
-    fontSize: 10,
+    fontSize: FONT_SIZES.xxs,
     fontFamily: FONTS.PRETENDARD[400],
   },
   weekDayText: {
     color: COLORS.white,
-    fontSize: 12,
+    fontSize: FONT_SIZES.xxs,
     fontFamily: FONTS.PRETENDARD[400],
   },
 });
