@@ -1,5 +1,6 @@
 # API KEY
 .env
+.env.local
 
 # Gemfile.lock
 Gemfile.lock
