@@ -2,6 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
+// 이제 토큰 굳이 필요없을듯 유저에대한 정보를 저장하는것으로 바꾸기
 interface Token {
   accessToken: string;
   refreshToken: string;

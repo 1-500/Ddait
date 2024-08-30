@@ -1,5 +1,6 @@
+import { useNavigation } from '@react-navigation/native';
 import { useEffect } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Alert, StyleSheet, Text, View } from 'react-native';
 
 import { emailAccountId, socialLoginAccountId } from '../../apis/signup/index';
 import useUserStore from '../../store/sign/login';
@@ -8,6 +9,7 @@ import useUserFormStore from '../../store/sign/signup';
 const CompleteRegisterForm = () => {
   const { email, password, nickname, position, preferredSport, gender, selectedDate, clearForm } = useUserFormStore();
   const { socialEmail } = useUserStore();
+  const navigation = useNavigation();
 
   useEffect(() => {
     const postId = async () => {
@@ -27,7 +29,7 @@ const CompleteRegisterForm = () => {
             }),
           );
         } else {
-          await emailAccountId(
+          const result = await emailAccountId(
             JSON.stringify({
               email,
               password,
@@ -38,7 +40,7 @@ const CompleteRegisterForm = () => {
               birthdate: `${selectedDate.year}${selectedDate.month}${selectedDate.day}`,
             }),
           );
-
+          Alert.alert(result.message);
           clearForm();
         }
       } catch (error) {
