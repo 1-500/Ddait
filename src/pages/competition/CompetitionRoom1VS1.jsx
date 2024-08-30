@@ -20,6 +20,39 @@ const dummy_data = {
     start_date: new Date(2024, 7, 1), //2024-08-01
     end_date: new Date(2024, 7, 31), //2024-08-31
   },
+  record: [
+    {
+      id: 'competition_record_uuid1',
+      member_id: 'member_uuid1',
+      competition_room_id: 'competition_room_uuid1',
+      rank: null,
+      total_score: 19.79,
+      created_at: '2024-08-26T18:17:51.368969+00:00',
+      score_detail: [
+        {
+          name: '데드리프트',
+          score: 0,
+        },
+        {
+          name: '벤치프레스',
+          score: 2.51,
+        },
+        {
+          name: '스쿼트',
+          score: 17.28,
+        },
+      ],
+    },
+    {
+      id: 'competition_record_uuid2',
+      member_id: 'member_uuid2',
+      competition_room_id: 'competition_room_uuid1',
+      rank: null,
+      total_score: 0,
+      created_at: '2024-08-27T13:44:16+00:00',
+      score_detail: [],
+    },
+  ],
   result: {
     me: {
       name: '따잇',
@@ -43,7 +76,7 @@ const dummy_data = {
   usage_data: ['data1', 'data2'],
 };
 
-const CompetitionRoom1V1 = () => {
+const CompetitionRoom1VS1 = () => {
   const maxGraphWidth = width - 180;
 
   const renderCompetitionProfile = (data, color, style) => {
@@ -132,7 +165,7 @@ const CompetitionRoom1V1 = () => {
   );
 };
 
-export default CompetitionRoom1V1;
+export default CompetitionRoom1VS1;
 
 const styles = StyleSheet.create({
   pageContainer: {
