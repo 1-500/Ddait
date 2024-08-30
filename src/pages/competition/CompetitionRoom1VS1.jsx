@@ -1,24 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import {
-  Dimensions,
-  FlatList,
-  Image,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { Dimensions, FlatList, Image, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 
+import { getCompetitionRecord } from '../../apis/competition';
 import CompetitionRoomHeader from '../../components/CompetitionRoomHeader';
 import CustomTag from '../../components/CustomTag';
 import { COLORS } from '../../constants/colors';
-import { FONT_SIZES, FONT_WEIGHTS, FONTS } from '../../constants/font';
+import { FONT_SIZES, FONTS } from '../../constants/font';
 import { RADIUS } from '../../constants/radius';
 import { LAYOUT_PADDING, SPACING } from '../../constants/space';
+// import useUserStore from '../../store/sign/login';
 
 const { width } = Dimensions.get('window');
+
+// const { userId } = useUserStore();
+/* eslint-disable */
 
 const dummy_data = {
   room_info: {
@@ -89,22 +84,28 @@ const dummy_data = {
   usage_data: ['데드리프트', '벤치프레스', '스쿼트'],
 };
 
-const CompetitionRoom1VS1 = () => {
+const CompetitionRoom1VS1 = ({ competitionId }) => {
   const maxGraphWidth = width - 180;
-  const [resultData, setResultData] = useState([]);
+  const [competitionRecord, setCompetitionRecord] = useState();
 
   useEffect(() => {
-    // setResultData(getMyResult());
-    setResultData([dummy_data.record[0], dummy_data.record[1]]);
+    setCompetitionRecord(dummy_data.record);
+    // fetchResult();
   }, []);
 
-  // const getMyResult = () => {
-  //   const result =
-  //     dummy_data.record[0].member_id === userId
-  //       ? [dummy_data.record[0], dummy_data.record[1]]
-  //       : [dummy_data.record[1], dummy_data.record[0]];
-  //   return result;
-  // };
+  const fetchResult = async () => {
+    try {
+      const res = getCompetitionRecord(competitionId);
+      if (res.status === 200) {
+        // userId 가져오기
+        const userId = 'member_uuid1';
+        const sortedData = res.data[1].member_id === userId ? [res.data[1], res.data[0]] : [res.data[0], res.data[1]];
+        setCompetitionRecord(sortedData);
+      }
+    } catch (error) {
+      console.log('error: ', error);
+    }
+  };
 
   const CompetitionProfile = ({ userInfo, result, color, style }) => {
     return (
@@ -127,7 +128,7 @@ const CompetitionRoom1VS1 = () => {
         <View style={styles.messageWrapper}>
           <Text style={styles.userNameText}>{dummy_data.user_info[0].nickname}님,</Text>
           <Text style={styles.messageText}>
-            {resultData[0].total_score >= resultData[1].total_score
+            {competitionRecord[0].total_score >= competitionRecord[1].total_score
               ? '지금 이기고 있네요! 계속 가봅시다'
               : '지고있어요.. 조금만 더 힘내요!'}
           </Text>
@@ -135,10 +136,10 @@ const CompetitionRoom1VS1 = () => {
         <View style={styles.profileContainer}>
           <CompetitionProfile
             userInfo={dummy_data.user_info[0]}
-            result={resultData[0]}
+            result={competitionRecord[0]}
             color={COLORS.primary}
             style={
-              resultData[0].total_score >= resultData[1].total_score && {
+              competitionRecord[0].total_score >= competitionRecord[1].total_score && {
                 borderWidth: 3,
                 borderColor: COLORS.primary,
               }
@@ -146,10 +147,10 @@ const CompetitionRoom1VS1 = () => {
           />
           <CompetitionProfile
             userInfo={dummy_data.user_info[1]}
-            result={resultData[1]}
+            result={competitionRecord[1]}
             color={COLORS.secondary}
             style={
-              resultData[1].total_score >= resultData[0].total_score && {
+              competitionRecord[1].total_score >= competitionRecord[0].total_score && {
                 borderWidth: 3,
                 borderColor: COLORS.secondary,
               }
@@ -175,12 +176,15 @@ const CompetitionRoom1VS1 = () => {
                 {
                   backgroundColor: COLORS.primary,
                   width:
-                    (maxGraphWidth * resultData[0].score_detail[index].score) /
-                    (Math.max(resultData[1].score_detail[index].score, resultData[0].score_detail[index].score) || 1),
+                    (maxGraphWidth * competitionRecord[0].score_detail[index].score) /
+                    (Math.max(
+                      competitionRecord[1].score_detail[index].score,
+                      competitionRecord[0].score_detail[index].score,
+                    ) || 1),
                 },
               ]}
             />
-            <Text style={styles.scoreText}>{resultData[0].score_detail[index].score}</Text>
+            <Text style={styles.scoreText}>{competitionRecord[0].score_detail[index].score}</Text>
           </View>
           <View style={styles.graphWrapper}>
             <View
@@ -189,12 +193,15 @@ const CompetitionRoom1VS1 = () => {
                 {
                   backgroundColor: COLORS.secondary,
                   width:
-                    (maxGraphWidth * resultData[1].score_detail[index].score) /
-                    (Math.max(resultData[0].score_detail[index].score, resultData[1].score_detail[index].score) || 1),
+                    (maxGraphWidth * competitionRecord[1].score_detail[index].score) /
+                    (Math.max(
+                      competitionRecord[0].score_detail[index].score,
+                      competitionRecord[1].score_detail[index].score,
+                    ) || 1),
                 },
               ]}
             />
-            <Text style={styles.scoreText}>{resultData[1].score_detail[index].score}</Text>
+            <Text style={styles.scoreText}>{competitionRecord[1].score_detail[index].score}</Text>
           </View>
         </View>
       </View>
@@ -204,7 +211,7 @@ const CompetitionRoom1VS1 = () => {
   return (
     <SafeAreaView style={styles.pageContainer}>
       <CompetitionRoomHeader data={dummy_data.room_info} />
-      {resultData[0] && resultData[1] && (
+      {competitionRecord[0] && competitionRecord[1] && (
         <View style={[{ paddingTop: 30 }, LAYOUT_PADDING]}>
           <FlatList
             data={dummy_data.record[0].score_detail}
