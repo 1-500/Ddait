@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Alert, Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
+import { postLogout } from '../../apis/mypage/index';
 import CustomButton from '../../components/CustomButton';
 import CustomTag from '../../components/CustomTag';
 import HeaderComponents from '../../components/HeaderComponents';
@@ -9,6 +10,7 @@ import { COLORS } from '../../constants/colors';
 import { FONT_SIZES, FONTS } from '../../constants/font';
 import { LAYOUT_PADDING } from '../../constants/space';
 import { SPACING } from '../../constants/space';
+import useUserStore from '../../store/sign/login';
 
 const dummyProfile = require('../../assets/images/profile.png');
 const defaultBadge = require('../../assets/images/badge-default.png');
@@ -18,7 +20,19 @@ const MyPage = ({ navigation }) => {
   const badges = [defaultBadge, defaultBadge, defaultBadge, defaultBadge, defaultBadge];
   // 푸시 알림 기본값: On (임시)
   const [isPushOn, setIsPushOn] = useState(true);
-
+  const { clearUser } = useUserStore();
+  const handleLogoutButton = async () => {
+    const result = await postLogout();
+    if (result.status === 200) {
+      Alert.alert('로그아웃 하였습니다!');
+      clearUser();
+      navigation.navigate('Sign', {
+        screen: 'Login',
+      });
+    } else {
+      Alert.alert('로그아웃 실패하였습니다');
+    }
+  };
   return (
     <SafeAreaView style={styles.container}>
       <HeaderComponents icon="setting" title="마이페이지" />
@@ -39,7 +53,7 @@ const MyPage = ({ navigation }) => {
           </View>
           <View style={styles.buttonWrapper}>
             <CustomButton theme="primary" size="medium" text="회원 정보 수정" />
-            <CustomButton theme="primary" size="medium" text="로그아웃" />
+            <CustomButton theme="primary" size="medium" text="로그아웃" onPress={handleLogoutButton} />
           </View>
         </View>
 
