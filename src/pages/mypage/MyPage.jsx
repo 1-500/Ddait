@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Alert, Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
+import { postLogout } from '../../apis/mypage/index';
 import CustomButton from '../../components/CustomButton';
 import CustomTag from '../../components/CustomTag';
 import HeaderComponents from '../../components/HeaderComponents';
@@ -19,6 +20,17 @@ const MyPage = ({ navigation }) => {
   // 푸시 알림 기본값: On (임시)
   const [isPushOn, setIsPushOn] = useState(true);
 
+  const handleLogoutButton = async () => {
+    const result = await postLogout();
+    if (result.status === 200) {
+      Alert.alert('로그아웃 하였습니다!');
+      navigation.navigate('Sign', {
+        screen: 'Login',
+      });
+    } else {
+      Alert.alert('로그아웃 실패하였습니다');
+    }
+  };
   return (
     <SafeAreaView style={styles.container}>
       <HeaderComponents icon="setting" title="마이페이지" />
@@ -39,7 +51,7 @@ const MyPage = ({ navigation }) => {
           </View>
           <View style={styles.buttonWrapper}>
             <CustomButton theme="primary" size="medium" text="회원 정보 수정" />
-            <CustomButton theme="primary" size="medium" text="로그아웃" />
+            <CustomButton theme="primary" size="medium" text="로그아웃" onPress={handleLogoutButton} />
           </View>
         </View>
 

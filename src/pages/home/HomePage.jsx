@@ -2,20 +2,18 @@ import axios from 'axios';
 import React, { useEffect } from 'react';
 import { processColor, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 
-import { getTest } from '../../apis/home';
+import { getTest } from '../../apis/home/index';
 import CustomCard from '../../components/CustomCardComponent';
 import CustomInput from '../../components/CustomInput';
 import HeaderComponents from '../../components/HeaderComponents';
 import { COLORS } from '../../constants/colors';
 import { LAYOUT_PADDING } from '../../constants/space';
-import useUserStore from '../../store/sign/login';
 
 const HomePage = () => {
   /* eslint-disable */
-  const { token } = useUserStore();
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchtest = async () => {
       try {
         const res = await getTest();
         console.log(res);
@@ -24,7 +22,7 @@ const HomePage = () => {
       }
     };
 
-    fetchData();
+    fetchtest();
     /* eslint-enable */
   }, []);
   return (
