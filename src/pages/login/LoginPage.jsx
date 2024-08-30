@@ -1,5 +1,5 @@
 import { useNavigation } from '@react-navigation/native';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Alert, Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { emailLogin } from '../../apis/login/index';
@@ -20,7 +20,7 @@ const LoginPage = () => {
   const [emailInput, setEmailInput] = useState();
   const [passwordInput, setPasswordInput] = useState();
 
-  const { setToken, setUserEmail } = useUserStore();
+  const { setToken, setUserEmail, clearUser, setUserId, userId } = useUserStore();
 
   const handleEmailInput = (text) => {
     setEmailInput(text);
@@ -39,7 +39,8 @@ const LoginPage = () => {
         }),
       );
       if (result) {
-        const { access_token, expires_in, refresh_token, user } = result;
+        const { access_token, expires_in, refresh_token, user } = result.session;
+        setUserId(result.userId);
         setToken({
           accessToken: access_token,
           expiresIn: expires_in,
@@ -57,6 +58,11 @@ const LoginPage = () => {
       Alert.alert('이메일 패스워드를 입력하세요!');
     }
   };
+  useEffect(() => {
+    clearUser();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>

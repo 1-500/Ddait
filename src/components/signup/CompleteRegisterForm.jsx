@@ -6,13 +6,13 @@ import useUserStore from '../../store/sign/login';
 import useUserFormStore from '../../store/sign/signup';
 
 const CompleteRegisterForm = () => {
-  const { email, password, nickname, position, preferredSport, gender, selectedDate } = useUserFormStore();
-  const { socialEmail, clearUser } = useUserStore();
+  const { email, password, nickname, position, preferredSport, gender, selectedDate, clearForm } = useUserFormStore();
+  const { socialEmail } = useUserStore();
 
   useEffect(() => {
     const postId = async () => {
       try {
-        if (socialEmail) {
+        if (socialEmail !== null) {
           // 소셜로그인이 이메일이 존재한다
           const result = await socialLoginAccountId(
             JSON.stringify({
@@ -27,7 +27,7 @@ const CompleteRegisterForm = () => {
             }),
           );
         } else {
-          const result = await emailAccountId(
+          await emailAccountId(
             JSON.stringify({
               email,
               password,
@@ -38,6 +38,8 @@ const CompleteRegisterForm = () => {
               birthdate: `${selectedDate.year}${selectedDate.month}${selectedDate.day}`,
             }),
           );
+
+          clearForm();
         }
       } catch (error) {
         // console.log(error);
