@@ -78,6 +78,10 @@ const StartWorkout = () => {
       id: index + workoutData.length + 1,
       title: exerciseName,
       workoutSet: [{ id: 1, weight: '', reps: '' }],
+      time: 0,
+      isRunning: false,
+      restTime: 0,
+      isResting: false,
     }));
     setWorkoutData((prev) => [...prev, ...newWorkoutData]);
     setSelectedExercises([]);
@@ -122,35 +126,50 @@ const StartWorkout = () => {
     );
   };
 
-  const handleStartPause = () => {
-    if (isRunning) {
-      clearInterval(intervalId);
-      setIsRunning(!isRunning);
-    } else {
-      const id = setInterval(() => {
-        setTotalTime((prevTime) => {
-          const newSeconds = prevTime.seconds + 1;
-          const newMinutes = prevTime.minutes + Math.floor(newSeconds / 60);
-
-          return {
-            minutes: newMinutes,
-            seconds: newSeconds % 60,
-          };
-        });
-      }, 1000);
-
-      setIntervalId(id);
-      setIsRunning(!isRunning);
-      setIsReset(!isReset);
-    }
+  const handleStartPause = (workoutId) => {
+    setWorkoutData((prevData) =>
+      prevData.map((workout) => {
+        if (workout.id === workoutId) {
+          if (workout.isRunning) {
+            return { ...workout, isRunning: false };
+          } else {
+            return { ...workout, isRunning: true, isResting: false };
+          }
+        }
+        return workout;
+      }),
+    );
   };
 
-  const handleReset = () => {
-    if (isRunning) {
-      clearInterval(intervalId);
-      setIsRunning(!isRunning);
-    }
+  const handleRest = (workoutId) => {
+    setWorkoutData((prevData) =>
+      prevData.map((workout) => {
+        if (workout.id === workoutId) {
+          return { ...workout, isRunning: false, isResting: !workout.isResting };
+        }
+        return workout;
+      }),
+    );
   };
+  useEffect(() => {
+    const id = setInterval(() => {
+      setTotalTime((prevTime) => prevTime + 1);
+      setWorkoutData((prevData) =>
+        prevData.map((workout) => {
+          if (workout.isRunning) {
+            return { ...workout, time: workout.time + 1 };
+          } else if (workout.isResting) {
+            return { ...workout, restTime: workout.restTime + 1 };
+          }
+          return workout;
+        }),
+      );
+    }, 1000);
+
+    setIntervalId(id);
+
+    return () => clearInterval(id);
+  }, []);
 
   const handleDeleteExerciseSet = (workoutId, setId) => {
     setWorkoutData((prevData) =>
@@ -189,13 +208,15 @@ const StartWorkout = () => {
   const handleSaveWorkoutRecord = async () => {
     try {
       const workoutName = '아침운동';
-      const workoutTime = `${String(totalTime.minutes).padStart(2, '0')}:${String(totalTime.seconds).padStart(2, '0')}`;
+      const workoutTime = `${String(Math.floor(totalTime / 60)).padStart(2, '0')}:${String(totalTime % 60).padStart(2, '0')}`;
       const exercises = workoutData.flatMap((workout) =>
         workout.workoutSet.map((set) => ({
           exercise_name: workout.title,
           weight: set.weight,
           reps: set.reps,
           set: set.id,
+          exercise_time: workout.time,
+          rest_time: workout.restTime,
         })),
       );
       const workoutRecord = {
@@ -207,42 +228,56 @@ const StartWorkout = () => {
 
       const res = await postWorkoutRecord(userId, workoutRecord);
 
+      /* eslint-disable */
       if (res) {
         Alert.alert('운동 기록', '정상적으로 저장되었습니다');
         navigation.navigate('WorkoutDiaryScreen');
       } else {
         Alert.alert('운동 기록', '기록 저장에 실패했습니다.');
-        // eslint-disable-next-line no-console
         console.error('기록 저장에 실패했습니다.', res.error);
       }
     } catch (error) {
-      // eslint-disable-next-line no-console
       console.log('error', error);
     }
+    /* eslint-enable */
   };
+
+  const formatTime = (seconds) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
+  };
+
+  const calculateTotalTimes = () => {
+    return workoutData.reduce(
+      (acc, workout) => {
+        acc.totalWorkoutTime += workout.time;
+        acc.totalRestTime += workout.restTime;
+        return acc;
+      },
+      { totalWorkoutTime: 0, totalRestTime: 0 },
+    );
+  };
+  const { totalWorkoutTime, totalRestTime } = calculateTotalTimes();
 
   const renderWorkoutCard = ({ item }) => (
     <View style={styles.card}>
       <View style={styles.header}>
         <Text style={styles.titleText}>{item.title}</Text>
         <View style={{ flexDirection: 'row', gap: 8 }}>
-          {isRunning ? (
-            <>
-              <TouchableOpacity style={styles.startButton} onPress={handleStartPause}>
-                <Text style={styles.startButtonText}>정지</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.startButton} onPress={handleReset}>
-                <Text style={styles.startButtonText}>휴식</Text>
-              </TouchableOpacity>
-            </>
-          ) : (
-            <TouchableOpacity style={styles.startButton} onPress={handleStartPause}>
-              <Text style={styles.startButtonText}>{isReset ? '재개' : '시작'}</Text>
-            </TouchableOpacity>
-          )}
+          <TouchableOpacity style={styles.startButton} onPress={() => handleStartPause(item.id)}>
+            <Text style={styles.startButtonText}>{item.isRunning ? '정지' : '시작'}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.startButton} onPress={() => handleRest(item.id)}>
+            <Text style={styles.startButtonText}>{item.isResting ? '휴식 종료' : '휴식'}</Text>
+          </TouchableOpacity>
         </View>
       </View>
       <View style={styles.divider} />
+      {/* <View style={styles.timerContainer}>
+        <Text style={{ color: '#fff' }}>운동 시간: {formatTime(item.time)}</Text>
+        <Text style={{ color: '#fff' }}>휴식 시간: {formatTime(item.restTime)}</Text>
+      </View> */}
       <View style={styles.workoutSetContainer}>
         <View style={styles.workoutSetHeader}>
           <Text style={styles.workoutSetText}>세트</Text>
@@ -308,10 +343,21 @@ const StartWorkout = () => {
     <SafeAreaView style={{ flex: 1, backgroundColor: BACKGROUND_COLORS.dark }}>
       <HeaderComponents title="운동 시작" icon="timer" onRightBtnPress={handleTimerVisible} />
       <View style={styles.timerContainer}>
-        <MaterialCommunityIcons name="timer-outline" size={24} color={COLORS.white} />
-        <Text style={{ color: COLORS.white, marginLeft: 16 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <MaterialCommunityIcons name="timer-outline" size={24} color={COLORS.white} />
+          {/* <Text style={{ color: COLORS.white, marginLeft: 16 }}>
           {String(totalTime.minutes).padStart(2, '0')}:{String(totalTime.seconds).padStart(2, '0')}
-        </Text>
+        </Text> */}
+          <Text style={{ color: COLORS.white, marginLeft: 8, fontSize: BODY_FONT_SIZES.md }}>
+            운동: {formatTime(totalWorkoutTime)}
+          </Text>
+        </View>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <MaterialCommunityIcons name="timer-sand" size={24} color={COLORS.white} />
+          <Text style={{ color: COLORS.white, marginLeft: 8, fontSize: BODY_FONT_SIZES.md }}>
+            휴식: {formatTime(totalRestTime)}
+          </Text>
+        </View>
       </View>
       {workoutData.length === 0 && (
         <View style={styles.workoutContainer}>
