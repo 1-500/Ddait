@@ -15,7 +15,7 @@ import StartWorkout from './pages/diary/workoutDiary/StartWorkout';
 import WorkoutDatePick from './pages/diary/workoutDiary/WorkoutDatePick';
 import WorkoutDiary from './pages/diary/workoutDiary/WorkoutDiary';
 import Friend from './pages/friend/Friend';
-import HomePage from './pages/home/HomePage';
+import Home from './pages/home/Home';
 import LoginPage from './pages/login/LoginPage';
 import MyPage from './pages/mypage/MyPage';
 import ProfilePrivacy from './pages/mypage/ProfilePrivacy';
@@ -35,7 +35,9 @@ const MainTab = () => {
         headerShown: false,
       }}
     >
-      <Tab.Screen name="Home" component={HomePage} />
+      {/* <Tab.Screen name="SignUp" component={SignUpPage} /> */}
+      <Tab.Screen name="Home" component={Home} />
+      <Tab.Screen name="Competition" component={Competition} />
       <Tab.Screen name="Competition" component={CompetitionStack} />
       <Tab.Screen name="Friend" component={Friend} />
       <Tab.Screen name="Mypage" component={MyPage} />
