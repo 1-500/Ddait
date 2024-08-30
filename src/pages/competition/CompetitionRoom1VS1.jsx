@@ -4,7 +4,7 @@ import { Dimensions, Image, SafeAreaView, ScrollView, StyleSheet, Text, Touchabl
 import CompetitionRoomHeader from '../../components/CompetitionRoomHeader';
 import CustomTag from '../../components/CustomTag';
 import { COLORS } from '../../constants/colors';
-import { FONT_SIZES, FONT_WEIGHTS } from '../../constants/font';
+import { FONT_SIZES, FONT_WEIGHTS, FONTS } from '../../constants/font';
 import { RADIUS } from '../../constants/radius';
 import { LAYOUT_PADDING, SPACING } from '../../constants/space';
 
@@ -50,7 +50,20 @@ const dummy_data = {
       rank: null,
       total_score: 0,
       created_at: '2024-08-27T13:44:16+00:00',
-      score_detail: [],
+      score_detail: [
+        {
+          name: '데드리프트',
+          score: 0,
+        },
+        {
+          name: '벤치프레스',
+          score: 0,
+        },
+        {
+          name: '스쿼트',
+          score: 0,
+        },
+      ],
     },
   ],
   result: {
@@ -177,12 +190,12 @@ const styles = StyleSheet.create({
   },
   userNameText: {
     fontSize: FONT_SIZES.xl,
-    fontWeight: FONT_WEIGHTS.bold,
+    fontFamily: FONTS.PRETENDARD[700],
     color: COLORS.white,
   },
   messageText: {
     fontSize: FONT_SIZES.sm,
-    fontWeight: FONT_WEIGHTS.regular,
+    fontFamily: FONTS.PRETENDARD[400],
     color: COLORS.white,
   },
   profileContainer: {
@@ -206,14 +219,14 @@ const styles = StyleSheet.create({
   profileText: {
     textAlign: 'center',
     fontSize: FONT_SIZES.md,
-    fontWeight: FONT_WEIGHTS.bold,
+    fontFamily: FONTS.PRETENDARD[700],
     lineHeight: 24,
     color: COLORS.white,
   },
   profileTailText: {
     textAlignVertical: 'bottom',
     fontSize: FONT_SIZES.sm,
-    fontWeight: FONT_WEIGHTS.regular,
+    fontFamily: FONTS.PRETENDARD[400],
     color: COLORS.semiLightGrey,
   },
   vsTag: {
@@ -228,7 +241,7 @@ const styles = StyleSheet.create({
   },
   vsTagText: {
     fontSize: FONT_SIZES.sm,
-    fontWeight: FONT_WEIGHTS.medium,
+    fontFamily: FONTS.PRETENDARD[500],
     color: COLORS.white,
   },
   resultDataWrapper: {
@@ -243,7 +256,7 @@ const styles = StyleSheet.create({
   scoreTitleText: {
     width: 60,
     fontSize: FONT_SIZES.sm,
-    fontWeight: FONT_WEIGHTS.bold,
+    fontFamily: FONTS.PRETENDARD[700],
     color: COLORS.white,
   },
   graphContainer: {
@@ -259,7 +272,7 @@ const styles = StyleSheet.create({
   },
   scoreText: {
     fontSize: FONT_SIZES.sm,
-    fontWeight: FONT_WEIGHTS.regular,
+    fontFamily: FONTS.PRETENDARD[400],
     color: COLORS.white,
   },
 });
