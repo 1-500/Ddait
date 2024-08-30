@@ -74,16 +74,19 @@ const ProfileSection = ({ data }) => (
     </View>
   </View>
 );
-
 const SectionTitle = ({ title, navigation, navigateTo }) => (
   <View style={styles.titleWrapper}>
     <Text style={styles.titleText}>{title}</Text>
-    <Pressable onPress={() => navigation.navigate(navigateTo)}>
+    <Pressable
+      onPress={() => navigation.navigate(navigateTo)}
+      style={({ pressed }) => ({
+        opacity: pressed ? 0.7 : 1,
+      })}
+    >
       <Text style={styles.moreText}>더보기</Text>
     </Pressable>
   </View>
 );
-
 const ExerciseSummary = ({ data }) => (
   <View style={styles.cardContainer}>
     <Text style={styles.mdBoldText}>8월에는 운동을 얼마나 했을까요?</Text>
