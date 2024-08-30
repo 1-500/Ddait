@@ -2,7 +2,7 @@ import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import { Alert, Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import { emailLogin, fetchData } from '../../apis/login/index';
+import { emailLogin } from '../../apis/login/index';
 import CustomButton from '../../components/CustomButton';
 import CustomInput from '../../components/CustomInput';
 import { COLORS } from '../../constants/colors';
@@ -20,7 +20,7 @@ const LoginPage = () => {
   const [emailInput, setEmailInput] = useState();
   const [passwordInput, setPasswordInput] = useState();
 
-  const { setToken, setUserEmail, clearUser, setUserId, token } = useUserStore();
+  const { setToken, setUserEmail } = useUserStore();
 
   const handleEmailInput = (text) => {
     setEmailInput(text);
@@ -41,29 +41,27 @@ const LoginPage = () => {
       if (result.status === 403) {
         Alert.alert(result.message);
         return;
+      } else {
+        if (result.status === 200) {
+          const { access_token, expires_in, refresh_token, user } = result.session;
+          setToken({
+            accessToken: access_token,
+            expiresIn: expires_in,
+            refreshToken: refresh_token,
+          });
+          setUserEmail(user.email);
+          Alert.alert('로그인 하였습니다!');
+          navigation.navigate('MainTab', {
+            screen: 'Home',
+          });
+        } else {
+          Alert.alert(result.message);
+        }
       }
-      // console.log(result);
-
-      const { access_token, expires_in, refresh_token, user } = result.session;
-      setUserId(result.userId);
-      setToken({
-        accessToken: access_token,
-        expiresIn: expires_in,
-        refreshToken: refresh_token,
-      });
-      setUserEmail(user.email);
-      Alert.alert('로그인 하였습니다!');
-      navigation.navigate('MainTab', {
-        screen: 'Home',
-      });
     } else {
       Alert.alert('이메일 패스워드를 입력하세요!');
     }
   };
-  useEffect(() => {
-    clearUser();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   return (
     <SafeAreaView style={styles.container}>

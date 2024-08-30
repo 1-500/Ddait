@@ -10,6 +10,7 @@ import { COLORS } from '../../constants/colors';
 import { FONT_SIZES, FONTS } from '../../constants/font';
 import { LAYOUT_PADDING } from '../../constants/space';
 import { SPACING } from '../../constants/space';
+import useUserStore from '../../store/sign/login';
 
 const dummyProfile = require('../../assets/images/profile.png');
 const defaultBadge = require('../../assets/images/badge-default.png');
@@ -19,11 +20,12 @@ const MyPage = ({ navigation }) => {
   const badges = [defaultBadge, defaultBadge, defaultBadge, defaultBadge, defaultBadge];
   // 푸시 알림 기본값: On (임시)
   const [isPushOn, setIsPushOn] = useState(true);
-
+  const { clearUser } = useUserStore();
   const handleLogoutButton = async () => {
     const result = await postLogout();
     if (result.status === 200) {
       Alert.alert('로그아웃 하였습니다!');
+      clearUser();
       navigation.navigate('Sign', {
         screen: 'Login',
       });
