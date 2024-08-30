@@ -103,10 +103,6 @@ const StartWorkout = () => {
   };
   /* eslint-enable */
 
-  const handleStartWorkout = () => {
-    // console.log('모달등장');
-  };
-
   const handleAddExerciseSet = (workoutId) => {
     setWorkoutData((prevData) =>
       prevData.map(
@@ -274,10 +270,6 @@ const StartWorkout = () => {
         </View>
       </View>
       <View style={styles.divider} />
-      {/* <View style={styles.timerContainer}>
-        <Text style={{ color: '#fff' }}>운동 시간: {formatTime(item.time)}</Text>
-        <Text style={{ color: '#fff' }}>휴식 시간: {formatTime(item.restTime)}</Text>
-      </View> */}
       <View style={styles.workoutSetContainer}>
         <View style={styles.workoutSetHeader}>
           <Text style={styles.workoutSetText}>세트</Text>
@@ -341,13 +333,10 @@ const StartWorkout = () => {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: BACKGROUND_COLORS.dark }}>
-      <HeaderComponents title="운동 시작" icon="timer" onRightBtnPress={handleTimerVisible} />
+      <HeaderComponents title="운동 시작" />
       <View style={styles.timerContainer}>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <MaterialCommunityIcons name="timer-outline" size={24} color={COLORS.white} />
-          {/* <Text style={{ color: COLORS.white, marginLeft: 16 }}>
-          {String(totalTime.minutes).padStart(2, '0')}:{String(totalTime.seconds).padStart(2, '0')}
-        </Text> */}
           <Text style={{ color: COLORS.white, marginLeft: 8, fontSize: BODY_FONT_SIZES.md }}>
             운동: {formatTime(totalWorkoutTime)}
           </Text>
