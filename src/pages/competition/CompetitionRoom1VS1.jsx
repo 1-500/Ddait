@@ -1,5 +1,15 @@
-import React from 'react';
-import { Dimensions, Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import {
+  Dimensions,
+  FlatList,
+  Image,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
 import CompetitionRoomHeader from '../../components/CompetitionRoomHeader';
 import CustomTag from '../../components/CustomTag';
@@ -66,42 +76,126 @@ const dummy_data = {
       ],
     },
   ],
-  result: {
-    me: {
-      name: '따잇',
-      profileImg: require('../../assets/images/profile.png'),
-      score: {
-        total: 102,
-        data1: 22,
-        data2: 16,
-      },
+  user_info: [
+    {
+      nickname: '따잇',
+      profile_image: require('../../assets/images/profile.png'),
     },
-    opponent: {
-      name: '나라',
-      profileImg: require('../../assets/images/profile.png'),
-      score: {
-        total: 88,
-        data1: 18,
-        data2: 14,
-      },
+    {
+      nickname: '나라',
+      profile_image: require('../../assets/images/profile.png'),
     },
-  },
-  usage_data: ['data1', 'data2'],
+  ],
+  usage_data: ['데드리프트', '벤치프레스', '스쿼트'],
 };
 
 const CompetitionRoom1VS1 = () => {
   const maxGraphWidth = width - 180;
+  const [resultData, setResultData] = useState([]);
 
-  const renderCompetitionProfile = (data, color, style) => {
+  useEffect(() => {
+    // setResultData(getMyResult());
+    setResultData([dummy_data.record[0], dummy_data.record[1]]);
+  }, []);
+
+  // const getMyResult = () => {
+  //   const result =
+  //     dummy_data.record[0].member_id === userId
+  //       ? [dummy_data.record[0], dummy_data.record[1]]
+  //       : [dummy_data.record[1], dummy_data.record[0]];
+  //   return result;
+  // };
+
+  const CompetitionProfile = ({ userInfo, result, color, style }) => {
     return (
       <View style={[styles.profileWrapper, style]}>
-        <Image style={{ width: 80, height: 80 }} source={data.profileImg} />
+        <Image style={{ width: 80, height: 80 }} source={userInfo.profile_image} />
         <View>
           <View style={styles.profileTextWrapper}>
-            <Text style={styles.profileText}>{data.name}</Text>
+            <Text style={styles.profileText}>{userInfo.nickname}</Text>
             <Text style={styles.profileTailText}>님</Text>
           </View>
-          <Text style={[styles.profileText, { color: color }]}>{data.score.total}</Text>
+          <Text style={[styles.profileText, { color: color }]}>{result.total_score}</Text>
+        </View>
+      </View>
+    );
+  };
+
+  const Competition1VS1Header = () => {
+    return (
+      <View>
+        <View style={styles.messageWrapper}>
+          <Text style={styles.userNameText}>{dummy_data.user_info[0].nickname}님,</Text>
+          <Text style={styles.messageText}>
+            {resultData[0].total_score >= resultData[1].total_score
+              ? '지금 이기고 있네요! 계속 가봅시다'
+              : '지고있어요.. 조금만 더 힘내요!'}
+          </Text>
+        </View>
+        <View style={styles.profileContainer}>
+          <CompetitionProfile
+            userInfo={dummy_data.user_info[0]}
+            result={resultData[0]}
+            color={COLORS.primary}
+            style={
+              resultData[0].total_score >= resultData[1].total_score && {
+                borderWidth: 3,
+                borderColor: COLORS.primary,
+              }
+            }
+          />
+          <CompetitionProfile
+            userInfo={dummy_data.user_info[1]}
+            result={resultData[1]}
+            color={COLORS.secondary}
+            style={
+              resultData[1].total_score >= resultData[0].total_score && {
+                borderWidth: 3,
+                borderColor: COLORS.secondary,
+              }
+            }
+          />
+          <CustomTag size="small" text="VS" style={styles.vsTag} textStyle={styles.vsTagText} />
+        </View>
+      </View>
+    );
+  };
+
+  const renderScoreItem = ({ item, index }) => {
+    return (
+      <View style={styles.scoreWrapper}>
+        <Text style={styles.scoreTitleText} numberOfLines={3} ellipsizeMode="tail">
+          {item.name}
+        </Text>
+        <View style={styles.graphContainer}>
+          <View style={styles.graphWrapper}>
+            <View
+              style={[
+                styles.graph,
+                {
+                  backgroundColor: COLORS.primary,
+                  width:
+                    (maxGraphWidth * resultData[0].score_detail[index].score) /
+                    (Math.max(resultData[1].score_detail[index].score, resultData[0].score_detail[index].score) || 1),
+                },
+              ]}
+            />
+            <Text style={styles.scoreText}>{resultData[0].score_detail[index].score}</Text>
+          </View>
+          <View style={styles.graphWrapper}>
+            <View
+              style={[
+                styles.graph,
+                {
+                  backgroundColor: COLORS.secondary,
+                  width:
+                    (maxGraphWidth * resultData[1].score_detail[index].score) /
+                    (Math.max(resultData[0].score_detail[index].score, resultData[1].score_detail[index].score) || 1),
+                },
+              ]}
+            />
+            <Text style={styles.scoreText}>{resultData[1].score_detail[index].score}</Text>
+          </View>
         </View>
       </View>
     );
@@ -110,70 +204,19 @@ const CompetitionRoom1VS1 = () => {
   return (
     <SafeAreaView style={styles.pageContainer}>
       <CompetitionRoomHeader data={dummy_data.room_info} />
-      <ScrollView style={[{ paddingTop: 30 }, LAYOUT_PADDING]}>
-        <View style={styles.messageWrapper}>
-          <Text style={styles.userNameText}>{dummy_data.result.me.name}님,</Text>
-          <Text style={styles.messageText}>지금 이기고 있네요! 계속 가봅시다</Text>
+      {resultData[0] && resultData[1] && (
+        <View style={[{ paddingTop: 30 }, LAYOUT_PADDING]}>
+          <FlatList
+            data={dummy_data.record[0].score_detail}
+            keyExtractor={(item, index) => index}
+            renderItem={renderScoreItem}
+            ListHeaderComponent={Competition1VS1Header}
+            ListFooterComponent={<View style={{ height: 30 }} />}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ gap: 10 }}
+          />
         </View>
-        <View style={styles.profileContainer}>
-          {renderCompetitionProfile(
-            dummy_data.result.me,
-            COLORS.primary,
-            dummy_data.result.me.score.total >= dummy_data.result.opponent.score.total && {
-              borderWidth: 3,
-              borderColor: COLORS.primary,
-            },
-          )}
-          {renderCompetitionProfile(
-            dummy_data.result.opponent,
-            COLORS.secondary,
-            dummy_data.result.opponent.score.total >= dummy_data.result.me.score.total && {
-              borderWidth: 3,
-              borderColor: COLORS.secondary,
-            },
-          )}
-          <CustomTag size="small" text="VS" style={styles.vsTag} textStyle={styles.vsTagText} />
-        </View>
-        <View style={styles.resultDataWrapper}>
-          {dummy_data.usage_data.map((name, index) => (
-            <View key={index} style={styles.scoreWrapper}>
-              <Text style={styles.scoreTitleText} numberOfLines={3} ellipsizeMode="tail">
-                {name}
-              </Text>
-              <View style={styles.graphContainer}>
-                <View style={styles.graphWrapper}>
-                  <View
-                    style={[
-                      styles.graph,
-                      {
-                        backgroundColor: COLORS.primary,
-                        width:
-                          (maxGraphWidth * dummy_data.result.me.score[name]) /
-                          Math.max(dummy_data.result.me.score[name], dummy_data.result.opponent.score[name]),
-                      },
-                    ]}
-                  />
-                  <Text style={styles.scoreText}>{dummy_data.result.me.score[name]}</Text>
-                </View>
-                <View style={styles.graphWrapper}>
-                  <View
-                    style={[
-                      styles.graph,
-                      {
-                        backgroundColor: COLORS.secondary,
-                        width:
-                          (maxGraphWidth * dummy_data.result.opponent.score[name]) /
-                          Math.max(dummy_data.result.me.score[name], dummy_data.result.opponent.score[name]),
-                      },
-                    ]}
-                  />
-                  <Text style={styles.scoreText}>{dummy_data.result.opponent.score[name]}</Text>
-                </View>
-              </View>
-            </View>
-          ))}
-        </View>
-      </ScrollView>
+      )}
     </SafeAreaView>
   );
 };
@@ -243,10 +286,6 @@ const styles = StyleSheet.create({
     fontSize: FONT_SIZES.sm,
     fontFamily: FONTS.PRETENDARD[500],
     color: COLORS.white,
-  },
-  resultDataWrapper: {
-    marginTop: 30,
-    gap: SPACING.lg,
   },
   scoreWrapper: {
     flexDirection: 'row',
