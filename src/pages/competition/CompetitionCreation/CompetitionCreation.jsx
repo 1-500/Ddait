@@ -119,7 +119,7 @@ const CompetitionCreation = ({ navigation }) => {
       const response = await createCompetition(data);
       Alert.alert('경쟁방 생성', `'${title}' 경쟁방이 생성되었습니다!`);
       maxMembers === 2
-        ? navigation.navigate('CompetitionRoom1V1', { competitionId: response.room_id })
+        ? navigation.navigate('CompetitionRoom1VS1', { competitionId: response.room_id })
         : navigation.navigate('CompetitionRoomRanking', { competitionId: response.room_id });
       resetState();
     } catch (error) {
