@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Image, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import HeaderComponents from '../../components/HeaderComponents';
 import HeatmapCalendar from '../../components/HeatMapCalendar';
@@ -36,23 +36,29 @@ const dummyDates = [
   { date: '2024-08-25', value: 90 },
 ];
 
-const Home = () => {
-  const data = dummyMyCompetitions;
+const Home = ({ navigation }) => {
+  const competition = dummyMyCompetitions[0]; // Directly access the first item
+
   const handleCompetitionPress = (item) => {
-    //페이지 이동
+    if (item.max_members === 2) {
+      navigation.navigate('CompetitionRoom1V1', { competitionId: item.id });
+    } else {
+      navigation.navigate('CompetitionRoomRanking', { competitionId: item.id });
+    }
   };
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <HeaderComponents icon="home" />
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
         <ProfileSection data={userData} />
-        <SectionTitle title="진행중인 경쟁" />
-        {data.length > 0 ? (
-          data.map((item) => <MyCompetitionItem key={item.id} item={item} onPress={handleCompetitionPress} />)
+        <SectionTitle title="진행중인 경쟁" navigation={navigation} navigateTo="Competition" />
+        {competition ? (
+          <MyCompetitionItem item={competition} onPress={handleCompetitionPress} />
         ) : (
           <NoOngoingCompetitions />
         )}
-        <SectionTitle title="운동 요약" />
+        <SectionTitle title="운동 요약" navigation={navigation} navigateTo="Mypage" />
         <ExerciseSummary data={dummyDates} />
       </ScrollView>
     </SafeAreaView>
@@ -69,7 +75,14 @@ const ProfileSection = ({ data }) => (
   </View>
 );
 
-const SectionTitle = ({ title }) => <Text style={styles.titleText}>{title}</Text>;
+const SectionTitle = ({ title, navigation, navigateTo }) => (
+  <View style={styles.titleWrapper}>
+    <Text style={styles.titleText}>{title}</Text>
+    <Pressable onPress={() => navigation.navigate(navigateTo)}>
+      <Text style={styles.moreText}>더보기</Text>
+    </Pressable>
+  </View>
+);
 
 const ExerciseSummary = ({ data }) => (
   <View style={styles.cardContainer}>
@@ -111,11 +124,20 @@ const styles = StyleSheet.create({
     color: COLORS.white,
     fontSize: FONT_SIZES.md,
   },
+  titleWrapper: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    ...ELEMENT_VERTICAL_MARGIN,
+  },
   titleText: {
     fontSize: HEADER_FONT_SIZES.sm,
     fontWeight: FONT_WEIGHTS.bold,
     color: COLORS.white,
-    ...ELEMENT_VERTICAL_MARGIN,
+  },
+  moreText: {
+    fontSize: FONT_SIZES.sm,
+    color: COLORS.white,
   },
   cardContainer: {
     backgroundColor: BACKGROUND_COLORS.greyDark,
