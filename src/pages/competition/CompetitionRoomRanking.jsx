@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { SafeAreaView, StyleSheet, useWindowDimensions } from 'react-native';
 import { SceneMap, TabBar, TabView } from 'react-native-tab-view';
 
@@ -8,6 +8,8 @@ import { FONT_SIZES, FONT_WEIGHTS } from '../../constants/font';
 import Invite from './rankingPageTabs/Invite';
 import MyScore from './rankingPageTabs/MyScore';
 import RankList from './rankingPageTabs/RankList';
+
+/* eslint-disable */
 
 const dummy_data = {
   room_info: {
@@ -19,6 +21,8 @@ const dummy_data = {
     start_date: new Date(2024, 7, 1), //2024-08-01
     end_date: new Date(2024, 7, 31), //2024-08-31
   },
+  record: [],
+  myDetail: {},
   result: [
     {
       name: '나라1',
@@ -260,15 +264,48 @@ const renderScene = ({ route, jumpTo }) => {
   }
 };
 
-const CompetitionRoomRanking = () => {
+const CompetitionRoomRanking = ({ competitionId }) => {
   const layout = useWindowDimensions();
 
-  const [index, setIndex] = React.useState(0);
-  const [routes] = React.useState([
+  const [competitionRecord, setCompetitionRecord] = useState();
+  const [index, setIndex] = useState(0);
+  const [routes] = useState([
     { key: 'rankList', title: '랭킹' },
     { key: 'myScore', title: '내 점수' },
     { key: 'invite', title: '초대' },
   ]);
+
+  useEffect(() => {
+    setCompetitionRecord(dummy_data.record);
+    // fetchResult();
+  }, []);
+
+  const fetchResult = async () => {
+    try {
+      const res = getCompetitionRecord(competitionId);
+      if (res.status === 200) {
+        setCompetitionRecord(res.data);
+      }
+    } catch (error) {
+      console.log('error: ', error);
+    }
+  };
+
+  const fetchMyDetailResult = async () => {
+    try {
+      // 내 상세 기록 API 요청
+    } catch (error) {
+      console.log('error: ', error);
+    }
+  };
+
+  const fetchFriendList = async () => {
+    try {
+      // 내 친구 API 요청
+    } catch (error) {
+      console.log('error: ', error);
+    }
+  };
 
   return (
     <SafeAreaView style={styles.pageContainer}>
