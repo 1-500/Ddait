@@ -37,7 +37,6 @@ const MainTab = () => {
     >
       {/* <Tab.Screen name="SignUp" component={SignUpPage} /> */}
       <Tab.Screen name="Home" component={Home} />
-      <Tab.Screen name="Competition" component={Competition} />
       <Tab.Screen name="Competition" component={CompetitionStack} />
       <Tab.Screen name="Friend" component={Friend} />
       <Tab.Screen name="Mypage" component={MyPage} />
