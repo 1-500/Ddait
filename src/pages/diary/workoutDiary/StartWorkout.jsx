@@ -214,25 +214,33 @@ const StartWorkout = () => {
     try {
       const workoutName = '아침운동';
       const totalWorkoutTime = workoutData.reduce((total, workout) => total + workout.time, 0);
-      const totalRestTime = workoutData.reduce((total, workout) => total + workout.restTime, 0);
+      const totalRestTime = workoutData.reduce((total, workout) => total + workout.restTime, 0); // post때 필요없지만 향후에 필요할 수도 있어 작성
       const formatTotalTime = (seconds) => {
         const hrs = Math.floor(seconds / 3600);
         const mins = Math.floor((seconds % 3600) / 60);
         const secs = seconds % 60;
         return `${String(hrs).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
       };
-      const workoutTime = formatTime(totalWorkoutTime);
+      const workoutTime = formatTotalTime(totalWorkoutTime);
 
       const exercises = workoutData.flatMap((workout) =>
-        workout.workoutSet.map((set) => ({
-          exercise_name: workout.title,
-          weight: set.weight,
-          reps: set.reps,
-          set: set.id,
-          exercise_time: workout.time,
-          rest_time: workout.restTime,
-        })),
+        workout.workoutSet
+          .filter((set) => set.isComplete)
+          .map((set) => ({
+            exercise_name: workout.title,
+            weight: set.weight,
+            reps: set.reps,
+            set: set.id,
+            exercise_time: formatTotalTime(workout.time),
+            rest_time: formatTotalTime(workout.restTime),
+          })),
       );
+
+      if (exercises.length === 0) {
+        Alert.alert('운동 기록', '완료된 세트가 없어 기록을 저장할 수 없습니다.');
+        return;
+      }
+
       const workoutRecord = {
         member_id: userId,
         workout_name: workoutName,
