@@ -127,8 +127,33 @@ const StartWorkout = () => {
       prevData.map((workout) => {
         if (workout.id === workoutId) {
           if (workout.isRunning) {
+            // 정지 버튼을 눌렀을 때 타이머를 멈춤
+            clearInterval(intervalId);
             return { ...workout, isRunning: false };
           } else {
+            // 시작 버튼을 눌렀을 때 타이머를 시작
+            const id = setInterval(() => {
+              setTotalTime((prev) => {
+                const newSeconds = prev.seconds + 1;
+                const newMinutes = prev.minutes + Math.floor(newSeconds / 60);
+
+                return {
+                  minutes: newMinutes,
+                  seconds: newSeconds % 60,
+                };
+              });
+              setWorkoutData((prevData) =>
+                prevData.map((workout) => {
+                  if (workout.id === workoutId && workout.isRunning) {
+                    return { ...workout, time: workout.time + 1 };
+                  } else if (workout.id === workoutId && workout.isResting) {
+                    return { ...workout, restTime: workout.restTime + 1 };
+                  }
+                  return workout;
+                }),
+              );
+            }, 1000);
+            setIntervalId(id);
             return { ...workout, isRunning: true, isResting: false };
           }
         }
@@ -148,24 +173,8 @@ const StartWorkout = () => {
     );
   };
   useEffect(() => {
-    const id = setInterval(() => {
-      setTotalTime((prevTime) => prevTime + 1);
-      setWorkoutData((prevData) =>
-        prevData.map((workout) => {
-          if (workout.isRunning) {
-            return { ...workout, time: workout.time + 1 };
-          } else if (workout.isResting) {
-            return { ...workout, restTime: workout.restTime + 1 };
-          }
-          return workout;
-        }),
-      );
-    }, 1000);
-
-    setIntervalId(id);
-
-    return () => clearInterval(id);
-  }, []);
+    return () => clearInterval(intervalId);
+  }, [intervalId]);
 
   const handleDeleteExerciseSet = (workoutId, setId) => {
     setWorkoutData((prevData) =>
@@ -204,7 +213,16 @@ const StartWorkout = () => {
   const handleSaveWorkoutRecord = async () => {
     try {
       const workoutName = '아침운동';
-      const workoutTime = `${String(Math.floor(totalTime / 60)).padStart(2, '0')}:${String(totalTime % 60).padStart(2, '0')}`;
+      const totalWorkoutTime = workoutData.reduce((total, workout) => total + workout.time, 0);
+      const totalRestTime = workoutData.reduce((total, workout) => total + workout.restTime, 0);
+      const formatTotalTime = (seconds) => {
+        const hrs = Math.floor(seconds / 3600);
+        const mins = Math.floor((seconds % 3600) / 60);
+        const secs = seconds % 60;
+        return `${String(hrs).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+      };
+      const workoutTime = formatTime(totalWorkoutTime);
+
       const exercises = workoutData.flatMap((workout) =>
         workout.workoutSet.map((set) => ({
           exercise_name: workout.title,
