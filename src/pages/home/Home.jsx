@@ -1,6 +1,8 @@
-import React from 'react';
-import { Image, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useIsFocused } from '@react-navigation/native'; // useIsFocused 훅을 import 합니다
+import React, { useEffect, useState } from 'react';
+import { Alert, Image, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 
+import { getMyCompetition } from '../../apis/competition/index';
 import HeaderComponents from '../../components/HeaderComponents';
 import HeatmapCalendar from '../../components/HeatMapCalendar';
 import MyCompetitionItem from '../../components/MyCompetitionItem';
@@ -15,19 +17,6 @@ const userData = {
   profile: 'https://ipsf.net/wp-content/uploads/2021/12/dummy-image-square-300x300.webp',
 };
 
-const dummyMyCompetitions = [
-  {
-    id: 1,
-    title: '1:1 헬스 대결 붙을사람!!',
-    max_members: 2,
-    current_members: 2,
-    competition_type: '헬스',
-    competition_theme: '스쿼트 내기',
-    start_date: '2024-08-25T09:00:00',
-    end_date: '2024-08-30T18:00:00',
-  },
-];
-
 const dummyDates = [
   { date: '2024-08-05', value: 50 },
   { date: '2024-08-10', value: 80 },
@@ -37,7 +26,42 @@ const dummyDates = [
 ];
 
 const Home = ({ navigation }) => {
-  const competition = dummyMyCompetitions[0]; // Directly access the first item
+  const [competition, setCompetition] = useState();
+  const isFocused = useIsFocused(); // 현재 화면이 포커스 상태인지 확인
+
+  const fetchMyCompetitions = async () => {
+    try {
+      const response = await getMyCompetition();
+      const competitions = response.data.data;
+      if (competitions && competitions.length > 0) {
+        const now = new Date(); //현재 날짜
+
+        const closestCompetition = competitions.reduce((closest, current) => {
+          const currentEndDate = new Date(current.end_date);
+          const closestEndDate = new Date(closest.end_date);
+
+          // 오늘과 종료날짜의 차
+          const currentDifference = Math.abs(currentEndDate - now);
+          const closestDifference = Math.abs(closestEndDate - now);
+
+          // current의 종료 날짜가 더 가까우면 current return
+          return currentDifference < closestDifference ? current : closest;
+        }, competitions[0]);
+
+        setCompetition(closestCompetition);
+      } else {
+        setCompetition(null);
+      }
+    } catch (error) {
+      Alert.alert('Error fetching competitions:', error.message);
+    }
+  };
+
+  useEffect(() => {
+    if (isFocused) {
+      fetchMyCompetitions();
+    }
+  }, [isFocused]);
 
   const handleCompetitionPress = (item) => {
     if (item.max_members === 2) {
