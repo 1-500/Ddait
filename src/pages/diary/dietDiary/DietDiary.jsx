@@ -39,6 +39,8 @@ const DietDiary = () => {
 
   const [isVisibleModal, setIsVisibleModal] = useState(false);
 
+  const [userWeight, setUserWeight] = useState(70.0);
+
   const navigation = useNavigation();
   const handleWorkoutTypePress = (type) => {
     if (type === '식단') {
@@ -51,6 +53,16 @@ const DietDiary = () => {
 
   const handleModal = () => {
     setIsVisibleModal(!isVisibleModal);
+  };
+
+  const handleMinusWeightButton = () => {
+    const newUserweight = userWeight - 0.1;
+    setUserWeight(parseFloat(newUserweight.toFixed(1)));
+  };
+
+  const handlePlusWeightButton = () => {
+    const newUserweight = userWeight + 0.1;
+    setUserWeight(parseFloat(newUserweight.toFixed(1)));
   };
   return (
     <SafeAreaView style={styles.container}>
@@ -83,11 +95,11 @@ const DietDiary = () => {
         <View style={styles.weightSection}>
           <Text style={styles.sectionTitle}>체중</Text>
           <View style={styles.weightInputContainer}>
-            <TouchableOpacity activeOpacity={0.6}>
+            <TouchableOpacity activeOpacity={0.6} onPress={handleMinusWeightButton}>
               <Image source={MinusButtonIcon} style={styles.weightButton} />
             </TouchableOpacity>
-            <CustomInput size="medium" theme="primary" value="72.8kg" style={styles.weightInput} />
-            <TouchableOpacity activeOpacity={0.6}>
+            <CustomInput size="medium" theme="primary" value={`${userWeight}kg`} style={styles.weightInput} />
+            <TouchableOpacity activeOpacity={0.6} onPress={handlePlusWeightButton}>
               <Image source={PlusButtonIcon} style={styles.weightButton} />
             </TouchableOpacity>
           </View>
