@@ -70,8 +70,8 @@ const WorkoutDiary = () => {
 
   const handleWorkoutTypePress = (type) => {
     if (type === '식단') {
-      navigation.navigate('DietDiary', {
-        screen: 'DietDiaryScreen',
+      navigation.navigate('FoodDiary', {
+        screen: 'FoodDiaryScreen',
       });
     } else if (type === '웨이트') {
       navigation.navigate('WorkoutDiary', {

@@ -1,16 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
-import {
-  Image,
-  Modal,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-  View,
-} from 'react-native';
+import { Alert, Image, Modal, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import * as Progress from 'react-native-progress';
 
 import CustomButton from '../../../components/CustomButton';
@@ -20,6 +10,12 @@ import { BACKGROUND_COLORS, COLORS, TEXT_COLORS } from '../../../constants/color
 import { FONT_SIZES, FONT_WEIGHTS, HEADER_FONT_SIZES } from '../../../constants/font';
 import { RADIUS } from '../../../constants/radius';
 import { LAYOUT_PADDING } from '../../../constants/space';
+import {
+  calculateCalories,
+  calculateCarbsCalories,
+  calculateFatCalories,
+  calculateProteinCalories,
+} from '../../../utils/foodDiary/index';
 
 const PlusButtonIcon = require('../../../assets/images/dietDiary/PluscircleButton.png');
 const MinusButtonIcon = require('../../../assets/images/dietDiary/MinusCircleButton.png');
@@ -32,19 +28,23 @@ const items = [
   { name: '물', title: '', icon: require('../../../assets/images/water.png') },
 ];
 
-const DietDiary = () => {
+const FoodDiary = () => {
   const [weekDays, setWeekDays] = useState(['21', '22', '23', '24', '25', '26', '27']);
   const [workoutTypes, setWorkoutTypes] = useState(['웨이트', '러닝', '식단', '등산']);
   const [activeWorkoutType, setActiveWorkoutType] = useState('식단');
 
   const [isVisibleModal, setIsVisibleModal] = useState(false);
 
-  const [userWeight, setUserWeight] = useState(70.0);
+  const [userWeight, setUserWeight] = useState(70);
+  const [totalCalories, setTotalCalories] = useState(2000);
+  const [carbRatio, setCarbRatio] = useState(0);
+  const [proteinRatio, setProteinRatio] = useState(0);
+  const [fatRatio, setFatRatio] = useState(0);
 
   const navigation = useNavigation();
   const handleWorkoutTypePress = (type) => {
     if (type === '식단') {
-      navigation.navigate('DietDiary', { screen: 'DietDiaryScreen' });
+      navigation.navigate('FoodDiary', { screen: 'FoodDiaryScreen' });
     } else if (type === '웨이트') {
       navigation.navigate('WorkoutDiary', { screen: 'WorkoutDiaryScreen' });
     }
@@ -63,6 +63,14 @@ const DietDiary = () => {
   const handlePlusWeightButton = () => {
     const newUserweight = userWeight + 0.1;
     setUserWeight(parseFloat(newUserweight.toFixed(1)));
+  };
+  const handleModalConfirmButton = () => {
+    const totalRatio = carbRatio + proteinRatio + fatRatio;
+    if (totalRatio === 100) {
+      setIsVisibleModal(false);
+      return;
+    }
+    Alert.alert('탄단지 비율을 100으로 두어야 합니다!');
   };
   return (
     <SafeAreaView style={styles.container}>
@@ -109,23 +117,23 @@ const DietDiary = () => {
           <View style={styles.macroContainer}>
             <View style={styles.macroItem}>
               <Text style={styles.macroLabel}>탄</Text>
-              <Text style={styles.macroValue}>50/300g</Text>
+              <Text style={styles.macroValue}>{`0/${calculateCarbsCalories(carbRatio, totalCalories)}g`}</Text>
             </View>
             <View style={styles.macroItem}>
               <Text style={styles.macroLabel}>단</Text>
-              <Text style={styles.macroValue}>50/300g</Text>
+              <Text style={styles.macroValue}>{`0/${calculateProteinCalories(proteinRatio, totalCalories)}g`}</Text>
             </View>
             <View style={styles.macroItem}>
               <Text style={styles.macroLabel}>지</Text>
-              <Text style={styles.macroValue}>50/300g</Text>
+              <Text style={styles.macroValue}>{`0/${calculateFatCalories(fatRatio, totalCalories)}g`}</Text>
             </View>
           </View>
           <View style={{ marginTop: 10 }}>
             <Progress.Bar progress={0.3} width={313} height={24} color="#6464FF" borderRadius={RADIUS.small} />
           </View>
           <View style={styles.calorieInfoContainer}>
-            <Text style={styles.calorieInfoText}>72.8 / 2300kcal</Text>
-            <Text style={styles.calorieInfoText}>2227.2kcal 남음</Text>
+            <Text style={styles.calorieInfoText}>72.8 / {totalCalories} kcal</Text>
+            <Text style={styles.calorieInfoText}>{totalCalories}kcal 남음</Text>
           </View>
 
           <View style={styles.buttonContainer}>
@@ -155,49 +163,68 @@ const DietDiary = () => {
         </View>
       </ScrollView>
       <Modal visible={isVisibleModal} animationType="slide" transparent={true} onRequestClose={handleModal}>
-        <TouchableWithoutFeedback onPress={handleModal}>
-          <View style={styles.modalBackground}>
-            <View style={styles.modalContainer}>
-              <View
-                style={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  marginVertical: 10,
-                  gap: 20,
-                }}
-              >
-                <View style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-                  <Text style={{ color: COLORS.white, fontSize: FONT_SIZES.md }}>탄수화물</Text>
-                  <CustomInput size="small" theme="primary" value="" />
-                </View>
-                <View style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-                  <Text style={{ color: COLORS.white, fontSize: FONT_SIZES.md }}>단백질</Text>
-                  <CustomInput size="small" theme="primary" value="" />
-                </View>
-                <View style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-                  <Text style={{ color: COLORS.white, fontSize: FONT_SIZES.md }}>지방</Text>
-                  <CustomInput size="small" theme="primary" value="" />
-                </View>
+        <View style={styles.modalBackground}>
+          <View style={styles.modalContainer}>
+            <View
+              style={{
+                display: 'flex',
+                flexDirection: 'row',
+                marginVertical: 10,
+                gap: 20,
+              }}
+            >
+              <View style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+                <Text style={{ color: COLORS.white, fontSize: FONT_SIZES.md }}>탄수화물</Text>
+                <CustomInput
+                  size="small"
+                  theme="user"
+                  defaultValue={carbRatio}
+                  onChangeText={(text) => setCarbRatio(Number(text))}
+                />
               </View>
-              <View
-                style={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  gap: 10,
-                  alignSelf: 'flex-end',
-                  marginVertical: 20,
-                }}
-              >
-                <Text style={{ color: COLORS.white, fontSize: FONT_SIZES.md }}>총</Text>
-                <CustomInput size="small" theme="primary" value="" />
-
-                <Text style={{ color: COLORS.white, fontSize: FONT_SIZES.md }}>kcal</Text>
+              <View style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+                <Text style={{ color: COLORS.white, fontSize: FONT_SIZES.md }}>단백질</Text>
+                <CustomInput
+                  size="small"
+                  theme="user"
+                  defaultValue={proteinRatio}
+                  onChangeText={(text) => setProteinRatio(Number(text))}
+                />
               </View>
-              <CustomButton theme="primary" size="large" text="설정 완료" />
+              <View style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+                <Text style={{ color: COLORS.white, fontSize: FONT_SIZES.md }}>지방</Text>
+                <CustomInput
+                  size="small"
+                  defaultValue={fatRatio}
+                  theme="user"
+                  onChangeText={(text) => setFatRatio(Number(text))}
+                />
+              </View>
             </View>
+            <View
+              style={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: 10,
+                alignSelf: 'flex-end',
+                marginVertical: 20,
+              }}
+            >
+              <Text style={{ color: COLORS.white, fontSize: FONT_SIZES.md }}>총</Text>
+              <CustomInput
+                size="medium"
+                theme="primary"
+                defaultValue={totalCalories}
+                onChangeText={(text) => setTotalCalories(text)}
+                style={{ fontSize: FONT_SIZES.lg }}
+              />
+
+              <Text style={{ color: COLORS.white, fontSize: FONT_SIZES.lg }}>kcal</Text>
+            </View>
+            <CustomButton theme="primary" size="large" text="설정 완료" onPress={handleModalConfirmButton} />
           </View>
-        </TouchableWithoutFeedback>
+        </View>
       </Modal>
     </SafeAreaView>
   );
@@ -393,4 +420,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default DietDiary;
+export default FoodDiary;
