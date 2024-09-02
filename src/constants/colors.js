@@ -28,11 +28,11 @@ export const BACKGROUND_COLORS = {
 
 export const TAG_COLORS = {
   default: `${COLORS.grey}`,
-  diet: `${COLORS.primary}`,
+  weight: `${COLORS.primary}`,
   walking: `${COLORS.secondary}`,
   runnging: `${COLORS.purple}`,
   climb: `${COLORS.brown}`,
-  weight: `${COLORS.warmGrey}`,
+  diet: `${COLORS.warmGrey}`,
   competition: `${COLORS.grey}`,
   black: `${COLORS.black}`,
 };
