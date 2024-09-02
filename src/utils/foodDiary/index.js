@@ -16,3 +16,13 @@ export function calculateFatCalories(fatPercentage, totalCalories) {
 export function calculateTotalCalories(carbsGrams, proteinGrams, fatGrams) {
   return Math.floor(carbsGrams * 4 + proteinGrams * 4 + fatGrams * 9); // 총 칼로리 (정수로 변환)
 }
+
+export function getFormattedDate() {
+  const today = new Date();
+
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, '0'); // 월은 0부터 시작하므로 +1
+  const day = String(today.getDate()).padStart(2, '0'); // 일은 1부터 시작
+
+  return `${year}-${month}-${day}`;
+}

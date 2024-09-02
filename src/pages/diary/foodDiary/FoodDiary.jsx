@@ -1,21 +1,28 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
-import { Alert, Image, Modal, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+  Alert,
+  Image,
+  Modal,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import * as Progress from 'react-native-progress';
 
+import { createMacroRatio, setMacroRatio, setUserWeight } from '../../../apis/food/index';
 import CustomButton from '../../../components/CustomButton';
 import CustomInput from '../../../components/CustomInput';
 import HeaderComponents from '../../../components/HeaderComponents';
 import { BACKGROUND_COLORS, COLORS, TEXT_COLORS } from '../../../constants/colors';
-import { FONT_SIZES, FONT_WEIGHTS, HEADER_FONT_SIZES } from '../../../constants/font';
+import { FONT_SIZES, FONT_WEIGHTS } from '../../../constants/font';
 import { RADIUS } from '../../../constants/radius';
 import { LAYOUT_PADDING } from '../../../constants/space';
-import {
-  calculateCalories,
-  calculateCarbsCalories,
-  calculateFatCalories,
-  calculateProteinCalories,
-} from '../../../utils/foodDiary/index';
+import { calculateCarbsCalories, calculateFatCalories, calculateProteinCalories } from '../../../utils/foodDiary/index';
 
 const PlusButtonIcon = require('../../../assets/images/dietDiary/PluscircleButton.png');
 const MinusButtonIcon = require('../../../assets/images/dietDiary/MinusCircleButton.png');
@@ -35,11 +42,11 @@ const FoodDiary = () => {
 
   const [isVisibleModal, setIsVisibleModal] = useState(false);
 
-  const [userWeight, setUserWeight] = useState(70);
-  const [totalCalories, setTotalCalories] = useState(2000);
-  const [carbRatio, setCarbRatio] = useState(0);
-  const [proteinRatio, setProteinRatio] = useState(0);
-  const [fatRatio, setFatRatio] = useState(0);
+  const [userWeightState, setUserWeightState] = useState(70);
+  const [totalCaloriesState, setTotalCaloriesState] = useState(2000);
+  const [carbRatioState, setCarbRatioState] = useState(0);
+  const [proteinRatioState, setProteinRatioState] = useState(0);
+  const [fatRatioState, setFatRatioState] = useState(0);
 
   const navigation = useNavigation();
   const handleWorkoutTypePress = (type) => {
@@ -56,17 +63,48 @@ const FoodDiary = () => {
   };
 
   const handleMinusWeightButton = () => {
-    const newUserweight = userWeight - 0.1;
-    setUserWeight(parseFloat(newUserweight.toFixed(1)));
+    let newUserweight;
+    try {
+      newUserweight = userWeightState - 0.1;
+      setUserWeight({
+        userWeight: parseFloat(newUserweight.toFixed(1)),
+      });
+    } catch (error) {
+      Alert.alert('DB에 반영하지 못했습니다.');
+    }
+    setUserWeightState(parseFloat(newUserweight.toFixed(1)));
   };
 
   const handlePlusWeightButton = () => {
-    const newUserweight = userWeight + 0.1;
-    setUserWeight(parseFloat(newUserweight.toFixed(1)));
+    let newUserweight;
+    try {
+      newUserweight = userWeightState + 0.1;
+      setUserWeight({
+        userWeight: parseFloat(newUserweight.toFixed(1)),
+      });
+    } catch (error) {
+      Alert.alert('DB에 반영하지 못했습니다.');
+    }
+    setUserWeightState(parseFloat(newUserweight.toFixed(1)));
   };
-  const handleModalConfirmButton = () => {
-    const totalRatio = carbRatio + proteinRatio + fatRatio;
+
+  const handleModalConfirmButton = async () => {
+    const totalRatio = carbRatioState + proteinRatioState + fatRatioState;
     if (totalRatio === 100) {
+      try {
+        const result = await setMacroRatio({
+          userWeight: userWeightState,
+          carbRatio: carbRatioState,
+          proteinRatio: proteinRatioState,
+          fatRatio: fatRatioState,
+          total_calories: totalCaloriesState,
+        });
+        if (result.status !== 200) {
+          throw new Error();
+        }
+      } catch (error) {
+        Alert.alert('DB에 반영하지 못했습니다.');
+      }
       setIsVisibleModal(false);
       return;
     }
@@ -75,7 +113,6 @@ const FoodDiary = () => {
   return (
     <SafeAreaView style={styles.container}>
       <HeaderComponents title="식단 일지" icon="date" />
-
       <View style={styles.dateContainer}>
         <View style={styles.weekDaysContainer}>
           {weekDays.map((day, index) => (
@@ -106,7 +143,7 @@ const FoodDiary = () => {
             <TouchableOpacity activeOpacity={0.6} onPress={handleMinusWeightButton}>
               <Image source={MinusButtonIcon} style={styles.weightButton} />
             </TouchableOpacity>
-            <CustomInput size="medium" theme="primary" value={`${userWeight}kg`} style={styles.weightInput} />
+            <CustomInput size="medium" theme="primary" value={`${userWeightState}kg`} style={styles.weightInput} />
             <TouchableOpacity activeOpacity={0.6} onPress={handlePlusWeightButton}>
               <Image source={PlusButtonIcon} style={styles.weightButton} />
             </TouchableOpacity>
@@ -117,23 +154,27 @@ const FoodDiary = () => {
           <View style={styles.macroContainer}>
             <View style={styles.macroItem}>
               <Text style={styles.macroLabel}>탄</Text>
-              <Text style={styles.macroValue}>{`0/${calculateCarbsCalories(carbRatio, totalCalories)}g`}</Text>
+              <Text
+                style={styles.macroValue}
+              >{`0/${calculateCarbsCalories(carbRatioState, totalCaloriesState)}g`}</Text>
             </View>
             <View style={styles.macroItem}>
               <Text style={styles.macroLabel}>단</Text>
-              <Text style={styles.macroValue}>{`0/${calculateProteinCalories(proteinRatio, totalCalories)}g`}</Text>
+              <Text
+                style={styles.macroValue}
+              >{`0/${calculateProteinCalories(proteinRatioState, totalCaloriesState)}g`}</Text>
             </View>
             <View style={styles.macroItem}>
               <Text style={styles.macroLabel}>지</Text>
-              <Text style={styles.macroValue}>{`0/${calculateFatCalories(fatRatio, totalCalories)}g`}</Text>
+              <Text style={styles.macroValue}>{`0/${calculateFatCalories(fatRatioState, totalCaloriesState)}g`}</Text>
             </View>
           </View>
           <View style={{ marginTop: 10 }}>
             <Progress.Bar progress={0.3} width={313} height={24} color="#6464FF" borderRadius={RADIUS.small} />
           </View>
           <View style={styles.calorieInfoContainer}>
-            <Text style={styles.calorieInfoText}>72.8 / {totalCalories} kcal</Text>
-            <Text style={styles.calorieInfoText}>{totalCalories}kcal 남음</Text>
+            <Text style={styles.calorieInfoText}>72.8 / {totalCaloriesState} kcal</Text>
+            <Text style={styles.calorieInfoText}>{totalCaloriesState}kcal 남음</Text>
           </View>
 
           <View style={styles.buttonContainer}>
@@ -147,8 +188,8 @@ const FoodDiary = () => {
               <TouchableOpacity
                 style={styles.mealItemButton}
                 onPress={() => {
-                  navigation.navigate('DietDiary', {
-                    screen: 'DietDetailScreen',
+                  navigation.navigate('FoodDiary', {
+                    screen: 'FoodDetailScreen',
                     params: {
                       time: `${item.name}`,
                     },
@@ -173,32 +214,42 @@ const FoodDiary = () => {
                 gap: 20,
               }}
             >
-              <View style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+              <View style={{ display: 'flex', gap: 10 }}>
                 <Text style={{ color: COLORS.white, fontSize: FONT_SIZES.md }}>탄수화물</Text>
-                <CustomInput
-                  size="small"
-                  theme="user"
-                  defaultValue={carbRatio}
-                  onChangeText={(text) => setCarbRatio(Number(text))}
-                />
+                <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+                  <CustomInput
+                    size="small"
+                    theme="user"
+                    defaultValue={`${carbRatioState.toString()}`}
+                    value={carbRatioState}
+                    onChangeText={(text) => setCarbRatioState(Number(text))}
+                  />
+                  <Text style={{ color: COLORS.white, fontSize: FONT_SIZES.md }}>%</Text>
+                </View>
               </View>
-              <View style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+              <View style={{ display: 'flex', gap: 10 }}>
                 <Text style={{ color: COLORS.white, fontSize: FONT_SIZES.md }}>단백질</Text>
-                <CustomInput
-                  size="small"
-                  theme="user"
-                  defaultValue={proteinRatio}
-                  onChangeText={(text) => setProteinRatio(Number(text))}
-                />
+                <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+                  <CustomInput
+                    size="small"
+                    theme="user"
+                    defaultValue={`${proteinRatioState.toString()}`}
+                    onChangeText={(text) => setProteinRatioState(Number(text))}
+                  />
+                  <Text style={{ color: COLORS.white, fontSize: FONT_SIZES.md }}>%</Text>
+                </View>
               </View>
-              <View style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+              <View style={{ display: 'flex', gap: 10 }}>
                 <Text style={{ color: COLORS.white, fontSize: FONT_SIZES.md }}>지방</Text>
-                <CustomInput
-                  size="small"
-                  defaultValue={fatRatio}
-                  theme="user"
-                  onChangeText={(text) => setFatRatio(Number(text))}
-                />
+                <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+                  <CustomInput
+                    size="small"
+                    defaultValue={`${fatRatioState.toString()}`}
+                    theme="user"
+                    onChangeText={(text) => setFatRatioState(Number(text))}
+                  />
+                  <Text style={{ color: COLORS.white, fontSize: FONT_SIZES.md }}>%</Text>
+                </View>
               </View>
             </View>
             <View
@@ -215,8 +266,8 @@ const FoodDiary = () => {
               <CustomInput
                 size="medium"
                 theme="primary"
-                defaultValue={totalCalories}
-                onChangeText={(text) => setTotalCalories(text)}
+                defaultValue={totalCaloriesState}
+                onChangeText={(text) => setTotalCaloriesState(text)}
                 style={{ fontSize: FONT_SIZES.lg }}
               />
 
