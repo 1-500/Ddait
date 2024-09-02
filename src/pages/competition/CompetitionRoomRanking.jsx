@@ -1,7 +1,9 @@
-import React from 'react';
-import { SafeAreaView, StyleSheet, useWindowDimensions } from 'react-native';
+import { useRoute } from '@react-navigation/native';
+import React, { useEffect, useState } from 'react';
+import { Alert, SafeAreaView, StyleSheet, useWindowDimensions } from 'react-native';
 import { SceneMap, TabBar, TabView } from 'react-native-tab-view';
 
+import { getCompetitionDetail } from '../../apis/competition';
 import CompetitionRoomHeader from '../../components/CompetitionRoomHeader';
 import { COLORS } from '../../constants/colors';
 import { FONT_SIZES, FONT_WEIGHTS } from '../../constants/font';
@@ -262,6 +264,9 @@ const renderScene = ({ route, jumpTo }) => {
 
 const CompetitionRoomRanking = () => {
   const layout = useWindowDimensions();
+  const route = useRoute();
+  const [competitionData, setCompetitionData] = useState();
+  const { competitionId } = route.params;
 
   const [index, setIndex] = React.useState(0);
   const [routes] = React.useState([
@@ -270,9 +275,21 @@ const CompetitionRoomRanking = () => {
     { key: 'invite', title: '초대' },
   ]);
 
+  useEffect(() => {
+    const fetchCompetitionDetail = async () => {
+      try {
+        const result = await getCompetitionDetail(competitionId);
+        setCompetitionData(result.data);
+      } catch (error) {
+        Alert.alert('경쟁방 상세 정보 조회 실패', error.message);
+      }
+    };
+    fetchCompetitionDetail();
+  }, [competitionId]);
+
   return (
     <SafeAreaView style={styles.pageContainer}>
-      <CompetitionRoomHeader data={dummy_data.room_info} />
+      {competitionData && <CompetitionRoomHeader data={competitionData} />}
       <TabView
         renderTabBar={(props) => (
           <TabBar
