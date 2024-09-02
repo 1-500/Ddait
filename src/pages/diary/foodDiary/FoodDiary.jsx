@@ -1,25 +1,14 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
-import {
-  Alert,
-  Image,
-  Modal,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { Alert, Image, Modal, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import * as Progress from 'react-native-progress';
 
-import { createMacroRatio, setMacroRatio, setUserWeight } from '../../../apis/food/index';
+import { setMacroRatio, setUserWeight } from '../../../apis/food/index';
 import CustomButton from '../../../components/CustomButton';
 import CustomInput from '../../../components/CustomInput';
 import HeaderComponents from '../../../components/HeaderComponents';
 import { BACKGROUND_COLORS, COLORS, TEXT_COLORS } from '../../../constants/colors';
-import { FONT_SIZES, FONT_WEIGHTS } from '../../../constants/font';
+import { FONT_SIZES, FONT_WEIGHTS, FONTS } from '../../../constants/font';
 import { RADIUS } from '../../../constants/radius';
 import { LAYOUT_PADDING } from '../../../constants/space';
 import { calculateCarbsCalories, calculateFatCalories, calculateProteinCalories } from '../../../utils/foodDiary/index';
@@ -206,17 +195,10 @@ const FoodDiary = () => {
       <Modal visible={isVisibleModal} animationType="slide" transparent={true} onRequestClose={handleModal}>
         <View style={styles.modalBackground}>
           <View style={styles.modalContainer}>
-            <View
-              style={{
-                display: 'flex',
-                flexDirection: 'row',
-                marginVertical: 10,
-                gap: 20,
-              }}
-            >
+            <View style={styles.modalButtonContainer}>
               <View style={{ display: 'flex', gap: 10 }}>
-                <Text style={{ color: COLORS.white, fontSize: FONT_SIZES.md }}>탄수화물</Text>
-                <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+                <Text style={styles.modalText}>탄수화물</Text>
+                <View style={styles.modalButtonWrapper}>
                   <CustomInput
                     size="small"
                     theme="user"
@@ -224,12 +206,12 @@ const FoodDiary = () => {
                     value={carbRatioState}
                     onChangeText={(text) => setCarbRatioState(Number(text))}
                   />
-                  <Text style={{ color: COLORS.white, fontSize: FONT_SIZES.md }}>%</Text>
+                  <Text style={styles.modalText}>%</Text>
                 </View>
               </View>
               <View style={{ display: 'flex', gap: 10 }}>
-                <Text style={{ color: COLORS.white, fontSize: FONT_SIZES.md }}>단백질</Text>
-                <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+                <Text style={styles.modalText}>단백질</Text>
+                <View style={styles.modalButtonWrapper}>
                   <CustomInput
                     size="small"
                     theme="user"
@@ -240,38 +222,33 @@ const FoodDiary = () => {
                 </View>
               </View>
               <View style={{ display: 'flex', gap: 10 }}>
-                <Text style={{ color: COLORS.white, fontSize: FONT_SIZES.md }}>지방</Text>
-                <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+                <Text style={styles.modalText}>지방</Text>
+                <View style={styles.modalButtonWrapper}>
                   <CustomInput
                     size="small"
                     defaultValue={`${fatRatioState.toString()}`}
                     theme="user"
                     onChangeText={(text) => setFatRatioState(Number(text))}
                   />
-                  <Text style={{ color: COLORS.white, fontSize: FONT_SIZES.md }}>%</Text>
+                  <Text style={styles.modalText}>%</Text>
                 </View>
               </View>
             </View>
-            <View
-              style={{
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-                gap: 10,
-                alignSelf: 'flex-end',
-                marginVertical: 20,
-              }}
-            >
-              <Text style={{ color: COLORS.white, fontSize: FONT_SIZES.md }}>총</Text>
+            <View style={styles.modalCalroriesContainer}>
+              <Text style={{ fontFamily: FONTS.PRETENDARD[400], fontSize: FONT_SIZES.md, color: COLORS.white }}>
+                총
+              </Text>
               <CustomInput
                 size="medium"
                 theme="primary"
                 defaultValue={totalCaloriesState}
                 onChangeText={(text) => setTotalCaloriesState(text)}
-                style={{ fontSize: FONT_SIZES.lg }}
+                style={{ fontFamily: FONTS.PRETENDARD[400], fontSize: FONT_SIZES.md, color: COLORS.white }}
               />
 
-              <Text style={{ color: COLORS.white, fontSize: FONT_SIZES.lg }}>kcal</Text>
+              <Text style={{ fontFamily: FONTS.PRETENDARD[400], fontSize: FONT_SIZES.md, color: COLORS.white }}>
+                kcal
+              </Text>
             </View>
             <CustomButton theme="primary" size="large" text="설정 완료" onPress={handleModalConfirmButton} />
           </View>
@@ -312,14 +289,13 @@ const styles = StyleSheet.create({
   },
   dayText: {
     color: TEXT_COLORS.secondary,
-    fontSize: 14,
+    fontSize: FONT_SIZES.xs,
   },
   activeDayText: {
     color: TEXT_COLORS.primary,
-    fontSize: 14,
+    fontSize: FONT_SIZES.xs,
   },
   workoutTypesContainer: {
-    width: '100%',
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginTop: 16,
@@ -342,11 +318,11 @@ const styles = StyleSheet.create({
   },
   workoutTypeText: {
     color: TEXT_COLORS.secondary,
-    fontSize: 14,
+    fontSize: FONT_SIZES.xs,
   },
   activeWorkoutTypeText: {
     color: TEXT_COLORS.primary,
-    fontSize: 14,
+    fontSize: FONT_SIZES.xs,
   },
   diaryContentContainer: {
     flex: 1,
@@ -435,6 +411,7 @@ const styles = StyleSheet.create({
   mealItemName: {
     fontSize: FONT_SIZES.sm,
     color: TEXT_COLORS.primary,
+    fontFamily: FONTS.PRETENDARD[400],
   },
   mealItemButton: {
     width: 100,
@@ -448,13 +425,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 10,
   },
-  icon: {
-    // 아이콘 스타일 추가 필요
-  },
   mealItemTitle: {
     color: 'white',
     fontSize: FONT_SIZES.xs,
-    fontWeight: FONT_WEIGHTS.semiBold,
+    fontFamily: FONTS.PRETENDARD[600],
   },
   modalBackground: {
     flex: 1,
@@ -462,12 +436,36 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.7)',
   },
+  modalText: {
+    color: COLORS.white,
+    fontSize: FONT_SIZES.lg,
+    fontFamily: FONTS.PRETENDARD[600],
+  },
   modalContainer: {
-    width: '90%',
+    width: '100%',
     backgroundColor: COLORS.darkBackground,
     borderRadius: RADIUS.large,
-    padding: 20,
+    padding: 24,
     alignItems: 'center',
+  },
+  modalButtonContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    marginVertical: 10,
+    gap: 20,
+  },
+  modalButtonWrapper: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  modalCalroriesContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    alignSelf: 'flex-end',
+    marginVertical: 20,
   },
 });
 
