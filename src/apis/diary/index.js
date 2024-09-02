@@ -1,16 +1,9 @@
 // index
 import { API } from '..';
 
-export const getDiaryList = async (userId, selected) => {
+export const getDiaryList = async (selected) => {
   try {
-    const res = await API.get(`/workout-record?user_id=${userId}`, {
-      // header에는 userId, params에는 선택된 날짜
-      headers: {
-        user_Id: userId,
-      },
-      params: {
-        date: selected,
-      },
+    const res = await API.get(`/workout-diary?date=${selected}`, {
       withCredentials: true,
     });
     return res.data;
@@ -19,21 +12,18 @@ export const getDiaryList = async (userId, selected) => {
   }
 };
 
-export const getExerciseList = async (userId) => {
+export const getExerciseList = async () => {
   try {
-    const res = await API.get(`/workout-record/exercise-name?user_id=${userId}`);
+    const res = await API.get('/workout-diary/workout-info');
     return res.data;
   } catch (error) {
     return error;
   }
 };
 
-export const postWorkoutRecord = async (userId, data) => {
+export const postWorkoutRecord = async (data) => {
   try {
-    const res = await API.post('/workout-record', data, {
-      headers: {
-        user_Id: userId,
-      },
+    const res = await API.post('/workout-diary', data, {
       withCredentials: true,
     });
     return res.data;
