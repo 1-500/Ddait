@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FlatList, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
@@ -39,15 +39,15 @@ const CompetitionItem = React.memo(({ item, onPress }) => {
 });
 
 const SearchCompetition = ({ navigation }) => {
+  const [competitions, setCompetitions] = useState([]);
   const [sortBy, setSortBy] = useState('');
   const [selectedTags, setSelectedTags] = useState([]);
-  const [sortedCompetitions, setSortedCompetitions] = useState([]);
 
   useEffect(() => {
     const fetchCompetitions = async () => {
       try {
         const result = await getAllCompetitions();
-        setSortedCompetitions(result.data);
+        setCompetitions(result.data);
       } catch (error) {
         // eslint-disable-next-line no-console
         console.error('경쟁방 목록을 불러오는 데 실패했습니다:', error);
@@ -68,18 +68,30 @@ const SearchCompetition = ({ navigation }) => {
     [navigation],
   );
 
-  // 경쟁방 정렬 및 필터링
+  // 정렬 함수
   const sortCompetitions = useCallback((competitions, sortBy) => {
-    if (sortBy === '최신순') {
-      return [...competitions].sort((a, b) => {
-        return new Date(b.date.start_date) - new Date(a.date.start_date);
-      });
-    } else if (sortBy === '인기순') {
-      return [...competitions].sort((a, b) => b.info.current_members - a.info.current_members);
+    switch (sortBy) {
+      case '최신순':
+        return [...competitions].sort((a, b) => new Date(b.date.start_date) - new Date(a.date.start_date));
+      case '인기순':
+        return [...competitions].sort((a, b) => b.info.current_members - a.info.current_members);
+      case '마감순':
+        return [...competitions].sort((a, b) => new Date(a.date.end_date) - new Date(b.date.end_date));
+      default:
+        return competitions;
     }
-    return competitions;
   }, []);
 
+  // 정렬 옵션 변경 핸들러
+  const handleSortChange = useCallback((newSortBy) => {
+    setSortBy(newSortBy);
+  }, []);
+
+  const sortedCompetitions = useMemo(() => {
+    return sortCompetitions(competitions, sortBy);
+  }, [competitions, sortBy, sortCompetitions]);
+
+  // 경쟁방 필터링
   const filterCompetitions = useCallback((competitions, tags) => {
     if (tags.length === 0) {
       return competitions;
@@ -91,13 +103,13 @@ const SearchCompetition = ({ navigation }) => {
     );
   }, []);
 
-  useEffect(() => {
-    if (sortedCompetitions.length > 0) {
-      let filtered = filterCompetitions(sortedCompetitions, selectedTags);
-      let sorted = sortCompetitions(filtered, sortBy);
-      setSortedCompetitions(sorted);
-    }
-  }, [sortBy, sortCompetitions, selectedTags, filterCompetitions, sortedCompetitions]);
+  // useEffect(() => {
+  //   if (sortedCompetitions.length > 0) {
+  //     let filtered = filterCompetitions(sortedCompetitions, selectedTags);
+  //     let sorted = sortCompetitions(filtered, sortBy);
+  //     setSortedCompetitions(sorted);
+  //   }
+  // }, [sortBy, sortCompetitions, selectedTags, filterCompetitions, sortedCompetitions]);
 
   const toggleTag = (tag) => {
     setSelectedTags((prevTags) => (prevTags.includes(tag) ? prevTags.filter((t) => t !== tag) : [...prevTags, tag]));
@@ -136,15 +148,15 @@ const SearchCompetition = ({ navigation }) => {
                 <CustomTag
                   size="big"
                   text={tag}
-                  style={[styles.sortTag, selectedTags.includes(tag) && styles.selectedSortTag]}
+                  style={[styles.filterTag, selectedTags.includes(tag) && styles.selectedSortTag]}
                 />
               </TouchableOpacity>
             ))}
           </View>
           {/* 정렬 옵션 */}
           <DropdownModal
-            options={['최신순', '인기순']}
-            onChange={setSortBy}
+            options={['최신순', '인기순', '마감순']}
+            onChange={handleSortChange}
             value={sortBy}
             placeholder={'정렬'}
             showIcon={true}
@@ -174,7 +186,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginVertical: SPACING.lg,
   },
-  sortTag: {
+  filterTag: {
     paddingHorizontal: SPACING.md,
     paddingVertical: SPACING.sm,
     backgroundColor: '#404040',
