@@ -1,18 +1,19 @@
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
-import React, { useCallback, useRef } from 'react';
-import { Alert, FlatList, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useCallback, useRef, useState } from 'react';
+import { Alert, FlatList, SafeAreaView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
-import { dummyFriends } from '../../apis/dummydata';
+import { searchUser } from '../../apis/friend/index';
 import CustomInput from '../../components/CustomInput';
 import FriendOptionBottomSheet from '../../components/FriendOptionBottomSheet';
 import MemberProfileItem from '../../components/MemberProfileItem';
 import { COLORS } from '../../constants/colors';
-import { FONTS } from '../../constants/font';
 import { LAYOUT_PADDING, SPACING } from '../../constants/space';
 
 const FriendSearch = ({ navigation }) => {
   const bottomSheetRef = useRef(null);
+  const [searchResults, setSearchResults] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const handleOpenOptions = useCallback(() => {
     bottomSheetRef.current?.present();
@@ -20,17 +21,27 @@ const FriendSearch = ({ navigation }) => {
 
   const renderItem = ({ item }) => <MemberProfileItem memberData={item} onRightBtnPress={handleOpenOptions} />;
 
-  const handleSearch = () => {
-    return Alert.alert('검색 버튼 클릭');
+  const handleSearch = async () => {
+    try {
+      const results = await searchUser(searchQuery);
+      setSearchResults(results);
+    } catch (error) {
+      Alert.alert('검색 실패', '사용자를 검색하는 동안 문제가 발생했습니다.');
+    }
   };
 
   return (
     <BottomSheetModalProvider>
       <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.darkBackground }}>
-        <SearchHeader navigation={navigation} onPressSearch={handleSearch} />
+        <SearchHeader
+          navigation={navigation}
+          onPressSearch={handleSearch}
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+        />
         <View style={styles.contentContainer}>
           <FlatList
-            data={dummyFriends}
+            data={searchResults} // 검색 결과를 FlatList에 전달
             renderItem={renderItem}
             keyExtractor={(item) => item.id}
             showsVerticalScrollIndicator={false}
@@ -43,7 +54,7 @@ const FriendSearch = ({ navigation }) => {
   );
 };
 
-const SearchHeader = ({ navigation, onPressSearch }) => {
+const SearchHeader = ({ navigation, onPressSearch, searchQuery, setSearchQuery }) => {
   return (
     <View style={styles.headerContainer}>
       <TouchableOpacity
@@ -57,7 +68,13 @@ const SearchHeader = ({ navigation, onPressSearch }) => {
       >
         <FontAwesome name="angle-left" size={24} color={COLORS.white} />
       </TouchableOpacity>
-      <CustomInput size="stretch" theme="search" onPressIcon={onPressSearch} />
+      <CustomInput
+        size="stretch"
+        theme="search"
+        value={searchQuery} // 검색어를 입력 필드에 연결
+        onChangeText={setSearchQuery} // 검색어가 변경될 때 상태 업데이트
+        onPressIcon={onPressSearch}
+      />
     </View>
   );
 };
