@@ -208,45 +208,49 @@ const StartWorkout = () => {
 
   const handleSaveWorkoutRecord = async () => {
     try {
-      const workoutName = '아침운동';
+      const title = '아침운동';
       const totalWorkoutTime = workoutData.reduce((total, workout) => total + workout.time, 0);
-      const totalRestTime = workoutData.reduce((total, workout) => total + workout.restTime, 0); // post때 필요없지만 향후에 필요할 수도 있어 작성
+
       const formatTotalTime = (seconds) => {
         const hrs = Math.floor(seconds / 3600);
         const mins = Math.floor((seconds % 3600) / 60);
         const secs = seconds % 60;
         return `${String(hrs).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
       };
-      const workoutTime = formatTotalTime(totalWorkoutTime);
+      const time = formatTotalTime(totalWorkoutTime);
 
-      const exercises = workoutData.flatMap((workout) =>
+      // 각 운동에 대해 완료된 세트만 필터링하여 workout_records 배열에 저장
+      const workout_records = workoutData.flatMap((workout) =>
         workout.workoutSet
           .filter((set) => set.isComplete)
           .map((set) => ({
-            exercise_name: workout.title,
+            workout_info: {
+              name: workout.title,
+            },
             weight: set.weight,
             reps: set.reps,
             set: set.id,
-            exercise_time: formatTotalTime(workout.time),
-            rest_time: formatTotalTime(workout.restTime),
           })),
       );
 
-      if (exercises.length === 0) {
+      // 완료된 세트가 없는 경우 알림
+      if (workout_records.length === 0) {
         Alert.alert('운동 기록', '완료된 세트가 없어 기록을 저장할 수 없습니다.');
         return;
       }
 
+      // 운동 기록 객체 생성
       const workoutRecord = {
-        member_id: userId,
-        workout_name: workoutName,
-        workout_time: workoutTime,
-        exercises,
+        title: title,
+        time: time,
+        workout_records, // 운동 기록 데이터
       };
 
-      const res = await postWorkoutRecord(userId, workoutRecord);
+      // POST 요청으로 운동 기록 저장
+      const res = await postWorkoutRecord(workoutRecord);
 
       /* eslint-disable */
+      // 응답 처리
       if (res) {
         Alert.alert('운동 기록', '정상적으로 저장되었습니다');
         navigation.navigate('WorkoutDiaryScreen');
@@ -257,7 +261,7 @@ const StartWorkout = () => {
     } catch (error) {
       console.log('error', error);
     }
-    /* eslint-enable */
+    /* eslint enable */
   };
 
   const formatTime = (seconds) => {
