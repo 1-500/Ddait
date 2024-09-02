@@ -51,3 +51,15 @@ export const getMyCompetition = async () => {
     }
   }
 };
+
+// 전체 경쟁방 목록 조회
+export const getAllCompetitions = async () => {
+  try {
+    const response = await API.get('competition/rooms');
+    return response.data;
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error('전체 경쟁방 목록 조회 중 오류 발생:', error);
+    throw error;
+  }
+};
