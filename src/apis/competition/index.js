@@ -36,11 +36,12 @@ export const enterCompetition = async (roomId) => {
   }
 };
 
+// 내 경쟁방 목록 조회
 export const getMyCompetition = async () => {
   try {
-    const response = await API.get('/competition/rooms');
+    const response = await API.get('/competition/rooms/my');
     console.log('getMyCompetition 응답:', response.data);
-    return response;
+    return response.data;
   } catch (error) {
     if (error.response) {
       console.error('getMyCompetition Error:', error.response);
@@ -56,10 +57,15 @@ export const getMyCompetition = async () => {
 export const getAllCompetitions = async () => {
   try {
     const response = await API.get('competition/rooms');
+    console.log('getAllCompetitions 응답:', response.data);
     return response.data;
   } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error('전체 경쟁방 목록 조회 중 오류 발생:', error);
-    throw error;
+    if (error.response) {
+      console.error('전체 경쟁방 목록 조회 중 오류 발생:', error);
+      throw error;
+    } else {
+      console.error('예상치 못한 오류 발생:', error.message);
+      throw error;
+    }
   }
 };

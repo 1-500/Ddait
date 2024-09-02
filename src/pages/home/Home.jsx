@@ -33,7 +33,7 @@ const Home = ({ navigation }) => {
   const fetchMyCompetitions = async () => {
     try {
       const response = await getMyCompetition();
-      const competitions = response.data.data;
+      const competitions = response.data;
       if (competitions && competitions.length > 0) {
         const now = new Date(); //현재 날짜
 
