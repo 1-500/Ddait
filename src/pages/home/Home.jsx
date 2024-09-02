@@ -8,11 +8,12 @@ import HeatmapCalendar from '../../components/HeatMapCalendar';
 import MyCompetitionItem from '../../components/MyCompetitionItem';
 import NoOngoingCompetitions from '../../components/NoOngoingCompetitions';
 import { BACKGROUND_COLORS, COLORS } from '../../constants/colors';
-import { FONT_SIZES, FONT_WEIGHTS, HEADER_FONT_SIZES } from '../../constants/font';
+import { FONT_SIZES, FONTS, HEADER_FONT_SIZES } from '../../constants/font';
 import { RADIUS } from '../../constants/radius';
 import { ELEMENT_VERTICAL_MARGIN, LAYOUT_PADDING, SPACING } from '../../constants/space';
 
 const userData = {
+  //전역상태에서 추후 가져오도록 수정
   nickname: '따잇',
   profile: 'https://ipsf.net/wp-content/uploads/2021/12/dummy-image-square-300x300.webp',
 };
@@ -145,11 +146,12 @@ const styles = StyleSheet.create({
   lgBoldText: {
     color: COLORS.white,
     fontSize: HEADER_FONT_SIZES.lg,
-    fontWeight: FONT_WEIGHTS.bold,
+    fontFamily: FONTS.PRETENDARD[700],
   },
   mdText: {
     color: COLORS.white,
     fontSize: FONT_SIZES.md,
+    fontFamily: FONTS.PRETENDARD[400],
   },
   titleWrapper: {
     flexDirection: 'row',
@@ -159,11 +161,12 @@ const styles = StyleSheet.create({
   },
   titleText: {
     fontSize: HEADER_FONT_SIZES.sm,
-    fontWeight: FONT_WEIGHTS.bold,
+    fontFamily: FONTS.PRETENDARD[700],
     color: COLORS.white,
   },
   moreText: {
     fontSize: FONT_SIZES.sm,
+    fontFamily: FONTS.PRETENDARD[400],
     color: COLORS.white,
   },
   cardContainer: {
@@ -178,7 +181,7 @@ const styles = StyleSheet.create({
     alignSelf: 'stretch',
     color: COLORS.white,
     fontSize: FONT_SIZES.md,
-    fontWeight: FONT_WEIGHTS.bold,
+    fontFamily: FONTS.PRETENDARD[600],
   },
 });
 
