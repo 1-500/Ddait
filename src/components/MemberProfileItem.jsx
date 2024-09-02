@@ -3,7 +3,7 @@ import { Dimensions, Image, StyleSheet, Text, TouchableOpacity, View } from 'rea
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import { COLORS } from '../constants/colors';
-import { FONT_SIZES, FONT_WEIGHTS, FONTS } from '../constants/font';
+import { FONT_SIZES, FONTS } from '../constants/font';
 import { SPACING } from '../constants/space';
 import CustomTag from './CustomTag';
 
@@ -41,11 +41,7 @@ const MemberProfileItem = ({ memberData, rightBtn = 'menu', onRightBtnPress = ()
           <Text style={styles.introduceText} ellipsizeMode="tail" numberOfLines={1}>
             {memberData.introduce}
           </Text>
-          <View style={styles.tagsContainer}>
-            {memberData.preferred_sport.map((sport, index) => (
-              <CustomTag key={`${sport}-${index}`} size="small" text={sport} />
-            ))}
-          </View>
+          <CustomTag size="small" text={memberData.preferred_sport} />
         </View>
       </View>
       {renderRightBtn()}
@@ -88,10 +84,5 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.PRETENDARD[500],
     color: COLORS.white,
     marginBottom: SPACING.xs,
-  },
-  tagsContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 6,
   },
 });
