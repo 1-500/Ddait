@@ -78,7 +78,7 @@ const Home = ({ navigation }) => {
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
         <ProfileSection data={userData} />
         <SectionTitle title="진행중인 경쟁" navigation={navigation} navigateTo="Competition" />
-        <View style={{ marginBottom: 16 }}>
+        <View style={{ marginBottom: SPACING.md }}>
           {competition ? (
             <MyCompetitionItem item={competition} onPress={handleCompetitionPress} />
           ) : (

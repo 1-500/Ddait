@@ -223,7 +223,7 @@ const styles = StyleSheet.create({
   titleContainer: {
     flexDirection: 'row',
     alignItems: 'baseline',
-    gap: 8,
+    gap: SPACING.xs,
   },
   competitionTitle: {
     color: COLORS.white,
