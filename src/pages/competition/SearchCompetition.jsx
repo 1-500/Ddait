@@ -16,6 +16,8 @@ import { formDate } from '../../utils/date';
 
 // 경쟁방 아이템 컴포넌트
 const CompetitionItem = React.memo(({ item, onPress }) => {
+  const memberTextColor = item.user_status.is_participant ? COLORS.lightPurple : COLORS.white;
+
   return (
     <TouchableOpacity onPress={() => onPress(item)} style={styles.competitionContainer}>
       <View style={{ gap: SPACING.xs }}>
@@ -38,8 +40,12 @@ const CompetitionItem = React.memo(({ item, onPress }) => {
       </View>
 
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: SPACING.xs }}>
-        <Ionicons name="person" size={16} color={COLORS.semiLightGrey} />
-        <Text style={styles.competitionMembers}>
+        {item.user_status.is_participant ? (
+          <Ionicons name="person" size={16} color={COLORS.lightPurple} />
+        ) : (
+          <Ionicons name="person" size={16} color={COLORS.semiLightGrey} />
+        )}
+        <Text style={[styles.competitionMembers, { color: memberTextColor }]}>
           {item.info.current_members} / {item.info.max_members}
         </Text>
       </View>

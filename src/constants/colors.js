@@ -13,6 +13,7 @@ export const COLORS = {
   purple: '#9747FF',
   blue: '#2196F3',
   brown: '#8E6A33',
+  lightPurple: '#8B8BFF',
 
   placeholder: '#888888',
 
