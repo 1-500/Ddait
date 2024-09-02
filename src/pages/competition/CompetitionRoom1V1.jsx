@@ -1,6 +1,18 @@
-import React from 'react';
-import { Dimensions, Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useRoute } from '@react-navigation/native';
+import React, { useEffect, useState } from 'react';
+import {
+  Alert,
+  Dimensions,
+  Image,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
+import { getCompetitionDetail } from '../../apis/competition';
 import CompetitionRoomHeader from '../../components/CompetitionRoomHeader';
 import CustomTag from '../../components/CustomTag';
 import { COLORS } from '../../constants/colors';
@@ -45,6 +57,21 @@ const dummy_data = {
 
 const CompetitionRoom1V1 = () => {
   const maxGraphWidth = width - 180;
+  const route = useRoute();
+  const [competitionData, setCompetitionData] = useState();
+  const { competitionId } = route.params;
+
+  useEffect(() => {
+    const fetchCompetitionDetail = async () => {
+      try {
+        const result = await getCompetitionDetail(competitionId);
+        setCompetitionData(result.data);
+      } catch (error) {
+        Alert.alert('경쟁방 상세 정보 조회 실패', error.message);
+      }
+    };
+    fetchCompetitionDetail();
+  }, [competitionId]);
 
   const renderCompetitionProfile = (data, color, style) => {
     return (
@@ -63,7 +90,7 @@ const CompetitionRoom1V1 = () => {
 
   return (
     <SafeAreaView style={styles.pageContainer}>
-      <CompetitionRoomHeader data={dummy_data.room_info} />
+      {competitionData && <CompetitionRoomHeader data={competitionData} />}
       <ScrollView style={[{ paddingTop: 30 }, LAYOUT_PADDING]}>
         <View style={styles.messageWrapper}>
           <Text style={styles.userNameText}>{dummy_data.result.me.name}님,</Text>

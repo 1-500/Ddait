@@ -69,3 +69,20 @@ export const getAllCompetitions = async () => {
     }
   }
 };
+
+// 경쟁방 상세 조회
+export const getCompetitionDetail = async (id) => {
+  try {
+    const response = await API.get(`competition/rooms/${id}`);
+    console.log('getCompetitionDetail 응답:', response.data);
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      console.error('경쟁방 상세 조회 중 오류 발생:', error);
+      throw error;
+    } else {
+      console.error('예상치 못한 오류 발생:', error.message);
+      throw error;
+    }
+  }
+};
