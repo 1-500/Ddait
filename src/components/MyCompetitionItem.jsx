@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import Octicons from 'react-native-vector-icons/Octicons';
 
 import { COLORS } from '../constants/colors';
 import { FONT_SIZES, FONTS } from '../constants/font';
@@ -10,12 +11,19 @@ import { formDate } from '../utils/date';
 
 const MyCompetitionItem = ({ item, onPress }) => (
   <TouchableOpacity onPress={() => onPress(item)} style={styles.competitionContainer}>
-    <Text style={styles.competitionTitle}>{item.title}</Text>
+    <View style={styles.titleContainer}>
+      <Text style={styles.competitionTitle}>{item.title}</Text>
+      {item.settings.is_private ? (
+        <Octicons name="lock" size={16} color={COLORS.primary} />
+      ) : (
+        <Octicons name="unlock" size={16} color={COLORS.lightGrey} />
+      )}
+    </View>
     <Text style={styles.competitionDate}>
       {formDate(item.date.start_date)} ~ {formDate(item.date.end_date)}
     </Text>
     <View style={styles.competitionMembersContainer}>
-      <Ionicons name="person" size={16} color={COLORS.semiLightGrey} />
+      <Ionicons name="person" size={16} color={COLORS.lightPurple} />
       <Text style={styles.competitionMembers}>
         {item.info.current_members} / {item.info.max_members}
       </Text>
@@ -30,7 +38,11 @@ const styles = StyleSheet.create({
     paddingVertical: SPACING.xl,
     borderRadius: RADIUS.large,
     gap: SPACING.xs,
-    // marginBottom: SPACING.md,
+  },
+  titleContainer: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    gap: 8,
   },
   competitionTitle: {
     color: COLORS.white,
@@ -48,7 +60,7 @@ const styles = StyleSheet.create({
     gap: SPACING.xs,
   },
   competitionMembers: {
-    color: COLORS.white,
+    color: COLORS.lightPurple,
     fontSize: FONT_SIZES.sm,
     fontFamily: FONTS.PRETENDARD[500],
   },

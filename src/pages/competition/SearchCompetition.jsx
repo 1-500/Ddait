@@ -1,5 +1,6 @@
+import { useIsFocused } from '@react-navigation/native';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { FlatList, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, FlatList, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Octicons from 'react-native-vector-icons/Octicons';
 
@@ -21,13 +22,13 @@ const CompetitionItem = React.memo(({ item, onPress }) => {
   return (
     <TouchableOpacity onPress={() => onPress(item)} style={styles.competitionContainer}>
       <View style={{ gap: SPACING.xs }}>
-        <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 8 }}>
-          {item.settings.is_private ? (
-            <Octicons name="lock" size={16} color={COLORS.lightGrey} />
-          ) : (
-            <Octicons name="unlock" size={16} color={COLORS.primary} />
-          )}
+        <View style={styles.titleContainer}>
           <Text style={styles.competitionTitle}>{item.title}</Text>
+          {item.settings.is_private ? (
+            <Octicons name="lock" size={16} color={COLORS.primary} />
+          ) : (
+            <Octicons name="unlock" size={16} color={COLORS.lightGrey} />
+          )}
         </View>
         <View style={{ flexDirection: 'row', gap: SPACING.xxs }}>
           <CustomTag size="small" text={item.info.competition_type} />
@@ -57,6 +58,7 @@ const SearchCompetition = ({ navigation }) => {
   const [competitions, setCompetitions] = useState([]);
   const [sortBy, setSortBy] = useState('');
   const [selectedTag, setSelectedTag] = useState('');
+  const isFocused = useIsFocused();
 
   useEffect(() => {
     const fetchCompetitions = async () => {
@@ -64,13 +66,12 @@ const SearchCompetition = ({ navigation }) => {
         const result = await getAllCompetitions();
         setCompetitions(result.data);
       } catch (error) {
-        // eslint-disable-next-line no-console
-        console.error('경쟁방 목록을 불러오는 데 실패했습니다:', error);
+        Alert.alert('전체 경쟁방 목록을 불러오는데 실패했습니다', error.message);
       }
     };
 
     fetchCompetitions();
-  }, []);
+  }, [isFocused]);
 
   const handleCompetitionPress = useCallback(
     (item) => {
@@ -218,6 +219,11 @@ const styles = StyleSheet.create({
     borderRadius: RADIUS.large,
     flexDirection: 'row',
     justifyContent: 'space-between',
+  },
+  titleContainer: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    gap: 8,
   },
   competitionTitle: {
     color: COLORS.white,
