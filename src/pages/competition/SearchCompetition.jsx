@@ -42,7 +42,7 @@ const CompetitionItem = React.memo(({ item, onPress }) => {
 const SearchCompetition = ({ navigation }) => {
   const [competitions, setCompetitions] = useState([]);
   const [sortBy, setSortBy] = useState('');
-  const [selectedTags, setSelectedTags] = useState([]);
+  const [selectedTag, setSelectedTag] = useState('');
 
   useEffect(() => {
     const fetchCompetitions = async () => {
@@ -88,35 +88,37 @@ const SearchCompetition = ({ navigation }) => {
     setSortBy(newSortBy);
   }, []);
 
-  const sortedCompetitions = useMemo(() => {
-    return sortCompetitions(competitions, sortBy);
-  }, [competitions, sortBy, sortCompetitions]);
-
   // 경쟁방 필터링
-  const filterCompetitions = useCallback((competitions, tags) => {
-    if (tags.length === 0) {
+  const filterCompetitions = useCallback((competitions, tag) => {
+    if (!tag) {
       return competitions;
     }
-    return competitions.filter((competition) =>
-      tags.some(
-        (tag) => competition.info.competition_type.includes(tag) || competition.info.competition_theme.includes(tag),
-      ),
-    );
+    switch (tag) {
+      case '웨이트':
+        return competitions.filter((comp) => comp.info.competition_type === '웨이트트레이닝');
+      case '랭킹전':
+        return competitions.filter((comp) => comp.info.max_members !== 2);
+      case '1:1':
+        return competitions.filter((comp) => comp.info.max_members === 2);
+      default:
+        return competitions;
+    }
   }, []);
 
-  // useEffect(() => {
-  //   if (sortedCompetitions.length > 0) {
-  //     let filtered = filterCompetitions(sortedCompetitions, selectedTags);
-  //     let sorted = sortCompetitions(filtered, sortBy);
-  //     setSortedCompetitions(sorted);
-  //   }
-  // }, [sortBy, sortCompetitions, selectedTags, filterCompetitions, sortedCompetitions]);
+  const filteredCompetitions = useMemo(() => {
+    return filterCompetitions(competitions, selectedTag);
+  }, [competitions, selectedTag, filterCompetitions]);
+
+  // 필터링 된 데이터를 정렬
+  const sortedCompetitions = useMemo(() => {
+    return sortCompetitions(filteredCompetitions, sortBy);
+  }, [filteredCompetitions, sortBy, sortCompetitions]);
 
   const toggleTag = (tag) => {
-    setSelectedTags((prevTags) => (prevTags.includes(tag) ? prevTags.filter((t) => t !== tag) : [...prevTags, tag]));
+    setSelectedTag((prevTag) => (prevTag === tag ? '' : tag));
   };
 
-  // 랜더링 관련
+  // 랜더링 컴포넌트
   const renderCompetitions = useCallback(
     ({ item }) => <CompetitionItem item={item} onPress={handleCompetitionPress} />,
     [handleCompetitionPress],
@@ -144,12 +146,12 @@ const SearchCompetition = ({ navigation }) => {
         <View style={styles.sortContainer}>
           {/* 태그 필터 */}
           <View style={{ flexDirection: 'row', gap: 8 }}>
-            {['웨이트', '러닝', '다이어트'].map((tag) => (
+            {['웨이트', '랭킹전', '1:1'].map((tag) => (
               <TouchableOpacity key={tag} onPress={() => toggleTag(tag)} activeOpacity={0.6}>
                 <CustomTag
                   size="big"
                   text={tag}
-                  style={[styles.filterTag, selectedTags.includes(tag) && styles.selectedSortTag]}
+                  style={[styles.filterTag, selectedTag.includes(tag) && styles.selectedFilterTag]}
                 />
               </TouchableOpacity>
             ))}
@@ -192,7 +194,7 @@ const styles = StyleSheet.create({
     paddingVertical: SPACING.sm,
     backgroundColor: '#404040',
   },
-  selectedSortTag: {
+  selectedFilterTag: {
     backgroundColor: COLORS.primary,
   },
   competitionContainer: {
