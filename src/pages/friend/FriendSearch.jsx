@@ -1,16 +1,17 @@
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import React, { useCallback, useRef } from 'react';
-import { FlatList, SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import { Alert, FlatList, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 import { dummyFriends } from '../../apis/dummydata';
+import CustomInput from '../../components/CustomInput';
 import FriendOptionBottomSheet from '../../components/FriendOptionBottomSheet';
-import HeaderComponents from '../../components/HeaderComponents';
 import MemberProfileItem from '../../components/MemberProfileItem';
 import { COLORS } from '../../constants/colors';
 import { FONTS } from '../../constants/font';
 import { LAYOUT_PADDING, SPACING } from '../../constants/space';
 
-const Friend = ({ navigation }) => {
+const FriendSearch = ({ navigation }) => {
   const bottomSheetRef = useRef(null);
 
   const handleOpenOptions = useCallback(() => {
@@ -19,12 +20,15 @@ const Friend = ({ navigation }) => {
 
   const renderItem = ({ item }) => <MemberProfileItem memberData={item} onRightBtnPress={handleOpenOptions} />;
 
+  const handleSearch = () => {
+    return Alert.alert('검색 버튼 클릭');
+  };
+
   return (
     <BottomSheetModalProvider>
       <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.darkBackground }}>
-        <HeaderComponents icon="search" title="친구 목록" onRightBtnPress={() => navigation.navigate('FriendSearch')} />
+        <SearchHeader navigation={navigation} onPressSearch={handleSearch} />
         <View style={styles.contentContainer}>
-          <Text style={styles.subtitle}>내 친구</Text>
           <FlatList
             data={dummyFriends}
             renderItem={renderItem}
@@ -39,17 +43,44 @@ const Friend = ({ navigation }) => {
   );
 };
 
-export default Friend;
+const SearchHeader = ({ navigation, onPressSearch }) => {
+  return (
+    <View style={styles.headerContainer}>
+      <TouchableOpacity
+        style={styles.btnWrapper}
+        activeOpacity={0.6}
+        onPress={() => {
+          if (navigation.canGoBack()) {
+            navigation.goBack();
+          }
+        }}
+      >
+        <FontAwesome name="angle-left" size={24} color={COLORS.white} />
+      </TouchableOpacity>
+      <CustomInput size="stretch" theme="search" onPressIcon={onPressSearch} />
+    </View>
+  );
+};
+
+export default FriendSearch;
 
 const styles = StyleSheet.create({
   contentContainer: {
     ...LAYOUT_PADDING,
-    paddingTop: SPACING.md,
-    gap: SPACING.xs,
   },
-  subtitle: {
-    color: COLORS.white,
-    fontSize: 16,
-    fontFamily: FONTS.PRETENDARD[600],
+  headerContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: SPACING.xs,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.primary,
+    backgroundColor: COLORS.darkBackground,
+  },
+  btnWrapper: {
+    width: 44,
+    height: 44,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });

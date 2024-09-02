@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dimensions, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import { Dimensions, Pressable, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 import Svg, { ClipPath, Defs, G, Path, Rect } from 'react-native-svg';
 
 import { COLORS, INPUT_COLORS } from '../constants/colors';
@@ -82,7 +82,7 @@ const SearchIcon = () => (
 /**
  *
  * @param {{
- * size: 'large' | 'medium' | 'small';
+ * size: 'large' | 'medium' | 'small' |'stretch';
  * theme: 'primary' | 'search' | 'user' | 'success' | 'error';
  * isSuccess: boolean;
  * onPressShowPassword?: () => {};
@@ -97,6 +97,7 @@ const SearchIcon = () => (
  * onChangeText: (text: string) => void;
  * keyboardType?: 'default' | 'email-address' | 'numeric' | 'phone-pad' | 'number-pad' | 'decimal-pad' | 'ascii-capable' | 'numbers-and-punctuation' | 'url' | 'name-phone-pad' | 'twitter' | 'web-search';
  * textContentType: 'none' | 'URL' | 'addressCity' | 'addressCityAndState' | 'addressState' | 'countryName' | 'creditCardNumber' | 'emailAddress' | 'familyName' | 'fullStreetAddress' | 'givenName' | 'jobTitle' | 'location' | 'middleName' | 'name' | 'namePrefix' | 'nameSuffix' | 'nickname' | 'organizationName' | 'postalCode' | 'streetAddressLine1' | 'streetAddressLine2' | 'sublocality' | 'telephoneNumber' | 'username' | 'password' | 'newPassword' | 'oneTimeCode'
+ * onPressIcon: () => {};
  * }} param0
  *
  */
@@ -118,6 +119,7 @@ const CustomInput = ({
   isPassword = false,
   onPressShowPassword = () => {},
   onPress,
+  onPressIcon,
 }) => {
   const windowWidth = Dimensions.get('window').width;
 
@@ -168,7 +170,9 @@ const CustomInput = ({
       />
       {theme === 'search' && (
         <View style={styles.iconWrapper}>
-          <SearchIcon />
+          <Pressable onPress={onPressIcon}>
+            <SearchIcon />
+          </Pressable>
         </View>
       )}
       {isPassword && theme !== 'search' ? (
