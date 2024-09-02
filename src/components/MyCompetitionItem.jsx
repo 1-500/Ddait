@@ -10,7 +10,7 @@ import { formDate } from '../utils/date';
 
 const MyCompetitionItem = ({ item, onPress }) => (
   <TouchableOpacity onPress={() => onPress(item)} style={styles.competitionContainer}>
-    <Text style={styles.competitionName}>{item.title}</Text>
+    <Text style={styles.competitionTitle}>{item.title}</Text>
     <Text style={styles.competitionDate}>
       {formDate(item.date.start_date)} ~ {formDate(item.date.end_date)}
     </Text>
@@ -30,9 +30,9 @@ const styles = StyleSheet.create({
     paddingVertical: SPACING.xl,
     borderRadius: RADIUS.large,
     gap: SPACING.xs,
-    marginBottom: SPACING.md,
+    // marginBottom: SPACING.md,
   },
-  competitionName: {
+  competitionTitle: {
     color: COLORS.white,
     fontSize: FONT_SIZES.md,
     fontFamily: FONTS.PRETENDARD[700],

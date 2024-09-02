@@ -78,11 +78,13 @@ const Home = ({ navigation }) => {
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
         <ProfileSection data={userData} />
         <SectionTitle title="진행중인 경쟁" navigation={navigation} navigateTo="Competition" />
-        {competition ? (
-          <MyCompetitionItem item={competition} onPress={handleCompetitionPress} />
-        ) : (
-          <NoOngoingCompetitions />
-        )}
+        <View style={{ marginBottom: 16 }}>
+          {competition ? (
+            <MyCompetitionItem item={competition} onPress={handleCompetitionPress} />
+          ) : (
+            <NoOngoingCompetitions />
+          )}
+        </View>
         <SectionTitle title="운동 요약" navigation={navigation} navigateTo="Mypage" />
         <ExerciseSummary data={dummyDates} />
       </ScrollView>

@@ -5,26 +5,11 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import { getMyCompetition } from '../../apis/competition';
 import CustomButton from '../../components/CustomButton';
+import MyCompetitionItem from '../../components/MyCompetitionItem';
 import { COLORS } from '../../constants/colors';
 import { FONT_SIZES, FONTS, HEADER_FONT_SIZES } from '../../constants/font';
 import { RADIUS } from '../../constants/radius';
 import { LAYOUT_PADDING, SPACING } from '../../constants/space';
-import { formDate } from '../../utils/date';
-
-const CompetitionItem = React.memo(({ item, onPress }) => (
-  <TouchableOpacity onPress={() => onPress(item)} style={styles.competitionContainer}>
-    <Text style={styles.competitionTitle}>{item.title}</Text>
-    <Text style={styles.competitionDate}>
-      {formDate(item.date.start_date)} ~ {formDate(item.date.end_date)}
-    </Text>
-    <View style={styles.competitionMembersContainer}>
-      <Ionicons name="person" size={16} color={COLORS.semiLightGrey} />
-      <Text style={styles.competitionMembers}>
-        {item.info.current_members} / {item.info.max_members}
-      </Text>
-    </View>
-  </TouchableOpacity>
-));
 
 const Competition = ({ navigation }) => {
   const [myCompetitions, setMyCompetitions] = useState([]);
@@ -54,7 +39,7 @@ const Competition = ({ navigation }) => {
   );
 
   const renderCompetitions = useCallback(
-    ({ item }) => <CompetitionItem item={item} onPress={handleCompetitionPress} />,
+    ({ item }) => <MyCompetitionItem item={item} onPress={handleCompetitionPress} />,
     [handleCompetitionPress],
   );
 
@@ -154,32 +139,6 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.PRETENDARD[600],
     marginBottom: SPACING.xxs,
     lineHeight: FONT_SIZES.md * 1.3,
-  },
-  competitionContainer: {
-    backgroundColor: COLORS.darkGrey,
-    paddingHorizontal: SPACING.lg,
-    paddingVertical: SPACING.xl,
-    borderRadius: RADIUS.large,
-    gap: SPACING.xs,
-  },
-  competitionTitle: {
-    color: COLORS.white,
-    fontSize: FONT_SIZES.md,
-    fontFamily: FONTS.PRETENDARD[600],
-  },
-  competitionDate: {
-    color: COLORS.semiLightGrey,
-    fontFamily: FONTS.PRETENDARD[400],
-  },
-  competitionMembersContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: SPACING.xs,
-  },
-  competitionMembers: {
-    color: COLORS.white,
-    fontSize: FONT_SIZES.sm,
-    fontFamily: FONTS.PRETENDARD[400],
   },
 });
 
