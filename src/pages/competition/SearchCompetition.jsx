@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FlatList, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import Octicons from 'react-native-vector-icons/Octicons';
 
 import { getAllCompetitions } from '../../apis/competition';
 import CustomButton from '../../components/CustomButton';
@@ -18,7 +19,14 @@ const CompetitionItem = React.memo(({ item, onPress }) => {
   return (
     <TouchableOpacity onPress={() => onPress(item)} style={styles.competitionContainer}>
       <View style={{ gap: SPACING.xs }}>
-        <Text style={styles.competitionTitle}>{item.title}</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 8 }}>
+          {item.settings.is_private ? (
+            <Octicons name="lock" size={16} color={COLORS.lightGrey} />
+          ) : (
+            <Octicons name="unlock" size={16} color={COLORS.primary} />
+          )}
+          <Text style={styles.competitionTitle}>{item.title}</Text>
+        </View>
         <View style={{ flexDirection: 'row', gap: SPACING.xxs }}>
           <CustomTag size="small" text={item.info.competition_type} />
           <CustomTag size="small" text={item.info.competition_theme} style={{ backgroundColor: COLORS.warmGrey }} />
