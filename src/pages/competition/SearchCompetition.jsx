@@ -22,6 +22,7 @@ const CompetitionItem = React.memo(({ item, onPress }) => {
         <View style={{ flexDirection: 'row', gap: SPACING.xxs }}>
           <CustomTag size="small" text={item.info.competition_type} />
           <CustomTag size="small" text={item.info.competition_theme} />
+          <CustomTag size="small" text={item.info.max_members === 2 ? '1:1' : '랭킹전'} />
         </View>
         <Text style={styles.competitionDate}>
           {formDate(item.date.start_date)} ~ {formDate(item.date.end_date)}
