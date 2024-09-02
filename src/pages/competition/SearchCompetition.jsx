@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { FlatList, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
-import { dummyCompetitions } from '../../apis/dummydata';
+import { getAllCompetitions } from '../../apis/competition';
 import CustomButton from '../../components/CustomButton';
 import CustomTag from '../../components/CustomTag';
 import DropdownModal from '../../components/DropdownModal';
@@ -14,37 +14,52 @@ import { LAYOUT_PADDING, SPACING } from '../../constants/space';
 import { formDate } from '../../utils/date';
 
 // 경쟁방 아이템 컴포넌트
-const CompetitionItem = React.memo(({ item, onPress }) => (
-  <TouchableOpacity onPress={() => onPress(item)} style={styles.competitionContainer}>
-    <View style={{ gap: SPACING.xs }}>
-      <Text style={styles.competitionName}>{item.name}</Text>
-      <View style={{ flexDirection: 'row', gap: SPACING.xxs }}>
-        {item.tags.map((tag, index) => (
-          <CustomTag key={index} size="small" text={tag} />
-        ))}
+const CompetitionItem = React.memo(({ item, onPress }) => {
+  return (
+    <TouchableOpacity onPress={() => onPress(item)} style={styles.competitionContainer}>
+      <View style={{ gap: SPACING.xs }}>
+        <Text style={styles.competitionTitle}>{item.title}</Text>
+        <View style={{ flexDirection: 'row', gap: SPACING.xxs }}>
+          <CustomTag size="small" text={item.info.competition_type} />
+          <CustomTag size="small" text={item.info.competition_theme} />
+        </View>
+        <Text style={styles.competitionDate}>
+          {formDate(item.date.start_date)} ~ {formDate(item.date.end_date)}
+        </Text>
       </View>
-      <Text style={styles.competitionDate}>
-        {formDate(item.start_date)} ~ {formDate(item.end_date)}
-      </Text>
-    </View>
 
-    <View style={{ flexDirection: 'row', alignItems: 'center', gap: SPACING.xs }}>
-      <Ionicons name="person" size={16} color={COLORS.semiLightGrey} />
-      <Text style={styles.competitionMembers}>
-        {item.current_members} / {item.max_members}
-      </Text>
-    </View>
-  </TouchableOpacity>
-));
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: SPACING.xs }}>
+        <Ionicons name="person" size={16} color={COLORS.semiLightGrey} />
+        <Text style={styles.competitionMembers}>
+          {item.info.current_members} / {item.info.max_members}
+        </Text>
+      </View>
+    </TouchableOpacity>
+  );
+});
 
 const SearchCompetition = ({ navigation }) => {
   const [sortBy, setSortBy] = useState('');
   const [selectedTags, setSelectedTags] = useState([]);
-  const [sortedCompetitions, setSortedCompetitions] = useState(dummyCompetitions);
+  const [sortedCompetitions, setSortedCompetitions] = useState([]);
+
+  useEffect(() => {
+    const fetchCompetitions = async () => {
+      try {
+        const result = await getAllCompetitions();
+        setSortedCompetitions(result.data);
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error('경쟁방 목록을 불러오는 데 실패했습니다:', error);
+      }
+    };
+
+    fetchCompetitions();
+  }, []);
 
   const handleCompetitionPress = useCallback(
     (item) => {
-      if (item.max_members === 2) {
+      if (item.info.max_members === 2) {
         navigation.navigate('CompetitionRoom1V1', { competitionId: item.id });
       } else {
         navigation.navigate('CompetitionRoomRanking', { competitionId: item.id });
@@ -57,10 +72,10 @@ const SearchCompetition = ({ navigation }) => {
   const sortCompetitions = useCallback((competitions, sortBy) => {
     if (sortBy === '최신순') {
       return [...competitions].sort((a, b) => {
-        return new Date(b.start_date) - new Date(a.start_date);
+        return new Date(b.date.start_date) - new Date(a.date.start_date);
       });
     } else if (sortBy === '인기순') {
-      return [...competitions].sort((a, b) => b.current_members - a.current_members);
+      return [...competitions].sort((a, b) => b.info.current_members - a.info.current_members);
     }
     return competitions;
   }, []);
@@ -69,14 +84,20 @@ const SearchCompetition = ({ navigation }) => {
     if (tags.length === 0) {
       return competitions;
     }
-    return competitions.filter((competition) => tags.every((tag) => competition.tags.includes(tag)));
+    return competitions.filter((competition) =>
+      tags.some(
+        (tag) => competition.info.competition_type.includes(tag) || competition.info.competition_theme.includes(tag),
+      ),
+    );
   }, []);
 
   useEffect(() => {
-    let filtered = filterCompetitions(dummyCompetitions, selectedTags);
-    let sorted = sortCompetitions(filtered, sortBy);
-    setSortedCompetitions(sorted);
-  }, [sortBy, sortCompetitions, selectedTags, filterCompetitions]);
+    if (sortedCompetitions.length > 0) {
+      let filtered = filterCompetitions(sortedCompetitions, selectedTags);
+      let sorted = sortCompetitions(filtered, sortBy);
+      setSortedCompetitions(sorted);
+    }
+  }, [sortBy, sortCompetitions, selectedTags, filterCompetitions, sortedCompetitions]);
 
   const toggleTag = (tag) => {
     setSelectedTags((prevTags) => (prevTags.includes(tag) ? prevTags.filter((t) => t !== tag) : [...prevTags, tag]));
@@ -91,7 +112,7 @@ const SearchCompetition = ({ navigation }) => {
   const ListEmpty = useCallback(
     () => (
       <View style={styles.cardContainer}>
-        <Text style={styles.cardText}>진행중인 경쟁이 없네요...(｡•́︿•̀｡){'\n'}얼른 따잇! 하러 가보실까요?</Text>
+        <Text style={styles.cardText}>진행중인 경쟁이 없네요...{'\n'}얼른 따잇! 하러 가보실까요? 😎</Text>
         <CustomButton
           theme="primary"
           size="large"
@@ -169,7 +190,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
-  competitionName: {
+  competitionTitle: {
     color: COLORS.white,
     fontSize: FONT_SIZES.md,
     fontFamily: FONTS.PRETENDARD[600],
