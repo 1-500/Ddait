@@ -1,13 +1,12 @@
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Alert, FlatList, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import { Alert, FlatList, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { dummyFriends } from '../../apis/dummydata';
 import { searchUser } from '../../apis/friend/index';
 import CustomButton from '../../components/CustomButton';
-import CustomInput from '../../components/CustomInput';
 import FriendOptionBottomSheet from '../../components/FriendOptionBottomSheet';
+import SearchHeader from '../../components/Header/SearchHeader';
 import MemberProfileItem from '../../components/MemberProfileItem';
 import SectionTitle from '../../components/SectionTitle';
 import { COLORS } from '../../constants/colors';
@@ -25,31 +24,28 @@ const FriendSearch = ({ navigation }) => {
   }, []);
   const renderItem = ({ item }) => <MemberProfileItem memberData={item} onRightBtnPress={handleOpenOptions} />;
 
-  const handleSearch = useCallback(async () => {
-    setError('');
-    setSearchResults([]);
-
-    if (searchQuery.trim() === '') {
-      return;
-    }
-
-    try {
-      const res = await searchUser(searchQuery);
-      if (res.data?.length === 0) {
-        setSearchResults([]);
-        setError(res.message);
-      } else {
-        setSearchResults(res);
-        setError('');
-      }
-    } catch (error) {
-      Alert.alert('검색 실패', '사용자를 검색하는 동안 문제가 발생했습니다.');
-    }
-  }, [searchQuery]);
-
   useEffect(() => {
+    const handleSearch = async () => {
+      setError('');
+      setSearchResults([]);
+      if (searchQuery.trim() === '') {
+        return;
+      }
+      try {
+        const res = await searchUser(searchQuery);
+        if (res.data?.length === 0) {
+          setSearchResults([]);
+          setError(res.message || 'No results found.');
+        } else {
+          setSearchResults(res);
+          setError('');
+        }
+      } catch (error) {
+        Alert.alert('검색 실패', '사용자를 검색하는 동안 문제가 발생했습니다.');
+      }
+    };
     handleSearch();
-  }, [handleSearch]);
+  }, [searchQuery]);
 
   return (
     <BottomSheetModalProvider>
@@ -96,32 +92,6 @@ const FriendSearch = ({ navigation }) => {
     </BottomSheetModalProvider>
   );
 };
-
-const SearchHeader = ({ navigation, searchQuery, setSearchQuery }) => {
-  return (
-    <View style={styles.headerContainer}>
-      <TouchableOpacity
-        style={styles.btnWrapper}
-        activeOpacity={0.6}
-        onPress={() => {
-          if (navigation.canGoBack()) {
-            navigation.goBack();
-          }
-        }}
-      >
-        <FontAwesome name="angle-left" size={24} color={COLORS.white} />
-      </TouchableOpacity>
-      <CustomInput
-        size="stretch"
-        theme="search"
-        value={searchQuery}
-        onChangeText={setSearchQuery}
-        returnKeyType="search"
-      />
-    </View>
-  );
-};
-
 export default FriendSearch;
 
 const styles = StyleSheet.create({
@@ -132,21 +102,6 @@ const styles = StyleSheet.create({
   contentContainer: {
     ...LAYOUT_PADDING,
     flex: 1,
-  },
-  headerContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: SPACING.xs,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.primary,
-    backgroundColor: COLORS.darkBackground,
-  },
-  btnWrapper: {
-    width: 44,
-    height: 44,
-    justifyContent: 'center',
-    alignItems: 'center',
   },
   mapSearchWrapper: {
     flex: 1,
