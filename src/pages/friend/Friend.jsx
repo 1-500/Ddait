@@ -10,7 +10,7 @@ import { COLORS } from '../../constants/colors';
 import { FONTS } from '../../constants/font';
 import { LAYOUT_PADDING, SPACING } from '../../constants/space';
 
-const Friend = () => {
+const Friend = ({ navigation }) => {
   const bottomSheetRef = useRef(null);
 
   const handleOpenOptions = useCallback(() => {
@@ -22,7 +22,7 @@ const Friend = () => {
   return (
     <BottomSheetModalProvider>
       <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.darkBackground }}>
-        <HeaderComponents icon="search" title="친구 목록" />
+        <HeaderComponents icon="search" title="친구 목록" onRightBtnPress={() => navigation.navigate('FriendSearch')} />
         <View style={styles.contentContainer}>
           <Text style={styles.subtitle}>내 친구</Text>
           <FlatList

@@ -143,6 +143,38 @@ const WorkoutDiary = () => {
     </View>
   );
 
+  const formatSelectedDate = (date) => {
+    const month = date.getMonth() + 1; // 월은 0부터 시작하므로 1을 더해줍니다.
+    const day = date.getDate();
+    return `${month}월 ${day}일`;
+  };
+  const renderEmptyMessage = () => {
+    const formattedSelectedDate = formatSelectedDate(selectedDate);
+    if (selectedDate.toISOString().split('T')[0] === todayFormatted) {
+      return (
+        <>
+          <View style={styles.messageContainer}>
+            <Text style={styles.messageText}>완료한 운동이 없네요!</Text>
+            <Text style={styles.messageText}>오늘 운동하러 가볼까요?</Text>
+          </View>
+          <CustomButton
+            theme="primary"
+            size="large"
+            states="enabled"
+            onPress={handleStartWorkout}
+            text="운동 시작하기"
+          />
+        </>
+      );
+    } else {
+      return (
+        <View style={styles.messageContainer}>
+          <Text style={styles.messageText}>{`${formattedSelectedDate}에는 운동한 기록이 없네요 🥲`}</Text>
+        </View>
+      );
+    }
+  };
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.darkBackground }}>
       <View style={{ height: 60, backgroundColor: '#fff' }}>
@@ -182,19 +214,7 @@ const WorkoutDiary = () => {
 
       <View style={styles.diaryContentContainer}>
         {workoutRecords.length === 0 ? (
-          <>
-            <View style={styles.messageContainer}>
-              <Text style={styles.messageText}>완료한 운동이 없네요!</Text>
-              <Text style={styles.messageText}>오늘 운동하러 가볼까요?</Text>
-            </View>
-            <CustomButton
-              theme="primary"
-              size="large"
-              states="enabled"
-              onPress={handleStartWorkout}
-              text="운동 시작하기"
-            />
-          </>
+          renderEmptyMessage()
         ) : (
           <FlatList
             data={workoutRecords}

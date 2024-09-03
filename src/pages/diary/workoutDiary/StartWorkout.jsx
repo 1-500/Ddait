@@ -107,29 +107,6 @@ const StartWorkout = () => {
   };
   /* eslint-enable */
 
-  const handleAddExerciseSet = (workoutId) => {
-    setWorkoutData((prevData) =>
-      prevData.map(
-        (workout) =>
-          workout.id === workoutId
-            ? /* eslint-disable */
-              {
-                ...workout,
-                workoutSet: [
-                  ...workout.workoutSet,
-                  { id: workout.workoutSet.length + 1, weight: '', reps: '', isComplete: false },
-                ],
-              }
-            : workout,
-        /* eslint-enable */
-      ),
-    );
-  };
-
-  const handleRestTimer = () => {
-    setIsTimerVisible(!isTimerVisible);
-  };
-
   const handleStartPause = (workoutId) => {
     setWorkoutData((prevData) =>
       prevData.map((workout) => {
@@ -172,7 +149,29 @@ const StartWorkout = () => {
     return () => clearInterval(intervalId);
   }, [intervalId]);
 
-  const handleDeleteExerciseSet = (workoutId, setId) => {
+  const handleAddWorkoutSet = (workoutId) => {
+    setWorkoutData((prevData) =>
+      prevData.map((workout) => {
+        if (workout.id === workoutId) {
+          if (workout.workoutSet.length >= 10) {
+            Alert.alert('알림', '세트는 최대 10개까지 추가할 수 있습니다.');
+            return workout;
+          } else {
+            return {
+              ...workout,
+              workoutSet: [
+                ...workout.workoutSet,
+                { id: workout.workoutSet.length + 1, weight: '', reps: '', isComplete: false },
+              ],
+            };
+          }
+        }
+        return workout;
+      }),
+    );
+  };
+
+  const handleDeleteWorkoutSet = (workoutId, setId) => {
     setWorkoutData((prevData) =>
       prevData.map(
         (workout) =>
@@ -188,7 +187,7 @@ const StartWorkout = () => {
     );
   };
 
-  const handleCompleteExerciseSet = (workoutId, setId) => {
+  const handleCompleteWorkoutSet = (workoutId, setId) => {
     setWorkoutData(
       (prevData) =>
         prevData.map((workout) =>
@@ -321,18 +320,18 @@ const StartWorkout = () => {
               {set.isComplete ? (
                 <MaterialCommunityIcons name="check-circle-outline" size={24} color={COLORS.grey} />
               ) : (
-                <TouchableOpacity onPress={() => handleCompleteExerciseSet(item.id, set.id)}>
+                <TouchableOpacity onPress={() => handleCompleteWorkoutSet(item.id, set.id)}>
                   <MaterialCommunityIcons name="check-circle-outline" size={24} color={COLORS.primary} />
                 </TouchableOpacity>
               )}
 
-              <TouchableOpacity onPress={() => handleDeleteExerciseSet(item.id, set.id)}>
+              <TouchableOpacity onPress={() => handleDeleteWorkoutSet(item.id, set.id)}>
                 <MaterialCommunityIcons name="minus-circle-outline" size={24} color={TEXT_COLORS.secondary} />
               </TouchableOpacity>
             </View>
           </View>
         ))}
-        <TouchableOpacity style={styles.addSetButton} onPress={() => handleAddExerciseSet(item.id)}>
+        <TouchableOpacity style={styles.addSetButton} onPress={() => handleAddWorkoutSet(item.id)}>
           <Text style={styles.addSetButtonText}>세트 추가</Text>
         </TouchableOpacity>
       </View>
