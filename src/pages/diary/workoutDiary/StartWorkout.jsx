@@ -1,19 +1,29 @@
 import { BottomSheetModal, BottomSheetModalProvider, BottomSheetView } from '@gorhom/bottom-sheet';
 import { useNavigation } from '@react-navigation/native';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Alert, FlatList, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+  Alert,
+  FlatList,
+  Modal,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
+} from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import CustomTag from '../../../../src/components/CustomTag';
 import { getExerciseList, postWorkoutRecord } from '../../../apis/diary';
 import CustomButton from '../../../components/CustomButton';
 import CustomInput from '../../../components/CustomInput';
+import CustomTimer from '../../../components/CustomTimer';
 import HeaderComponents from '../../../components/HeaderComponents';
 import { BACKGROUND_COLORS, COLORS, TEXT_COLORS } from '../../../constants/colors';
 import { BODY_FONT_SIZES, HEADER_FONT_SIZES } from '../../../constants/font';
 import { RADIUS } from '../../../constants/radius';
 import { LAYOUT_PADDING } from '../../../constants/space';
-import useUserStore from '../../../store/sign/login';
 
 const StartWorkout = () => {
   const navigation = useNavigation();
@@ -22,6 +32,7 @@ const StartWorkout = () => {
   const [selectedExercises, setSelectedExercises] = useState([]);
   const [workoutData, setWorkoutData] = useState([]);
   const [totalTime, setTotalTime] = useState({ minutes: 0, seconds: 0 });
+  const [restTime, setRestTime] = useState({ minutes: 0, seconds: 0 });
   const [isTimerVisible, setIsTimerVisible] = useState(false);
   const [isRunning, setIsRunning] = useState(false);
   const [isReset, setIsReset] = useState(false);
@@ -29,8 +40,6 @@ const StartWorkout = () => {
 
   const bottomSheetModalRef = useRef(null);
   const snapPoints = useMemo(() => ['80%', '80%'], []);
-
-  const { userId } = useUserStore();
 
   /* eslint-disable */
   useEffect(() => {
@@ -76,7 +85,6 @@ const StartWorkout = () => {
       workoutSet: [{ id: 1, weight: '', reps: '' }],
       time: 0,
       isRunning: false,
-      restTime: 0,
       isResting: false,
     }));
     setWorkoutData((prev) => [...prev, ...newWorkoutData]);
@@ -118,6 +126,10 @@ const StartWorkout = () => {
     );
   };
 
+  const handleRestTimer = () => {
+    setIsTimerVisible(!isTimerVisible);
+  };
+
   const handleStartPause = (workoutId) => {
     setWorkoutData((prevData) =>
       prevData.map((workout) => {
@@ -142,15 +154,13 @@ const StartWorkout = () => {
                 prevData.map((workout) => {
                   if (workout.id === workoutId && workout.isRunning) {
                     return { ...workout, time: workout.time + 1 };
-                  } else if (workout.id === workoutId && workout.isResting) {
-                    return { ...workout, restTime: workout.restTime + 1 };
                   }
                   return workout;
                 }),
               );
             }, 1000);
             setIntervalId(id);
-            return { ...workout, isRunning: true, isResting: false };
+            return { ...workout, isRunning: true };
           }
         }
         return workout;
@@ -158,16 +168,6 @@ const StartWorkout = () => {
     );
   };
 
-  const handleRest = (workoutId) => {
-    setWorkoutData((prevData) =>
-      prevData.map((workout) => {
-        if (workout.id === workoutId) {
-          return { ...workout, isRunning: false, isResting: !workout.isResting };
-        }
-        return workout;
-      }),
-    );
-  };
   useEffect(() => {
     return () => clearInterval(intervalId);
   }, [intervalId]);
@@ -274,13 +274,12 @@ const StartWorkout = () => {
     return workoutData.reduce(
       (acc, workout) => {
         acc.totalWorkoutTime += workout.time;
-        acc.totalRestTime += workout.restTime;
         return acc;
       },
-      { totalWorkoutTime: 0, totalRestTime: 0 },
+      { totalWorkoutTime: 0 },
     );
   };
-  const { totalWorkoutTime, totalRestTime } = calculateTotalTimes();
+  const { totalWorkoutTime } = calculateTotalTimes();
 
   const renderWorkoutCard = ({ item }) => (
     <View style={styles.card}>
@@ -289,9 +288,6 @@ const StartWorkout = () => {
         <View style={{ flexDirection: 'row', gap: 8 }}>
           <TouchableOpacity style={styles.startButton} onPress={() => handleStartPause(item.id)}>
             <Text style={styles.startButtonText}>{item.isRunning ? '정지' : '시작'}</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.startButton} onPress={() => handleRest(item.id)}>
-            <Text style={styles.startButtonText}>{item.isResting ? '휴식 종료' : '휴식'}</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -359,18 +355,12 @@ const StartWorkout = () => {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: BACKGROUND_COLORS.dark }}>
-      <HeaderComponents title="운동 시작" />
+      <HeaderComponents title="운동 시작" icon="timer" onRightBtnPress={handleRestTimer} />
       <View style={styles.timerContainer}>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <MaterialCommunityIcons name="timer-outline" size={24} color={COLORS.white} />
           <Text style={{ color: COLORS.white, marginLeft: 8, fontSize: BODY_FONT_SIZES.md }}>
             운동: {formatTime(totalWorkoutTime)}
-          </Text>
-        </View>
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <MaterialCommunityIcons name="timer-sand" size={24} color={COLORS.white} />
-          <Text style={{ color: COLORS.white, marginLeft: 8, fontSize: BODY_FONT_SIZES.md }}>
-            휴식: {formatTime(totalRestTime)}
           </Text>
         </View>
       </View>
@@ -414,6 +404,20 @@ const StartWorkout = () => {
           </View>
         }
       />
+
+      <Modal visible={isTimerVisible} animationType="slide" transparent={true} onRequestClose={handleRestTimer}>
+        <TouchableWithoutFeedback onPress={handleRestTimer}>
+          <View style={styles.modalBackground}>
+            <View style={styles.modalContainer}>
+              <Text style={styles.modalTitle}>휴식시간</Text>
+              <TouchableOpacity style={{ position: 'absolute', top: 10, right: 15 }} onPress={handleRestTimer}>
+                <MaterialCommunityIcons name="close" size={24} color={COLORS.primary} />
+              </TouchableOpacity>
+              <CustomTimer time={restTime} setTime={setRestTime} handleTimerVisible={handleRestTimer} />
+            </View>
+          </View>
+        </TouchableWithoutFeedback>
+      </Modal>
 
       <BottomSheetModalProvider>
         <BottomSheetModal
