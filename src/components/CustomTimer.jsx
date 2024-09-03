@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, Vibration, View } from 'react-native';
 
 import { COLORS, TEXT_COLORS } from '../constants/colors';
 import { BODY_FONT_SIZES } from '../constants/font';
@@ -18,6 +18,8 @@ const CustomTimer = ({ time, setTime }) => {
         clearInterval(intervalId.current);
         intervalId.current = null;
         Alert.alert('휴식 완료', '휴식 시간이 끝났습니다.');
+        Vibration.vibrate(1000);
+        setIsSettingMode(false);
 
         return prevTime;
       } else if (seconds === 0) {
@@ -46,6 +48,8 @@ const CustomTimer = ({ time, setTime }) => {
   const handleReset = () => {
     setIsRunning(false);
     setTime({ minutes: parseInt(inputMinutes, 10), seconds: parseInt(inputSeconds, 10) });
+    setIsSettingMode(false);
+
     if (intervalId.current) {
       clearInterval(intervalId.current);
       intervalId.current = null;
