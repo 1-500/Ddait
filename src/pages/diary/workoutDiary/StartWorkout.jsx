@@ -34,7 +34,6 @@ const StartWorkout = () => {
   const [totalTime, setTotalTime] = useState({ minutes: 0, seconds: 0 });
   const [restTime, setRestTime] = useState({ minutes: 0, seconds: 0 });
   const [isTimerVisible, setIsTimerVisible] = useState(false);
-  const [isRunning, setIsRunning] = useState(false);
   const [isReset, setIsReset] = useState(false);
   const [intervalId, setIntervalId] = useState(null);
 
@@ -573,7 +572,7 @@ const styles = StyleSheet.create({
     width: '80%',
     backgroundColor: COLORS.darkBackground,
     borderRadius: RADIUS.large,
-    padding: 16,
+    padding: 40,
     alignItems: 'center',
   },
   modalTitle: {

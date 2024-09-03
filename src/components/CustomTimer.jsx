@@ -18,6 +18,7 @@ const CustomTimer = ({ time, setTime }) => {
         clearInterval(intervalId.current);
         intervalId.current = null;
         Alert.alert('휴식 완료', '휴식 시간이 끝났습니다.');
+
         return prevTime;
       } else if (seconds === 0) {
         return { minutes: minutes - 1, seconds: 59 };
@@ -53,7 +54,8 @@ const CustomTimer = ({ time, setTime }) => {
 
   const handleSetTime = () => {
     setTime({ minutes: parseInt(inputMinutes, 10), seconds: parseInt(inputSeconds, 10) });
-    setIsSettingMode(!isSettingMode);
+    setIsRunning(true);
+    setIsSettingMode(true);
   };
 
   return (
@@ -93,7 +95,7 @@ const CustomTimer = ({ time, setTime }) => {
             />
           </View>
           <TouchableOpacity style={styles.setButton} onPress={handleSetTime}>
-            <Text style={styles.buttonText}>설정</Text>
+            <Text style={styles.buttonText}>시작</Text>
           </TouchableOpacity>
         </>
       )}
