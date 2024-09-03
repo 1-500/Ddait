@@ -13,6 +13,7 @@ const TEXT_TO_TYPE = {
   러닝: 'running',
   등산: 'climb',
   웨이트: 'weight',
+  웨이트트레이닝: 'weight',
   '1:1': 'competition',
   랭킹전: 'competition',
   '경쟁 세부 테마': 'diet',

@@ -1,22 +1,65 @@
+/* eslint-disable no-console */
 import { API } from '..';
 
 export const createCompetition = async (data) => {
-  const userId = 2; // 하드코딩해두고 추후 수정
-
   try {
-    const response = await API.post('/competition', data);
-    const postRecordData = {
-      competition_room_id: response.data.room_id,
-      member_id: userId,
-    };
-    await API.post('/competition/record', postRecordData); //기록 생성 바로 요청
+    const response = await API.post('/competition/rooms', data);
+    console.log('createCompetition 응답:', response.data);
+    return response;
+  } catch (error) {
+    if (error.response) {
+      console.error('createCompetitionRoom Error:', error.response);
+      throw error;
+    } else {
+      console.error('예상치 못한 오류 발생:', error.message);
+      throw error;
+    }
+  }
+};
 
+export const enterCompetition = async (roomId) => {
+  const postData = {
+    competition_room_id: roomId,
+  };
+  try {
+    const response = await API.post('/competition/record', postData);
+    console.log('기록이 성공적으로 생성되었습니다:', response.data);
+    return response;
+  } catch (error) {
+    if (error.response) {
+      console.error('enterCompetition Error:', error.response);
+      throw error;
+    } else {
+      console.error('예상치 못한 오류 발생:', error.message);
+      throw error;
+    }
+  }
+};
+
+export const getMyCompetition = async () => {
+  try {
+    const response = await API.get('/competition/rooms');
+    console.log('getMyCompetition 응답:', response.data);
+    return response;
+  } catch (error) {
+    if (error.response) {
+      console.error('getMyCompetition Error:', error.response);
+      throw error;
+    } else {
+      console.error('예상치 못한 오류 발생:', error.message);
+      throw error;
+    }
+  }
+};
+
+// 전체 경쟁방 목록 조회
+export const getAllCompetitions = async () => {
+  try {
+    const response = await API.get('competition/rooms');
     return response.data;
   } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error('Server responded with status:', error.response.status);
-    // eslint-disable-next-line no-console
-    console.error('Response data:', error.response.data);
+    console.error('전체 경쟁방 목록 조회 중 오류 발생:', error);
+    throw error;
   }
 };
 
@@ -25,9 +68,8 @@ export const getCompetitionRooms = async () => {
     const response = await API.get('/competition/rooms');
     return response.data;
   } catch (error) {
-    // eslint-disable-next-line no-console
     console.error('Server responded with status:', error.response.status);
-    // eslint-disable-next-line no-console
+
     console.error('Response data:', error.response.data);
   }
 };
@@ -47,9 +89,8 @@ export const getCompetitionRecord = async (roomId, memberId) => {
 
     return response.data;
   } catch (error) {
-    // eslint-disable-next-line no-console
     console.error('Server responded with status:', error.response.status);
-    // eslint-disable-next-line no-console
+
     console.error('Response data:', error.response.data);
   }
 };
@@ -60,9 +101,8 @@ export const patchCompetitionRecord = async (body) => {
 
     return response.data;
   } catch (error) {
-    // eslint-disable-next-line no-console
     console.error('Server responded with status:', error.response.status);
-    // eslint-disable-next-line no-console
+
     console.error('Response data:', error.response.data);
   }
 };
@@ -73,9 +113,8 @@ export const getCompetitionRecordDetail = async (roomId, memberId) => {
 
     return response.data;
   } catch (error) {
-    // eslint-disable-next-line no-console
     console.error('Server responded with status:', error.response.status);
-    // eslint-disable-next-line no-console
+
     console.error('Response data:', error.response.data);
   }
 };

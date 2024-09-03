@@ -8,9 +8,9 @@ import CompetitionCreation from './pages/competition/CompetitionCreation/Competi
 import CompetitionRoom1VS1 from './pages/competition/CompetitionRoom1VS1';
 import CompetitionRoomRanking from './pages/competition/CompetitionRoomRanking';
 import SearchCompetition from './pages/competition/SearchCompetition';
-import DietDetail from './pages/diary/dietDiary/DietDetail';
-import DietDiary from './pages/diary/dietDiary/DietDiary';
-import FoodRecord from './pages/diary/dietDiary/FoodRecord';
+import FoodDiary from './pages/diary/foodDiary/FoodDiary';
+import FoodRecord from './pages/diary/foodDiary/FoodRecord';
+import FoodRecordDetail from './pages/diary/foodDiary/FoodRecordDetail';
 import StartWorkout from './pages/diary/workoutDiary/StartWorkout';
 import WorkoutDatePick from './pages/diary/workoutDiary/WorkoutDatePick';
 import WorkoutDiary from './pages/diary/workoutDiary/WorkoutDiary';
@@ -62,11 +62,11 @@ const DiaryStack = () => {
   );
 };
 
-const DietDiaryStack = () => {
+const FoodDiaryStack = () => {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="DietDiaryScreen" component={DietDiary} />
-      <Stack.Screen name="DietDetailScreen" component={DietDetail} />
+      <Stack.Screen name="FoodDiaryScreen" component={FoodDiary} />
+      <Stack.Screen name="FoodDetailScreen" component={FoodRecordDetail} />
       <Stack.Screen name="FoodRecordScreen" component={FoodRecord} />
     </Stack.Navigator>
   );
@@ -88,7 +88,7 @@ const Router = () => {
       <Stack.Screen name="SignUp" component={SignUpPage} />
       <Stack.Screen name="Sign" component={SignStack} />
       <Stack.Screen name="WorkoutDiary" component={DiaryStack} />
-      <Stack.Screen name="DietDiary" component={DietDiaryStack} />
+      <Stack.Screen name="FoodDiary" component={FoodDiaryStack} />
       <Stack.Screen name="ProfilePrivacy" component={ProfilePrivacy} />
       <Stack.Screen name="CompetitionCreation" component={CompetitionCreation} />
       <Stack.Screen name="CompetitionRoom1VS1" component={CompetitionRoom1VS1} />

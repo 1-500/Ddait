@@ -13,6 +13,7 @@ export const COLORS = {
   purple: '#9747FF',
   blue: '#2196F3',
   brown: '#8E6A33',
+  lightPurple: '#8B8BFF',
 
   placeholder: '#888888',
 
@@ -28,11 +29,11 @@ export const BACKGROUND_COLORS = {
 
 export const TAG_COLORS = {
   default: `${COLORS.grey}`,
-  diet: `${COLORS.primary}`,
+  weight: `${COLORS.primary}`,
   walking: `${COLORS.secondary}`,
   runnging: `${COLORS.purple}`,
   climb: `${COLORS.brown}`,
-  weight: `${COLORS.warmGrey}`,
+  diet: `${COLORS.warmGrey}`,
   competition: `${COLORS.grey}`,
   black: `${COLORS.black}`,
 };

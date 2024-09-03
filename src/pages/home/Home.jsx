@@ -1,32 +1,22 @@
-import React from 'react';
-import { Image, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useIsFocused } from '@react-navigation/native'; // useIsFocused 훅을 import 합니다
+import React, { useEffect, useState } from 'react';
+import { Alert, Image, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 
+import { getMyCompetition } from '../../apis/competition/index';
 import HeaderComponents from '../../components/HeaderComponents';
 import HeatmapCalendar from '../../components/HeatMapCalendar';
 import MyCompetitionItem from '../../components/MyCompetitionItem';
 import NoOngoingCompetitions from '../../components/NoOngoingCompetitions';
 import { BACKGROUND_COLORS, COLORS } from '../../constants/colors';
-import { FONT_SIZES, FONT_WEIGHTS, HEADER_FONT_SIZES } from '../../constants/font';
+import { FONT_SIZES, FONTS, HEADER_FONT_SIZES } from '../../constants/font';
 import { RADIUS } from '../../constants/radius';
 import { ELEMENT_VERTICAL_MARGIN, LAYOUT_PADDING, SPACING } from '../../constants/space';
 
 const userData = {
+  //전역상태에서 추후 가져오도록 수정
   nickname: '따잇',
   profile: 'https://ipsf.net/wp-content/uploads/2021/12/dummy-image-square-300x300.webp',
 };
-
-const dummyMyCompetitions = [
-  {
-    id: 1,
-    title: '1:1 헬스 대결 붙을사람!!',
-    max_members: 2,
-    current_members: 2,
-    competition_type: '헬스',
-    competition_theme: '스쿼트 내기',
-    start_date: '2024-08-25T09:00:00',
-    end_date: '2024-08-30T18:00:00',
-  },
-];
 
 const dummyDates = [
   { date: '2024-08-05', value: 50 },
@@ -37,7 +27,42 @@ const dummyDates = [
 ];
 
 const Home = ({ navigation }) => {
-  const competition = dummyMyCompetitions[0]; // Directly access the first item
+  const [competition, setCompetition] = useState();
+  const isFocused = useIsFocused(); // 현재 화면이 포커스 상태인지 확인
+
+  const fetchMyCompetitions = async () => {
+    try {
+      const response = await getMyCompetition();
+      const competitions = response.data.data;
+      if (competitions && competitions.length > 0) {
+        const now = new Date(); //현재 날짜
+
+        const closestCompetition = competitions.reduce((closest, current) => {
+          const currentEndDate = new Date(current.end_date);
+          const closestEndDate = new Date(closest.end_date);
+
+          // 오늘과 종료날짜의 차
+          const currentDifference = Math.abs(currentEndDate - now);
+          const closestDifference = Math.abs(closestEndDate - now);
+
+          // current의 종료 날짜가 더 가까우면 current return
+          return currentDifference < closestDifference ? current : closest;
+        }, competitions[0]);
+
+        setCompetition(closestCompetition);
+      } else {
+        setCompetition(null);
+      }
+    } catch (error) {
+      Alert.alert('Error fetching competitions:', error.message);
+    }
+  };
+
+  useEffect(() => {
+    if (isFocused) {
+      fetchMyCompetitions();
+    }
+  }, [isFocused]);
 
   const handleCompetitionPress = (item) => {
     if (item.max_members === 2) {
@@ -121,11 +146,12 @@ const styles = StyleSheet.create({
   lgBoldText: {
     color: COLORS.white,
     fontSize: HEADER_FONT_SIZES.lg,
-    fontWeight: FONT_WEIGHTS.bold,
+    fontFamily: FONTS.PRETENDARD[700],
   },
   mdText: {
     color: COLORS.white,
     fontSize: FONT_SIZES.md,
+    fontFamily: FONTS.PRETENDARD[400],
   },
   titleWrapper: {
     flexDirection: 'row',
@@ -135,11 +161,12 @@ const styles = StyleSheet.create({
   },
   titleText: {
     fontSize: HEADER_FONT_SIZES.sm,
-    fontWeight: FONT_WEIGHTS.bold,
+    fontFamily: FONTS.PRETENDARD[700],
     color: COLORS.white,
   },
   moreText: {
     fontSize: FONT_SIZES.sm,
+    fontFamily: FONTS.PRETENDARD[400],
     color: COLORS.white,
   },
   cardContainer: {
@@ -154,7 +181,7 @@ const styles = StyleSheet.create({
     alignSelf: 'stretch',
     color: COLORS.white,
     fontSize: FONT_SIZES.md,
-    fontWeight: FONT_WEIGHTS.bold,
+    fontFamily: FONTS.PRETENDARD[600],
   },
 });
 

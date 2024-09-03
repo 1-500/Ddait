@@ -11,7 +11,7 @@ import { RADIUS } from '../../../constants/radius';
 const PlusButtonIcon = require('../../../assets/images/dietDiary/PluscircleButton.png');
 const MinusButtonIcon = require('../../../assets/images/dietDiary/MinusCircleButton.png');
 
-const DietDetail = ({ route }) => {
+const FoodRecordDetail = ({ route }) => {
   const { time } = route.params;
   const carbPercentage = 30;
   const proteinPercentage = 50;
@@ -107,8 +107,6 @@ const DietDetail = ({ route }) => {
     </SafeAreaView>
   );
 };
-
-export default DietDetail;
 
 const styles = StyleSheet.create({
   container: {
@@ -218,3 +216,4 @@ const styles = StyleSheet.create({
     padding: 10,
   },
 });
+export default FoodRecordDetail;

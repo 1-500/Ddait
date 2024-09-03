@@ -11,7 +11,6 @@ import { BACKGROUND_COLORS, BUTTON_COLORS, COLORS, TEXT_COLORS } from '../../../
 import { FONT_SIZES } from '../../../constants/font';
 import { RADIUS } from '../../../constants/radius';
 import { LAYOUT_PADDING } from '../../../constants/space';
-import useUserStore from '../../../store/sign/login';
 import { formatDate, getEndOfWeek, getStartOfWeek, getWeekOfMonth } from '../../../utils/date';
 
 const WorkoutDiary = () => {
@@ -28,7 +27,6 @@ const WorkoutDiary = () => {
   const [selectedDate, setSelectedDate] = useState(today);
   const [workoutRecords, setWorkoutRecords] = useState([]);
 
-  const { userId } = useUserStore();
   /* eslint-disable */
 
   useEffect(() => {
@@ -41,7 +39,7 @@ const WorkoutDiary = () => {
     console.log(selected);
     const fetchWorkout = async () => {
       try {
-        const res = await getDiaryList(userId, selected);
+        const res = await getDiaryList(selected);
         console.log(res);
         setWorkoutRecords(res);
       } catch (error) {
@@ -70,8 +68,8 @@ const WorkoutDiary = () => {
 
   const handleWorkoutTypePress = (type) => {
     if (type === '식단') {
-      navigation.navigate('DietDiary', {
-        screen: 'DietDiaryScreen',
+      navigation.navigate('FoodDiary', {
+        screen: 'FoodDiaryScreen',
       });
     } else if (type === '웨이트') {
       navigation.navigate('WorkoutDiary', {
@@ -128,15 +126,15 @@ const WorkoutDiary = () => {
   const renderWorkoutRecord = ({ item }) => (
     <View style={styles.workoutRecordContainer}>
       <View style={styles.recordHeader}>
-        <Text style={styles.recordText}>{item.workout_name}</Text>
-        <Text style={styles.recordDurationText}>52분</Text>
+        <Text style={styles.recordText}>{item.title}</Text>
+        <Text style={styles.recordDurationText}>{item.time}</Text>
       </View>
       <View style={styles.recordContainer}>
         <View>
-          {item.exercise_info &&
-            item.exercise_info.map((exercise, index) => (
+          {item.workout_record &&
+            item.workout_record.map((exercise, index) => (
               <View key={index} style={styles.exerciseContainer}>
-                <Text style={styles.exerciseHeaderText}>{exercise.exercise_name.name}</Text>
+                <Text style={styles.exerciseHeaderText}>{exercise.workout_info.name}</Text>
                 <Text style={styles.exerciseText}>{exercise.set}세트</Text>
               </View>
             ))}

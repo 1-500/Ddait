@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Alert, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 
-import { createCompetition } from '../../../apis/competition/index';
+import { createCompetition, enterCompetition } from '../../../apis/competition/index';
 import CustomButton from '../../../components/CustomButton';
 import HeaderComponents from '../../../components/HeaderComponents';
 import StepIndicator from '../../../components/StepIndicator';
@@ -99,12 +99,14 @@ const CompetitionCreation = ({ navigation }) => {
     }
   };
 
+  // 경쟁방 생성 및 입장 핸들링 함수
   const handleSubmit = async () => {
     if (!isStepValid()) {
       Alert.alert('경고', '모든 항목을 기입해야 경쟁방을 생성할 수 있어요.');
       return;
     }
-    const data = {
+
+    const competitionData = {
       title,
       max_members: maxMembers,
       competition_type: competitionType,
@@ -116,11 +118,18 @@ const CompetitionCreation = ({ navigation }) => {
     };
 
     try {
-      const response = await createCompetition(data);
+      const response = await createCompetition(competitionData);
+      const roomId = response.data.data.room_id;
+      if (!roomId) {
+        throw new Error('room_id가 정의되지 않았습니다');
+      }
+      await enterCompetition(roomId);
       Alert.alert('경쟁방 생성', `'${title}' 경쟁방이 생성되었습니다!`);
+
       maxMembers === 2
-        ? navigation.navigate('CompetitionRoom1VS1', { competitionId: response.room_id })
-        : navigation.navigate('CompetitionRoomRanking', { competitionId: response.room_id });
+        ? navigation.navigate('CompetitionRoom1VS1', { competitionId: roomId })
+        : navigation.navigate('CompetitionRoomRanking', { competitionId: roomId });
+
       resetState();
     } catch (error) {
       Alert.alert('Error', 'Failed to create competition');
