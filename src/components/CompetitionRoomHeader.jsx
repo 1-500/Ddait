@@ -12,8 +12,8 @@ import CustomTag from './CustomTag';
 
 const CompetitionRoomHeader = ({ data }) => {
   const navigation = useNavigation();
-  const startDate = dayjs(data.start_date);
-  const endDate = dayjs(data.end_date);
+  const startDate = dayjs(data.date.start_date);
+  const endDate = dayjs(data.date.end_date);
 
   return (
     <View style={styles.headerWrapper}>
@@ -29,16 +29,16 @@ const CompetitionRoomHeader = ({ data }) => {
           <FontAwesome name="angle-left" size={24} color={COLORS.white} />
         </TouchableOpacity>
         <Text style={styles.headerTitleText}>{data.title}</Text>
-        {data.is_public ? (
-          <Octicons name="unlock" size={24} color={COLORS.white} />
-        ) : (
+        {data.settings.is_private ? (
           <Octicons name="lock" size={24} color={COLORS.primary} />
+        ) : (
+          <Octicons name="unlock" size={24} color={COLORS.lightGrey} />
         )}
       </View>
       <View style={styles.tagsWrapper}>
-        <CustomTag size="big" text={data.competition_type} />
-        <CustomTag size="big" text={data.competition_theme} />
-        <CustomTag size="big" text={data.max_members > 2 ? '랭킹전' : '1:1'} />
+        <CustomTag size="big" text={data.info.competition_type} />
+        <CustomTag size="big" text={data.info.competition_theme} />
+        <CustomTag size="big" text={data.info.max_members > 2 ? '랭킹전' : '1:1'} />
       </View>
       <View style={styles.periodWrapper}>
         <Text style={styles.periodText}>{`${startDate.format('YY.MM.DD')}~${endDate.format('YY.MM.DD')}`}</Text>

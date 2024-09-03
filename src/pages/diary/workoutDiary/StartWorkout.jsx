@@ -22,6 +22,7 @@ import CustomTimer from '../../../components/CustomTimer';
 import HeaderComponents from '../../../components/HeaderComponents';
 import { BACKGROUND_COLORS, COLORS, TEXT_COLORS } from '../../../constants/colors';
 import { BODY_FONT_SIZES, HEADER_FONT_SIZES } from '../../../constants/font';
+import { FONTS } from '../../../constants/font';
 import { RADIUS } from '../../../constants/radius';
 import { LAYOUT_PADDING } from '../../../constants/space';
 
@@ -358,9 +359,7 @@ const StartWorkout = () => {
       <View style={styles.timerContainer}>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <MaterialCommunityIcons name="timer-outline" size={24} color={COLORS.white} />
-          <Text style={{ color: COLORS.white, marginLeft: 8, fontSize: BODY_FONT_SIZES.md }}>
-            운동: {formatTime(totalWorkoutTime)}
-          </Text>
+          <Text style={styles.timerText}>운동: {formatTime(totalWorkoutTime)}</Text>
         </View>
       </View>
       {workoutData.length === 0 && (
@@ -497,6 +496,7 @@ const styles = StyleSheet.create({
     color: TEXT_COLORS.primary,
     fontSize: BODY_FONT_SIZES.md,
     textAlign: 'center',
+    fontFamily: FONTS.PRETENDARD[700],
   },
   header: {
     flexDirection: 'row',
@@ -506,7 +506,7 @@ const styles = StyleSheet.create({
   },
   titleText: {
     fontSize: HEADER_FONT_SIZES.sm,
-    fontWeight: 'bold',
+    fontFamily: FONTS.PRETENDARD[700],
     color: TEXT_COLORS.primary,
   },
   startButton: {
@@ -518,6 +518,7 @@ const styles = StyleSheet.create({
   startButtonText: {
     color: TEXT_COLORS.primary,
     fontSize: BODY_FONT_SIZES.md,
+    fontFamily: FONTS.PRETENDARD[700],
   },
   divider: {
     height: 1,
@@ -549,6 +550,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: TEXT_COLORS.primary,
     fontSize: BODY_FONT_SIZES.md,
+    fontFamily: FONTS.PRETENDARD[500],
   },
   addSetButton: {
     marginTop: 16,
@@ -561,6 +563,7 @@ const styles = StyleSheet.create({
   addSetButtonText: {
     color: TEXT_COLORS.secondary,
     fontSize: BODY_FONT_SIZES.md,
+    fontFamily: FONTS.PRETENDARD[700],
   },
   modalBackground: {
     flex: 1,
@@ -578,6 +581,7 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: HEADER_FONT_SIZES.md,
     color: TEXT_COLORS.primary,
+    fontFamily: FONTS.PRETENDARD[700],
     marginBottom: 16,
   },
 
@@ -608,11 +612,19 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: BODY_FONT_SIZES.md,
     color: TEXT_COLORS.primary,
+    fontFamily: FONTS.PRETENDARD[700],
   },
 
   exerciseHeader: {
     marginVertical: 16,
     color: TEXT_COLORS.primary,
     fontSize: HEADER_FONT_SIZES.sm,
+    fontFamily: FONTS.PRETENDARD[700],
+  },
+  timerText: {
+    color: COLORS.white,
+    marginLeft: 8,
+    fontSize: BODY_FONT_SIZES.md,
+    fontFamily: FONTS.PRETENDARD[700],
   },
 });

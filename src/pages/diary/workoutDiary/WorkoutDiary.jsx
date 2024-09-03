@@ -8,7 +8,7 @@ import { getDiaryList } from '../../../apis/diary';
 import CustomButton from '../../../components/CustomButton';
 import HeaderComponents from '../../../components/HeaderComponents';
 import { BACKGROUND_COLORS, BUTTON_COLORS, COLORS, TEXT_COLORS } from '../../../constants/colors';
-import { FONT_SIZES } from '../../../constants/font';
+import { FONT_SIZES, FONTS } from '../../../constants/font';
 import { RADIUS } from '../../../constants/radius';
 import { LAYOUT_PADDING } from '../../../constants/space';
 import { formatDate, getEndOfWeek, getStartOfWeek, getWeekOfMonth } from '../../../utils/date';
@@ -267,6 +267,7 @@ const styles = StyleSheet.create({
     color: TEXT_COLORS.secondary,
     fontSize: 16,
     marginBottom: 8,
+    fontFamily: FONTS.PRETENDARD[500],
   },
   weekDaysContainer: {
     flexDirection: 'row',
@@ -290,10 +291,12 @@ const styles = StyleSheet.create({
   dayText: {
     color: TEXT_COLORS.secondary,
     fontSize: FONT_SIZES.sm,
+    fontFamily: FONTS.PRETENDARD[500],
   },
   activeDayText: {
     color: TEXT_COLORS.primary,
     fontSize: FONT_SIZES.sm,
+    fontFamily: FONTS.PRETENDARD[500],
   },
   diaryContentContainer: {
     backgroundColor: BACKGROUND_COLORS.greyDark,
@@ -326,10 +329,12 @@ const styles = StyleSheet.create({
   workoutTypeText: {
     color: TEXT_COLORS.secondary,
     fontSize: FONT_SIZES.md,
+    fontFamily: FONTS.PRETENDARD[500],
   },
   activeWorkoutTypeText: {
     color: TEXT_COLORS.primary,
     fontSize: FONT_SIZES.md,
+    fontFamily: FONTS.PRETENDARD[500],
   },
   messageContainer: {
     borderRadius: 10,
@@ -343,6 +348,7 @@ const styles = StyleSheet.create({
     color: TEXT_COLORS.primary,
     fontSize: 16,
     textAlign: 'center',
+    fontFamily: FONTS.PRETENDARD[600],
   },
 
   workoutRecordContainer: {
@@ -366,11 +372,12 @@ const styles = StyleSheet.create({
   recordText: {
     color: TEXT_COLORS.secondary,
     fontSize: FONT_SIZES.md,
-    fontWeight: 'bold',
+    fontFamily: FONTS.PRETENDARD[700],
   },
   recordDurationText: {
     color: TEXT_COLORS.secondary,
     fontSize: FONT_SIZES.sm,
+    fontFamily: FONTS.PRETENDARD[500],
   },
   exerciseContainer: {
     paddingVertical: 8,
@@ -379,10 +386,12 @@ const styles = StyleSheet.create({
   exerciseHeaderText: {
     color: TEXT_COLORS.primary,
     fontSize: FONT_SIZES.lg,
+    fontFamily: FONTS.PRETENDARD[500],
   },
   exerciseText: {
     color: TEXT_COLORS.secondary,
     fontSize: FONT_SIZES.sm,
+    fontFamily: FONTS.PRETENDARD[500],
   },
   startButtonContainer: {
     backgroundColor: BUTTON_COLORS.primary,
@@ -395,6 +404,6 @@ const styles = StyleSheet.create({
   startButtonText: {
     color: TEXT_COLORS.primary,
     fontSize: 16,
-    fontWeight: 'bold',
+    fontFamily: FONTS.PRETENDARD[700],
   },
 });
