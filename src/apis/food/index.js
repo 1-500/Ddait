@@ -26,8 +26,27 @@ export const getFoodRecordByTime = async (data) => {
   } catch (error) {}
 };
 
-export function getTotal(array, key) {
+export const getTotal = (array, key) => {
   return array.reduce((sum, item) => {
     return sum + (item[key] || 0);
   }, 0);
-}
+};
+export const calculateNutrientRatios = (arr) => {
+  const totalNutrients = arr.reduce(
+    (totals, item) => {
+      totals.carbs += item.carbs || 0;
+      totals.protein += item.protein || 0;
+      totals.fat += item.fat || 0;
+      return totals;
+    },
+    { carbs: 0, protein: 0, fat: 0 },
+  );
+
+  const total = totalNutrients.carbs + totalNutrients.protein + totalNutrients.fat;
+
+  return {
+    carbsRatio: Math.floor((totalNutrients.carbs / total) * 100),
+    proteinRatio: Math.floor((totalNutrients.protein / total) * 100),
+    fatRatio: Math.floor((totalNutrients.fat / total) * 100),
+  };
+};
