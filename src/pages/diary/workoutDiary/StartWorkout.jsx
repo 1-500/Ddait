@@ -155,20 +155,23 @@ const StartWorkout = () => {
 
   const handleAddWorkoutSet = (workoutId) => {
     setWorkoutData((prevData) =>
-      prevData.map(
-        (workout) =>
-          workout.id === workoutId && workout.workoutSet.length < 10
-            ? /* eslint-disable */
-              {
-                ...workout,
-                workoutSet: [
-                  ...workout.workoutSet,
-                  { id: workout.workoutSet.length + 1, weight: '', reps: '', isComplete: false },
-                ],
-              }
-            : workout,
-        /* eslint-enable */
-      ),
+      prevData.map((workout) => {
+        if (workout.id === workoutId) {
+          if (workout.workoutSet.length >= 10) {
+            Alert.alert('알림', '세트는 최대 10개까지 추가할 수 있습니다.');
+            return workout;
+          } else {
+            return {
+              ...workout,
+              workoutSet: [
+                ...workout.workoutSet,
+                { id: workout.workoutSet.length + 1, weight: '', reps: '', isComplete: false },
+              ],
+            };
+          }
+        }
+        return workout;
+      }),
     );
   };
 
