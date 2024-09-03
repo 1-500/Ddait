@@ -117,6 +117,7 @@ const CustomInput = ({
   autoFocus = false,
   secureTextEntry = false,
   isPassword = false,
+  defaultValue,
   onPressShowPassword = () => {},
   onPress,
   returnKeyType,
@@ -159,6 +160,7 @@ const CustomInput = ({
         placeholderTextColor={`${COLORS.placeholder}`}
         keyboardType={keyboardType}
         value={value}
+        defaultValue={defaultValue}
         onChangeText={onChangeText}
         allowFontScaling={false}
         textContentType={textContentType}

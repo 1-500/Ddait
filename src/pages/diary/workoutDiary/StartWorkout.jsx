@@ -1,7 +1,7 @@
 import { BottomSheetModal, BottomSheetModalProvider, BottomSheetView } from '@gorhom/bottom-sheet';
 import { useNavigation } from '@react-navigation/native';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Alert, FlatList, Modal, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, FlatList, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import CustomTag from '../../../../src/components/CustomTag';
@@ -10,7 +10,7 @@ import CustomButton from '../../../components/CustomButton';
 import CustomInput from '../../../components/CustomInput';
 import HeaderComponents from '../../../components/HeaderComponents';
 import { BACKGROUND_COLORS, COLORS, TEXT_COLORS } from '../../../constants/colors';
-import { BODY_FONT_SIZES, FONT_SIZES, HEADER_FONT_SIZES } from '../../../constants/font';
+import { BODY_FONT_SIZES, HEADER_FONT_SIZES } from '../../../constants/font';
 import { RADIUS } from '../../../constants/radius';
 import { LAYOUT_PADDING } from '../../../constants/space';
 import useUserStore from '../../../store/sign/login';
@@ -69,10 +69,6 @@ const StartWorkout = () => {
     }
   };
 
-  const handleTimerVisible = () => {
-    setIsTimerVisible(!isTimerVisible);
-  };
-
   const handleSaveSelectedExercises = () => {
     const newWorkoutData = selectedExercises.map((exerciseName, index) => ({
       id: index + workoutData.length + 1,
@@ -127,8 +123,33 @@ const StartWorkout = () => {
       prevData.map((workout) => {
         if (workout.id === workoutId) {
           if (workout.isRunning) {
+            // 정지 버튼을 눌렀을 때 타이머를 멈춤
+            clearInterval(intervalId);
             return { ...workout, isRunning: false };
           } else {
+            // 시작 버튼을 눌렀을 때 타이머를 시작
+            const id = setInterval(() => {
+              setTotalTime((prev) => {
+                const newSeconds = prev.seconds + 1;
+                const newMinutes = prev.minutes + Math.floor(newSeconds / 60);
+
+                return {
+                  minutes: newMinutes,
+                  seconds: newSeconds % 60,
+                };
+              });
+              setWorkoutData((prevData) =>
+                prevData.map((workout) => {
+                  if (workout.id === workoutId && workout.isRunning) {
+                    return { ...workout, time: workout.time + 1 };
+                  } else if (workout.id === workoutId && workout.isResting) {
+                    return { ...workout, restTime: workout.restTime + 1 };
+                  }
+                  return workout;
+                }),
+              );
+            }, 1000);
+            setIntervalId(id);
             return { ...workout, isRunning: true, isResting: false };
           }
         }
@@ -148,24 +169,8 @@ const StartWorkout = () => {
     );
   };
   useEffect(() => {
-    const id = setInterval(() => {
-      setTotalTime((prevTime) => prevTime + 1);
-      setWorkoutData((prevData) =>
-        prevData.map((workout) => {
-          if (workout.isRunning) {
-            return { ...workout, time: workout.time + 1 };
-          } else if (workout.isResting) {
-            return { ...workout, restTime: workout.restTime + 1 };
-          }
-          return workout;
-        }),
-      );
-    }, 1000);
-
-    setIntervalId(id);
-
-    return () => clearInterval(id);
-  }, []);
+    return () => clearInterval(intervalId);
+  }, [intervalId]);
 
   const handleDeleteExerciseSet = (workoutId, setId) => {
     setWorkoutData((prevData) =>
@@ -203,28 +208,49 @@ const StartWorkout = () => {
 
   const handleSaveWorkoutRecord = async () => {
     try {
-      const workoutName = '아침운동';
-      const workoutTime = `${String(Math.floor(totalTime / 60)).padStart(2, '0')}:${String(totalTime % 60).padStart(2, '0')}`;
-      const exercises = workoutData.flatMap((workout) =>
-        workout.workoutSet.map((set) => ({
-          exercise_name: workout.title,
-          weight: set.weight,
-          reps: set.reps,
-          set: set.id,
-          exercise_time: workout.time,
-          rest_time: workout.restTime,
-        })),
+      const title = '아침운동';
+      const totalWorkoutTime = workoutData.reduce((total, workout) => total + workout.time, 0);
+
+      const formatTotalTime = (seconds) => {
+        const hrs = Math.floor(seconds / 3600);
+        const mins = Math.floor((seconds % 3600) / 60);
+        const secs = seconds % 60;
+        return `${String(hrs).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+      };
+      const time = formatTotalTime(totalWorkoutTime);
+
+      // 각 운동에 대해 완료된 세트만 필터링하여 workout_records 배열에 저장
+      const workout_records = workoutData.flatMap((workout) =>
+        workout.workoutSet
+          .filter((set) => set.isComplete)
+          .map((set) => ({
+            workout_info: {
+              name: workout.title,
+            },
+            weight: set.weight,
+            reps: set.reps,
+            set: set.id,
+          })),
       );
+
+      // 완료된 세트가 없는 경우 알림
+      if (workout_records.length === 0) {
+        Alert.alert('운동 기록', '완료된 세트가 없어 기록을 저장할 수 없습니다.');
+        return;
+      }
+
+      // 운동 기록 객체 생성
       const workoutRecord = {
-        member_id: userId,
-        workout_name: workoutName,
-        workout_time: workoutTime,
-        exercises,
+        title: title,
+        time: time,
+        workout_records, // 운동 기록 데이터
       };
 
-      const res = await postWorkoutRecord(userId, workoutRecord);
+      // POST 요청으로 운동 기록 저장
+      const res = await postWorkoutRecord(workoutRecord);
 
       /* eslint-disable */
+      // 응답 처리
       if (res) {
         Alert.alert('운동 기록', '정상적으로 저장되었습니다');
         navigation.navigate('WorkoutDiaryScreen');
@@ -235,7 +261,7 @@ const StartWorkout = () => {
     } catch (error) {
       console.log('error', error);
     }
-    /* eslint-enable */
+    /* eslint enable */
   };
 
   const formatTime = (seconds) => {
