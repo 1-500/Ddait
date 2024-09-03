@@ -1,17 +1,6 @@
 import { useRoute } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
-import {
-  Alert,
-  Dimensions,
-  FlatList,
-  Image,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { Alert, Dimensions, FlatList, Image, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 
 import { getCompetitionDetail } from '../../apis/competition';
 import { getCompetitionRecord } from '../../apis/competition';
