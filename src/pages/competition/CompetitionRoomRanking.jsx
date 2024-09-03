@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Alert, SafeAreaView, StyleSheet, useWindowDimensions } from 'react-native';
 import { SceneMap, TabBar, TabView } from 'react-native-tab-view';
 
-import { getCompetitionDetail } from '../../apis/competition';
+import { getCompetitionDetail, getCompetitionRecord, getCompetitionRecordDetail } from '../../apis/competition';
 import CompetitionRoomHeader from '../../components/CompetitionRoomHeader';
 import { COLORS } from '../../constants/colors';
 import { FONT_SIZES, FONT_WEIGHTS } from '../../constants/font';
@@ -255,24 +255,13 @@ const dummy_data = {
   },
 };
 
-const renderScene = ({ route, jumpTo }) => {
-  switch (route.key) {
-    case 'rankList':
-      return <RankList data={dummy_data} jumpTo={jumpTo} />;
-    case 'myScore':
-      return <MyScore data={dummy_data.my_result} jumpTo={jumpTo} />;
-    case 'invite':
-      return <Invite friends={dummy_data.friends} jumpTo={jumpTo} />;
-  }
-};
-
 const CompetitionRoomRanking = () => {
   const layout = useWindowDimensions();
   const route = useRoute();
-  const [competitionData, setCompetitionData] = useState();
   const { competitionId } = route.params;
-
+  const [competitionData, setCompetitionData] = useState();
   const [competitionRecord, setCompetitionRecord] = useState();
+  const [competitionRecordDetail, setCompetitionRecordDetail] = useState();
   const [index, setIndex] = useState(0);
   const [routes] = useState([
     { key: 'rankList', title: '랭킹' },
@@ -289,8 +278,45 @@ const CompetitionRoomRanking = () => {
         Alert.alert('경쟁방 상세 정보 조회 실패', error.message);
       }
     };
+
+    const fetchCompetitionRecord = async () => {
+      try {
+        const res = await getCompetitionRecord(competitionId);
+        if (res.status === 200) {
+          console.log(res);
+          setCompetitionRecord(res.data);
+        }
+      } catch (error) {
+        console.log('error: ', error);
+      }
+    };
+
+    const fetchCompetitionRecordDetail = async () => {
+      try {
+        const res = await getCompetitionRecordDetail(competitionId);
+        if (res.status === 200) {
+          setCompetitionRecordDetail(res.data);
+        }
+      } catch (error) {
+        console.log('error: ', error);
+      }
+    };
+
     fetchCompetitionDetail();
+    fetchCompetitionRecord();
+    fetchCompetitionRecordDetail();
   }, [competitionId]);
+
+  const renderScene = ({ route, jumpTo }) => {
+    switch (route.key) {
+      case 'rankList':
+        return <RankList data={competitionRecord} jumpTo={jumpTo} />;
+      case 'myScore':
+        return <MyScore data={dummy_data.my_result} jumpTo={jumpTo} />;
+      case 'invite':
+        return <Invite friends={dummy_data.friends} jumpTo={jumpTo} />;
+    }
+  };
 
   return (
     <SafeAreaView style={styles.pageContainer}>

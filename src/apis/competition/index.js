@@ -98,18 +98,9 @@ export const getCompetitionRooms = async () => {
   }
 };
 
-export const getCompetitionRecord = async (roomId, memberId) => {
+export const getCompetitionRecord = async (roomId) => {
   try {
-    let response;
-
-    if (roomId) {
-      if (memberId) {
-        response = await API.get(`/competition/record?roomId=${roomId}&memberId=${memberId}`);
-      }
-      response = await API.get(`/competition/record?roomId=${roomId}`);
-    } else {
-      response = await API.get('/competition/record');
-    }
+    const response = await API.get(`/competition/record?roomId=${roomId}`);
 
     return response.data;
   } catch (error) {
@@ -131,9 +122,9 @@ export const patchCompetitionRecord = async (body) => {
   }
 };
 
-export const getCompetitionRecordDetail = async (roomId, memberId) => {
+export const getCompetitionRecordDetail = async (roomId) => {
   try {
-    const response = await API.get(`/competition/record/detail?roomId=${roomId}&memberId=${memberId}`);
+    const response = await API.get(`/competition/record/detail?roomId=${roomId}`);
 
     return response.data;
   } catch (error) {
