@@ -1,6 +1,6 @@
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
-import React, { useCallback, useRef, useState } from 'react';
-import { Alert, FlatList, SafeAreaView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { Alert, FlatList, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 import { searchUser } from '../../apis/friend/index';
@@ -8,12 +8,14 @@ import CustomInput from '../../components/CustomInput';
 import FriendOptionBottomSheet from '../../components/FriendOptionBottomSheet';
 import MemberProfileItem from '../../components/MemberProfileItem';
 import { COLORS } from '../../constants/colors';
+import { FONTS } from '../../constants/font';
 import { LAYOUT_PADDING, SPACING } from '../../constants/space';
 
 const FriendSearch = ({ navigation }) => {
   const bottomSheetRef = useRef(null);
   const [searchResults, setSearchResults] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [error, setError] = useState(''); // 에러 메시지 상태로 변경
 
   const handleOpenOptions = useCallback(() => {
     bottomSheetRef.current?.present();
@@ -21,32 +23,45 @@ const FriendSearch = ({ navigation }) => {
 
   const renderItem = ({ item }) => <MemberProfileItem memberData={item} onRightBtnPress={handleOpenOptions} />;
 
-  const handleSearch = async () => {
+  const handleSearch = useCallback(async () => {
+    setError('');
+    setSearchResults([]);
+
+    if (searchQuery.trim() === '') {
+      return;
+    }
+
     try {
-      const results = await searchUser(searchQuery);
-      setSearchResults(results);
+      const res = await searchUser(searchQuery);
+      if (res.data?.length === 0) {
+        setSearchResults([]);
+        setError(res.message);
+      } else {
+        setSearchResults(res);
+        setError('');
+      }
     } catch (error) {
       Alert.alert('검색 실패', '사용자를 검색하는 동안 문제가 발생했습니다.');
     }
-  };
+  }, [searchQuery]); // 검색어가 변경될 때마다
+
+  useEffect(() => {
+    handleSearch();
+  }, [handleSearch]);
 
   return (
     <BottomSheetModalProvider>
       <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.darkBackground }}>
-        <SearchHeader
-          navigation={navigation}
-          onPressSearch={handleSearch}
-          searchQuery={searchQuery}
-          setSearchQuery={setSearchQuery}
-        />
+        <SearchHeader navigation={navigation} searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
         <View style={styles.contentContainer}>
           <FlatList
-            data={searchResults} // 검색 결과를 FlatList에 전달
+            data={searchResults}
             renderItem={renderItem}
             keyExtractor={(item) => item.id}
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{ paddingBottom: 160 }}
           />
+          {error && <Text style={styles.errorText}>{error}</Text>}
         </View>
         <FriendOptionBottomSheet ref={bottomSheetRef} />
       </SafeAreaView>
@@ -54,7 +69,7 @@ const FriendSearch = ({ navigation }) => {
   );
 };
 
-const SearchHeader = ({ navigation, onPressSearch, searchQuery, setSearchQuery }) => {
+const SearchHeader = ({ navigation, searchQuery, setSearchQuery }) => {
   return (
     <View style={styles.headerContainer}>
       <TouchableOpacity
@@ -71,9 +86,9 @@ const SearchHeader = ({ navigation, onPressSearch, searchQuery, setSearchQuery }
       <CustomInput
         size="stretch"
         theme="search"
-        value={searchQuery} // 검색어를 입력 필드에 연결
-        onChangeText={setSearchQuery} // 검색어가 변경될 때 상태 업데이트
-        onPressIcon={onPressSearch}
+        value={searchQuery}
+        onChangeText={setSearchQuery}
+        returnKeyType="search" // 키보드 엔터 키 '검색'
       />
     </View>
   );
@@ -99,5 +114,11 @@ const styles = StyleSheet.create({
     height: 44,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  errorText: {
+    alignSelf: 'center',
+    color: COLORS.white,
+    fontSize: 16,
+    fontFamily: FONTS.PRETENDARD[600],
   },
 });
