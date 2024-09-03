@@ -2,7 +2,7 @@ import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import { Image, Modal, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import { getFoodRecord } from '../../../apis/food/index';
+import { getFoodRecordByTime, getTotal } from '../../../apis/food/index';
 import CustomButton from '../../../components/CustomButton';
 import HeaderComponents from '../../../components/HeaderComponents';
 import { COLORS } from '../../../constants/colors';
@@ -18,15 +18,10 @@ const FoodRecordDetail = ({ route }) => {
   const proteinPercentage = 50;
   const etcPercentage = 20;
   const navigation = useNavigation();
-  const [totalCaloriesState, setTotalCaloriesState] = useState(0);
-  const [totalCarbsState, setTotalCarbsState] = useState(0);
-  const [totalProteinState, setTotalProteinState] = useState(0);
-  const [totalFatState, setTotalFatState] = useState(0);
-
   const [foodRecordListState, setFoodRecordListState] = useState([]);
   useEffect(() => {
     const fetchFoodRecord = async () => {
-      const result = await getFoodRecord();
+      const result = await getFoodRecordByTime();
       setFoodRecordListState(result.data);
     };
     fetchFoodRecord();
@@ -46,13 +41,13 @@ const FoodRecordDetail = ({ route }) => {
         <ScrollView style={{ padding: 20 }}>
           <View style={styles.calorieContainer}>
             <Text style={styles.calorieText}>총 열량</Text>
-            <Text style={styles.calorieText}>468kcal</Text>
+            <Text style={styles.calorieText}>{getTotal(foodRecordListState, 'calories')} kcal</Text>
           </View>
 
           <View style={styles.macroInfo}>
-            <Text style={styles.macroText}>탄 35.2g</Text>
-            <Text style={styles.macroText}>단 35.2g</Text>
-            <Text style={styles.macroText}>지방 40.g</Text>
+            <Text style={styles.macroText}>탄 {getTotal(foodRecordListState, 'carbs')}g</Text>
+            <Text style={styles.macroText}>단 {getTotal(foodRecordListState, 'protein')}g</Text>
+            <Text style={styles.macroText}>지방 {getTotal(foodRecordListState, 'fat')}g</Text>
           </View>
           <View style={styles.progressBar}>
             <View style={[styles.progressSegment, { width: `${carbPercentage}%`, backgroundColor: COLORS.primary }]}>

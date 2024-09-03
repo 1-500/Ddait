@@ -16,7 +16,7 @@ export const setUserWeight = async (data) => {
   return;
 };
 
-export const getFoodRecord = async (data) => {
+export const getFoodRecordByTime = async (data) => {
   try {
     const response = await API.get(
       `food-record/?date=${getFormattedDate()}&meal_time=${encodeURIComponent('아침')}`,
@@ -25,3 +25,9 @@ export const getFoodRecord = async (data) => {
     return response.data;
   } catch (error) {}
 };
+
+export function getTotal(array, key) {
+  return array.reduce((sum, item) => {
+    return sum + (item[key] || 0);
+  }, 0);
+}
