@@ -15,3 +15,13 @@ export const setUserWeight = async (data) => {
   } catch (error) {}
   return;
 };
+
+export const getFoodRecord = async (data) => {
+  try {
+    const response = await API.get(
+      `food-record/?date=${getFormattedDate()}&meal_time=${encodeURIComponent('아침')}`,
+      data,
+    );
+    return response.data;
+  } catch (error) {}
+};

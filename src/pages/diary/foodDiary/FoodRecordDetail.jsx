@@ -1,7 +1,8 @@
 import { useNavigation } from '@react-navigation/native';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Image, Modal, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
+import { getFoodRecord } from '../../../apis/food/index';
 import CustomButton from '../../../components/CustomButton';
 import HeaderComponents from '../../../components/HeaderComponents';
 import { COLORS } from '../../../constants/colors';
@@ -17,10 +18,23 @@ const FoodRecordDetail = ({ route }) => {
   const proteinPercentage = 50;
   const etcPercentage = 20;
   const navigation = useNavigation();
+  const [totalCaloriesState, setTotalCaloriesState] = useState(0);
+  const [totalCarbsState, setTotalCarbsState] = useState(0);
+  const [totalProteinState, setTotalProteinState] = useState(0);
+  const [totalFatState, setTotalFatState] = useState(0);
+
+  const [foodRecordListState, setFoodRecordListState] = useState([]);
+  useEffect(() => {
+    const fetchFoodRecord = async () => {
+      const result = await getFoodRecord();
+      setFoodRecordListState(result.data);
+    };
+    fetchFoodRecord();
+  }, []);
+
   return (
     <SafeAreaView style={styles.container}>
       <HeaderComponents title={time} />
-
       <View style={styles.mainContainer}>
         <View style={styles.header}>
           <TouchableOpacity activeOpacity={0.6}>
@@ -56,43 +70,12 @@ const FoodRecordDetail = ({ route }) => {
 
           <View style={{ marginVertical: 10 }}>
             <Text style={styles.foodListTitle}>{time}</Text>
-            <View style={styles.foodItem}>
-              <View>
-                <Text style={{ color: 'white', marginBottom: 5 }}>햇반</Text>
-                <Text style={{ color: COLORS.white }}>100g</Text>
-              </View>
-              <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-                <Text style={styles.foodCalories}>132kcal</Text>
-                <TouchableOpacity activeOpacity={0.6}>
-                  <Image source={MinusButtonIcon} style={{ width: 20, height: 20 }} />
-                </TouchableOpacity>
-              </View>
-            </View>
           </View>
-          <View style={styles.foodItem}>
-            <View>
-              <Text style={{ color: 'white', marginBottom: 5 }}>햇반</Text>
-              <Text style={{ color: COLORS.white }}>100g</Text>
-            </View>
-            <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-              <Text style={styles.foodCalories}>132kcal</Text>
-              <TouchableOpacity activeOpacity={0.6}>
-                <Image source={MinusButtonIcon} style={{ width: 20, height: 20 }} />
-              </TouchableOpacity>
-            </View>
-          </View>
-          <View style={styles.foodItem}>
-            <View>
-              <Text style={{ color: 'white', marginBottom: 5 }}>햇반</Text>
-              <Text style={{ color: COLORS.white }}>100g</Text>
-            </View>
-            <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-              <Text style={styles.foodCalories}>132kcal</Text>
-              <TouchableOpacity activeOpacity={0.6}>
-                <Image source={MinusButtonIcon} style={{ width: 20, height: 20 }} />
-              </TouchableOpacity>
-            </View>
-          </View>
+          {foodRecordListState.map((food) => {
+            return (
+              <FoodInfoCard key={food.id} name={food.name} serving_size={food.serving_size} calories={food.calories} />
+            );
+          })}
         </ScrollView>
         <View style={styles.buttonContainer}>
           <CustomButton
@@ -105,6 +88,23 @@ const FoodRecordDetail = ({ route }) => {
         </View>
       </View>
     </SafeAreaView>
+  );
+};
+
+const FoodInfoCard = ({ name, calories, serving_size }) => {
+  return (
+    <View style={styles.foodItem}>
+      <View>
+        <Text style={{ color: 'white', marginBottom: 5 }}>{name}</Text>
+        <Text style={{ color: COLORS.white }}>{serving_size}g</Text>
+      </View>
+      <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+        <Text style={styles.foodCalories}>{calories}kcal</Text>
+        <TouchableOpacity activeOpacity={0.6}>
+          <Image source={MinusButtonIcon} style={{ width: 20, height: 20 }} />
+        </TouchableOpacity>
+      </View>
+    </View>
   );
 };
 
