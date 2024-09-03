@@ -33,7 +33,7 @@ const Home = ({ navigation }) => {
   const fetchMyCompetitions = async () => {
     try {
       const response = await getMyCompetition();
-      const competitions = response.data.data;
+      const competitions = response.data;
       if (competitions && competitions.length > 0) {
         const now = new Date(); //현재 날짜
 
@@ -78,11 +78,13 @@ const Home = ({ navigation }) => {
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
         <ProfileSection data={userData} />
         <SectionTitle title="진행중인 경쟁" navigation={navigation} navigateTo="Competition" />
-        {competition ? (
-          <MyCompetitionItem item={competition} onPress={handleCompetitionPress} />
-        ) : (
-          <NoOngoingCompetitions />
-        )}
+        <View style={{ marginBottom: SPACING.md }}>
+          {competition ? (
+            <MyCompetitionItem item={competition} onPress={handleCompetitionPress} />
+          ) : (
+            <NoOngoingCompetitions />
+          )}
+        </View>
         <SectionTitle title="운동 요약" navigation={navigation} navigateTo="Mypage" />
         <ExerciseSummary data={dummyDates} />
       </ScrollView>

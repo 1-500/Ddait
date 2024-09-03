@@ -1,34 +1,35 @@
-import React, { useCallback } from 'react';
-import { FlatList, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useIsFocused } from '@react-navigation/native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Alert, FlatList, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
-import { dummyMyCompetitions } from '../../apis/dummydata';
+import { getMyCompetition } from '../../apis/competition';
 import CustomButton from '../../components/CustomButton';
+import MyCompetitionItem from '../../components/MyCompetitionItem';
 import { COLORS } from '../../constants/colors';
 import { FONT_SIZES, FONTS, HEADER_FONT_SIZES } from '../../constants/font';
 import { RADIUS } from '../../constants/radius';
 import { LAYOUT_PADDING, SPACING } from '../../constants/space';
-import { formDate } from '../../utils/date';
-
-const CompetitionItem = React.memo(({ item, onPress }) => (
-  <TouchableOpacity onPress={() => onPress(item)} style={styles.competitionContainer}>
-    <Text style={styles.competitionName}>{item.name}</Text>
-    <Text style={styles.competitionDate}>
-      {formDate(item.start_date)} ~ {formDate(item.end_date)}
-    </Text>
-    <View style={{ flexDirection: 'row', alignItems: 'center', gap: SPACING.xs }}>
-      <Ionicons name="person" size={16} color={COLORS.semiLightGrey} />
-      <Text style={styles.competitionMembers}>
-        {item.current_members} / {item.max_members}
-      </Text>
-    </View>
-  </TouchableOpacity>
-));
 
 const Competition = ({ navigation }) => {
+  const [myCompetitions, setMyCompetitions] = useState([]);
+  const isFocused = useIsFocused();
+
+  useEffect(() => {
+    const fetchMyCompetitions = async () => {
+      try {
+        const result = await getMyCompetition();
+        setMyCompetitions(result.data);
+      } catch (error) {
+        Alert.alert('내 경쟁방 목록을 불러오는데 실패했습니다', error.message);
+      }
+    };
+    fetchMyCompetitions();
+  }, [isFocused]);
+
   const handleCompetitionPress = useCallback(
     (item) => {
-      if (item.max_members === 2) {
+      if (item.info.max_members === 2) {
         navigation.navigate('CompetitionRoom1VS1', { competitionId: item.id });
       } else {
         navigation.navigate('CompetitionRoomRanking', { competitionId: item.id });
@@ -38,7 +39,7 @@ const Competition = ({ navigation }) => {
   );
 
   const renderCompetitions = useCallback(
-    ({ item }) => <CompetitionItem item={item} onPress={handleCompetitionPress} />,
+    ({ item }) => <MyCompetitionItem item={item} onPress={handleCompetitionPress} />,
     [handleCompetitionPress],
   );
 
@@ -92,12 +93,12 @@ const Competition = ({ navigation }) => {
       <View style={{ ...LAYOUT_PADDING }}>
         <FlatList
           ListHeaderComponent={ListHeader}
-          data={dummyMyCompetitions}
+          data={myCompetitions}
           renderItem={renderCompetitions}
           keyExtractor={(item) => item.id}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ gap: SPACING.md }}
-          ListFooterComponent={dummyMyCompetitions.length > 0 ? ListFooter : null}
+          ListFooterComponent={myCompetitions.length > 0 ? ListFooter : null}
           ListEmptyComponent={ListEmpty}
         />
       </View>
@@ -138,27 +139,6 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.PRETENDARD[600],
     marginBottom: SPACING.xxs,
     lineHeight: FONT_SIZES.md * 1.3,
-  },
-  competitionContainer: {
-    backgroundColor: COLORS.darkGrey,
-    paddingHorizontal: SPACING.lg,
-    paddingVertical: SPACING.xl,
-    borderRadius: RADIUS.large,
-    gap: SPACING.xs,
-  },
-  competitionName: {
-    color: COLORS.white,
-    fontSize: FONT_SIZES.md,
-    fontFamily: FONTS.PRETENDARD[600],
-  },
-  competitionDate: {
-    color: COLORS.semiLightGrey,
-    fontFamily: FONTS.PRETENDARD[400],
-  },
-  competitionMembers: {
-    color: COLORS.white,
-    fontSize: FONT_SIZES.sm,
-    fontFamily: FONTS.PRETENDARD[400],
   },
 });
 

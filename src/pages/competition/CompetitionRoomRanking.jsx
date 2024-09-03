@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
-import { SafeAreaView, StyleSheet, useWindowDimensions } from 'react-native';
+import { useRoute } from '@react-navigation/native';
+import React, { useEffect, useState } from 'react';
+import { Alert, SafeAreaView, StyleSheet, useWindowDimensions } from 'react-native';
 import { SceneMap, TabBar, TabView } from 'react-native-tab-view';
 
+import { getCompetitionDetail } from '../../apis/competition';
 import CompetitionRoomHeader from '../../components/CompetitionRoomHeader';
 import { COLORS } from '../../constants/colors';
 import { FONT_SIZES, FONT_WEIGHTS } from '../../constants/font';
@@ -264,8 +266,11 @@ const renderScene = ({ route, jumpTo }) => {
   }
 };
 
-const CompetitionRoomRanking = ({ competitionId }) => {
+const CompetitionRoomRanking = () => {
   const layout = useWindowDimensions();
+  const route = useRoute();
+  const [competitionData, setCompetitionData] = useState();
+  const { competitionId } = route.params;
 
   const [competitionRecord, setCompetitionRecord] = useState();
   const [index, setIndex] = useState(0);
@@ -276,40 +281,20 @@ const CompetitionRoomRanking = ({ competitionId }) => {
   ]);
 
   useEffect(() => {
-    setCompetitionRecord(dummy_data.record);
-    // fetchResult();
-  }, []);
-
-  const fetchResult = async () => {
-    try {
-      const res = getCompetitionRecord(competitionId);
-      if (res.status === 200) {
-        setCompetitionRecord(res.data);
+    const fetchCompetitionDetail = async () => {
+      try {
+        const result = await getCompetitionDetail(competitionId);
+        setCompetitionData(result.data);
+      } catch (error) {
+        Alert.alert('경쟁방 상세 정보 조회 실패', error.message);
       }
-    } catch (error) {
-      console.log('error: ', error);
-    }
-  };
-
-  const fetchMyDetailResult = async () => {
-    try {
-      // 내 상세 기록 API 요청
-    } catch (error) {
-      console.log('error: ', error);
-    }
-  };
-
-  const fetchFriendList = async () => {
-    try {
-      // 내 친구 API 요청
-    } catch (error) {
-      console.log('error: ', error);
-    }
-  };
+    };
+    fetchCompetitionDetail();
+  }, [competitionId]);
 
   return (
     <SafeAreaView style={styles.pageContainer}>
-      <CompetitionRoomHeader data={dummy_data.room_info} />
+      {competitionData && <CompetitionRoomHeader data={competitionData} />}
       <TabView
         renderTabBar={(props) => (
           <TabBar

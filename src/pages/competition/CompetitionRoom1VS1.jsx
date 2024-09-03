@@ -1,6 +1,18 @@
+import { useRoute } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
-import { Dimensions, FlatList, Image, SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import {
+  Alert,
+  Dimensions,
+  Image,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
+import { getCompetitionDetail } from '../../apis/competition';
 import { getCompetitionRecord } from '../../apis/competition';
 import CompetitionRoomHeader from '../../components/CompetitionRoomHeader';
 import CustomTag from '../../components/CustomTag';
@@ -8,11 +20,9 @@ import { COLORS } from '../../constants/colors';
 import { FONT_SIZES, FONTS } from '../../constants/font';
 import { RADIUS } from '../../constants/radius';
 import { LAYOUT_PADDING, SPACING } from '../../constants/space';
-// import useUserStore from '../../store/sign/login';
 
 const { width } = Dimensions.get('window');
 
-// const { userId } = useUserStore();
 /* eslint-disable */
 
 const dummy_data = {
@@ -84,9 +94,24 @@ const dummy_data = {
   usage_data: ['데드리프트', '벤치프레스', '스쿼트'],
 };
 
-const CompetitionRoom1VS1 = ({ competitionId }) => {
+const CompetitionRoom1VS1 = () => {
   const maxGraphWidth = width - 180;
   const [competitionRecord, setCompetitionRecord] = useState();
+  const route = useRoute();
+  const [competitionData, setCompetitionData] = useState();
+  const { competitionId } = route.params;
+
+  useEffect(() => {
+    const fetchCompetitionDetail = async () => {
+      try {
+        const result = await getCompetitionDetail(competitionId);
+        setCompetitionData(result.data);
+      } catch (error) {
+        Alert.alert('경쟁방 상세 정보 조회 실패', error.message);
+      }
+    };
+    fetchCompetitionDetail();
+  }, [competitionId]);
 
   useEffect(() => {
     setCompetitionRecord(dummy_data.record);
@@ -210,7 +235,7 @@ const CompetitionRoom1VS1 = ({ competitionId }) => {
 
   return (
     <SafeAreaView style={styles.pageContainer}>
-      <CompetitionRoomHeader data={dummy_data.room_info} />
+      {competitionData && <CompetitionRoomHeader data={competitionData} />}
       {competitionRecord[0] && competitionRecord[1] && (
         <View style={[{ paddingTop: 30 }, LAYOUT_PADDING]}>
           <FlatList
