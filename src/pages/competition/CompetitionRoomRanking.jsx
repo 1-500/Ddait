@@ -312,7 +312,7 @@ const CompetitionRoomRanking = () => {
       case 'rankList':
         return <RankList data={competitionRecord} jumpTo={jumpTo} />;
       case 'myScore':
-        return <MyScore data={dummy_data.my_result} jumpTo={jumpTo} />;
+        return <MyScore data={competitionRecordDetail} jumpTo={jumpTo} />;
       case 'invite':
         return <Invite friends={dummy_data.friends} jumpTo={jumpTo} />;
     }
