@@ -143,7 +143,13 @@ const WorkoutDiary = () => {
     </View>
   );
 
+  const formatSelectedDate = (date) => {
+    const month = date.getMonth() + 1; // 월은 0부터 시작하므로 1을 더해줍니다.
+    const day = date.getDate();
+    return `${month}월 ${day}일`;
+  };
   const renderEmptyMessage = () => {
+    const formattedSelectedDate = formatSelectedDate(selectedDate);
     if (selectedDate.toISOString().split('T')[0] === todayFormatted) {
       return (
         <>
@@ -163,7 +169,7 @@ const WorkoutDiary = () => {
     } else {
       return (
         <View style={styles.messageContainer}>
-          <Text style={styles.messageText}>선택한 날짜에 운동 기록이 없네요 🥲</Text>
+          <Text style={styles.messageText}>{`${formattedSelectedDate}에는 운동한 기록이 없네요 🥲`}</Text>
         </View>
       );
     }
