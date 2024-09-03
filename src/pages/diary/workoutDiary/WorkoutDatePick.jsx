@@ -6,6 +6,7 @@ import { Calendar, LocaleConfig } from 'react-native-calendars';
 import CustomButton from '../../../components/CustomButton';
 import HeaderComponents from '../../../components/HeaderComponents';
 import { BACKGROUND_COLORS, COLORS, TEXT_COLORS } from '../../../constants/colors';
+import { FONTS } from '../../../constants/font';
 import { LAYOUT_PADDING } from '../../../constants/space';
 
 LocaleConfig.locales.fr = {
@@ -117,6 +118,7 @@ const styles = StyleSheet.create({
     color: TEXT_COLORS.secondary,
     fontSize: 16,
     marginBottom: 8,
+    fontFamily: FONTS.PRETENDARD[700],
   },
   weekDaysContainer: {
     flexDirection: 'row',
@@ -140,10 +142,12 @@ const styles = StyleSheet.create({
   dayText: {
     color: TEXT_COLORS.secondary,
     fontSize: 14,
+    fontFamily: FONTS.PRETENDARD[700],
   },
   activeDayText: {
     color: TEXT_COLORS.primary,
     fontSize: 14,
+    fontFamily: FONTS.PRETENDARD[700],
   },
   diaryContentContainer: {
     backgroundColor: BACKGROUND_COLORS.dark,
