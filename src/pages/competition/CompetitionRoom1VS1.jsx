@@ -1,4 +1,5 @@
 import { useRoute } from '@react-navigation/native';
+import dayjs from 'dayjs';
 import React, { useEffect, useState } from 'react';
 import { Alert, Dimensions, FlatList, Image, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 
@@ -23,11 +24,16 @@ const CompetitionRoom1VS1 = () => {
   const { competitionId } = route.params;
   const [competitionData, setCompetitionData] = useState();
   const [competitionRecord, setCompetitionRecord] = useState();
+  const [isInProgress, setIsInProgress] = useState(false);
 
   useEffect(() => {
     const fetchCompetitionDetail = async () => {
       try {
         const result = await getCompetitionDetail(competitionId);
+        const today = dayjs();
+        const startDate = dayjs(result.data.date.start_date);
+        const endDate = dayjs(result.data.date.end_date);
+        setIsInProgress(startDate <= today && today <= endDate);
         setCompetitionData(result.data);
       } catch (error) {
         Alert.alert('경쟁방 상세 정보 조회 실패', error.message);
@@ -38,7 +44,15 @@ const CompetitionRoom1VS1 = () => {
       try {
         const res = await getCompetitionRecord(competitionId);
         if (res.status === 200) {
-          const sortedData = res.data[1].is_my_record ? [res.data[1], res.data[0]] : [res.data[0], res.data[1]];
+          const sortedData = res.data.sort((a, b) => {
+            if (a.is_my_record && !b.is_my_record) {
+              return -1;
+            } else if (!a.is_my_record && b.is_my_record) {
+              return 1;
+            } else {
+              return 0;
+            }
+          });
           setCompetitionRecord(sortedData);
         }
       } catch (error) {
@@ -51,46 +65,58 @@ const CompetitionRoom1VS1 = () => {
   }, [competitionId]);
 
   const CompetitionProfile = ({ record, color, style }) => {
-    console.log(record.member_info);
     return (
       <View style={[styles.profileWrapper, style]}>
-        <Image
-          style={{ width: 80, height: 80 }}
-          source={record.member_info.profile_image ? { uri: record.member_info.profile_image } : dummyProfile}
-        />
-        <View>
-          <View style={styles.profileTextWrapper}>
-            <Text style={styles.profileText}>{record.member_info.nickname}</Text>
-            <Text style={styles.profileTailText}>님</Text>
-          </View>
-          <Text style={[styles.profileText, { color: color }]}>{record.total_score}</Text>
-        </View>
+        {record ? (
+          <>
+            <Image
+              style={{ width: 80, height: 80 }}
+              source={record.member_info.profile_image ? { uri: record.member_info.profile_image } : dummyProfile}
+            />
+            <View>
+              <View style={styles.profileTextWrapper}>
+                <Text style={styles.profileText}>{record.member_info.nickname}</Text>
+                <Text style={styles.profileTailText}>님</Text>
+              </View>
+              <Text style={[styles.profileText, { color: color }]}>{record.total_score}</Text>
+            </View>
+          </>
+        ) : (
+          <Text style={[styles.profileTailText, { color: COLORS.white }]}>아직 상대방이 참여하지 않았어요..</Text>
+        )}
       </View>
     );
   };
 
   const Competition1VS1Header = ({ data }) => {
+    console.log(isInProgress);
     return (
       <View style={{ paddingBottom: 20 }}>
         <View style={styles.messageWrapper}>
-          <Text style={styles.userNameText}>{data[0].member_info.nickname}님,</Text>
-          <Text style={styles.messageText}>
-            {(() => {
-              if (data[0].total_score > data[1].total_score) {
-                return '지금 이기고 있네요! 계속 가봅시다';
-              } else if (data[0].total_score < data[1].total_score) {
-                return '지고있어요.. 조금만 더 힘내요!';
-              } else {
-                return '비기고 있어요! 조금만 더 해봅시다';
-              }
-            })()}
+          <Text style={styles.userNameText}>
+            {isInProgress ? `${data[0].member_info.nickname} 님,` : '아직 경쟁 시작 전입니다'}
           </Text>
+          {isInProgress && (
+            <Text style={styles.messageText}>
+              {(() => {
+                if (data[0].total_score > data[1].total_score) {
+                  return '지금 이기고 있네요! 계속 가봅시다';
+                } else if (data[0].total_score < data[1].total_score) {
+                  return '지고있어요.. 조금만 더 힘내요!';
+                } else {
+                  return '비기고 있어요! 조금만 더 해봅시다';
+                }
+              })()}
+            </Text>
+          )}
         </View>
         <View style={styles.profileContainer}>
           <CompetitionProfile
             record={data[0]}
             color={COLORS.primary}
             style={
+              isInProgress &&
+              data[1] &&
               data[0].total_score >= data[1].total_score && {
                 borderWidth: 3,
                 borderColor: COLORS.primary,
@@ -101,62 +127,68 @@ const CompetitionRoom1VS1 = () => {
             record={data[1]}
             color={COLORS.secondary}
             style={
+              isInProgress &&
+              data[1] &&
               data[1].total_score >= data[0].total_score && {
                 borderWidth: 3,
                 borderColor: COLORS.secondary,
               }
             }
           />
-          <CustomTag size="small" text="VS" style={styles.vsTag} textStyle={styles.vsTagText} />
+          <CustomTag size="small" text="vs" style={styles.vsTag} textStyle={styles.vsTagText} />
         </View>
       </View>
     );
   };
 
   const renderScoreItem = ({ item, index }) => {
-    return (
-      <View style={styles.scoreWrapper}>
-        <Text style={styles.scoreTitleText} numberOfLines={3} ellipsizeMode="tail">
-          {item.name}
-        </Text>
-        <View style={styles.graphContainer}>
-          <View style={styles.graphWrapper}>
-            <View
-              style={[
-                styles.graph,
-                {
-                  backgroundColor: COLORS.primary,
-                  width:
-                    (maxGraphWidth * competitionRecord[0].score_detail[index].score) /
-                    (Math.max(
-                      competitionRecord[1].score_detail[index].score,
-                      competitionRecord[0].score_detail[index].score,
-                    ) || 1),
-                },
-              ]}
-            />
-            <Text style={styles.scoreText}>{competitionRecord[0].score_detail[index].score}</Text>
-          </View>
-          <View style={styles.graphWrapper}>
-            <View
-              style={[
-                styles.graph,
-                {
-                  backgroundColor: COLORS.secondary,
-                  width:
-                    (maxGraphWidth * competitionRecord[1].score_detail[index].score) /
-                    (Math.max(
-                      competitionRecord[0].score_detail[index].score,
-                      competitionRecord[1].score_detail[index].score,
-                    ) || 1),
-                },
-              ]}
-            />
-            <Text style={styles.scoreText}>{competitionRecord[1].score_detail[index].score}</Text>
+    if (isInProgress) {
+      return (
+        <View style={styles.scoreWrapper}>
+          <Text style={styles.scoreTitleText} numberOfLines={3} ellipsizeMode="tail">
+            {item.name}
+          </Text>
+          <View style={styles.graphContainer}>
+            <View style={styles.graphWrapper}>
+              <View
+                style={[
+                  styles.graph,
+                  competitionRecord[1] && {
+                    backgroundColor: COLORS.primary,
+                    width:
+                      (maxGraphWidth * competitionRecord[0].score_detail[index].score) /
+                      (Math.max(
+                        competitionRecord[1].score_detail[index].score,
+                        competitionRecord[0].score_detail[index].score,
+                      ) || 1),
+                  },
+                ]}
+              />
+              <Text style={styles.scoreText}>{competitionRecord[0].score_detail[index].score}</Text>
+            </View>
+            <View style={styles.graphWrapper}>
+              <View
+                style={[
+                  styles.graph,
+                  competitionRecord[1] && {
+                    backgroundColor: COLORS.secondary,
+                    width:
+                      (maxGraphWidth * competitionRecord[1].score_detail[index].score) /
+                      (Math.max(
+                        competitionRecord[0].score_detail[index].score,
+                        competitionRecord[1].score_detail[index].score,
+                      ) || 1),
+                  },
+                ]}
+              />
+              <Text style={styles.scoreText}>{competitionRecord[1].score_detail[index].score}</Text>
+            </View>
           </View>
         </View>
-      </View>
-    );
+      );
+    } else {
+      return <></>;
+    }
   };
 
   return (
@@ -209,6 +241,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     gap: 10,
+    paddingHorizontal: 12,
     paddingVertical: 20,
     borderRadius: 30,
     backgroundColor: COLORS.darkGreyBackground,
@@ -225,9 +258,10 @@ const styles = StyleSheet.create({
     color: COLORS.white,
   },
   profileTailText: {
+    textAlign: 'center',
     textAlignVertical: 'bottom',
     fontSize: FONT_SIZES.sm,
-    fontFamily: FONTS.PRETENDARD[400],
+    fontFamily: FONTS.PRETENDARD[500],
     color: COLORS.semiLightGrey,
   },
   vsTag: {
