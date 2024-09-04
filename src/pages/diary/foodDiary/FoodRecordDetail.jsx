@@ -1,13 +1,14 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
-import { Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import { calculateNutrientRatios, getFoodRecordByTime, getTotal } from '../../../apis/food/index';
+import { getFoodRecordByTime } from '../../../apis/food/index';
 import CustomButton from '../../../components/CustomButton';
 import HeaderComponents from '../../../components/HeaderComponents';
 import { COLORS } from '../../../constants/colors';
 import { FONT_SIZES, FONTS } from '../../../constants/font';
 import { RADIUS } from '../../../constants/radius';
+import { calculateNutrientRatios, getTotal } from '../../../utils/foodDiary/index';
 
 const PlusButtonIcon = require('../../../assets/images/dietDiary/PluscircleButton.png');
 const MinusButtonIcon = require('../../../assets/images/dietDiary/MinusCircleButton.png');
@@ -18,8 +19,15 @@ const FoodRecordDetail = ({ route }) => {
   const [foodRecordListState, setFoodRecordListState] = useState([]);
   useEffect(() => {
     const fetchFoodRecord = async () => {
-      const result = await getFoodRecordByTime();
-      setFoodRecordListState(result.data);
+      try {
+        const result = await getFoodRecordByTime();
+        if (result.error) {
+          throw new Error('서버에서 데이터를 가져오지 못했습니다.');
+        }
+        setFoodRecordListState(result.data);
+      } catch (error) {
+        Alert.alert(error.message);
+      }
     };
     fetchFoodRecord();
   }, []);
@@ -44,33 +52,38 @@ const FoodRecordDetail = ({ route }) => {
           </View>
 
           <View style={styles.macroInfo}>
-            <Text style={styles.macroText}>탄 {getTotal(foodRecordListState, 'carbs')}g</Text>
-            <Text style={styles.macroText}>단 {getTotal(foodRecordListState, 'protein')}g</Text>
-            <Text style={styles.macroText}>지방 {getTotal(foodRecordListState, 'fat')}g</Text>
+            {['carbs', 'protein', 'fat'].map((key, index) => (
+              <Text key={key} style={styles.macroText}>
+                {index === 0 ? '탄' : index === 1 ? '단' : '지'} {getTotal(foodRecordListState, key)}g
+              </Text>
+            ))}
           </View>
           <View style={styles.progressBar}>
             <View
-              style={[styles.progressSegment, { width: `${macroRatio.carbsRatio}%`, backgroundColor: COLORS.primary }]}
+              style={[
+                styles.progressSegment,
+                { width: `${macroRatio.carbsRatio || 0}%`, backgroundColor: COLORS.primary },
+              ]}
             >
-              <Text style={styles.progressText}>{macroRatio.carbsRatio}%</Text>
+              <Text style={styles.progressText}>{macroRatio.carbsRatio || 0}%</Text>
             </View>
             <View
               style={[
                 styles.progressSegment,
-                { width: `${macroRatio.proteinRatio}%`, backgroundColor: COLORS.secondary },
+                { width: `${macroRatio.proteinRatio || 0}%`, backgroundColor: COLORS.secondary },
               ]}
             >
-              <Text style={styles.progressText}>{macroRatio.proteinRatio}%</Text>
+              <Text style={styles.progressText}>{macroRatio.proteinRatio || 0}%</Text>
             </View>
-            <View style={[styles.progressSegment, { width: `${macroRatio.fatRatio}%` }]}>
-              <Text style={styles.progressText}>{macroRatio.fatRatio}%</Text>
+            <View style={[styles.progressSegment, { width: `${macroRatio.fatRatio || 0}%` }]}>
+              <Text style={styles.progressText}>{macroRatio.fatRatio || 0}%</Text>
             </View>
           </View>
 
           <View style={{ marginVertical: 10 }}>
             <Text style={styles.foodListTitle}>{time}</Text>
           </View>
-          {foodRecordListState.map((food) => {
+          {foodRecordListState?.map((food) => {
             return (
               <FoodInfoCard key={food.id} name={food.name} serving_size={food.serving_size} calories={food.calories} />
             );
