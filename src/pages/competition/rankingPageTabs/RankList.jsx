@@ -11,7 +11,7 @@ const dummyProfile = require('../../../assets/images/profile.png');
 
 const { width: screenWidth } = Dimensions.get('window');
 
-const RankList = ({ data }) => {
+const RankList = ({ data, competitionData, onJoin, onLeave }) => {
   const [imageSize, setImageSize] = useState({ width: 0, height: 0 });
   const [isItemOpen, setIsItemOpen] = useState([]);
 
@@ -88,6 +88,25 @@ const RankList = ({ data }) => {
     );
   };
 
+  const Preview = () => {
+    const isParticipant = competitionData?.user_status?.is_participant;
+
+    return (
+      <View style={styles.preview}>
+        <Text style={styles.previewText}>
+          {'4일 후 랭킹전 시작! 🏆\n'}
+          <Text style={{ color: COLORS.secondary }}>따잇! </Text>
+          {'하고 1등 할 준비 되셨나요?'}
+        </Text>
+        <View>
+          <TouchableOpacity style={styles.actionBtn} onPress={isParticipant ? onLeave : onJoin} activeOpacity={0.6}>
+            <Text style={styles.actionBtnText}>{isParticipant ? '나가기' : '참여하기'}</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  };
+
   const renderRankItem = ({ item, index }) => {
     return (
       <TouchableOpacity
@@ -130,7 +149,7 @@ const RankList = ({ data }) => {
         keyExtractor={(item, index) => index}
         data={data}
         renderItem={renderRankItem}
-        ListHeaderComponent={Podium}
+        ListHeaderComponent={Preview}
         ListFooterComponent={<View style={{ height: 30 }} />}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ gap: 10 }}
@@ -193,5 +212,31 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.PRETENDARD[500],
     color: COLORS.white,
     paddingVertical: SPACING.xxs,
+  },
+  preview: {
+    backgroundColor: '#2B2B2B',
+    paddingVertical: 30,
+    alignItems: 'center',
+    borderRadius: 16,
+    marginTop: 30,
+  },
+  previewText: {
+    color: COLORS.white,
+    fontSize: 18,
+    fontFamily: FONTS.PRETENDARD[600],
+    textAlign: 'center',
+  },
+  actionBtn: {
+    backgroundColor: COLORS.secondary,
+    marginTop: SPACING.lg,
+    paddingHorizontal: SPACING.xl,
+    paddingVertical: 6,
+    borderRadius: 50,
+  },
+  actionBtnText: {
+    fontSize: FONT_SIZES.sm,
+    fontFamily: FONTS.PRETENDARD[600],
+    lineHeight: 20,
+    color: '#FFF',
   },
 });

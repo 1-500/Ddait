@@ -72,6 +72,16 @@ const CompetitionRoomRanking = () => {
     { key: 'invite', title: '초대' },
   ]);
 
+  const handleJoin = async () => {
+    // 참여 로직, api 호출
+    Alert.alert('경쟁방 참여하기');
+  };
+
+  const handleLeave = async () => {
+    // 나가기 로직, api 호출
+    Alert.alert('경쟁방 나가기');
+  };
+
   useEffect(() => {
     const fetchCompetitionDetail = async () => {
       try {
@@ -113,7 +123,15 @@ const CompetitionRoomRanking = () => {
   const renderScene = ({ route, jumpTo }) => {
     switch (route.key) {
       case 'rankList':
-        return <RankList data={competitionRecord} jumpTo={jumpTo} />;
+        return (
+          <RankList
+            data={competitionRecord}
+            competitionData={competitionData}
+            onJoin={handleJoin}
+            onLeave={handleLeave}
+            jumpTo={jumpTo}
+          />
+        );
       case 'myScore':
         return <MyScore data={competitionRecordDetail} jumpTo={jumpTo} />;
       case 'invite':
