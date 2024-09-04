@@ -15,6 +15,7 @@ import StartWorkout from './pages/diary/workoutDiary/StartWorkout';
 import WorkoutDatePick from './pages/diary/workoutDiary/WorkoutDatePick';
 import WorkoutDiary from './pages/diary/workoutDiary/WorkoutDiary';
 import Friend from './pages/friend/Friend';
+import FriendSearch from './pages/friend/FriendSearch';
 import Home from './pages/home/Home';
 import LoginPage from './pages/login/LoginPage';
 import MyPage from './pages/mypage/MyPage';
@@ -93,6 +94,7 @@ const Router = () => {
       <Stack.Screen name="CompetitionCreation" component={CompetitionCreation} />
       <Stack.Screen name="CompetitionRoom1VS1" component={CompetitionRoom1VS1} />
       <Stack.Screen name="CompetitionRoomRanking" component={CompetitionRoomRanking} />
+      <Stack.Screen name="FriendSearch" component={FriendSearch} />
     </Stack.Navigator>
   ); // 라우팅
 };
