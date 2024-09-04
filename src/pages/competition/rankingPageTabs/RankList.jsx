@@ -11,7 +11,7 @@ const dummyProfile = require('../../../assets/images/profile.png');
 
 const { width: screenWidth } = Dimensions.get('window');
 
-const RankList = ({ data }) => {
+const RankList = ({ data, isInProgress }) => {
   const [imageSize, setImageSize] = useState({ width: 0, height: 0 });
   const [isItemOpen, setIsItemOpen] = useState([]);
 
@@ -88,38 +88,58 @@ const RankList = ({ data }) => {
     );
   };
 
+  const HeaderBeforeStart = () => {
+    return <></>;
+  };
+
   const renderRankItem = ({ item, index }) => {
-    return (
-      <TouchableOpacity
-        style={[
-          styles.rankItemWrapper,
-          item.is_my_record ? { backgroundColor: COLORS.primary } : { backgroundColor: COLORS.darkGreyBackground },
-        ]}
-        onPress={() =>
-          setIsItemOpen(Array.from({ length: isItemOpen.length }, (_, i) => index === i && !isItemOpen[index]))
-        }
-        activeOpacity={0.6}
-      >
-        <View style={styles.rankItemHeaderWrapper}>
-          <Text style={styles.rankText}>{index + 1}</Text>
-          <Text style={styles.rankText}>{item.member_info.nickname}</Text>
-          <FontAwesome name={isItemOpen[index] ? 'angle-up' : 'angle-down'} size={24} color={COLORS.white} />
-        </View>
-        {isItemOpen[index] && (
-          <View style={styles.innerContentWrapper}>
-            {data[0].score_detail.map((e, i) => (
-              <Text
-                key={`${e.name}_${index}`}
-                style={styles.scoreText}
-              >{`${e.name}: ${item.score_detail[i].score}점`}</Text>
-            ))}
-            <Text
-              style={[styles.scoreText, { fontFamily: FONTS.PRETENDARD[600] }]}
-            >{`총점: ${item.total_score}점`}</Text>
+    if (isInProgress) {
+      return (
+        <TouchableOpacity
+          style={[
+            styles.rankItemWrapper,
+            item.is_my_record ? { backgroundColor: COLORS.primary } : { backgroundColor: COLORS.darkGreyBackground },
+          ]}
+          onPress={() =>
+            setIsItemOpen(Array.from({ length: isItemOpen.length }, (_, i) => index === i && !isItemOpen[index]))
+          }
+          activeOpacity={0.6}
+        >
+          <View style={styles.rankItemHeaderWrapper}>
+            <Text style={styles.rankText}>{index + 1}</Text>
+            <Text style={styles.rankText}>{item.member_info.nickname}</Text>
+            <FontAwesome name={isItemOpen[index] ? 'angle-up' : 'angle-down'} size={24} color={COLORS.white} />
           </View>
-        )}
-      </TouchableOpacity>
-    );
+          {isItemOpen[index] && (
+            <View style={styles.innerContentWrapper}>
+              {data[0].score_detail.map((e, i) => (
+                <Text
+                  key={`${e.name}_${index}`}
+                  style={styles.scoreText}
+                >{`${e.name}: ${item.score_detail[i].score}점`}</Text>
+              ))}
+              <Text
+                style={[styles.scoreText, { fontFamily: FONTS.PRETENDARD[600] }]}
+              >{`총점: ${item.total_score}점`}</Text>
+            </View>
+          )}
+        </TouchableOpacity>
+      );
+    } else {
+      return (
+        <View
+          style={[
+            styles.rankItemWrapper,
+            styles.rankItemHeaderWrapper,
+            item.is_my_record ? { backgroundColor: COLORS.primary } : { backgroundColor: COLORS.darkGreyBackground },
+          ]}
+        >
+          <Text style={styles.rankText}>-</Text>
+          <Text style={styles.rankText}>{item.member_info.nickname}</Text>
+          <View />
+        </View>
+      );
+    }
   };
 
   return (
@@ -130,7 +150,7 @@ const RankList = ({ data }) => {
         keyExtractor={(item, index) => index}
         data={data}
         renderItem={renderRankItem}
-        ListHeaderComponent={Podium}
+        ListHeaderComponent={isInProgress ? Podium : HeaderBeforeStart}
         ListFooterComponent={<View style={{ height: 30 }} />}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ gap: 10 }}
