@@ -107,6 +107,10 @@ const StartWorkout = () => {
   };
   /* eslint-enable */
 
+  const handleRestTimer = () => {
+    setIsTimerVisible(!isTimerVisible);
+  };
+
   const handleStartPause = (workoutId) => {
     setWorkoutData((prevData) =>
       prevData.map((workout) => {
@@ -157,12 +161,10 @@ const StartWorkout = () => {
             Alert.alert('알림', '세트는 최대 10개까지 추가할 수 있습니다.');
             return workout;
           } else {
+            const maxSetId = workout.workoutSet.reduce((maxId, set) => Math.max(maxId, set.id), 0);
             return {
               ...workout,
-              workoutSet: [
-                ...workout.workoutSet,
-                { id: workout.workoutSet.length + 1, weight: '', reps: '', isComplete: false },
-              ],
+              workoutSet: [...workout.workoutSet, { id: maxSetId + 1, weight: '', reps: '', isComplete: false }],
             };
           }
         }
@@ -195,9 +197,7 @@ const StartWorkout = () => {
             ? /* eslint-disable */
               {
                 ...workout,
-                workoutSet: workout.workoutSet.map((set) =>
-                  set.id === setId ? { ...set, isComplete: !set.isComplete } : set,
-                ),
+                workoutSet: workout.workoutSet.filter((set) => set.id !== setId),
               }
             : workout,
         ),
