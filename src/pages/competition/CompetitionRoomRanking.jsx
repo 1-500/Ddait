@@ -7,6 +7,7 @@ import { getCompetitionDetail, getCompetitionRecord, getCompetitionRecordDetail 
 import CompetitionRoomHeader from '../../components/CompetitionRoomHeader';
 import { COLORS } from '../../constants/colors';
 import { FONT_SIZES, FONT_WEIGHTS } from '../../constants/font';
+import { isInCompetitionProgress } from '../../utils/competition';
 import Invite from './rankingPageTabs/Invite';
 import MyScore from './rankingPageTabs/MyScore';
 import RankList from './rankingPageTabs/RankList';
@@ -65,6 +66,7 @@ const CompetitionRoomRanking = () => {
   const [competitionData, setCompetitionData] = useState();
   const [competitionRecord, setCompetitionRecord] = useState();
   const [competitionRecordDetail, setCompetitionRecordDetail] = useState();
+  const [isInProgress, setIsInProgress] = useState(false);
   const [index, setIndex] = useState(0);
   const [routes] = useState([
     { key: 'rankList', title: '랭킹' },
@@ -76,6 +78,7 @@ const CompetitionRoomRanking = () => {
     const fetchCompetitionDetail = async () => {
       try {
         const result = await getCompetitionDetail(competitionId);
+        setIsInProgress(isInCompetitionProgress(result.data));
         setCompetitionData(result.data);
       } catch (error) {
         Alert.alert('경쟁방 상세 정보 조회 실패', error.message);
@@ -113,7 +116,7 @@ const CompetitionRoomRanking = () => {
   const renderScene = ({ route, jumpTo }) => {
     switch (route.key) {
       case 'rankList':
-        return <RankList data={competitionRecord} jumpTo={jumpTo} />;
+        return <RankList data={competitionRecord} isInProgress={isInProgress} jumpTo={jumpTo} />;
       case 'myScore':
         return <MyScore data={competitionRecordDetail} jumpTo={jumpTo} />;
       case 'invite':
