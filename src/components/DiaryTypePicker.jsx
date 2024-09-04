@@ -1,26 +1,14 @@
-import { useNavigation } from '@react-navigation/native';
-import { useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { BACKGROUND_COLORS, COLORS, TEXT_COLORS } from '../constants/colors';
 import { FONT_SIZES } from '../constants/font';
 import { RADIUS } from '../constants/radius';
+import useDiaryCalendarStore from '../store/food/calendar';
 
 const DiaryTypePicker = () => {
-  const [types, setTypes] = useState(['웨이트', '러닝', '식단', '등산']);
-  const [activeType, setActiveType] = useState('식단');
+  const { types, activeType, setActiveType } = useDiaryCalendarStore();
 
-  const navigation = useNavigation();
   const handleTypePress = (type) => {
-    if (type === '식단') {
-      navigation.navigate('FoodDiary', {
-        screen: 'FoodDiaryScreen',
-      });
-    } else if (type === '웨이트') {
-      navigation.navigate('WorkoutDiary', {
-        screen: 'WorkoutDiaryScreen',
-      });
-    }
     setActiveType(type);
   };
   return (

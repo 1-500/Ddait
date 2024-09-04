@@ -97,12 +97,6 @@ const FoodDiary = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <HeaderComponents title="식단 일지" icon="date" onDatePress={openBottomSheet} />
-      <View style={styles.dateContainer}>
-        <DiaryCalendar />
-        <DiaryTypePicker />
-      </View>
-
       <ScrollView style={styles.diaryContentContainer}>
         <View style={styles.weightSection}>
           <Text style={styles.sectionTitle}>체중</Text>
@@ -232,7 +226,6 @@ const FoodDiary = () => {
           </View>
         </View>
       </Modal>
-      <DiaryCalendarBottomSheet ref={bottomSheetModalRef} />
     </SafeAreaView>
   );
 };
@@ -241,11 +234,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.darkBackground,
-  },
-  dateContainer: {
-    paddingVertical: 16,
-    alignItems: 'center',
-    ...LAYOUT_PADDING,
   },
 
   diaryContentContainer: {
