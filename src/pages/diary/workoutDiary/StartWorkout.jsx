@@ -297,10 +297,10 @@ const StartWorkout = () => {
           <Text style={styles.workoutSetText}>무게</Text>
           <Text style={styles.workoutSetText}>횟수</Text>
         </View>
-        {item.workoutSet.map((set) => (
+        {item.workoutSet.map((set, index) => (
           <View key={set.id} style={styles.workoutSetRow}>
             <View style={styles.workoutSetInfo}>
-              <Text style={styles.workoutSetText}>{set.id}</Text>
+              <Text style={styles.workoutSetText}>{index + 1}</Text>
               <CustomInput
                 size="small"
                 theme="primary"
