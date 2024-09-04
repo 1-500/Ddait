@@ -14,11 +14,11 @@ import {
 } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import CustomTag from '../../../../src/components/CustomTag';
 import { getExerciseList, postWorkoutRecord } from '../../../apis/diary';
 import CustomButton from '../../../components/CustomButton';
 import CustomInput from '../../../components/CustomInput';
 import CustomTimer from '../../../components/CustomTimer';
+import DropdownModal from '../../../components/DropdownModal';
 import HeaderComponents from '../../../components/HeaderComponents';
 import { BACKGROUND_COLORS, COLORS, TEXT_COLORS } from '../../../constants/colors';
 import { BODY_FONT_SIZES, HEADER_FONT_SIZES } from '../../../constants/font';
@@ -37,6 +37,11 @@ const StartWorkout = () => {
   const [isTimerVisible, setIsTimerVisible] = useState(false);
   const [isReset, setIsReset] = useState(false);
   const [intervalId, setIntervalId] = useState(null);
+  const [dropdownState, setDropdownState] = useState({
+    bodyPart: '',
+    equipment: '',
+    bookmark: '',
+  });
 
   const bottomSheetModalRef = useRef(null);
   const snapPoints = useMemo(() => ['80%', '80%'], []);
@@ -352,6 +357,13 @@ const StartWorkout = () => {
     </TouchableOpacity>
   );
 
+  const handleSortChange = useCallback((key, value) => {
+    setDropdownState((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
+  }, []);
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: BACKGROUND_COLORS.dark }}>
       <HeaderComponents title="운동 시작" icon="timer" onRightBtnPress={handleRestTimer} />
@@ -430,13 +442,31 @@ const StartWorkout = () => {
             </View>
             <View style={{ flexDirection: 'row', marginVertical: 16 }}>
               <TouchableOpacity style={{ marginRight: 16 }}>
-                <CustomTag size="big" text="부위" />
+                <DropdownModal
+                  options={['전체', '팔', '등', '어깨', '가슴', '하체']}
+                  onChange={(value) => handleSortChange('bodyPart', value)}
+                  value={dropdownState.bodyPart}
+                  placeholder={'부위'}
+                  showIcon={true}
+                />
               </TouchableOpacity>
               <TouchableOpacity style={{ marginRight: 16 }}>
-                <CustomTag size="big" text="무게" />
+                <DropdownModal
+                  options={['전체', '바벨', '덤벨', '케틀벨', '머신']}
+                  onChange={(value) => handleSortChange('equipment', value)}
+                  value={dropdownState.equipment}
+                  placeholder={'도구'}
+                  showIcon={true}
+                />
               </TouchableOpacity>
               <TouchableOpacity style={{ marginRight: 16 }}>
-                <CustomTag size="big" text="도구" />
+                <DropdownModal
+                  options={['즐겨찾기']}
+                  onChange={(value) => handleSortChange('bookmark', value)}
+                  value={dropdownState.bookmark}
+                  placeholder={<MaterialCommunityIcons name="bookmark" size={18} color={TEXT_COLORS.secondary} />}
+                  showIcon={true}
+                />
               </TouchableOpacity>
             </View>
             <View>
