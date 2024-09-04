@@ -168,12 +168,10 @@ const StartWorkout = () => {
             Alert.alert('알림', '세트는 최대 10개까지 추가할 수 있습니다.');
             return workout;
           } else {
+            const maxSetId = workout.workoutSet.reduce((maxId, set) => Math.max(maxId, set.id), 0);
             return {
               ...workout,
-              workoutSet: [
-                ...workout.workoutSet,
-                { id: workout.workoutSet.length + 1, weight: '', reps: '', isComplete: false },
-              ],
+              workoutSet: [...workout.workoutSet, { id: maxSetId + 1, weight: '', reps: '', isComplete: false }],
             };
           }
         }
@@ -206,9 +204,7 @@ const StartWorkout = () => {
             ? /* eslint-disable */
               {
                 ...workout,
-                workoutSet: workout.workoutSet.map((set) =>
-                  set.id === setId ? { ...set, isComplete: !set.isComplete } : set,
-                ),
+                workoutSet: workout.workoutSet.filter((set) => set.id !== setId),
               }
             : workout,
         ),
@@ -308,10 +304,10 @@ const StartWorkout = () => {
           <Text style={styles.workoutSetText}>무게</Text>
           <Text style={styles.workoutSetText}>횟수</Text>
         </View>
-        {item.workoutSet.map((set) => (
+        {item.workoutSet.map((set, index) => (
           <View key={set.id} style={styles.workoutSetRow}>
             <View style={styles.workoutSetInfo}>
-              <Text style={styles.workoutSetText}>{set.id}</Text>
+              <Text style={styles.workoutSetText}>{index + 1}</Text>
               <CustomInput
                 size="small"
                 theme="primary"
