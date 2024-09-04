@@ -1,7 +1,7 @@
 import { BottomSheetModal, BottomSheetModalProvider, BottomSheetView } from '@gorhom/bottom-sheet';
 import { useNavigation } from '@react-navigation/native';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { FlatList, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, FlatList, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Calendar } from 'react-native-calendars';
 
 import { getDiaryList } from '../../../apis/diary';
@@ -36,7 +36,6 @@ const WorkoutDiary = () => {
   }, []);
 
   useEffect(() => {
-    console.log(selected);
     const fetchWorkout = async () => {
       try {
         const res = await getDiaryList(selected);
@@ -44,6 +43,7 @@ const WorkoutDiary = () => {
         setWorkoutRecords(res);
       } catch (error) {
         console.log('error: ', error);
+        Alert.alert('운동 기록을 불러오는데 실패했습니다.'); // 향후 toast메세지로 변경합니다.
       }
     };
 
@@ -143,14 +143,8 @@ const WorkoutDiary = () => {
     </View>
   );
 
-  const formatSelectedDate = (date) => {
-    const month = date.getMonth() + 1; // 월은 0부터 시작하므로 1을 더해줍니다.
-    const day = date.getDate();
-    return `${month}월 ${day}일`;
-  };
   const renderEmptyMessage = () => {
-    const formattedSelectedDate = formatSelectedDate(selectedDate);
-    if (selectedDate.toISOString().split('T')[0] === todayFormatted) {
+    if (selected === today.toISOString().split('T')[0]) {
       return (
         <>
           <View style={styles.messageContainer}>
@@ -169,7 +163,7 @@ const WorkoutDiary = () => {
     } else {
       return (
         <View style={styles.messageContainer}>
-          <Text style={styles.messageText}>{`${formattedSelectedDate}에는 운동한 기록이 없네요 🥲`}</Text>
+          <Text style={styles.messageText}>{`${selected}에는 운동한 기록이 없네요 🥲`}</Text>
         </View>
       );
     }
