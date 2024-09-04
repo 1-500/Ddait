@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import { useNavigation } from '@react-navigation/native';
+import React, { useEffect, useState } from 'react';
 import {
+  Alert,
   Image,
   Modal,
   SafeAreaView,
@@ -11,39 +13,43 @@ import {
   View,
 } from 'react-native';
 
+import { getFoodBySearch } from '../../../apis/food/index';
 import CustomButton from '../../../components/CustomButton';
 import CustomInput from '../../../components/CustomInput';
 import HeaderComponents from '../../../components/HeaderComponents';
 import { BACKGROUND_COLORS, COLORS, TEXT_COLORS } from '../../../constants/colors';
 import { FONT_SIZES, FONT_WEIGHTS } from '../../../constants/font';
 import { RADIUS } from '../../../constants/radius';
+import { debounce } from '../../../utils/foodDiary/debounce';
 
 const PlusButtonIcon = require('../../../assets/images/dietDiary/PluscircleButton.png');
 const BookmarkIcon = require('../../../assets/images/dietDiary/bookmark.png');
 
 const FoodRecord = () => {
-  const [searchText, setSearchText] = useState('');
   const [tag, setTag] = useState(['최근', '북마크', '직접등록']);
   const [activeTag, setActiveTag] = useState('최근');
   const [isVisibleModal, setIsVisibleModal] = useState(false);
-
+  const navigation = useNavigation();
   const handleTag = (type) => {
     setActiveTag(type);
   };
   const handleModal = () => {
     setIsVisibleModal(!isVisibleModal);
   };
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.darkBackground }}>
       <HeaderComponents title="음식 기록" />
       <View style={styles.container}>
-        <CustomInput
-          style={{ padding: 10 }}
-          theme="search"
-          size="large"
-          placeholder="음식명 검색"
-          onChangeText={searchText}
-        />
+        <View style={{ marginVertical: 5 }}>
+          <CustomInput
+            style={{ padding: 10 }}
+            theme="search"
+            size="large"
+            placeholder="음식명 검색"
+            onPress={() => navigation.navigate('FoodDiary', { screen: 'FoodSearchScreen' })}
+          />
+        </View>
 
         <View style={styles.tagContainer}>
           {tag.map((type, index) => (
@@ -138,6 +144,8 @@ const FoodRecord = () => {
     </SafeAreaView>
   );
 };
+
+const FoodCard = () => {};
 
 const styles = StyleSheet.create({
   container: {
