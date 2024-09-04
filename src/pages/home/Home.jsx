@@ -1,12 +1,13 @@
 import { useIsFocused } from '@react-navigation/native'; // useIsFocused 훅을 import 합니다
 import React, { useEffect, useState } from 'react';
-import { Alert, Image, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, Image, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { getMyCompetition } from '../../apis/competition/index';
 import HeaderComponents from '../../components/HeaderComponents';
 import HeatmapCalendar from '../../components/HeatMapCalendar';
 import MyCompetitionItem from '../../components/MyCompetitionItem';
 import NoOngoingCompetitions from '../../components/NoOngoingCompetitions';
+import SectionTitle from '../../components/SectionTitle';
 import { BACKGROUND_COLORS, COLORS } from '../../constants/colors';
 import { FONT_SIZES, FONTS, HEADER_FONT_SIZES } from '../../constants/font';
 import { RADIUS } from '../../constants/radius';
@@ -77,7 +78,7 @@ const Home = ({ navigation }) => {
       <HeaderComponents icon="home" />
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
         <ProfileSection data={userData} />
-        <SectionTitle title="진행중인 경쟁" navigation={navigation} navigateTo="Competition" />
+        <SectionTitle title="진행중인 경쟁" showMore={true} navigation={navigation} navigateTo="Competition" />
         <View style={{ marginBottom: SPACING.md }}>
           {competition ? (
             <MyCompetitionItem item={competition} onPress={handleCompetitionPress} />
@@ -85,7 +86,7 @@ const Home = ({ navigation }) => {
             <NoOngoingCompetitions />
           )}
         </View>
-        <SectionTitle title="운동 요약" navigation={navigation} navigateTo="Mypage" />
+        <SectionTitle title="운동 요약" showMore={true} navigation={navigation} navigateTo="Mypage" />
         <ExerciseSummary data={dummyDates} />
       </ScrollView>
     </SafeAreaView>
@@ -99,19 +100,6 @@ const ProfileSection = ({ data }) => (
       <Text style={styles.lgBoldText}>{`${data.nickname}님,`}</Text>
       <Text style={styles.mdText}>안녕하세요</Text>
     </View>
-  </View>
-);
-const SectionTitle = ({ title, navigation, navigateTo }) => (
-  <View style={styles.titleWrapper}>
-    <Text style={styles.titleText}>{title}</Text>
-    <Pressable
-      onPress={() => navigation.navigate(navigateTo)}
-      style={({ pressed }) => ({
-        opacity: pressed ? 0.7 : 1,
-      })}
-    >
-      <Text style={styles.moreText}>더보기</Text>
-    </Pressable>
   </View>
 );
 const ExerciseSummary = ({ data }) => (
@@ -154,22 +142,6 @@ const styles = StyleSheet.create({
     color: COLORS.white,
     fontSize: FONT_SIZES.md,
     fontFamily: FONTS.PRETENDARD[400],
-  },
-  titleWrapper: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    ...ELEMENT_VERTICAL_MARGIN,
-  },
-  titleText: {
-    fontSize: HEADER_FONT_SIZES.sm,
-    fontFamily: FONTS.PRETENDARD[700],
-    color: COLORS.white,
-  },
-  moreText: {
-    fontSize: FONT_SIZES.sm,
-    fontFamily: FONTS.PRETENDARD[400],
-    color: COLORS.white,
   },
   cardContainer: {
     backgroundColor: BACKGROUND_COLORS.greyDark,
