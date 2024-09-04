@@ -38,8 +38,8 @@ const StartWorkout = () => {
   const [isReset, setIsReset] = useState(false);
   const [intervalId, setIntervalId] = useState(null);
   const [dropdownState, setDropdownState] = useState({
-    bodyPart: '',
-    equipment: '',
+    bodyPart: '전체',
+    equipment: '전체',
     bookmark: '',
   });
 
@@ -52,7 +52,8 @@ const StartWorkout = () => {
       try {
         const res = await getExerciseList();
         const nameData = res.map((item) => item.name);
-        setExerciseListData(nameData);
+        // setExerciseListData(nameData);
+        setExerciseListData(res);
       } catch (error) {
         console.log('error', error);
       }
@@ -67,6 +68,12 @@ const StartWorkout = () => {
     };
   }, [intervalId]);
   /* eslint-enable */
+
+  const filteredExerciseList = exerciseListData.filter((exercise) => {
+    const isPartMatch = dropdownState.bodyPart === '전체' || exercise.body_part === dropdownState.bodyPart;
+    const isToolMatch = dropdownState.equipment === '전체' || exercise.equipment === dropdownState.equipment;
+    return isPartMatch && isToolMatch;
+  });
 
   const handlePresentModalPress = useCallback(() => {
     bottomSheetModalRef.current?.present();
@@ -443,7 +450,7 @@ const StartWorkout = () => {
             <View style={{ flexDirection: 'row', marginVertical: 16 }}>
               <TouchableOpacity style={{ marginRight: 16 }}>
                 <DropdownModal
-                  options={['전체', '팔', '등', '어깨', '가슴', '하체']}
+                  options={['전체', '상체', '하체', '팔', '등', '어깨', '가슴']}
                   onChange={(value) => handleSortChange('bodyPart', value)}
                   value={dropdownState.bodyPart}
                   placeholder={'부위'}
@@ -471,7 +478,7 @@ const StartWorkout = () => {
             </View>
             <View>
               <FlatList
-                data={exerciseListData}
+                data={filteredExerciseList.map((item) => item.name)}
                 renderItem={renderExerciseList}
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={{ paddingBottom: 16, paddingHorizontal: 16 }}
