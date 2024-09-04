@@ -1,12 +1,14 @@
 import { BottomSheetBackdrop, BottomSheetModal } from '@gorhom/bottom-sheet';
 import React, { forwardRef, useCallback } from 'react';
-import { Dimensions, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { COLORS } from '../constants/colors';
 import { SPACING } from '../constants/space';
 import CustomButton from './CustomButton';
 
 const FriendOptionBottomSheet = forwardRef((props, ref) => {
+  const { isFriend } = props; // props에서 isFriend를 구조 분해 할당
+
   const snapPoints = [350];
 
   const renderBackdrop = useCallback(
@@ -25,7 +27,11 @@ const FriendOptionBottomSheet = forwardRef((props, ref) => {
     >
       <View style={styles.container}>
         <CustomButton text="1:1 따잇 걸기!" onPress={() => {}} theme="primary" size="large" />
-        <CustomButton text="차단" onPress={() => {}} theme="error" size="large" />
+        {!isFriend ? (
+          <CustomButton text="친구 신청" onPress={() => {}} theme="primary" size="large" />
+        ) : (
+          <CustomButton text="차단" onPress={() => {}} theme="error" size="large" />
+        )}
         <CustomButton text="취소" onPress={() => {}} theme="block" size="large" />
       </View>
     </BottomSheetModal>
