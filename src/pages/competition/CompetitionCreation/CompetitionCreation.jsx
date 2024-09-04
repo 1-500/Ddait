@@ -127,7 +127,7 @@ const CompetitionCreation = ({ navigation }) => {
       Alert.alert('경쟁방 생성', `'${title}' 경쟁방이 생성되었습니다!`);
 
       maxMembers === 2
-        ? navigation.navigate('CompetitionRoom1V1', { competitionId: roomId })
+        ? navigation.navigate('CompetitionRoom1VS1', { competitionId: roomId })
         : navigation.navigate('CompetitionRoomRanking', { competitionId: roomId });
 
       resetState();

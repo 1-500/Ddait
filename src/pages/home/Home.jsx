@@ -66,7 +66,7 @@ const Home = ({ navigation }) => {
 
   const handleCompetitionPress = (item) => {
     if (item.max_members === 2) {
-      navigation.navigate('CompetitionRoom1V1', { competitionId: item.id });
+      navigation.navigate('CompetitionRoom1VS1', { competitionId: item.id });
     } else {
       navigation.navigate('CompetitionRoomRanking', { competitionId: item.id });
     }
