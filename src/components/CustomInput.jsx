@@ -82,7 +82,7 @@ const SearchIcon = () => (
 /**
  *
  * @param {{
- * size: 'large' | 'medium' | 'small';
+ * size: 'large' | 'medium' | 'small' |'stretch';
  * theme: 'primary' | 'search' | 'user' | 'success' | 'error';
  * isSuccess: boolean;
  * onPressShowPassword?: () => {};
@@ -97,6 +97,7 @@ const SearchIcon = () => (
  * onChangeText: (text: string) => void;
  * keyboardType?: 'default' | 'email-address' | 'numeric' | 'phone-pad' | 'number-pad' | 'decimal-pad' | 'ascii-capable' | 'numbers-and-punctuation' | 'url' | 'name-phone-pad' | 'twitter' | 'web-search';
  * textContentType: 'none' | 'URL' | 'addressCity' | 'addressCityAndState' | 'addressState' | 'countryName' | 'creditCardNumber' | 'emailAddress' | 'familyName' | 'fullStreetAddress' | 'givenName' | 'jobTitle' | 'location' | 'middleName' | 'name' | 'namePrefix' | 'nameSuffix' | 'nickname' | 'organizationName' | 'postalCode' | 'streetAddressLine1' | 'streetAddressLine2' | 'sublocality' | 'telephoneNumber' | 'username' | 'password' | 'newPassword' | 'oneTimeCode'
+ * returnKeyType:  enum('default', 'go', 'google', 'join', 'next', 'route', 'search', 'send', 'yahoo', 'done', 'emergency-call');
  * }} param0
  *
  */
@@ -119,6 +120,7 @@ const CustomInput = ({
   defaultValue,
   onPressShowPassword = () => {},
   onPress,
+  returnKeyType,
 }) => {
   const windowWidth = Dimensions.get('window').width;
 
@@ -167,6 +169,7 @@ const CustomInput = ({
         autoCapitalize="none"
         onPress={onPress}
         autoCorrect={false}
+        returnKeyType={returnKeyType}
       />
       {theme === 'search' && (
         <View style={styles.iconWrapper}>
@@ -241,11 +244,11 @@ const styles = StyleSheet.create({
     color: COLORS.white,
   },
   inputWithIcon: {
-    marginRight: 40,
+    marginLeft: 30,
   },
   iconWrapper: {
     position: 'absolute',
-    right: 10,
+    left: 10,
   },
   defaultInputBox: {
     borderStyle: 'solid',

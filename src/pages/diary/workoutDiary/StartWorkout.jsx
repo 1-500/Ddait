@@ -1,19 +1,30 @@
 import { BottomSheetModal, BottomSheetModalProvider, BottomSheetView } from '@gorhom/bottom-sheet';
 import { useNavigation } from '@react-navigation/native';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Alert, FlatList, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+  Alert,
+  FlatList,
+  Modal,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
+} from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import CustomTag from '../../../../src/components/CustomTag';
 import { getExerciseList, postWorkoutRecord } from '../../../apis/diary';
 import CustomButton from '../../../components/CustomButton';
 import CustomInput from '../../../components/CustomInput';
+import CustomTimer from '../../../components/CustomTimer';
 import HeaderComponents from '../../../components/HeaderComponents';
 import { BACKGROUND_COLORS, COLORS, TEXT_COLORS } from '../../../constants/colors';
 import { BODY_FONT_SIZES, HEADER_FONT_SIZES } from '../../../constants/font';
+import { FONTS } from '../../../constants/font';
 import { RADIUS } from '../../../constants/radius';
 import { LAYOUT_PADDING } from '../../../constants/space';
-import useUserStore from '../../../store/sign/login';
 
 const StartWorkout = () => {
   const navigation = useNavigation();
@@ -22,15 +33,13 @@ const StartWorkout = () => {
   const [selectedExercises, setSelectedExercises] = useState([]);
   const [workoutData, setWorkoutData] = useState([]);
   const [totalTime, setTotalTime] = useState({ minutes: 0, seconds: 0 });
+  const [restTime, setRestTime] = useState({ minutes: 0, seconds: 0 });
   const [isTimerVisible, setIsTimerVisible] = useState(false);
-  const [isRunning, setIsRunning] = useState(false);
   const [isReset, setIsReset] = useState(false);
   const [intervalId, setIntervalId] = useState(null);
 
   const bottomSheetModalRef = useRef(null);
   const snapPoints = useMemo(() => ['80%', '80%'], []);
-
-  const { userId } = useUserStore();
 
   /* eslint-disable */
   useEffect(() => {
@@ -76,7 +85,6 @@ const StartWorkout = () => {
       workoutSet: [{ id: 1, weight: '', reps: '' }],
       time: 0,
       isRunning: false,
-      restTime: 0,
       isResting: false,
     }));
     setWorkoutData((prev) => [...prev, ...newWorkoutData]);
@@ -98,25 +106,6 @@ const StartWorkout = () => {
     );
   };
   /* eslint-enable */
-
-  const handleAddExerciseSet = (workoutId) => {
-    setWorkoutData((prevData) =>
-      prevData.map(
-        (workout) =>
-          workout.id === workoutId
-            ? /* eslint-disable */
-              {
-                ...workout,
-                workoutSet: [
-                  ...workout.workoutSet,
-                  { id: workout.workoutSet.length + 1, weight: '', reps: '', isComplete: false },
-                ],
-              }
-            : workout,
-        /* eslint-enable */
-      ),
-    );
-  };
 
   const handleStartPause = (workoutId) => {
     setWorkoutData((prevData) =>
@@ -142,15 +131,13 @@ const StartWorkout = () => {
                 prevData.map((workout) => {
                   if (workout.id === workoutId && workout.isRunning) {
                     return { ...workout, time: workout.time + 1 };
-                  } else if (workout.id === workoutId && workout.isResting) {
-                    return { ...workout, restTime: workout.restTime + 1 };
                   }
                   return workout;
                 }),
               );
             }, 1000);
             setIntervalId(id);
-            return { ...workout, isRunning: true, isResting: false };
+            return { ...workout, isRunning: true };
           }
         }
         return workout;
@@ -158,21 +145,33 @@ const StartWorkout = () => {
     );
   };
 
-  const handleRest = (workoutId) => {
+  useEffect(() => {
+    return () => clearInterval(intervalId);
+  }, [intervalId]);
+
+  const handleAddWorkoutSet = (workoutId) => {
     setWorkoutData((prevData) =>
       prevData.map((workout) => {
         if (workout.id === workoutId) {
-          return { ...workout, isRunning: false, isResting: !workout.isResting };
+          if (workout.workoutSet.length >= 10) {
+            Alert.alert('알림', '세트는 최대 10개까지 추가할 수 있습니다.');
+            return workout;
+          } else {
+            return {
+              ...workout,
+              workoutSet: [
+                ...workout.workoutSet,
+                { id: workout.workoutSet.length + 1, weight: '', reps: '', isComplete: false },
+              ],
+            };
+          }
         }
         return workout;
       }),
     );
   };
-  useEffect(() => {
-    return () => clearInterval(intervalId);
-  }, [intervalId]);
 
-  const handleDeleteExerciseSet = (workoutId, setId) => {
+  const handleDeleteWorkoutSet = (workoutId, setId) => {
     setWorkoutData((prevData) =>
       prevData.map(
         (workout) =>
@@ -188,7 +187,7 @@ const StartWorkout = () => {
     );
   };
 
-  const handleCompleteExerciseSet = (workoutId, setId) => {
+  const handleCompleteWorkoutSet = (workoutId, setId) => {
     setWorkoutData(
       (prevData) =>
         prevData.map((workout) =>
@@ -208,45 +207,49 @@ const StartWorkout = () => {
 
   const handleSaveWorkoutRecord = async () => {
     try {
-      const workoutName = '아침운동';
+      const title = '아침운동';
       const totalWorkoutTime = workoutData.reduce((total, workout) => total + workout.time, 0);
-      const totalRestTime = workoutData.reduce((total, workout) => total + workout.restTime, 0); // post때 필요없지만 향후에 필요할 수도 있어 작성
+
       const formatTotalTime = (seconds) => {
         const hrs = Math.floor(seconds / 3600);
         const mins = Math.floor((seconds % 3600) / 60);
         const secs = seconds % 60;
         return `${String(hrs).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
       };
-      const workoutTime = formatTotalTime(totalWorkoutTime);
+      const time = formatTotalTime(totalWorkoutTime);
 
-      const exercises = workoutData.flatMap((workout) =>
+      // 각 운동에 대해 완료된 세트만 필터링하여 workout_records 배열에 저장
+      const workout_records = workoutData.flatMap((workout) =>
         workout.workoutSet
           .filter((set) => set.isComplete)
           .map((set) => ({
-            exercise_name: workout.title,
+            workout_info: {
+              name: workout.title,
+            },
             weight: set.weight,
             reps: set.reps,
             set: set.id,
-            exercise_time: formatTotalTime(workout.time),
-            rest_time: formatTotalTime(workout.restTime),
           })),
       );
 
-      if (exercises.length === 0) {
+      // 완료된 세트가 없는 경우 알림
+      if (workout_records.length === 0) {
         Alert.alert('운동 기록', '완료된 세트가 없어 기록을 저장할 수 없습니다.');
         return;
       }
 
+      // 운동 기록 객체 생성
       const workoutRecord = {
-        member_id: userId,
-        workout_name: workoutName,
-        workout_time: workoutTime,
-        exercises,
+        title: title,
+        time: time,
+        workout_records, // 운동 기록 데이터
       };
 
-      const res = await postWorkoutRecord(userId, workoutRecord);
+      // POST 요청으로 운동 기록 저장
+      const res = await postWorkoutRecord(workoutRecord);
 
       /* eslint-disable */
+      // 응답 처리
       if (res) {
         Alert.alert('운동 기록', '정상적으로 저장되었습니다');
         navigation.navigate('WorkoutDiaryScreen');
@@ -257,7 +260,7 @@ const StartWorkout = () => {
     } catch (error) {
       console.log('error', error);
     }
-    /* eslint-enable */
+    /* eslint enable */
   };
 
   const formatTime = (seconds) => {
@@ -270,13 +273,12 @@ const StartWorkout = () => {
     return workoutData.reduce(
       (acc, workout) => {
         acc.totalWorkoutTime += workout.time;
-        acc.totalRestTime += workout.restTime;
         return acc;
       },
-      { totalWorkoutTime: 0, totalRestTime: 0 },
+      { totalWorkoutTime: 0 },
     );
   };
-  const { totalWorkoutTime, totalRestTime } = calculateTotalTimes();
+  const { totalWorkoutTime } = calculateTotalTimes();
 
   const renderWorkoutCard = ({ item }) => (
     <View style={styles.card}>
@@ -285,9 +287,6 @@ const StartWorkout = () => {
         <View style={{ flexDirection: 'row', gap: 8 }}>
           <TouchableOpacity style={styles.startButton} onPress={() => handleStartPause(item.id)}>
             <Text style={styles.startButtonText}>{item.isRunning ? '정지' : '시작'}</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.startButton} onPress={() => handleRest(item.id)}>
-            <Text style={styles.startButtonText}>{item.isResting ? '휴식 종료' : '휴식'}</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -321,18 +320,18 @@ const StartWorkout = () => {
               {set.isComplete ? (
                 <MaterialCommunityIcons name="check-circle-outline" size={24} color={COLORS.grey} />
               ) : (
-                <TouchableOpacity onPress={() => handleCompleteExerciseSet(item.id, set.id)}>
+                <TouchableOpacity onPress={() => handleCompleteWorkoutSet(item.id, set.id)}>
                   <MaterialCommunityIcons name="check-circle-outline" size={24} color={COLORS.primary} />
                 </TouchableOpacity>
               )}
 
-              <TouchableOpacity onPress={() => handleDeleteExerciseSet(item.id, set.id)}>
+              <TouchableOpacity onPress={() => handleDeleteWorkoutSet(item.id, set.id)}>
                 <MaterialCommunityIcons name="minus-circle-outline" size={24} color={TEXT_COLORS.secondary} />
               </TouchableOpacity>
             </View>
           </View>
         ))}
-        <TouchableOpacity style={styles.addSetButton} onPress={() => handleAddExerciseSet(item.id)}>
+        <TouchableOpacity style={styles.addSetButton} onPress={() => handleAddWorkoutSet(item.id)}>
           <Text style={styles.addSetButtonText}>세트 추가</Text>
         </TouchableOpacity>
       </View>
@@ -355,19 +354,11 @@ const StartWorkout = () => {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: BACKGROUND_COLORS.dark }}>
-      <HeaderComponents title="운동 시작" />
+      <HeaderComponents title="운동 시작" icon="timer" onRightBtnPress={handleRestTimer} />
       <View style={styles.timerContainer}>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <MaterialCommunityIcons name="timer-outline" size={24} color={COLORS.white} />
-          <Text style={{ color: COLORS.white, marginLeft: 8, fontSize: BODY_FONT_SIZES.md }}>
-            운동: {formatTime(totalWorkoutTime)}
-          </Text>
-        </View>
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <MaterialCommunityIcons name="timer-sand" size={24} color={COLORS.white} />
-          <Text style={{ color: COLORS.white, marginLeft: 8, fontSize: BODY_FONT_SIZES.md }}>
-            휴식: {formatTime(totalRestTime)}
-          </Text>
+          <Text style={styles.timerText}>운동: {formatTime(totalWorkoutTime)}</Text>
         </View>
       </View>
       {workoutData.length === 0 && (
@@ -410,6 +401,20 @@ const StartWorkout = () => {
           </View>
         }
       />
+
+      <Modal visible={isTimerVisible} animationType="slide" transparent={true} onRequestClose={handleRestTimer}>
+        <TouchableWithoutFeedback onPress={handleRestTimer}>
+          <View style={styles.modalBackground}>
+            <View style={styles.modalContainer}>
+              <Text style={styles.modalTitle}>휴식시간</Text>
+              <TouchableOpacity style={{ position: 'absolute', top: 10, right: 15 }} onPress={handleRestTimer}>
+                <MaterialCommunityIcons name="close" size={24} color={COLORS.primary} />
+              </TouchableOpacity>
+              <CustomTimer time={restTime} setTime={setRestTime} handleTimerVisible={handleRestTimer} />
+            </View>
+          </View>
+        </TouchableWithoutFeedback>
+      </Modal>
 
       <BottomSheetModalProvider>
         <BottomSheetModal
@@ -490,6 +495,7 @@ const styles = StyleSheet.create({
     color: TEXT_COLORS.primary,
     fontSize: BODY_FONT_SIZES.md,
     textAlign: 'center',
+    fontFamily: FONTS.PRETENDARD[700],
   },
   header: {
     flexDirection: 'row',
@@ -499,7 +505,7 @@ const styles = StyleSheet.create({
   },
   titleText: {
     fontSize: HEADER_FONT_SIZES.sm,
-    fontWeight: 'bold',
+    fontFamily: FONTS.PRETENDARD[700],
     color: TEXT_COLORS.primary,
   },
   startButton: {
@@ -511,6 +517,7 @@ const styles = StyleSheet.create({
   startButtonText: {
     color: TEXT_COLORS.primary,
     fontSize: BODY_FONT_SIZES.md,
+    fontFamily: FONTS.PRETENDARD[700],
   },
   divider: {
     height: 1,
@@ -542,6 +549,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: TEXT_COLORS.primary,
     fontSize: BODY_FONT_SIZES.md,
+    fontFamily: FONTS.PRETENDARD[500],
   },
   addSetButton: {
     marginTop: 16,
@@ -554,6 +562,7 @@ const styles = StyleSheet.create({
   addSetButtonText: {
     color: TEXT_COLORS.secondary,
     fontSize: BODY_FONT_SIZES.md,
+    fontFamily: FONTS.PRETENDARD[700],
   },
   modalBackground: {
     flex: 1,
@@ -565,12 +574,13 @@ const styles = StyleSheet.create({
     width: '80%',
     backgroundColor: COLORS.darkBackground,
     borderRadius: RADIUS.large,
-    padding: 16,
+    padding: 40,
     alignItems: 'center',
   },
   modalTitle: {
     fontSize: HEADER_FONT_SIZES.md,
     color: TEXT_COLORS.primary,
+    fontFamily: FONTS.PRETENDARD[700],
     marginBottom: 16,
   },
 
@@ -601,11 +611,19 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: BODY_FONT_SIZES.md,
     color: TEXT_COLORS.primary,
+    fontFamily: FONTS.PRETENDARD[700],
   },
 
   exerciseHeader: {
     marginVertical: 16,
     color: TEXT_COLORS.primary,
     fontSize: HEADER_FONT_SIZES.sm,
+    fontFamily: FONTS.PRETENDARD[700],
+  },
+  timerText: {
+    color: COLORS.white,
+    marginLeft: 8,
+    fontSize: BODY_FONT_SIZES.md,
+    fontFamily: FONTS.PRETENDARD[700],
   },
 });

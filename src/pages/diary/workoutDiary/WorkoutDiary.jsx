@@ -8,10 +8,9 @@ import { getDiaryList } from '../../../apis/diary';
 import CustomButton from '../../../components/CustomButton';
 import HeaderComponents from '../../../components/HeaderComponents';
 import { BACKGROUND_COLORS, BUTTON_COLORS, COLORS, TEXT_COLORS } from '../../../constants/colors';
-import { FONT_SIZES } from '../../../constants/font';
+import { FONT_SIZES, FONTS } from '../../../constants/font';
 import { RADIUS } from '../../../constants/radius';
 import { LAYOUT_PADDING } from '../../../constants/space';
-import useUserStore from '../../../store/sign/login';
 import { formatDate, getEndOfWeek, getStartOfWeek, getWeekOfMonth } from '../../../utils/date';
 
 const WorkoutDiary = () => {
@@ -28,7 +27,6 @@ const WorkoutDiary = () => {
   const [selectedDate, setSelectedDate] = useState(today);
   const [workoutRecords, setWorkoutRecords] = useState([]);
 
-  const { userId } = useUserStore();
   /* eslint-disable */
 
   useEffect(() => {
@@ -41,7 +39,7 @@ const WorkoutDiary = () => {
     console.log(selected);
     const fetchWorkout = async () => {
       try {
-        const res = await getDiaryList(userId, selected);
+        const res = await getDiaryList(selected);
         console.log(res);
         setWorkoutRecords(res);
       } catch (error) {
@@ -128,15 +126,15 @@ const WorkoutDiary = () => {
   const renderWorkoutRecord = ({ item }) => (
     <View style={styles.workoutRecordContainer}>
       <View style={styles.recordHeader}>
-        <Text style={styles.recordText}>{item.workout_name}</Text>
-        <Text style={styles.recordDurationText}>52분</Text>
+        <Text style={styles.recordText}>{item.title}</Text>
+        <Text style={styles.recordDurationText}>{item.time}</Text>
       </View>
       <View style={styles.recordContainer}>
         <View>
-          {item.exercise_info &&
-            item.exercise_info.map((exercise, index) => (
+          {item.workout_record &&
+            item.workout_record.map((exercise, index) => (
               <View key={index} style={styles.exerciseContainer}>
-                <Text style={styles.exerciseHeaderText}>{exercise.exercise_name.name}</Text>
+                <Text style={styles.exerciseHeaderText}>{exercise.workout_info.name}</Text>
                 <Text style={styles.exerciseText}>{exercise.set}세트</Text>
               </View>
             ))}
@@ -144,6 +142,38 @@ const WorkoutDiary = () => {
       </View>
     </View>
   );
+
+  const formatSelectedDate = (date) => {
+    const month = date.getMonth() + 1; // 월은 0부터 시작하므로 1을 더해줍니다.
+    const day = date.getDate();
+    return `${month}월 ${day}일`;
+  };
+  const renderEmptyMessage = () => {
+    const formattedSelectedDate = formatSelectedDate(selectedDate);
+    if (selectedDate.toISOString().split('T')[0] === todayFormatted) {
+      return (
+        <>
+          <View style={styles.messageContainer}>
+            <Text style={styles.messageText}>완료한 운동이 없네요!</Text>
+            <Text style={styles.messageText}>오늘 운동하러 가볼까요?</Text>
+          </View>
+          <CustomButton
+            theme="primary"
+            size="large"
+            states="enabled"
+            onPress={handleStartWorkout}
+            text="운동 시작하기"
+          />
+        </>
+      );
+    } else {
+      return (
+        <View style={styles.messageContainer}>
+          <Text style={styles.messageText}>{`${formattedSelectedDate}에는 운동한 기록이 없네요 🥲`}</Text>
+        </View>
+      );
+    }
+  };
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.darkBackground }}>
@@ -184,19 +214,7 @@ const WorkoutDiary = () => {
 
       <View style={styles.diaryContentContainer}>
         {workoutRecords.length === 0 ? (
-          <>
-            <View style={styles.messageContainer}>
-              <Text style={styles.messageText}>완료한 운동이 없네요!</Text>
-              <Text style={styles.messageText}>오늘 운동하러 가볼까요?</Text>
-            </View>
-            <CustomButton
-              theme="primary"
-              size="large"
-              states="enabled"
-              onPress={handleStartWorkout}
-              text="운동 시작하기"
-            />
-          </>
+          renderEmptyMessage()
         ) : (
           <FlatList
             data={workoutRecords}
@@ -269,6 +287,7 @@ const styles = StyleSheet.create({
     color: TEXT_COLORS.secondary,
     fontSize: 16,
     marginBottom: 8,
+    fontFamily: FONTS.PRETENDARD[500],
   },
   weekDaysContainer: {
     flexDirection: 'row',
@@ -292,10 +311,12 @@ const styles = StyleSheet.create({
   dayText: {
     color: TEXT_COLORS.secondary,
     fontSize: FONT_SIZES.sm,
+    fontFamily: FONTS.PRETENDARD[500],
   },
   activeDayText: {
     color: TEXT_COLORS.primary,
     fontSize: FONT_SIZES.sm,
+    fontFamily: FONTS.PRETENDARD[500],
   },
   diaryContentContainer: {
     backgroundColor: BACKGROUND_COLORS.greyDark,
@@ -328,10 +349,12 @@ const styles = StyleSheet.create({
   workoutTypeText: {
     color: TEXT_COLORS.secondary,
     fontSize: FONT_SIZES.md,
+    fontFamily: FONTS.PRETENDARD[500],
   },
   activeWorkoutTypeText: {
     color: TEXT_COLORS.primary,
     fontSize: FONT_SIZES.md,
+    fontFamily: FONTS.PRETENDARD[500],
   },
   messageContainer: {
     borderRadius: 10,
@@ -345,6 +368,7 @@ const styles = StyleSheet.create({
     color: TEXT_COLORS.primary,
     fontSize: 16,
     textAlign: 'center',
+    fontFamily: FONTS.PRETENDARD[600],
   },
 
   workoutRecordContainer: {
@@ -368,11 +392,12 @@ const styles = StyleSheet.create({
   recordText: {
     color: TEXT_COLORS.secondary,
     fontSize: FONT_SIZES.md,
-    fontWeight: 'bold',
+    fontFamily: FONTS.PRETENDARD[700],
   },
   recordDurationText: {
     color: TEXT_COLORS.secondary,
     fontSize: FONT_SIZES.sm,
+    fontFamily: FONTS.PRETENDARD[500],
   },
   exerciseContainer: {
     paddingVertical: 8,
@@ -381,10 +406,12 @@ const styles = StyleSheet.create({
   exerciseHeaderText: {
     color: TEXT_COLORS.primary,
     fontSize: FONT_SIZES.lg,
+    fontFamily: FONTS.PRETENDARD[500],
   },
   exerciseText: {
     color: TEXT_COLORS.secondary,
     fontSize: FONT_SIZES.sm,
+    fontFamily: FONTS.PRETENDARD[500],
   },
   startButtonContainer: {
     backgroundColor: BUTTON_COLORS.primary,
@@ -397,6 +424,6 @@ const styles = StyleSheet.create({
   startButtonText: {
     color: TEXT_COLORS.primary,
     fontSize: 16,
-    fontWeight: 'bold',
+    fontFamily: FONTS.PRETENDARD[700],
   },
 });
