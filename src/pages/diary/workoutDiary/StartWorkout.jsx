@@ -14,7 +14,6 @@ import {
 } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import CustomTag from '../../../../src/components/CustomTag';
 import { getExerciseList, postWorkoutRecord } from '../../../apis/diary';
 import CustomButton from '../../../components/CustomButton';
 import CustomInput from '../../../components/CustomInput';
@@ -38,7 +37,6 @@ const StartWorkout = () => {
   const [isTimerVisible, setIsTimerVisible] = useState(false);
   const [isReset, setIsReset] = useState(false);
   const [intervalId, setIntervalId] = useState(null);
-  const [sortBy, setSortBy] = useState('');
   const [dropdownState, setDropdownState] = useState({
     bodyPart: '',
     equipment: '',
@@ -444,7 +442,6 @@ const StartWorkout = () => {
             </View>
             <View style={{ flexDirection: 'row', marginVertical: 16 }}>
               <TouchableOpacity style={{ marginRight: 16 }}>
-                {/* <CustomTag size="big" text="부위" /> */}
                 <DropdownModal
                   options={['전체', '팔', '등', '어깨', '가슴', '하체']}
                   onChange={(value) => handleSortChange('bodyPart', value)}
@@ -454,7 +451,6 @@ const StartWorkout = () => {
                 />
               </TouchableOpacity>
               <TouchableOpacity style={{ marginRight: 16 }}>
-                {/* <CustomTag size="big" text="무게" /> */}
                 <DropdownModal
                   options={['전체', '바벨', '덤벨', '케틀벨', '머신']}
                   onChange={(value) => handleSortChange('equipment', value)}
