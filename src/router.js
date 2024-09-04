@@ -11,6 +11,7 @@ import SearchCompetition from './pages/competition/SearchCompetition';
 import FoodDiary from './pages/diary/foodDiary/FoodDiary';
 import FoodRecord from './pages/diary/foodDiary/FoodRecord';
 import FoodRecordDetail from './pages/diary/foodDiary/FoodRecordDetail';
+import FoodSearch from './pages/diary/foodDiary/FoodSearch';
 import StartWorkout from './pages/diary/workoutDiary/StartWorkout';
 import WorkoutDatePick from './pages/diary/workoutDiary/WorkoutDatePick';
 import WorkoutDiary from './pages/diary/workoutDiary/WorkoutDiary';
@@ -69,6 +70,7 @@ const FoodDiaryStack = () => {
       <Stack.Screen name="FoodDiaryScreen" component={FoodDiary} />
       <Stack.Screen name="FoodDetailScreen" component={FoodRecordDetail} />
       <Stack.Screen name="FoodRecordScreen" component={FoodRecord} />
+      <Stack.Screen name="FoodSearchScreen" component={FoodSearch} />
     </Stack.Navigator>
   );
 };
