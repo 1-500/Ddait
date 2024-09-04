@@ -87,17 +87,6 @@ export const getCompetitionDetail = async (id) => {
   }
 };
 
-export const getCompetitionRooms = async () => {
-  try {
-    const response = await API.get('/competition/rooms');
-    return response.data;
-  } catch (error) {
-    console.error('Server responded with status:', error.response.status);
-
-    console.error('Response data:', error.response.data);
-  }
-};
-
 export const getCompetitionRecord = async (roomId) => {
   try {
     const response = await API.get(`/competition/record?roomId=${roomId}`);
