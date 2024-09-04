@@ -1,7 +1,7 @@
 import { BottomSheetModal, BottomSheetModalProvider, BottomSheetView } from '@gorhom/bottom-sheet';
 import { useNavigation } from '@react-navigation/native';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { FlatList, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, FlatList, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Calendar } from 'react-native-calendars';
 
 import { getDiaryList } from '../../../apis/diary';
@@ -43,6 +43,7 @@ const WorkoutDiary = () => {
         setWorkoutRecords(res);
       } catch (error) {
         console.log('error: ', error);
+        Alert.alert('운동 기록을 불러오는데 실패했습니다.'); // 향후 toast메세지로 변경합니다.
       }
     };
 
