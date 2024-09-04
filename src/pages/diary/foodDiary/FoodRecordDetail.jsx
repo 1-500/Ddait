@@ -1,26 +1,42 @@
 import { useNavigation } from '@react-navigation/native';
-import React from 'react';
-import { Image, Modal, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Alert, Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
+import { getFoodRecordByTime } from '../../../apis/food/index';
 import CustomButton from '../../../components/CustomButton';
 import HeaderComponents from '../../../components/HeaderComponents';
 import { COLORS } from '../../../constants/colors';
-import { FONT_SIZES, FONT_WEIGHTS } from '../../../constants/font';
+import { FONT_SIZES, FONTS } from '../../../constants/font';
 import { RADIUS } from '../../../constants/radius';
+import { calculateNutrientRatios, getTotal } from '../../../utils/foodDiary/index';
 
 const PlusButtonIcon = require('../../../assets/images/dietDiary/PluscircleButton.png');
 const MinusButtonIcon = require('../../../assets/images/dietDiary/MinusCircleButton.png');
 
 const FoodRecordDetail = ({ route }) => {
   const { time } = route.params;
-  const carbPercentage = 30;
-  const proteinPercentage = 50;
-  const etcPercentage = 20;
   const navigation = useNavigation();
+  const [foodRecordListState, setFoodRecordListState] = useState([]);
+  useEffect(() => {
+    const fetchFoodRecord = async () => {
+      try {
+        const result = await getFoodRecordByTime();
+        if (result.error) {
+          throw new Error('서버에서 데이터를 가져오지 못했습니다.');
+        }
+        setFoodRecordListState(result.data);
+      } catch (error) {
+        Alert.alert(error.message);
+      }
+    };
+    fetchFoodRecord();
+  }, []);
+
+  const macroRatio = calculateNutrientRatios(foodRecordListState);
+
   return (
     <SafeAreaView style={styles.container}>
       <HeaderComponents title={time} />
-
       <View style={styles.mainContainer}>
         <View style={styles.header}>
           <TouchableOpacity activeOpacity={0.6}>
@@ -32,79 +48,75 @@ const FoodRecordDetail = ({ route }) => {
         <ScrollView style={{ padding: 20 }}>
           <View style={styles.calorieContainer}>
             <Text style={styles.calorieText}>총 열량</Text>
-            <Text style={styles.calorieText}>468kcal</Text>
+            <Text style={styles.calorieText}>{getTotal(foodRecordListState, 'calories')} kcal</Text>
           </View>
 
           <View style={styles.macroInfo}>
-            <Text style={styles.macroText}>탄 35.2g</Text>
-            <Text style={styles.macroText}>단 35.2g</Text>
-            <Text style={styles.macroText}>지방 40.g</Text>
+            {['carbs', 'protein', 'fat'].map((key, index) => (
+              <Text key={key} style={styles.macroText}>
+                {index === 0 ? '탄' : index === 1 ? '단' : '지'} {getTotal(foodRecordListState, key)}g
+              </Text>
+            ))}
           </View>
           <View style={styles.progressBar}>
-            <View style={[styles.progressSegment, { width: `${carbPercentage}%`, backgroundColor: COLORS.primary }]}>
-              <Text style={styles.progressText}>{carbPercentage}%</Text>
+            <View
+              style={[
+                styles.progressSegment,
+                { width: `${macroRatio.carbsRatio || 0}%`, backgroundColor: COLORS.primary },
+              ]}
+            >
+              <Text style={styles.progressText}>{macroRatio.carbsRatio || 0}%</Text>
             </View>
             <View
-              style={[styles.progressSegment, { width: `${proteinPercentage}%`, backgroundColor: COLORS.secondary }]}
+              style={[
+                styles.progressSegment,
+                { width: `${macroRatio.proteinRatio || 0}%`, backgroundColor: COLORS.secondary },
+              ]}
             >
-              <Text style={styles.progressText}>{proteinPercentage}%</Text>
+              <Text style={styles.progressText}>{macroRatio.proteinRatio || 0}%</Text>
             </View>
-            <View style={[styles.progressSegment, { width: `${etcPercentage}%` }]}>
-              <Text style={styles.progressText}>{etcPercentage}%</Text>
+            <View style={[styles.progressSegment, { width: `${macroRatio.fatRatio || 0}%` }]}>
+              <Text style={styles.progressText}>{macroRatio.fatRatio || 0}%</Text>
             </View>
           </View>
 
           <View style={{ marginVertical: 10 }}>
             <Text style={styles.foodListTitle}>{time}</Text>
-            <View style={styles.foodItem}>
-              <View>
-                <Text style={{ color: 'white', marginBottom: 5 }}>햇반</Text>
-                <Text style={{ color: COLORS.white }}>100g</Text>
-              </View>
-              <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-                <Text style={styles.foodCalories}>132kcal</Text>
-                <TouchableOpacity activeOpacity={0.6}>
-                  <Image source={MinusButtonIcon} style={{ width: 20, height: 20 }} />
-                </TouchableOpacity>
-              </View>
-            </View>
           </View>
-          <View style={styles.foodItem}>
-            <View>
-              <Text style={{ color: 'white', marginBottom: 5 }}>햇반</Text>
-              <Text style={{ color: COLORS.white }}>100g</Text>
-            </View>
-            <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-              <Text style={styles.foodCalories}>132kcal</Text>
-              <TouchableOpacity activeOpacity={0.6}>
-                <Image source={MinusButtonIcon} style={{ width: 20, height: 20 }} />
-              </TouchableOpacity>
-            </View>
-          </View>
-          <View style={styles.foodItem}>
-            <View>
-              <Text style={{ color: 'white', marginBottom: 5 }}>햇반</Text>
-              <Text style={{ color: COLORS.white }}>100g</Text>
-            </View>
-            <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-              <Text style={styles.foodCalories}>132kcal</Text>
-              <TouchableOpacity activeOpacity={0.6}>
-                <Image source={MinusButtonIcon} style={{ width: 20, height: 20 }} />
-              </TouchableOpacity>
-            </View>
-          </View>
+          {foodRecordListState?.map((food) => {
+            return (
+              <FoodInfoCard key={food.id} name={food.name} serving_size={food.serving_size} calories={food.calories} />
+            );
+          })}
         </ScrollView>
         <View style={styles.buttonContainer}>
           <CustomButton
             size="medium"
             text="추가"
             theme="primary"
-            onPress={() => navigation.navigate('DietDiary', { screen: 'FoodRecordScreen' })}
+            onPress={() => navigation.navigate('FoodDiary', { screen: 'FoodRecordScreen' })}
           />
           <CustomButton size="medium" text="확인" theme="secondary" />
         </View>
       </View>
     </SafeAreaView>
+  );
+};
+
+const FoodInfoCard = ({ name, calories, serving_size }) => {
+  return (
+    <View style={styles.foodItem}>
+      <View>
+        <Text style={{ color: 'white', marginBottom: 5 }}>{name}</Text>
+        <Text style={{ color: COLORS.white }}>{serving_size}g</Text>
+      </View>
+      <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+        <Text style={styles.foodCalories}>{calories}kcal</Text>
+        <TouchableOpacity activeOpacity={0.6}>
+          <Image source={MinusButtonIcon} style={{ width: 20, height: 20 }} />
+        </TouchableOpacity>
+      </View>
+    </View>
   );
 };
 
@@ -132,8 +144,8 @@ const styles = StyleSheet.create({
   addPhoto: {
     color: 'white',
     textAlign: 'center',
+    fontFamily: FONTS.PRETENDARD[600],
     fontSize: FONT_SIZES.sm,
-    fontWeight: FONT_WEIGHTS.semiBold,
   },
   calorieContainer: {
     display: 'flex',
@@ -143,7 +155,7 @@ const styles = StyleSheet.create({
   },
   calorieText: {
     color: 'white',
-    fontWeight: FONT_WEIGHTS.semiBold,
+    fontFamily: FONTS.PRETENDARD[600],
     fontSize: FONT_SIZES.lg,
   },
 
@@ -156,20 +168,18 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   progressSegment: {
-    height: '100%',
     justifyContent: 'center',
     alignItems: 'center',
   },
   progressText: {
     color: 'white',
     fontSize: FONT_SIZES.xxs,
-    fontWeight: FONT_WEIGHTS.semiBold,
+    fontFamily: FONTS.PRETENDARD[600],
   },
 
   macroInfo: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: 10,
   },
   macroText: {
     color: 'white',
@@ -178,7 +188,7 @@ const styles = StyleSheet.create({
   foodListTitle: {
     color: 'white',
     fontSize: FONT_SIZES.lg,
-    fontWeight: FONT_WEIGHTS.bold,
+    fontFamily: FONTS.PRETENDARD[700],
     marginVertical: 10,
   },
   foodItem: {
