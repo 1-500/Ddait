@@ -17,6 +17,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { getExerciseList, postWorkoutRecord } from '../../../apis/diary';
 import CustomButton from '../../../components/CustomButton';
 import CustomInput from '../../../components/CustomInput';
+import CustomTag from '../../../components/CustomTag';
 import CustomTimer from '../../../components/CustomTimer';
 import DropdownModal from '../../../components/DropdownModal';
 import HeaderComponents from '../../../components/HeaderComponents';
@@ -24,7 +25,7 @@ import { BACKGROUND_COLORS, COLORS, TEXT_COLORS } from '../../../constants/color
 import { BODY_FONT_SIZES, HEADER_FONT_SIZES } from '../../../constants/font';
 import { FONTS } from '../../../constants/font';
 import { RADIUS } from '../../../constants/radius';
-import { LAYOUT_PADDING } from '../../../constants/space';
+import { LAYOUT_PADDING, SPACING } from '../../../constants/space';
 
 const StartWorkout = () => {
   const navigation = useNavigation();
@@ -40,7 +41,7 @@ const StartWorkout = () => {
   const [dropdownState, setDropdownState] = useState({
     bodyPart: '전체',
     equipment: '전체',
-    bookmark: '',
+    bookmark: 'false',
   });
 
   const bottomSheetModalRef = useRef(null);
@@ -51,8 +52,6 @@ const StartWorkout = () => {
     const fetchExerciseList = async () => {
       try {
         const res = await getExerciseList();
-        const nameData = res.map((item) => item.name);
-        // setExerciseListData(nameData);
         setExerciseListData(res);
       } catch (error) {
         console.log('error', error);
@@ -72,7 +71,8 @@ const StartWorkout = () => {
   const filteredExerciseList = exerciseListData.filter((exercise) => {
     const isPartMatch = dropdownState.bodyPart === '전체' || exercise.body_part === dropdownState.bodyPart;
     const isToolMatch = dropdownState.equipment === '전체' || exercise.equipment === dropdownState.equipment;
-    return isPartMatch && isToolMatch;
+    const isBookmarkMatch = dropdownState.bookmark ? exercise.bookmark === true : true;
+    return isPartMatch && isToolMatch && isBookmarkMatch;
   });
 
   const handlePresentModalPress = useCallback(() => {
@@ -292,6 +292,13 @@ const StartWorkout = () => {
   };
   const { totalWorkoutTime } = calculateTotalTimes();
 
+  const handleBookmarkToggle = () => {
+    setDropdownState((prev) => ({
+      ...prev,
+      bookmark: !prev.bookmark,
+    }));
+  };
+
   const renderWorkoutCard = ({ item }) => (
     <View style={styles.card}>
       <View style={styles.header}>
@@ -360,7 +367,9 @@ const StartWorkout = () => {
         />
       </View>
       <Text style={styles.exerciseItemText}>{item}</Text>
-      <MaterialCommunityIcons name="bookmark-outline" size={24} color={TEXT_COLORS.secondary} />
+      <TouchableOpacity>
+        <MaterialCommunityIcons name="bookmark-outline" size={24} color={TEXT_COLORS.secondary} />
+      </TouchableOpacity>
     </TouchableOpacity>
   );
 
@@ -466,13 +475,20 @@ const StartWorkout = () => {
                   showIcon={true}
                 />
               </TouchableOpacity>
-              <TouchableOpacity style={{ marginRight: 16 }}>
-                <DropdownModal
-                  options={['즐겨찾기']}
-                  onChange={(value) => handleSortChange('bookmark', value)}
-                  value={dropdownState.bookmark}
-                  placeholder={<MaterialCommunityIcons name="bookmark" size={18} color={TEXT_COLORS.secondary} />}
-                  showIcon={true}
+              <TouchableOpacity
+                style={{
+                  marginRight: 16,
+                  backgroundColor: COLORS.darkGrey,
+                  paddingVertical: SPACING.xxs,
+                  paddingHorizontal: SPACING.sm,
+                  borderRadius: RADIUS.large,
+                }}
+                onPress={handleBookmarkToggle}
+              >
+                <MaterialCommunityIcons
+                  name={dropdownState.bookmark ? 'bookmark' : 'bookmark-outline'}
+                  size={24}
+                  color={COLORS.primary}
                 />
               </TouchableOpacity>
             </View>
