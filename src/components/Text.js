@@ -39,7 +39,6 @@ const Text = ({
 const styles = StyleSheet.create({
   'bigheadline1-bold': {
     fontFamily: FONTS.PRETENDARD[700],
-
     fontSize: 30,
     lineHeight: 46,
   },
@@ -50,224 +49,187 @@ const styles = StyleSheet.create({
   },
   'bigheadline1-regular': {
     fontFamily: FONTS.PRETENDARD[700],
-
     fontSize: 30,
     lineHeight: 46,
   },
   'bigheadline2-bold': {
     fontFamily: FONTS.PRETENDARD[700],
-
     fontSize: 26,
     lineHeight: 40,
   },
   'bigheadline2-medium': {
     fontFamily: FONTS.PRETENDARD[700],
-
     fontSize: 26,
     lineHeight: 40,
   },
   'bigheadline2-regular': {
     fontFamily: FONTS.PRETENDARD[700],
-
     fontSize: 26,
     lineHeight: 40,
   },
 
   'headline1-bold': {
     fontFamily: FONTS.PRETENDARD[700],
-
     fontSize: 22,
     lineHeight: 34,
   },
   'headline1-medium': {
     fontFamily: FONTS.PRETENDARD[700],
-
     fontSize: 22,
     lineHeight: 34,
   },
   'headline1-regular': {
     fontFamily: FONTS.PRETENDARD[700],
-
     fontSize: 22,
     lineHeight: 34,
   },
   'headline2-bold': {
     fontFamily: FONTS.PRETENDARD[700],
-
     fontSize: 22,
     lineHeight: 22 * 1.5,
   },
   'headline2-medium': {
     fontFamily: FONTS.PRETENDARD[700],
-
     fontSize: 22,
     lineHeight: 22 * 1.5,
   },
   'headline2-regular': {
     fontFamily: FONTS.PRETENDARD[700],
-
     fontSize: 22,
     lineHeight: 22 * 1.5,
   },
   'title1-bold': {
     fontFamily: FONTS.PRETENDARD[700],
-
     fontSize: 19,
     lineHeight: 30,
   },
   'title1-medium': {
     fontFamily: FONTS.PRETENDARD[700],
-
     fontSize: 19,
     lineHeight: 30,
   },
   'title1-regular': {
     fontFamily: FONTS.PRETENDARD[700],
-
     fontSize: 19,
     lineHeight: 30,
   },
   'title2-bold': {
     fontFamily: FONTS.PRETENDARD[700],
-
     fontSize: 18,
     lineHeight: 28,
   },
   'title2-medium': {
     fontFamily: FONTS.PRETENDARD[700],
-
     fontSize: 18,
     lineHeight: 28,
   },
   'title2-regular': {
     fontFamily: FONTS.PRETENDARD[700],
-
     fontSize: 18,
     lineHeight: 28,
   },
   'title3-bold': {
     fontFamily: FONTS.PRETENDARD[700],
-
     fontSize: 17,
     lineHeight: 25.5,
   },
   'title3-medium': {
     fontFamily: FONTS.PRETENDARD[700],
-
     fontSize: 17,
     lineHeight: 25.5,
   },
   'title3-regular': {
     fontFamily: FONTS.PRETENDARD[700],
-
     fontSize: 17,
     lineHeight: 25.5,
   },
   'title4-bold': {
     fontFamily: FONTS.PRETENDARD[700],
-
     fontSize: 16,
     lineHeight: 24,
   },
   'title4-medium': {
     fontFamily: FONTS.PRETENDARD[700],
-
     fontSize: 16,
     lineHeight: 24,
   },
   'title4-regular': {
     fontFamily: FONTS.PRETENDARD[700],
-
     fontSize: 16,
     lineHeight: 24,
   },
   'body1-bold': {
     fontFamily: FONTS.PRETENDARD[700],
-
     fontSize: 15,
     lineHeight: 24,
   },
   'body1-medium': {
     fontFamily: FONTS.PRETENDARD[700],
-
     fontSize: 15,
     lineHeight: 24,
   },
   'body1-regular': {
     fontFamily: FONTS.PRETENDARD[700],
-
     fontSize: 15,
     lineHeight: 24,
   },
   'body2-bold': {
     fontFamily: FONTS.PRETENDARD[700],
-
     fontSize: 14,
     lineHeight: 22,
   },
   'body2-medium': {
     fontFamily: FONTS.PRETENDARD[700],
-
     fontSize: 14,
     lineHeight: 22,
   },
   'body2-regular': {
     fontFamily: FONTS.PRETENDARD[700],
-
     fontSize: 14,
     lineHeight: 22,
   },
   'body3-bold': {
     fontFamily: FONTS.PRETENDARD[700],
-
     fontSize: 13,
     lineHeight: 20,
   },
   'body3-medium': {
     fontFamily: FONTS.PRETENDARD[700],
-
     fontSize: 13,
     lineHeight: 20,
   },
   'body3-regular': {
     fontFamily: FONTS.PRETENDARD[700],
-
     fontSize: 13,
     lineHeight: 20,
   },
   'body4-bold': {
     fontFamily: FONTS.PRETENDARD[700],
-
     fontSize: 12,
     lineHeight: 18,
   },
   'body4-medium': {
     fontFamily: FONTS.PRETENDARD[700],
-
     fontSize: 12,
     lineHeight: 18,
   },
   'body4-regular': {
     fontFamily: FONTS.PRETENDARD[700],
-
     fontSize: 12,
     lineHeight: 18,
   },
   'body5-bold': {
     fontFamily: FONTS.PRETENDARD[700],
-
     fontSize: 11,
     lineHeight: 18,
   },
   'body5-medium': {
     fontFamily: FONTS.PRETENDARD[700],
-
     fontSize: 11,
     lineHeight: 18,
   },
   'body5-regular': {
     fontFamily: FONTS.PRETENDARD[700],
-
     fontSize: 11,
     lineHeight: 18,
   },

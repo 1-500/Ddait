@@ -3,11 +3,19 @@ import { Animated, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { COLORS } from '../constants/colors';
+import { useToastMessageStore } from '../store/toastMessage/toastMessage';
 import Text from './Text';
 
-const Toast = ({ text, visible, handleCancel, duration, type = 'success' }) => {
+const Toast = () => {
   const toastValue = useRef(new Animated.Value(0)).current;
   const { top, bottom } = useSafeAreaInsets(); // SafeArea에서 상단 inset 가져오기
+  const { visible, message, type, handleCancel } = useToastMessageStore((state) => ({
+    visible: state.visible,
+    message: state.message,
+    type: state.type,
+    handleCancel: state.handleCancel,
+  }));
+
   const getPointBarColor = () => {
     switch (type) {
       case 'success':
@@ -19,32 +27,36 @@ const Toast = ({ text, visible, handleCancel, duration, type = 'success' }) => {
     }
   };
 
+  /*eslint-disable*/
   const toastAnimated = useCallback(() => {
     toastValue.setValue(0);
+
     Animated.spring(toastValue, {
       toValue: 1,
       useNativeDriver: true,
       delay: 100,
     }).start(({ finished }) => {
       if (finished) {
-        handleCancel();
+        // 일정 시간 후 사라질 때 애니메이션 (timing 사용)
         Animated.timing(toastValue, {
           toValue: 0,
           useNativeDriver: true,
-          duration: 150,
-          delay: duration || 1000,
-        }).start();
+          duration: 300, // 사라질 때의 애니메이션 시간을 지정
+        }).start(() => {
+          handleCancel(); // 애니메이션이 끝난 후 상태를 변경
+        });
       }
     });
-  }, [duration, handleCancel, toastValue]);
+  }, [handleCancel]);
+  /*eslint-enable*/
 
   useEffect(() => {
     if (visible) {
       toastAnimated();
     }
-  }, [toastAnimated, visible]);
+  }, [visible, toastAnimated]);
 
-  return (
+  return visible ? (
     <Animated.View
       pointerEvents="none"
       style={[
@@ -55,12 +67,8 @@ const Toast = ({ text, visible, handleCancel, duration, type = 'success' }) => {
             {
               translateY: toastValue.interpolate({
                 inputRange: [0, 1],
-                outputRange: [bottom - 10, bottom - 30],
+                outputRange: [-top - 30, top],
               }),
-              //   translateY: toastValue.interpolate({
-              //     inputRange: [0, 1],
-              //     outputRange: [-top - 30, top],
-              //   }),
             },
             { scale: toastValue.interpolate({ inputRange: [0, 1], outputRange: [0.9, 1] }) },
           ],
@@ -71,19 +79,18 @@ const Toast = ({ text, visible, handleCancel, duration, type = 'success' }) => {
         <View style={[styles.pointBar, { backgroundColor: getPointBarColor() }]} />
         <View style={styles.toastContents}>
           <Text type="body3-regular" color="#fff">
-            {text}
+            {message}
           </Text>
         </View>
       </View>
     </Animated.View>
-  );
+  ) : null;
 };
 
 const styles = StyleSheet.create({
   toast: {
     position: 'absolute',
-    // top: 0,
-    bottom: 60,
+    top: 0,
     left: 0,
     right: 0,
     justifyContent: 'center',

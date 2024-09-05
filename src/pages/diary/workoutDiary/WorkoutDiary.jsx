@@ -12,6 +12,7 @@ import { BACKGROUND_COLORS, BUTTON_COLORS, COLORS, TEXT_COLORS } from '../../../
 import { FONT_SIZES, FONTS } from '../../../constants/font';
 import { RADIUS } from '../../../constants/radius';
 import { LAYOUT_PADDING } from '../../../constants/space';
+import { useToastMessageStore } from '../../../store/toastMessage/toastMessage';
 import { formatDate, getEndOfWeek, getStartOfWeek, getWeekOfMonth } from '../../../utils/date';
 
 const WorkoutDiary = () => {
@@ -28,10 +29,7 @@ const WorkoutDiary = () => {
   const [selectedDate, setSelectedDate] = useState(today);
   const [workoutRecords, setWorkoutRecords] = useState([]);
 
-  const [toastVisible, setToastVisible] = useState(false);
-  const [toastMessage, setToastMessage] = useState('');
-  const [toastType, setToastType] = useState('default');
-
+  const { showToast } = useToastMessageStore();
   /* eslint-disable */
 
   useEffect(() => {
@@ -48,7 +46,6 @@ const WorkoutDiary = () => {
         setWorkoutRecords(res);
       } catch (error) {
         console.log('error: ', error);
-        Alert.alert('운동 기록을 불러오는데 실패했습니다.'); // 향후 toast메세지로 변경합니다.
         showToast('운동 기록을 불러오는데 실패했습니다.', 'error');
       }
     };
@@ -177,20 +174,6 @@ const WorkoutDiary = () => {
     }
   };
 
-  const showToast = (message, type = 'default') => {
-    setToastMessage(message);
-    setToastType(type);
-    setToastVisible(true);
-
-    setTimeout(() => {
-      setToastVisible(false);
-    }, 3000); // 3초 후 닫기
-  };
-
-  const handleCancel = () => {
-    setToastVisible(false);
-  };
-
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.darkBackground }}>
       <View style={{ height: 60, backgroundColor: '#fff' }}>
@@ -240,7 +223,7 @@ const WorkoutDiary = () => {
         )}
       </View>
 
-      <Toast text={toastMessage} visible={toastVisible} type={toastType} handleCancel={handleCancel} />
+      <Toast />
       <BottomSheetModalProvider>
         <BottomSheetModal
           ref={bottomSheetModalRef}
