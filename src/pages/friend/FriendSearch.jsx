@@ -18,11 +18,16 @@ const FriendSearch = ({ navigation }) => {
   const [searchResults, setSearchResults] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [error, setError] = useState('');
+  const [selectedMemberId, setSelectedMemberId] = useState(null);
 
-  const handleOpenOptions = useCallback(() => {
+  const handleOpenOptions = useCallback((memberId) => {
+    setSelectedMemberId(memberId);
     bottomSheetRef.current?.present();
   }, []);
-  const renderItem = ({ item }) => <MemberProfileItem memberData={item} onRightBtnPress={handleOpenOptions} />;
+
+  const renderItem = ({ item }) => (
+    <MemberProfileItem memberData={item} onRightBtnPress={() => handleOpenOptions(item.id)} />
+  );
 
   useEffect(() => {
     const handleSearch = async () => {
@@ -35,9 +40,9 @@ const FriendSearch = ({ navigation }) => {
         const res = await searchUser(searchQuery);
         if (res.data?.length === 0) {
           setSearchResults([]);
-          setError(res.message || 'No results found.');
+          setError(res.message);
         } else {
-          setSearchResults(res);
+          setSearchResults(res.data);
           setError('');
         }
       } catch (error) {
@@ -53,25 +58,26 @@ const FriendSearch = ({ navigation }) => {
         <SearchHeader navigation={navigation} searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
         <View style={styles.contentContainer}>
           {searchQuery.trim() === '' ? (
-            //검색어가 없을 때
             <ScrollView showsVerticalScrollIndicator={false}>
               <View style={styles.mapSearchWrapper}>
                 <Text style={styles.lgText}>따잇님</Text>
                 <Text style={styles.mdText}>주변에 있는 따잇러도 찾아보시지 않으실래요?</Text>
                 <CustomButton style={styles.btnLayout} theme="primary" size="medium" text="지도에서 따잇러 찾기" />
               </View>
-              {/* <SectionTitle title="카카오톡 친구" showMore={true} navigation={navigation} /> 추후구현 */}
               <SectionTitle title="추천 친구" />
               <View>
                 {dummyFriends.map((friend) => (
-                  <MemberProfileItem key={friend.id} memberData={friend} onRightBtnPress={handleOpenOptions} />
+                  <MemberProfileItem
+                    key={friend.id}
+                    memberData={friend}
+                    onRightBtnPress={() => handleOpenOptions(friend.id)}
+                  />
                 ))}
               </View>
             </ScrollView>
           ) : (
             <>
-              {searchResults.length > 0 ? (
-                //검색 결과
+              {searchResults?.length > 0 ? (
                 <FlatList
                   data={searchResults}
                   renderItem={renderItem}
@@ -79,7 +85,6 @@ const FriendSearch = ({ navigation }) => {
                   showsVerticalScrollIndicator={false}
                 />
               ) : (
-                //검색 결과가 없을 때
                 <View style={styles.errorContainer}>
                   <Text style={[styles.mdText, { textAlign: 'center' }]}>{error}</Text>
                 </View>
@@ -87,11 +92,12 @@ const FriendSearch = ({ navigation }) => {
             </>
           )}
         </View>
-        <FriendOptionBottomSheet ref={bottomSheetRef} isFriend={false} />
+        <FriendOptionBottomSheet ref={bottomSheetRef} isFriend={false} memberId={selectedMemberId} />
       </SafeAreaView>
     </BottomSheetModalProvider>
   );
 };
+
 export default FriendSearch;
 
 const styles = StyleSheet.create({
