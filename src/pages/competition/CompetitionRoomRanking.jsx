@@ -133,7 +133,7 @@ const CompetitionRoomRanking = ({ navigation }) => {
     if (!isDeleted) {
       fetchAllData();
     }
-  }, [fetchAllData, isDeleted]);
+  }, [isFocused, isDeleted]);
 
   const handleJoin = async () => {
     try {
@@ -173,11 +173,13 @@ const CompetitionRoomRanking = ({ navigation }) => {
   const handleDelete = useCallback(
     (success, message) => {
       if (success) {
-        setIsDeleted(true);
-        Alert.alert('삭제 성공', '경쟁방이 성공적으로 삭제되었습니다.', [
+        Alert.alert('경쟁방 삭제', '경쟁방이 삭제되었습니다 😢', [
           {
             text: '확인',
-            onPress: () => navigation.goBack(),
+            onPress: () => {
+              setIsDeleted(true);
+              navigation.goBack();
+            },
           },
         ]);
       } else {
