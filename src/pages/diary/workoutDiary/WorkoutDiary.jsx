@@ -1,12 +1,13 @@
 import { BottomSheetModal, BottomSheetModalProvider, BottomSheetView } from '@gorhom/bottom-sheet';
 import { useNavigation } from '@react-navigation/native';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Alert, FlatList, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Button, FlatList, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Calendar } from 'react-native-calendars';
 
 import { getDiaryList } from '../../../apis/diary';
 import CustomButton from '../../../components/CustomButton';
 import HeaderComponents from '../../../components/HeaderComponents';
+import Toast from '../../../components/Toast';
 import { BACKGROUND_COLORS, BUTTON_COLORS, COLORS, TEXT_COLORS } from '../../../constants/colors';
 import { FONT_SIZES, FONTS } from '../../../constants/font';
 import { RADIUS } from '../../../constants/radius';
@@ -27,6 +28,10 @@ const WorkoutDiary = () => {
   const [selectedDate, setSelectedDate] = useState(today);
   const [workoutRecords, setWorkoutRecords] = useState([]);
 
+  const [toastVisible, setToastVisible] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
+  const [toastType, setToastType] = useState('default');
+
   /* eslint-disable */
 
   useEffect(() => {
@@ -44,6 +49,7 @@ const WorkoutDiary = () => {
       } catch (error) {
         console.log('error: ', error);
         Alert.alert('운동 기록을 불러오는데 실패했습니다.'); // 향후 toast메세지로 변경합니다.
+        showToast('운동 기록을 불러오는데 실패했습니다.', 'error');
       }
     };
 
@@ -151,6 +157,8 @@ const WorkoutDiary = () => {
             <Text style={styles.messageText}>완료한 운동이 없네요!</Text>
             <Text style={styles.messageText}>오늘 운동하러 가볼까요?</Text>
           </View>
+
+          <Button title="Show Toast" onPress={() => showToast('운동 기록을 불러오는데 실패했습니다.', 'error')} />
           <CustomButton
             theme="primary"
             size="large"
@@ -167,6 +175,20 @@ const WorkoutDiary = () => {
         </View>
       );
     }
+  };
+
+  const showToast = (message, type = 'default') => {
+    setToastMessage(message);
+    setToastType(type);
+    setToastVisible(true);
+
+    setTimeout(() => {
+      setToastVisible(false);
+    }, 3000); // 3초 후 닫기
+  };
+
+  const handleCancel = () => {
+    setToastVisible(false);
   };
 
   return (
@@ -218,6 +240,7 @@ const WorkoutDiary = () => {
         )}
       </View>
 
+      <Toast text={toastMessage} visible={toastVisible} type={toastType} handleCancel={handleCancel} />
       <BottomSheetModalProvider>
         <BottomSheetModal
           ref={bottomSheetModalRef}
