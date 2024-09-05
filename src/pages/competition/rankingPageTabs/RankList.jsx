@@ -239,6 +239,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 16,
     marginTop: 30,
+    marginBottom: 10,
   },
   previewText: {
     color: COLORS.white,
