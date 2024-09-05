@@ -28,12 +28,13 @@ const WorkoutDiary = () => {
         /*eslint-disable */
         console.log('error: ', error);
         showToast('운동 기록을 불러오는데 실패했습니다.', 'error');
-        /*eslint-enGsable */
       }
     };
 
     fetchWorkout();
   }, [selected]);
+  /*eslint-enable */
+
   const handleStartWorkout = () => {
     navigation.navigate('WorkoutDiary', { screen: 'StartWorkoutScreen' });
   };
