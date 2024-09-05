@@ -22,8 +22,8 @@ import { FONT_SIZES, FONT_WEIGHTS } from '../../../constants/font';
 import { RADIUS } from '../../../constants/radius';
 import { debounce } from '../../../utils/foodDiary/debounce';
 
-const PlusButtonIcon = require('../../../assets/images/dietDiary/PluscircleButton.png');
-const BookmarkIcon = require('../../../assets/images/dietDiary/bookmark.png');
+const PlusButtonIcon = require('../../../assets/images/dietDiary/PluscircleWhiteButton.png');
+const BookmarkIcon = require('../../../assets/images/dietDiary/bookmarkWhite.png');
 
 const FoodRecord = () => {
   const [tag, setTag] = useState(['최근', '북마크', '직접등록']);
