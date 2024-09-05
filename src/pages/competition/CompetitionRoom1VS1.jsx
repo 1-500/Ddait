@@ -10,7 +10,7 @@ import { COLORS } from '../../constants/colors';
 import { FONT_SIZES, FONTS } from '../../constants/font';
 import { RADIUS } from '../../constants/radius';
 import { LAYOUT_PADDING, SPACING } from '../../constants/space';
-import { isInCompetitionProgress } from '../../utils/competition';
+import { getCompetitionProgress } from '../../utils/competition';
 
 const { width } = Dimensions.get('window');
 
@@ -24,13 +24,13 @@ const CompetitionRoom1VS1 = () => {
   const { competitionId } = route.params;
   const [competitionData, setCompetitionData] = useState();
   const [competitionRecord, setCompetitionRecord] = useState();
-  const [isInProgress, setIsInProgress] = useState(false);
+  const [progress, setProgress] = useState(false);
 
   useEffect(() => {
     const fetchCompetitionDetail = async () => {
       try {
         const result = await getCompetitionDetail(competitionId);
-        setIsInProgress(isInCompetitionProgress(result.data));
+        setProgress(getCompetitionProgress(result.data));
         setCompetitionData(result.data);
       } catch (error) {
         Alert.alert('경쟁방 상세 정보 조회 실패', error.message);
@@ -86,14 +86,13 @@ const CompetitionRoom1VS1 = () => {
   };
 
   const Competition1VS1Header = ({ data }) => {
-    console.log(isInProgress);
     return (
       <View style={{ paddingBottom: 20 }}>
         <View style={styles.messageWrapper}>
           <Text style={styles.userNameText}>
-            {isInProgress ? `${data[0].member_info.nickname} 님,` : '아직 경쟁 시작 전입니다'}
+            {progress === 'BEFORE' ? '아직 경쟁 시작 전입니다' : `${data[0].member_info.nickname} 님,`}
           </Text>
-          {isInProgress && (
+          {progress === 'IN_PROGRESS' && (
             <Text style={styles.messageText}>
               {(() => {
                 if (data[0].total_score > data[1].total_score) {
@@ -112,7 +111,7 @@ const CompetitionRoom1VS1 = () => {
             record={data[0]}
             color={COLORS.primary}
             style={
-              isInProgress &&
+              progress === 'IN_PROGRESS' &&
               data[1] &&
               data[0].total_score >= data[1].total_score && {
                 borderWidth: 3,
@@ -124,7 +123,7 @@ const CompetitionRoom1VS1 = () => {
             record={data[1]}
             color={COLORS.secondary}
             style={
-              isInProgress &&
+              progress === 'IN_PROGRESS' &&
               data[1] &&
               data[1].total_score >= data[0].total_score && {
                 borderWidth: 3,
@@ -139,7 +138,9 @@ const CompetitionRoom1VS1 = () => {
   };
 
   const renderScoreItem = ({ item, index }) => {
-    if (isInProgress) {
+    if (progress === 'BEFORE') {
+      return <></>;
+    } else {
       return (
         <View style={styles.scoreWrapper}>
           <Text style={styles.scoreTitleText} numberOfLines={3} ellipsizeMode="tail">
@@ -183,8 +184,6 @@ const CompetitionRoom1VS1 = () => {
           </View>
         </View>
       );
-    } else {
-      return <></>;
     }
   };
 

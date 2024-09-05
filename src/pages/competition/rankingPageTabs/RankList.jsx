@@ -13,7 +13,7 @@ const dummyProfile = require('../../../assets/images/profile.png');
 
 const { width: screenWidth } = Dimensions.get('window');
 
-const RankList = ({ data, competitionData, isInProgress, onJoin, onLeave }) => {
+const RankList = ({ data, competitionData, progress, onJoin, onLeave }) => {
   const [imageSize, setImageSize] = useState({ width: 0, height: 0 });
   const [isItemOpen, setIsItemOpen] = useState([]);
 
@@ -112,7 +112,7 @@ const RankList = ({ data, competitionData, isInProgress, onJoin, onLeave }) => {
   };
 
   const renderRankItem = ({ item, index }) => {
-    if (isInProgress) {
+    if (progress === 'IN_PROGRESS') {
       return (
         <TouchableOpacity
           style={[
@@ -144,7 +144,7 @@ const RankList = ({ data, competitionData, isInProgress, onJoin, onLeave }) => {
           )}
         </TouchableOpacity>
       );
-    } else {
+    } else if (progress === 'BEFORE') {
       return (
         <View
           style={[
@@ -169,7 +169,15 @@ const RankList = ({ data, competitionData, isInProgress, onJoin, onLeave }) => {
         keyExtractor={(item, index) => index}
         data={data}
         renderItem={renderRankItem}
-        ListHeaderComponent={isInProgress ? Podium : Preview}
+        ListHeaderComponent={(() => {
+          if (progress === 'IN_PROGRESS') {
+            return Podium;
+          } else if (progress === 'BEFORE') {
+            return Preview;
+          } else {
+            return <></>;
+          }
+        })()}
         ListFooterComponent={<View style={{ height: 30 }} />}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ gap: 10 }}
