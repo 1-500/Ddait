@@ -20,8 +20,9 @@ const FriendOptionBottomSheet = forwardRef((props, ref) => {
     try {
       const res = await requestFriend(memberId);
       const nickname = res.data.friend_member_nickname;
-      Alert.alert('친구 추가', `${nickname}님에게 친구 요청을 보냈어요.\n 승인을 기다려주세요!`);
-      ref.current?.close();
+      Alert.alert('친구 추가', `${nickname}님에게 친구 요청을 보냈어요.\n 승인을 기다려주세요!`, [
+        { onPress: () => ref.current?.close() },
+      ]);
     } catch (error) {
       Alert.alert('친구 추가 실패', '오류가 발생했습니다.');
     }
