@@ -1,9 +1,9 @@
 import { useNavigation } from '@react-navigation/native';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Alert, Image, Modal, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import * as Progress from 'react-native-progress';
 
-import { setMacroRatio, setUserWeight } from '../../../apis/food/index';
+import { createFoodDiary, setMacroRatio, setUserWeight } from '../../../apis/food/index';
 import CustomButton from '../../../components/CustomButton';
 import CustomInput from '../../../components/CustomInput';
 import HeaderComponents from '../../../components/HeaderComponents';
@@ -11,7 +11,7 @@ import { BACKGROUND_COLORS, COLORS, TEXT_COLORS } from '../../../constants/color
 import { FONT_SIZES, FONT_WEIGHTS, FONTS } from '../../../constants/font';
 import { RADIUS } from '../../../constants/radius';
 import { LAYOUT_PADDING } from '../../../constants/space';
-import useSelectedFoodStore from '../../../store/index';
+import useSelectedFoodTimeStore from '../../../store/index';
 import { calculateCarbsCalories, calculateFatCalories, calculateProteinCalories } from '../../../utils/foodDiary/index';
 
 const PlusButtonIcon = require('../../../assets/images/dietDiary/PluscircleButton.png');
@@ -38,7 +38,7 @@ const FoodDiary = () => {
   const [proteinRatioState, setProteinRatioState] = useState(0);
   const [fatRatioState, setFatRatioState] = useState(0);
 
-  const { setTime } = useSelectedFoodStore();
+  const { setTime } = useSelectedFoodTimeStore();
 
   const navigation = useNavigation();
   const handleWorkoutTypePress = (type) => {
@@ -109,6 +109,21 @@ const FoodDiary = () => {
       screen: 'FoodDetailScreen',
     });
   };
+
+  useEffect(() => {
+    const postFoodDiary = async () => {
+      try {
+        const result = await createFoodDiary();
+        if (result.error) {
+          throw new Error(result.error);
+        }
+      } catch (error) {
+        Alert.alert(error.message);
+      }
+    };
+    postFoodDiary();
+  }, []);
+
   return (
     <SafeAreaView style={styles.container}>
       <HeaderComponents title="식단 일지" icon="date" />

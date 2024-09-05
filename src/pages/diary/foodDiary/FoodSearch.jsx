@@ -2,13 +2,15 @@ import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { Alert, Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import { getFoodBySearch } from '../../../apis/food/index';
+import { createFoodRecordByTime, getFoodBySearch } from '../../../apis/food/index';
 import CustomButton from '../../../components/CustomButton';
 import CustomInput from '../../../components/CustomInput';
 import HeaderComponents from '../../../components/HeaderComponents';
 import { BACKGROUND_COLORS, COLORS, TEXT_COLORS } from '../../../constants/colors';
 import { FONT_SIZES, FONT_WEIGHTS } from '../../../constants/font';
+import useSelectedFoodTimeStore from '../../../store/index';
 import { debounce } from '../../../utils/foodDiary/debounce';
+import { getFormattedDate } from '../../../utils/foodDiary/index';
 
 const PlusIcon = require('../../../assets/images/dietDiary/PluscircleWhiteButton.png');
 const BookmarkOffIcon = require('../../../assets/images/dietDiary/bookmarkWhite.png');
@@ -19,6 +21,7 @@ const FoodSearch = () => {
   const [searchText, setSearchText] = useState('');
   const [foodSearchListState, setFoodSearchListState] = useState([]);
   const [checkedFoods, setCheckedFoods] = useState([]);
+  const { time } = useSelectedFoodTimeStore();
   const navigation = useNavigation();
 
   const handleSearchInput = debounce(async (text) => {
@@ -46,9 +49,18 @@ const FoodSearch = () => {
     });
   };
   const handleRecordButton = () => {
-    navigation.navigate('FoodDiary', {
-      screen: 'FoodDetailScreen',
-    });
+    try {
+      const response = createFoodRecordByTime({
+        foodItems: checkedFoods,
+        meal_time: time,
+        date: getFormattedDate(),
+      });
+      // console.log(response);
+    } catch (error) {}
+
+    // navigation.navigate('FoodDiary', {
+    //   screen: 'FoodDetailScreen',
+    // });
   };
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.darkBackground }}>
