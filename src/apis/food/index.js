@@ -25,3 +25,10 @@ export const getFoodRecordByTime = async (data) => {
     return response.data;
   } catch (error) {}
 };
+
+export const getFoodBySearch = async (term) => {
+  try {
+    const response = await API.get(`food/search/?term=${encodeURIComponent(term)}`);
+    return response.data;
+  } catch (error) {}
+};

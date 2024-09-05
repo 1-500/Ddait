@@ -1,17 +1,19 @@
-import React, { useEffect, useRef, useState } from 'react';
+import dayjs from 'dayjs';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Dimensions, FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 import { COLORS } from '../../../constants/colors';
 import { FONT_SIZES, FONTS } from '../../../constants/font';
 import { LAYOUT_PADDING, SPACING } from '../../../constants/space';
+import { calculateDday } from '../../../utils/date';
 
 const podiumImage = require('../../../assets/images/podium.png');
 const dummyProfile = require('../../../assets/images/profile.png');
 
 const { width: screenWidth } = Dimensions.get('window');
 
-const RankList = ({ data, isInProgress }) => {
+const RankList = ({ data, competitionData, isInProgress, onJoin, onLeave }) => {
   const [imageSize, setImageSize] = useState({ width: 0, height: 0 });
   const [isItemOpen, setIsItemOpen] = useState([]);
 
@@ -88,8 +90,25 @@ const RankList = ({ data, isInProgress }) => {
     );
   };
 
-  const HeaderBeforeStart = () => {
-    return <></>;
+  const Preview = () => {
+    const isParticipant = competitionData?.user_status?.is_participant;
+    const startDate = dayjs(competitionData.date.start_date);
+    const dday = calculateDday(startDate);
+
+    return (
+      <View style={styles.preview}>
+        <Text style={styles.previewText}>
+          {dday}일 후 랭킹전 시작! 🏆{'\n'}
+          <Text style={{ color: COLORS.secondary }}>따잇! </Text>
+          하고 1등 할 준비 되셨나요?
+        </Text>
+        <View>
+          <TouchableOpacity style={styles.actionBtn} onPress={isParticipant ? onLeave : onJoin} activeOpacity={0.6}>
+            <Text style={styles.actionBtnText}>{isParticipant ? '나가기' : '참여하기'}</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
   };
 
   const renderRankItem = ({ item, index }) => {
@@ -150,7 +169,7 @@ const RankList = ({ data, isInProgress }) => {
         keyExtractor={(item, index) => index}
         data={data}
         renderItem={renderRankItem}
-        ListHeaderComponent={isInProgress ? Podium : HeaderBeforeStart}
+        ListHeaderComponent={isInProgress ? Podium : Preview}
         ListFooterComponent={<View style={{ height: 30 }} />}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ gap: 10 }}
@@ -213,5 +232,31 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.PRETENDARD[500],
     color: COLORS.white,
     paddingVertical: SPACING.xxs,
+  },
+  preview: {
+    backgroundColor: '#2B2B2B',
+    paddingVertical: 30,
+    alignItems: 'center',
+    borderRadius: 16,
+    marginTop: 30,
+  },
+  previewText: {
+    color: COLORS.white,
+    fontSize: 18,
+    fontFamily: FONTS.PRETENDARD[600],
+    textAlign: 'center',
+  },
+  actionBtn: {
+    backgroundColor: COLORS.secondary,
+    marginTop: SPACING.lg,
+    paddingHorizontal: SPACING.xl,
+    paddingVertical: 6,
+    borderRadius: 50,
+  },
+  actionBtnText: {
+    fontSize: FONT_SIZES.sm,
+    fontFamily: FONTS.PRETENDARD[600],
+    lineHeight: 20,
+    color: '#FFF',
   },
 });
