@@ -28,7 +28,7 @@ const WorkoutDiary = () => {
     fetchWorkout();
   }, [selected]);
   const handleStartWorkout = () => {
-    navigation.navigate('StartWorkoutScreen');
+    navigation.navigate('WorkoutDiary', { screen: 'StartWorkoutScreen' });
   };
 
   const renderWorkoutRecord = ({ item }) => (
