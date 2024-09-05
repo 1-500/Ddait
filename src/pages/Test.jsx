@@ -1,40 +1,25 @@
-import React, { useRef, useState } from 'react';
-import { Animated, Button, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React from 'react';
+import { Button, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import Toast from '../components/Toast'; // Toast 컴포넌트 경로에 맞게 설정
 import { useToastMessageStore } from '../store/toastMessage/toastMessage';
 
 const TestPage = () => {
   const { showToast } = useToastMessageStore();
-  const [buttonPosition, setButtonPosition] = useState({ x: 0, y: 0, width: 0, height: 0 });
-  const buttonRef = useRef(null); // 버튼의 ref
 
-  // 버튼 위치 측정
-  const measureButtonPosition = () => {
-    buttonRef.current.measure((x, y, width, height, pageX, pageY) => {
-      setButtonPosition({ x: pageX, y: pageY, width, height });
-      showToast('This is a custom positioned toast!', 'info', 3000, 'custom');
-    });
+  const showTopToast = () => {
+    showToast('This is a success message!', 'success', 1000, 'top', 80);
+  };
+  const showBottomToast = (message) => {
+    showToast(message, 'error', 1000, 'bottom', 120);
   };
 
   return (
     <SafeAreaView style={styles.container}>
       <View>
-        <TouchableOpacity
-          ref={buttonRef} // TouchableOpacity는 ref를 지원
-          onPress={measureButtonPosition}
-          style={{ padding: 10, backgroundColor: 'blue' }}
-        >
-          <Text style={{ color: 'white' }}>Show Toast</Text>
-        </TouchableOpacity>
+        <Text>테스트 페이지</Text>
+        <Button title="Show Top Toast" onPress={showTopToast} />
+        <Button title="Show Bottom Toast" onPress={() => showBottomToast('아아아아아')} />
       </View>
-
-      {/* 토스트 메세지 컴포넌트, 버튼 위치 위에 뜨도록 설정 */}
-      {buttonPosition && (
-        <Toast
-          customPosition={buttonPosition.y - 50} // 버튼 위에 띄우기 위해 Y값에서 50을 뺌
-        />
-      )}
     </SafeAreaView>
   );
 };
