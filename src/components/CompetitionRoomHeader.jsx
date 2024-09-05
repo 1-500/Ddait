@@ -1,12 +1,14 @@
 import { useNavigation } from '@react-navigation/native';
 import dayjs from 'dayjs';
-import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useState } from 'react';
+import { Modal, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
+import Feather from 'react-native-vector-icons/Feather';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Octicons from 'react-native-vector-icons/Octicons';
 
 import { COLORS } from '../constants/colors';
-import { FONT_SIZES, FONT_WEIGHTS } from '../constants/font';
+import { FONT_SIZES, FONT_WEIGHTS, FONTS } from '../constants/font';
+import { RADIUS } from '../constants/radius';
 import { SPACING } from '../constants/space';
 import CustomTag from './CustomTag';
 
@@ -14,36 +16,63 @@ const CompetitionRoomHeader = ({ data }) => {
   const navigation = useNavigation();
   const startDate = dayjs(data.date.start_date);
   const endDate = dayjs(data.date.end_date);
+  const [showDropdown, setShowDropdown] = useState(false);
+
+  const toggleDropdown = () => setShowDropdown((prev) => !prev);
+
+  const handleDeletePress = () => {
+    setShowDropdown(false);
+    // onDelete();
+  };
 
   return (
     <View style={styles.headerWrapper}>
-      <View style={styles.headerTitle}>
-        <TouchableOpacity
-          style={styles.backBtn}
-          onPress={() => {
-            if (navigation.canGoBack()) {
-              navigation.goBack();
-            }
-          }}
-        >
-          <FontAwesome name="angle-left" size={24} color={COLORS.white} />
-        </TouchableOpacity>
-        <Text style={styles.headerTitleText}>{data.title}</Text>
-        {data.settings.is_private ? (
-          <Octicons name="lock" size={24} color={COLORS.primary} />
-        ) : (
-          <Octicons name="unlock" size={24} color={COLORS.lightGrey} />
+      <View style={styles.headerContent}>
+        <View style={styles.headerTitle}>
+          <TouchableOpacity
+            style={styles.backBtn}
+            onPress={() => {
+              if (navigation.canGoBack()) {
+                navigation.goBack();
+              }
+            }}
+          >
+            <FontAwesome name="angle-left" size={24} color={COLORS.white} />
+          </TouchableOpacity>
+          <Text style={styles.headerTitleText}>{data.title}</Text>
+          {data.settings.is_private ? (
+            <Octicons name="lock" size={24} color={COLORS.primary} />
+          ) : (
+            <Octicons name="unlock" size={24} color={COLORS.lightGrey} />
+          )}
+        </View>
+        {data.user_status.is_host && (
+          <TouchableOpacity onPress={toggleDropdown} activeOpacity={0.6}>
+            <Feather name="more-horizontal" size={28} color={COLORS.white} />
+          </TouchableOpacity>
         )}
       </View>
       <View style={styles.tagsWrapper}>
         <CustomTag size="big" text={data.info.competition_type} />
-        <CustomTag size="big" text={data.info.competition_theme} />
+        <CustomTag size="big" text={data.info.competition_theme} style={{ backgroundColor: COLORS.warmGrey }} />
         <CustomTag size="big" text={data.info.max_members > 2 ? '랭킹전' : '1:1'} />
       </View>
       <View style={styles.periodWrapper}>
         <Text style={styles.periodText}>{`${startDate.format('YY.MM.DD')}~${endDate.format('YY.MM.DD')}`}</Text>
         <Text style={styles.periodText}>{`🔥 D-${endDate.diff(dayjs(), 'days')}`}</Text>
       </View>
+
+      <Modal transparent visible={showDropdown} onRequestClose={() => setShowDropdown(false)}>
+        <TouchableWithoutFeedback onPress={() => setShowDropdown(false)}>
+          <View style={styles.modalOverlay}>
+            <View style={styles.dropdown}>
+              <TouchableOpacity style={styles.dropdownItem} onPress={handleDeletePress}>
+                <Text style={styles.dropdownText}>삭제하기</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </TouchableWithoutFeedback>
+      </Modal>
     </View>
   );
 };
@@ -55,6 +84,11 @@ const styles = StyleSheet.create({
     gap: SPACING.md,
     padding: SPACING.lg,
     backgroundColor: COLORS.darkGreyBackground,
+  },
+  headerContent: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   backBtn: {
     width: 24,
@@ -87,5 +121,29 @@ const styles = StyleSheet.create({
     fontSize: FONT_SIZES.xs,
     fontWeight: FONT_WEIGHTS.medium,
     color: COLORS.semiLightGrey,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+  },
+  dropdown: {
+    alignItems: 'center',
+    position: 'absolute',
+    padding: SPACING.xs,
+    backgroundColor: COLORS.darkBackground,
+    borderRadius: RADIUS.large,
+    borderColor: COLORS.red,
+    borderWidth: 1,
+    top: 110,
+    right: SPACING.lg,
+  },
+  dropdownItem: {
+    paddingVertical: SPACING.xs,
+    paddingHorizontal: SPACING.sm,
+  },
+  dropdownText: {
+    color: COLORS.red,
+    fontSize: FONT_SIZES.md,
+    fontFamily: FONTS.PRETENDARD[500],
   },
 });
