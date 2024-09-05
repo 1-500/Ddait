@@ -8,6 +8,7 @@ import CompetitionCreation from './pages/competition/CompetitionCreation/Competi
 import CompetitionRoom1VS1 from './pages/competition/CompetitionRoom1VS1';
 import CompetitionRoomRanking from './pages/competition/CompetitionRoomRanking';
 import SearchCompetition from './pages/competition/SearchCompetition';
+import DiaryMain from './pages/diary/DiaryMain';
 import FoodDiary from './pages/diary/foodDiary/FoodDiary';
 import FoodRecord from './pages/diary/foodDiary/FoodRecord';
 import FoodRecordDetail from './pages/diary/foodDiary/FoodRecordDetail';
@@ -54,7 +55,7 @@ const SignStack = () => {
   );
 };
 
-const DiaryStack = () => {
+const WorkoutDiaryStack = () => {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="WorkoutDiaryScreen" component={WorkoutDiary} />
@@ -90,7 +91,8 @@ const Router = () => {
       <Stack.Screen name="MainTab" component={MainTab} />
       <Stack.Screen name="SignUp" component={SignUpPage} />
       <Stack.Screen name="Sign" component={SignStack} />
-      <Stack.Screen name="WorkoutDiary" component={DiaryStack} />
+      <Stack.Screen name="DiaryMain" component={DiaryMain} />
+      <Stack.Screen name="WorkoutDiary" component={WorkoutDiaryStack} />
       <Stack.Screen name="FoodDiary" component={FoodDiaryStack} />
       <Stack.Screen name="ProfilePrivacy" component={ProfilePrivacy} />
       <Stack.Screen name="CompetitionCreation" component={CompetitionCreation} />
