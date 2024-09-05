@@ -1,4 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react';
+import dayjs from 'dayjs';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Dimensions, FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
@@ -91,12 +92,32 @@ const RankList = ({ data, competitionData, onJoin, onLeave }) => {
   const Preview = () => {
     const isParticipant = competitionData?.user_status?.is_participant;
 
+    const calculateDdayInfo = () => {
+      if (!competitionData?.date?.start_date) {
+        return null;
+      }
+
+      const startDate = dayjs(competitionData.date.start_date);
+      const today = dayjs().startOf('day');
+      const diffDays = startDate.diff(today, 'day');
+
+      if (diffDays > 0) {
+        return `${diffDays}`;
+      } else if (diffDays === 0) {
+        return '오늘';
+      } else {
+        return;
+      }
+    };
+
+    const ddayInfo = calculateDdayInfo();
+
     return (
       <View style={styles.preview}>
         <Text style={styles.previewText}>
-          {'4일 후 랭킹전 시작! 🏆\n'}
+          {ddayInfo}일 후 랭킹전 시작! 🏆{'\n'}
           <Text style={{ color: COLORS.secondary }}>따잇! </Text>
-          {'하고 1등 할 준비 되셨나요?'}
+          하고 1등 할 준비 되셨나요?
         </Text>
         <View>
           <TouchableOpacity style={styles.actionBtn} onPress={isParticipant ? onLeave : onJoin} activeOpacity={0.6}>
