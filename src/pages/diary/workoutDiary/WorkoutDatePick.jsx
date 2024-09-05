@@ -8,6 +8,7 @@ import HeaderComponents from '../../../components/HeaderComponents';
 import { BACKGROUND_COLORS, COLORS, TEXT_COLORS } from '../../../constants/colors';
 import { FONTS } from '../../../constants/font';
 import { LAYOUT_PADDING } from '../../../constants/space';
+import useDiaryCalendarStore from '../../../store/food/calendar/index';
 
 LocaleConfig.locales.fr = {
   monthNames: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
@@ -20,12 +21,8 @@ LocaleConfig.locales.fr = {
 LocaleConfig.defaultLocale = 'fr';
 
 const WorkoutDatePick = () => {
-  const today = new Date().toISOString().split('T')[0];
-
   const navigation = useNavigation();
-  const [weekDays, setWeekDays] = useState(['21', '22', '23', '24', '25', '26', '27']);
-  const [selected, setSelected] = useState(today);
-  const [selectedDayInfo, setSelectedDayInfo] = useState('');
+  const { weekDays, selected, setSelected, setSelectedDayInfo } = useDiaryCalendarStore();
 
   const handleDayPress = (day) => {
     // 선택된 날짜의 운동 정보를 가져오기 위해 선택 날짜 정보 저장 => 이 정보를 기준으로 해당 날짜의 운동 정보를 가져오고 화면에 표시
@@ -62,8 +59,6 @@ const WorkoutDatePick = () => {
         }}
         current={'2024-08-23'}
         monthFormat={'yyyy.MM'}
-        // minDate={'2024-08-23'}
-        // maxDate={'2024-08-26'}
         onDayPress={(day) => {
           handleDayPress(day);
         }}
@@ -74,7 +69,6 @@ const WorkoutDatePick = () => {
             selectedColor: COLORS.primary,
             selectedTextColor: COLORS.white,
           },
-          // [today]: { selected: true, selectedColor: COLORS.primary },
         }}
         theme={{
           backgroundColor: '#1C1C1C',

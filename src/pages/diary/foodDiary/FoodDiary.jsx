@@ -6,11 +6,9 @@ import * as Progress from 'react-native-progress';
 import { createFoodDiary, setMacroRatio, setUserWeight } from '../../../apis/food/index';
 import CustomButton from '../../../components/CustomButton';
 import CustomInput from '../../../components/CustomInput';
-import HeaderComponents from '../../../components/HeaderComponents';
 import { BACKGROUND_COLORS, COLORS, TEXT_COLORS } from '../../../constants/colors';
 import { FONT_SIZES, FONT_WEIGHTS, FONTS } from '../../../constants/font';
 import { RADIUS } from '../../../constants/radius';
-import { LAYOUT_PADDING } from '../../../constants/space';
 import useSelectedFoodTimeStore from '../../../store/index';
 import { calculateCarbsCalories, calculateFatCalories, calculateProteinCalories } from '../../../utils/foodDiary/index';
 
@@ -26,12 +24,7 @@ const items = [
 ];
 
 const FoodDiary = () => {
-  const [weekDays, setWeekDays] = useState(['21', '22', '23', '24', '25', '26', '27']);
-  const [workoutTypes, setWorkoutTypes] = useState(['웨이트', '러닝', '식단', '등산']);
-  const [activeWorkoutType, setActiveWorkoutType] = useState('식단');
-
   const [isVisibleModal, setIsVisibleModal] = useState(false);
-
   const [userWeightState, setUserWeightState] = useState(70);
   const [totalCaloriesState, setTotalCaloriesState] = useState(2000);
   const [carbRatioState, setCarbRatioState] = useState(0);
@@ -41,14 +34,6 @@ const FoodDiary = () => {
   const { setTime } = useSelectedFoodTimeStore();
 
   const navigation = useNavigation();
-  const handleWorkoutTypePress = (type) => {
-    if (type === '식단') {
-      navigation.navigate('FoodDiary', { screen: 'FoodDiaryScreen' });
-    } else if (type === '웨이트') {
-      navigation.navigate('WorkoutDiary', { screen: 'WorkoutDiaryScreen' });
-    }
-    setActiveWorkoutType(type);
-  };
 
   const handleModal = () => {
     setIsVisibleModal(!isVisibleModal);
@@ -126,30 +111,6 @@ const FoodDiary = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <HeaderComponents title="식단 일지" icon="date" />
-      <View style={styles.dateContainer}>
-        <View style={styles.weekDaysContainer}>
-          {weekDays.map((day, index) => (
-            <TouchableOpacity key={index} style={day === '23' ? styles.activeDay : styles.day}>
-              <Text style={day === '23' ? styles.activeDayText : styles.dayText}>{day}</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-
-        <View style={styles.workoutTypesContainer}>
-          {workoutTypes.map((type, index) => (
-            <TouchableOpacity
-              key={index}
-              style={type === activeWorkoutType ? styles.activeWorkoutType : styles.workoutType}
-              onPress={() => handleWorkoutTypePress(type)}
-            >
-              <Text style={type === activeWorkoutType ? styles.activeWorkoutTypeText : styles.workoutTypeText}>
-                {type}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-      </View>
       <ScrollView style={styles.diaryContentContainer}>
         <View style={styles.weightSection}>
           <Text style={styles.sectionTitle}>체중</Text>
@@ -278,67 +239,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.darkBackground,
   },
-  dateContainer: {
-    paddingVertical: 16,
-    alignItems: 'center',
-    ...LAYOUT_PADDING,
-  },
-  weekDaysContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
-  },
-  day: {
-    padding: 8,
-    borderRadius: 20,
-    backgroundColor: BACKGROUND_COLORS.dark,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  activeDay: {
-    padding: 8,
-    borderRadius: 20,
-    backgroundColor: COLORS.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  dayText: {
-    color: TEXT_COLORS.secondary,
-    fontSize: FONT_SIZES.xs,
-  },
-  activeDayText: {
-    color: TEXT_COLORS.primary,
-    fontSize: FONT_SIZES.xs,
-  },
-  workoutTypesContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 16,
-  },
-  workoutType: {
-    paddingVertical: 10,
-    paddingHorizontal: 24,
-    borderRadius: RADIUS.large,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: BACKGROUND_COLORS.greyDark,
-  },
-  activeWorkoutType: {
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: RADIUS.large,
-    backgroundColor: COLORS.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  workoutTypeText: {
-    color: TEXT_COLORS.secondary,
-    fontSize: FONT_SIZES.xs,
-  },
-  activeWorkoutTypeText: {
-    color: TEXT_COLORS.primary,
-    fontSize: FONT_SIZES.xs,
-  },
+
   diaryContentContainer: {
     flex: 1,
     padding: 20,
