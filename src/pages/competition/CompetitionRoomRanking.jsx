@@ -166,6 +166,19 @@ const CompetitionRoomRanking = ({ navigation }) => {
     ]);
   };
 
+  const handleDelete = useCallback(
+    (success, message) => {
+      if (success) {
+        Alert.alert('삭제 성공', '경쟁방이 성공적으로 삭제되었습니다.', [
+          { text: '확인', onPress: () => navigation.goBack() },
+        ]);
+      } else {
+        Alert.alert('삭제 실패', message);
+      }
+    },
+    [navigation],
+  );
+
   const renderScene = ({ route, jumpTo }) => {
     switch (route.key) {
       case 'rankList':
@@ -196,7 +209,7 @@ const CompetitionRoomRanking = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.pageContainer}>
-      {competitionData && <CompetitionRoomHeader data={competitionData} />}
+      {competitionData && <CompetitionRoomHeader data={competitionData} onDelete={handleDelete} />}
       <TabView
         renderTabBar={(props) => (
           <TabBar

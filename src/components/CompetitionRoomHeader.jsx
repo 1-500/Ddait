@@ -1,18 +1,19 @@
 import { useNavigation } from '@react-navigation/native';
 import dayjs from 'dayjs';
 import React, { useState } from 'react';
-import { Modal, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
+import { Alert, Modal, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Octicons from 'react-native-vector-icons/Octicons';
 
+import { deleteCompetition } from '../apis/competition';
 import { COLORS } from '../constants/colors';
 import { FONT_SIZES, FONT_WEIGHTS, FONTS } from '../constants/font';
 import { RADIUS } from '../constants/radius';
 import { SPACING } from '../constants/space';
 import CustomTag from './CustomTag';
 
-const CompetitionRoomHeader = ({ data }) => {
+const CompetitionRoomHeader = ({ data, onDelete }) => {
   const navigation = useNavigation();
   const startDate = dayjs(data.date.start_date);
   const endDate = dayjs(data.date.end_date);
@@ -20,9 +21,25 @@ const CompetitionRoomHeader = ({ data }) => {
 
   const toggleDropdown = () => setShowDropdown((prev) => !prev);
 
-  const handleDeletePress = () => {
+  const handleDeletePress = async () => {
     setShowDropdown(false);
-    // onDelete();
+
+    // 날짜 검증
+    if (dayjs().isAfter(startDate)) {
+      onDelete(false, '시작일이 지난 경쟁방은 삭제할 수 없습니다 🥲');
+      return;
+    }
+
+    try {
+      await deleteCompetition(data.id);
+      onDelete(true);
+    } catch (error) {
+      if (error.response && error.response.data && error.response.data.message) {
+        onDelete(false, error.response.data.message);
+      } else {
+        onDelete(false, '경쟁방 삭제 중 오류가 발생했습니다.');
+      }
+    }
   };
 
   return (
