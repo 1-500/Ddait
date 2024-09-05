@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Octicons from 'react-native-vector-icons/Octicons';
 
@@ -23,8 +24,14 @@ const MyCompetitionItem = ({ item, onPress }) => (
       {formDate(item.date.start_date)} ~ {formDate(item.date.end_date)}
     </Text>
     <View style={styles.competitionMembersContainer}>
-      <Ionicons name="person" size={16} color={COLORS.lightPurple} />
-      <Text style={styles.competitionMembers}>
+      {item.user_status.is_host ? (
+        <FontAwesome6 name="crown" size={16} color={COLORS.lightGreen} />
+      ) : (
+        <Ionicons name="person" size={16} color={COLORS.lightPurple} />
+      )}
+      <Text
+        style={[styles.competitionMembers, { color: item.user_status.is_host ? COLORS.secondary : COLORS.primary }]}
+      >
         {item.info.current_members} / {item.info.max_members}
       </Text>
     </View>
@@ -60,7 +67,6 @@ const styles = StyleSheet.create({
     gap: SPACING.xs,
   },
   competitionMembers: {
-    color: COLORS.lightPurple,
     fontSize: FONT_SIZES.sm,
     fontFamily: FONTS.PRETENDARD[500],
   },

@@ -14,6 +14,7 @@ export const COLORS = {
   blue: '#2196F3',
   brown: '#8E6A33',
   lightPurple: '#8B8BFF',
+  lightGreen: '#4BD995',
 
   placeholder: '#888888',
 
