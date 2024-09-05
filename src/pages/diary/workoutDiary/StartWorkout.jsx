@@ -41,7 +41,7 @@ const StartWorkout = () => {
   const [dropdownState, setDropdownState] = useState({
     bodyPart: '전체',
     equipment: '전체',
-    bookmark: 'false',
+    bookmark: false,
   });
 
   const bottomSheetModalRef = useRef(null);
@@ -68,12 +68,14 @@ const StartWorkout = () => {
   }, [intervalId]);
   /* eslint-enable */
 
-  const filteredExerciseList = exerciseListData.filter((exercise) => {
-    const isPartMatch = dropdownState.bodyPart === '전체' || exercise.body_part === dropdownState.bodyPart;
-    const isToolMatch = dropdownState.equipment === '전체' || exercise.equipment === dropdownState.equipment;
-    const isBookmarkMatch = dropdownState.bookmark ? exercise.bookmark === true : true;
-    return isPartMatch && isToolMatch && isBookmarkMatch;
-  });
+  const filteredExerciseList = useMemo(() => {
+    return exerciseListData.filter((exercise) => {
+      const isPartMatch = dropdownState.bodyPart === '전체' || exercise.body_part === dropdownState.bodyPart;
+      const isToolMatch = dropdownState.equipment === '전체' || exercise.equipment === dropdownState.equipment;
+      const isBookmarkMatch = dropdownState.bookmark ? exercise.bookmark === true : true;
+      return isPartMatch && isToolMatch && isBookmarkMatch;
+    });
+  }, [exerciseListData, dropdownState.bodyPart, dropdownState.equipment, dropdownState.bookmark]);
 
   const handlePresentModalPress = useCallback(() => {
     bottomSheetModalRef.current?.present();
