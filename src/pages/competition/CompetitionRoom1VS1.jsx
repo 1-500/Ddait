@@ -10,6 +10,7 @@ import { COLORS } from '../../constants/colors';
 import { FONT_SIZES, FONTS } from '../../constants/font';
 import { RADIUS } from '../../constants/radius';
 import { LAYOUT_PADDING, SPACING } from '../../constants/space';
+import { isInCompetitionProgress } from '../../utils/competition';
 
 const { width } = Dimensions.get('window');
 
