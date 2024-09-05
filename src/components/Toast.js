@@ -9,11 +9,13 @@ import Text from './Text';
 const Toast = () => {
   const toastValue = useRef(new Animated.Value(0)).current;
   const { top, bottom } = useSafeAreaInsets(); // SafeArea에서 상단 inset 가져오기
-  const { visible, message, type, handleCancel } = useToastMessageStore((state) => ({
+  const { visible, message, duration, type, position, handleCancel } = useToastMessageStore((state) => ({
     visible: state.visible,
     message: state.message,
+    duration: state.duration,
     type: state.type,
     handleCancel: state.handleCancel,
+    position: state.position,
   }));
 
   const getPointBarColor = () => {
@@ -23,7 +25,7 @@ const Toast = () => {
       case 'error':
         return COLORS.red;
       default:
-        return COLORS.secondary; // 기본 색상
+        return COLORS.secondary;
     }
   };
 
@@ -41,7 +43,7 @@ const Toast = () => {
         Animated.timing(toastValue, {
           toValue: 0,
           useNativeDriver: true,
-          duration: 300, // 사라질 때의 애니메이션 시간을 지정
+          duration: duration || 1000, // 사라질 때의 애니메이션 시간을 지정
         }).start(() => {
           handleCancel(); // 애니메이션이 끝난 후 상태를 변경
         });
@@ -61,13 +63,14 @@ const Toast = () => {
       pointerEvents="none"
       style={[
         styles.toast,
+        position === 'top' ? { top: 0 } : { bottom: 80 },
         {
           opacity: toastValue,
           transform: [
             {
               translateY: toastValue.interpolate({
                 inputRange: [0, 1],
-                outputRange: [-top - 30, top],
+                outputRange: position === 'top' ? [-top - 10, top] : [bottom + 100, -(bottom + 50)],
               }),
             },
             { scale: toastValue.interpolate({ inputRange: [0, 1], outputRange: [0.9, 1] }) },
@@ -90,7 +93,6 @@ const Toast = () => {
 const styles = StyleSheet.create({
   toast: {
     position: 'absolute',
-    top: 0,
     left: 0,
     right: 0,
     justifyContent: 'center',

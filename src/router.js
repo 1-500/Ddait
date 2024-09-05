@@ -22,6 +22,7 @@ import MyPage from './pages/mypage/MyPage';
 import ProfilePrivacy from './pages/mypage/ProfilePrivacy';
 import SignUpPage from './pages/signup/SignUpPage';
 import SocialLogin from './pages/socialLogin/SocialLogin';
+import Test from './pages/Test';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -95,6 +96,7 @@ const Router = () => {
       <Stack.Screen name="CompetitionRoom1VS1" component={CompetitionRoom1VS1} />
       <Stack.Screen name="CompetitionRoomRanking" component={CompetitionRoomRanking} />
       <Stack.Screen name="FriendSearch" component={FriendSearch} />
+      <Stack.Screen name="Test" component={Test} />
     </Stack.Navigator>
   ); // 라우팅
 };

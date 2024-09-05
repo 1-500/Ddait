@@ -29,7 +29,7 @@ const WorkoutDiary = () => {
   const [selectedDate, setSelectedDate] = useState(today);
   const [workoutRecords, setWorkoutRecords] = useState([]);
 
-  const { showToast } = useToastMessageStore();
+  const showToast = useToastMessageStore((state) => state.showToast);
   /* eslint-disable */
 
   useEffect(() => {
@@ -155,7 +155,14 @@ const WorkoutDiary = () => {
             <Text style={styles.messageText}>오늘 운동하러 가볼까요?</Text>
           </View>
 
-          <Button title="Show Toast" onPress={() => showToast('운동 기록을 불러오는데 실패했습니다.', 'error')} />
+          <Button
+            title="Show top Toast"
+            onPress={() => showToast('운동 기록을 불러오는데 실패했습니다.', 'error', 5000, 'top')}
+          />
+          <Button
+            title="Show Bottom Toast"
+            onPress={() => showToast('운동 기록을 불러오는데 실패했습니다.', 'error', 5000, 'bottom')}
+          />
           <CustomButton
             theme="primary"
             size="large"
@@ -176,6 +183,7 @@ const WorkoutDiary = () => {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.darkBackground }}>
+      <Toast />
       <View style={{ height: 60, backgroundColor: '#fff' }}>
         <HeaderComponents
           icon="date"
@@ -223,7 +231,6 @@ const WorkoutDiary = () => {
         )}
       </View>
 
-      <Toast />
       <BottomSheetModalProvider>
         <BottomSheetModal
           ref={bottomSheetModalRef}
