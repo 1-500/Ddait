@@ -1,54 +1,78 @@
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Alert, FlatList, SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import { Alert, SafeAreaView, StyleSheet, useWindowDimensions, View } from 'react-native';
+import { TabBar, TabView } from 'react-native-tab-view';
 
 import { getMyFriends } from '../../apis/friend';
 import FriendOptionBottomSheet from '../../components/FriendOptionBottomSheet';
 import HeaderComponents from '../../components/HeaderComponents';
-import MemberProfileItem from '../../components/MemberProfileItem';
 import { COLORS } from '../../constants/colors';
-import { FONTS } from '../../constants/font';
-import { LAYOUT_PADDING, SPACING } from '../../constants/space';
+import { FONT_SIZES, FONTS } from '../../constants/font';
+import MyFriends from './friendPageTabs/MyFriends';
+import ReceivedRequests from './friendPageTabs/ReceivedRequests';
+import SentRequests from './friendPageTabs/SentRequests';
 
 const Friend = ({ navigation }) => {
-  const bottomSheetRef = useRef(null);
+  const [friends, setFriends] = useState([]);
   const [selectedMemberId, setSelectedMemberId] = useState(null);
+  const bottomSheetRef = useRef(null);
+  const [index, setIndex] = useState(0);
+  const [routes] = useState([
+    { key: 'myFriends', title: '내 친구' },
+    { key: 'receivedRequests', title: '받은 신청' },
+    { key: 'sentRequests', title: '보낸 신청' },
+  ]);
+
+  const renderScene = ({ route }) => {
+    switch (route.key) {
+      case 'myFriends':
+        return <MyFriends friends={friends} handleOpenOptions={handleOpenOptions} />;
+      case 'receivedRequests':
+        return <ReceivedRequests handleOpenOptions={handleOpenOptions} />;
+      case 'sentRequests':
+        return <SentRequests handleOpenOptions={handleOpenOptions} />;
+      default:
+        return null;
+    }
+  };
 
   const handleOpenOptions = useCallback((memberId) => {
     setSelectedMemberId(memberId);
     bottomSheetRef.current?.present();
   }, []);
-  const renderItem = ({ item }) => <MemberProfileItem memberData={item} onRightBtnPress={handleOpenOptions} />;
 
-  const [friends, setFriends] = useState();
-
-  const fetchMyCompetitions = async () => {
+  const fetchMyFriends = async () => {
     try {
       const { data } = await getMyFriends();
       setFriends(data);
     } catch (error) {
-      Alert.alert('Error fetching competitions:', error.message);
+      Alert.alert('Error fetching friends:', error.message);
     }
   };
 
   useEffect(() => {
-    fetchMyCompetitions();
+    fetchMyFriends();
   }, []);
 
   return (
     <BottomSheetModalProvider>
-      <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.darkBackground }}>
+      <SafeAreaView style={styles.safeArea}>
         <HeaderComponents icon="search" title="친구 목록" onRightBtnPress={() => navigation.navigate('FriendSearch')} />
-        <View style={styles.contentContainer}>
-          <Text style={styles.subtitle}>내 친구</Text>
-          <FlatList
-            data={friends}
-            renderItem={renderItem}
-            keyExtractor={(item) => item.id}
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={{ paddingBottom: 160 }}
-          />
-        </View>
+        <TabView
+          renderTabBar={(props) => (
+            <TabBar
+              {...props}
+              activeColor={COLORS.white}
+              inactiveColor={COLORS.lightGrey}
+              labelStyle={{ fontSize: FONT_SIZES.md, fontFamily: FONTS.PRETENDARD[600] }}
+              indicatorStyle={{ backgroundColor: COLORS.primary }}
+              style={{ backgroundColor: COLORS.darkBackground }}
+            />
+          )}
+          navigationState={{ index, routes }}
+          renderScene={renderScene}
+          onIndexChange={setIndex}
+        />
         <FriendOptionBottomSheet ref={bottomSheetRef} isFriend={true} memberId={selectedMemberId} />
       </SafeAreaView>
     </BottomSheetModalProvider>
@@ -58,14 +82,8 @@ const Friend = ({ navigation }) => {
 export default Friend;
 
 const styles = StyleSheet.create({
-  contentContainer: {
-    ...LAYOUT_PADDING,
-    paddingTop: SPACING.md,
-    gap: SPACING.xs,
-  },
-  subtitle: {
-    color: COLORS.white,
-    fontSize: 16,
-    fontFamily: FONTS.PRETENDARD[600],
+  safeArea: {
+    flex: 1,
+    backgroundColor: COLORS.darkBackground,
   },
 });
