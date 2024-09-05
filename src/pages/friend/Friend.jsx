@@ -1,8 +1,8 @@
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
-import React, { useCallback, useRef } from 'react';
-import { FlatList, SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { Alert, FlatList, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 
-import { dummyFriends } from '../../apis/dummydata';
+import { getMyFriends } from '../../apis/friend';
 import FriendOptionBottomSheet from '../../components/FriendOptionBottomSheet';
 import HeaderComponents from '../../components/HeaderComponents';
 import MemberProfileItem from '../../components/MemberProfileItem';
@@ -12,12 +12,28 @@ import { LAYOUT_PADDING, SPACING } from '../../constants/space';
 
 const Friend = ({ navigation }) => {
   const bottomSheetRef = useRef(null);
+  const [selectedMemberId, setSelectedMemberId] = useState(null);
 
-  const handleOpenOptions = useCallback(() => {
+  const handleOpenOptions = useCallback((memberId) => {
+    setSelectedMemberId(memberId);
     bottomSheetRef.current?.present();
   }, []);
-
   const renderItem = ({ item }) => <MemberProfileItem memberData={item} onRightBtnPress={handleOpenOptions} />;
+
+  const [friends, setFriends] = useState();
+
+  const fetchMyCompetitions = async () => {
+    try {
+      const { data } = await getMyFriends();
+      setFriends(data);
+    } catch (error) {
+      Alert.alert('Error fetching competitions:', error.message);
+    }
+  };
+
+  useEffect(() => {
+    fetchMyCompetitions();
+  }, []);
 
   return (
     <BottomSheetModalProvider>
@@ -26,14 +42,14 @@ const Friend = ({ navigation }) => {
         <View style={styles.contentContainer}>
           <Text style={styles.subtitle}>내 친구</Text>
           <FlatList
-            data={dummyFriends}
+            data={friends}
             renderItem={renderItem}
             keyExtractor={(item) => item.id}
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{ paddingBottom: 160 }}
           />
         </View>
-        <FriendOptionBottomSheet ref={bottomSheetRef} />
+        <FriendOptionBottomSheet ref={bottomSheetRef} isFriend={true} memberId={selectedMemberId} />
       </SafeAreaView>
     </BottomSheetModalProvider>
   );
