@@ -114,7 +114,7 @@ const RankList = ({ data, competitionData, isInProgress, onJoin, onLeave }) => {
   const RankItemContent = ({ item, index }) => {
     return (
       <>
-        <View style={styles.rankItemInnerContentWrapper}>
+        <View style={styles.rankItemContentWrapper}>
           <Text style={styles.rankText}>{isInProgress ? index + 1 : '-'}</Text>
           <Image
             style={styles.profileImg}
@@ -122,7 +122,7 @@ const RankList = ({ data, competitionData, isInProgress, onJoin, onLeave }) => {
           />
           <Text style={styles.rankText}>{item.member_info.nickname}</Text>
         </View>
-        <View style={[styles.rankItemInnerContentWrapper, { gap: 30 }]}>
+        <View style={[styles.rankItemContentWrapper, { gap: 30 }]}>
           {!isItemOpen[index] && (
             <Text
               style={[
@@ -252,7 +252,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingBottom: SPACING.md,
   },
-  rankItemInnerContentWrapper: {
+  rankItemContentWrapper: {
     flexDirection: 'row',
     gap: 10,
     alignItems: 'center',
