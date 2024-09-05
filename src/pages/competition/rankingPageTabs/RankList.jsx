@@ -44,15 +44,12 @@ const RankList = ({ data, competitionData, progress, onJoin, onLeave }) => {
         {data && (
           <View style={{ alignItems: 'center' }}>
             <View style={styles.podiumWrapper}>
-              {progress === 'AFTER' && (
-                <Image
-                  style={[
-                    styles.spotlightImage,
-                    { width: spotlightImageSize.width, height: spotlightImageSize.height },
-                  ]}
-                  source={spotlightImage}
-                />
-              )}
+              {/* {progress === 'AFTER' && ( */}
+              <Image
+                style={[styles.spotlightImage, { width: spotlightImageSize.width, height: spotlightImageSize.height }]}
+                source={spotlightImage}
+              />
+              {/* )} */}
               <Image style={{ width: podiumImageSize.width, height: podiumImageSize.height }} source={podiumImage} />
               {data[0] && (
                 <>
@@ -67,12 +64,12 @@ const RankList = ({ data, competitionData, progress, onJoin, onLeave }) => {
                       data[0].member_info.profile_image ? { uri: data[0].member_info.profile_image } : dummyProfile
                     }
                   />
-                  {progress === 'AFTER' && (
-                    <Image
-                      style={[styles.crownImage, { bottom: 0.85 * podiumImageSize.height + 72 }]}
-                      source={crownImage}
-                    />
-                  )}
+                  {/* {progress === 'AFTER' && ( */}
+                  <Image
+                    style={[styles.crownImage, { bottom: 0.85 * podiumImageSize.height + 74 }]}
+                    source={crownImage}
+                  />
+                  {/* )} */}
                 </>
               )}
               {data[1] && (
