@@ -8,15 +8,17 @@ import HeaderComponents from '../../../components/HeaderComponents';
 import { COLORS } from '../../../constants/colors';
 import { FONT_SIZES, FONT_WEIGHTS, FONTS } from '../../../constants/font';
 import { RADIUS } from '../../../constants/radius';
+import useSelectedFoodStore from '../../../store/index';
 import { calculateNutrientRatios, getTotal } from '../../../utils/foodDiary/index';
 
 const PlusButtonIcon = require('../../../assets/images/dietDiary/PluscircleButton.png');
 const MinusButtonIcon = require('../../../assets/images/dietDiary/MinusCircleButton.png');
 
-const FoodRecordDetail = ({ route }) => {
-  const { time } = route.params;
+const FoodRecordDetail = () => {
   const navigation = useNavigation();
   const [foodRecordListState, setFoodRecordListState] = useState([]);
+  const { time } = useSelectedFoodStore();
+
   useEffect(() => {
     const fetchFoodRecord = async () => {
       try {

@@ -11,6 +11,7 @@ import { BACKGROUND_COLORS, COLORS, TEXT_COLORS } from '../../../constants/color
 import { FONT_SIZES, FONT_WEIGHTS, FONTS } from '../../../constants/font';
 import { RADIUS } from '../../../constants/radius';
 import { LAYOUT_PADDING } from '../../../constants/space';
+import useSelectedFoodStore from '../../../store/index';
 import { calculateCarbsCalories, calculateFatCalories, calculateProteinCalories } from '../../../utils/foodDiary/index';
 
 const PlusButtonIcon = require('../../../assets/images/dietDiary/PluscircleButton.png');
@@ -36,6 +37,8 @@ const FoodDiary = () => {
   const [carbRatioState, setCarbRatioState] = useState(0);
   const [proteinRatioState, setProteinRatioState] = useState(0);
   const [fatRatioState, setFatRatioState] = useState(0);
+
+  const { setTime } = useSelectedFoodStore();
 
   const navigation = useNavigation();
   const handleWorkoutTypePress = (type) => {
@@ -98,6 +101,13 @@ const FoodDiary = () => {
       return;
     }
     Alert.alert('탄단지 비율을 100으로 두어야 합니다!');
+  };
+
+  const handleMealTime = (time) => {
+    setTime(time);
+    navigation.navigate('FoodDiary', {
+      screen: 'FoodDetailScreen',
+    });
   };
   return (
     <SafeAreaView style={styles.container}>
@@ -174,17 +184,7 @@ const FoodDiary = () => {
           {items.map((item, index) => (
             <View key={index} style={styles.mealItemWrapper}>
               <Text style={styles.mealItemName}>{item.name}</Text>
-              <TouchableOpacity
-                style={styles.mealItemButton}
-                onPress={() => {
-                  navigation.navigate('FoodDiary', {
-                    screen: 'FoodDetailScreen',
-                    params: {
-                      time: `${item.name}`,
-                    },
-                  });
-                }}
-              >
+              <TouchableOpacity style={styles.mealItemButton} onPress={() => handleMealTime(item.name)}>
                 <Image source={item.icon} style={styles.icon} />
                 <Text style={styles.mealItemTitle}>{item.title}</Text>
               </TouchableOpacity>

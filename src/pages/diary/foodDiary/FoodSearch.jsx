@@ -1,3 +1,4 @@
+import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { Alert, Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
@@ -18,6 +19,7 @@ const FoodSearch = () => {
   const [searchText, setSearchText] = useState('');
   const [foodSearchListState, setFoodSearchListState] = useState([]);
   const [checkedFoods, setCheckedFoods] = useState([]);
+  const navigation = useNavigation();
 
   const handleSearchInput = debounce(async (text) => {
     try {
@@ -41,6 +43,11 @@ const FoodSearch = () => {
       } else {
         return [...prev, food];
       }
+    });
+  };
+  const handleRecordButton = () => {
+    navigation.navigate('FoodDiary', {
+      screen: 'FoodDetailScreen',
     });
   };
   return (
@@ -74,7 +81,7 @@ const FoodSearch = () => {
 
         <View style={styles.buttonContainer}>
           <CustomButton size="large" text={`${checkedFoods.length}개 선택됨`} theme="secondary" />
-          <CustomButton size="large" text="기록하기" theme="primary" />
+          <CustomButton size="large" text="기록하기" theme="primary" onPress={handleRecordButton} />
         </View>
       </View>
     </SafeAreaView>
