@@ -1,5 +1,4 @@
 import { useRoute } from '@react-navigation/native';
-import dayjs from 'dayjs';
 import React, { useEffect, useState } from 'react';
 import { Alert, Dimensions, FlatList, Image, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 
@@ -11,6 +10,7 @@ import { COLORS } from '../../constants/colors';
 import { FONT_SIZES, FONTS } from '../../constants/font';
 import { RADIUS } from '../../constants/radius';
 import { LAYOUT_PADDING, SPACING } from '../../constants/space';
+import { isInCompetitionProgress } from '../../utils/competition';
 
 const { width } = Dimensions.get('window');
 
@@ -30,10 +30,7 @@ const CompetitionRoom1VS1 = () => {
     const fetchCompetitionDetail = async () => {
       try {
         const result = await getCompetitionDetail(competitionId);
-        const today = dayjs();
-        const startDate = dayjs(result.data.date.start_date);
-        const endDate = dayjs(result.data.date.end_date);
-        setIsInProgress(startDate <= today && today <= endDate);
+        setIsInProgress(isInCompetitionProgress(result.data));
         setCompetitionData(result.data);
       } catch (error) {
         Alert.alert('경쟁방 상세 정보 조회 실패', error.message);

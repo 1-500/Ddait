@@ -35,7 +35,7 @@ const BottomTabComponents = ({ state, navigation, insets, descriptors }) => {
     });
 
   const handlePressPlus = useCallback(() => {
-    navigation.navigate('WorkoutDiary');
+    navigation.navigate('DiaryMain');
   }, [navigation]);
 
   return (

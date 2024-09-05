@@ -11,7 +11,7 @@ const MyScore = ({ data }) => {
       <TouchableOpacity style={styles.scoreItemWrapper} activeOpacity={0.6}>
         <Text style={styles.exerciseNameText}>{item.name}</Text>
         <View style={{ gap: 4 }}>
-          {item.diary[item.diary.length - 1].record.map((e, i) => (
+          {item.diary[item.diary.length - 1]?.record.map((e, i) => (
             <View style={styles.recordWrapper}>
               <Text style={styles.recordText}>{e.set}</Text>
               <Text style={styles.recordText}>{`${e.weight}kg × ${e.reps}회`}</Text>
