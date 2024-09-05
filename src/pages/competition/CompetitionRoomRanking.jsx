@@ -74,6 +74,7 @@ const CompetitionRoomRanking = ({ navigation }) => {
   const [competitionRecordDetail, setCompetitionRecordDetail] = useState();
   const [isInProgress, setIsInProgress] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [isDeleted, setIsDeleted] = useState(false);
   const [index, setIndex] = useState(0);
   const [routes] = useState([
     { key: 'rankList', title: '랭킹' },
@@ -115,6 +116,7 @@ const CompetitionRoomRanking = ({ navigation }) => {
   };
 
   const fetchAllData = useCallback(async () => {
+    if (isDeleted) return;
     setLoading(true);
     try {
       await Promise.all([fetchCompetitionDetail(), fetchCompetitionRecord(), fetchCompetitionRecordDetail()]);
@@ -123,13 +125,15 @@ const CompetitionRoomRanking = ({ navigation }) => {
     } finally {
       setLoading(false);
     }
-  }, [competitionId]);
+  }, [competitionId, isDeleted]);
 
   const isFocused = useIsFocused();
 
   useEffect(() => {
-    fetchAllData();
-  }, [isFocused]);
+    if (!isDeleted) {
+      fetchAllData();
+    }
+  }, [fetchAllData, isDeleted]);
 
   const handleJoin = async () => {
     try {
@@ -169,8 +173,12 @@ const CompetitionRoomRanking = ({ navigation }) => {
   const handleDelete = useCallback(
     (success, message) => {
       if (success) {
+        setIsDeleted(true);
         Alert.alert('삭제 성공', '경쟁방이 성공적으로 삭제되었습니다.', [
-          { text: '확인', onPress: () => navigation.goBack() },
+          {
+            text: '확인',
+            onPress: () => navigation.goBack(),
+          },
         ]);
       } else {
         Alert.alert('삭제 실패', message);
@@ -198,6 +206,10 @@ const CompetitionRoomRanking = ({ navigation }) => {
         return <Invite friends={dummy_data.friends} jumpTo={jumpTo} />;
     }
   };
+
+  if (isDeleted) {
+    return null;
+  }
 
   if (loading) {
     return (
