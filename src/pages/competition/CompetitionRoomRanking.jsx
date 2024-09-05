@@ -8,6 +8,7 @@ import {
   getCompetitionDetail,
   getCompetitionRecord,
   getCompetitionRecordDetail,
+  leaveCompetition,
 } from '../../apis/competition';
 import CompetitionRoomHeader from '../../components/CompetitionRoomHeader';
 import { COLORS } from '../../constants/colors';
@@ -63,7 +64,7 @@ const dummy_data = {
   ],
 };
 
-const CompetitionRoomRanking = () => {
+const CompetitionRoomRanking = ({ navigation }) => {
   const layout = useWindowDimensions();
   const route = useRoute();
   const { competitionId } = route.params;
@@ -141,8 +142,25 @@ const CompetitionRoomRanking = () => {
   };
 
   const handleLeave = async () => {
-    // 나가기 로직, api 호출
-    Alert.alert('경쟁방 나가기');
+    Alert.alert('경쟁방 나가기', '이 경쟁방에서 나가시겠습니까?', [
+      { text: '취소', style: 'cancel' },
+      {
+        text: '나가기',
+        style: 'destructive',
+        onPress: async () => {
+          try {
+            const res = await leaveCompetition(competitionId);
+            if (res.status === 200) {
+              Alert.alert('성공', '경쟁방에서 나갔습니다');
+              navigation.goBack();
+            }
+          } catch (error) {
+            console.log('error: ', error);
+            Alert.alert('오류', '경쟁방에 나가기에 실패했습니다!');
+          }
+        },
+      },
+    ]);
   };
 
   const renderScene = ({ route, jumpTo }) => {

@@ -122,3 +122,22 @@ export const getCompetitionRecordDetail = async (roomId) => {
     console.error('Response data:', error.response.data);
   }
 };
+
+export const leaveCompetition = async (roomId) => {
+  const postData = {
+    competition_room_id: roomId,
+  };
+  try {
+    const response = await API.delete('/competition/record', { data: postData });
+    console.log('경쟁방 나가기 성공');
+    return response;
+  } catch (error) {
+    if (error.response) {
+      console.error('경쟁방 나가기 오류:', error);
+      throw error;
+    } else {
+      console.error('예상치 못한 오류 발생:', error.message);
+      throw error;
+    }
+  }
+};
