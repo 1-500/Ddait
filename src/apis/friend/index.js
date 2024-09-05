@@ -16,3 +16,24 @@ export const searchUser = async (nickname) => {
     }
   }
 };
+
+export const requestFriend = async (memberId) => {
+  console.log('memberId:', memberId);
+  const postData = {
+    friend_member_id: memberId,
+  };
+
+  try {
+    const response = await API.post('friends/request', postData);
+    console.log('requestFriend 응답:', response.data);
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      console.error('requestFriend Error: ', error.response.data);
+      throw Error(error.response.data.message);
+    } else {
+      console.error('예상치 못한 오류 발생:', error);
+      throw error;
+    }
+  }
+};
