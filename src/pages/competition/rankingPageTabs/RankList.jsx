@@ -111,6 +111,39 @@ const RankList = ({ data, competitionData, progress, onJoin, onLeave }) => {
     );
   };
 
+  const RankItemContent = ({ item, index }) => {
+    return (
+      <>
+        <View style={styles.rankItemContentWrapper}>
+          <Text style={styles.rankText}>{progress === 'BEFORE' ? '-' : index + 1}</Text>
+          <Image
+            style={styles.profileImg}
+            source={item.member_info.profile_image ? { uri: item.member_info.profile_image } : dummyProfile}
+          />
+          <Text style={styles.rankText}>{item.member_info.nickname}</Text>
+        </View>
+        <View style={[styles.rankItemContentWrapper, { gap: 30 }]}>
+          {!isItemOpen[index] && (
+            <Text
+              style={[
+                styles.rankText,
+                { fontFamily: FONTS.PRETENDARD[600] },
+                item.is_my_record ? { color: COLORS.white } : { color: COLORS.lightPurple },
+              ]}
+            >
+              {`${item.total_score}점`}
+            </Text>
+          )}
+          {progress === 'BEFORE' ? (
+            <View style={{ width: 24 }} />
+          ) : (
+            <FontAwesome name={isItemOpen[index] ? 'angle-up' : 'angle-down'} size={24} color={COLORS.white} />
+          )}
+        </View>
+      </>
+    );
+  };
+
   const renderRankItem = ({ item, index }) => {
     if (progress === 'IN_PROGRESS') {
       return (
@@ -125,9 +158,7 @@ const RankList = ({ data, competitionData, progress, onJoin, onLeave }) => {
           activeOpacity={0.6}
         >
           <View style={styles.rankItemHeaderWrapper}>
-            <Text style={styles.rankText}>{index + 1}</Text>
-            <Text style={styles.rankText}>{item.member_info.nickname}</Text>
-            <FontAwesome name={isItemOpen[index] ? 'angle-up' : 'angle-down'} size={24} color={COLORS.white} />
+            <RankItemContent item={item} index={index} />
           </View>
           {isItemOpen[index] && (
             <View style={styles.innerContentWrapper}>
@@ -138,7 +169,11 @@ const RankList = ({ data, competitionData, progress, onJoin, onLeave }) => {
                 >{`${e.name}: ${item.score_detail[i].score}점`}</Text>
               ))}
               <Text
-                style={[styles.scoreText, { fontFamily: FONTS.PRETENDARD[600] }]}
+                style={[
+                  styles.rankText,
+                  { fontFamily: FONTS.PRETENDARD[600], marginTop: 4 },
+                  item.is_my_record ? { color: COLORS.white } : { color: COLORS.lightPurple },
+                ]}
               >{`총점: ${item.total_score}점`}</Text>
             </View>
           )}
@@ -153,9 +188,7 @@ const RankList = ({ data, competitionData, progress, onJoin, onLeave }) => {
             item.is_my_record ? { backgroundColor: COLORS.primary } : { backgroundColor: COLORS.darkGreyBackground },
           ]}
         >
-          <Text style={styles.rankText}>-</Text>
-          <Text style={styles.rankText}>{item.member_info.nickname}</Text>
-          <View />
+          <RankItemContent item={item} index={index} />
         </View>
       );
     }
@@ -226,6 +259,15 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingBottom: SPACING.md,
+  },
+  rankItemContentWrapper: {
+    flexDirection: 'row',
+    gap: 10,
+    alignItems: 'center',
+  },
+  profileImg: {
+    width: 40,
+    height: 40,
   },
   rankText: {
     fontSize: FONT_SIZES.sm,
