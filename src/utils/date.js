@@ -1,3 +1,5 @@
+import dayjs from 'dayjs';
+
 export const getYears = () => {
   const startYear = 1930;
   const endYear = new Date().getFullYear();
@@ -74,4 +76,21 @@ export const formatDate = (date) => {
 export const formatDate_ISO8601 = (date, isEnd = false) => {
   const dayTime = isEnd ? '23:59:59' : '00:00:00';
   return `${date.year}-${String(date.month).padStart(2, '0')}-${String(date.day).padStart(2, '0')}T${dayTime}Z`;
+};
+
+export const calculateDday = (startDate) => {
+  if (!startDate) {
+    return null;
+  }
+
+  const today = dayjs().startOf('day');
+  const diffDays = startDate.diff(today, 'day');
+
+  if (diffDays > 0) {
+    return `${diffDays}`;
+  } else if (diffDays === 0) {
+    return '오늘';
+  } else {
+    return `+ ${Math.abs(diffDays) + 1}`;
+  }
 };

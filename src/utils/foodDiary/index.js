@@ -26,3 +26,39 @@ export function getFormattedDate() {
 
   return `${year}-${month}-${day}`;
 }
+
+export const getTotal = (array, key) => {
+  if (!Array.isArray(array)) {
+    return 0;
+  }
+  return array.reduce((sum, item) => {
+    const value = item[key];
+    return sum + (typeof value === 'number' ? value : 0);
+  }, 0);
+};
+export const calculateNutrientRatios = (array) => {
+  if (!Array.isArray(array)) {
+    return {
+      carbsRatio: 0,
+      proteinRatio: 0,
+      fatRatio: 0,
+    };
+  }
+  const totalNutrients = array.reduce(
+    (totals, item) => {
+      totals.carbs += item.carbs || 0;
+      totals.protein += item.protein || 0;
+      totals.fat += item.fat || 0;
+      return totals;
+    },
+    { carbs: 0, protein: 0, fat: 0 },
+  );
+
+  const total = totalNutrients.carbs + totalNutrients.protein + totalNutrients.fat;
+
+  return {
+    carbsRatio: Math.floor((totalNutrients.carbs / total) * 100),
+    proteinRatio: Math.floor((totalNutrients.protein / total) * 100),
+    fatRatio: Math.floor((totalNutrients.fat / total) * 100),
+  };
+};

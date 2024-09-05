@@ -1,19 +1,31 @@
 import { BottomSheetModal, BottomSheetModalProvider, BottomSheetView } from '@gorhom/bottom-sheet';
 import { useNavigation } from '@react-navigation/native';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Alert, FlatList, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+  Alert,
+  FlatList,
+  Modal,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
+} from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import CustomTag from '../../../../src/components/CustomTag';
 import { getExerciseList, postWorkoutRecord } from '../../../apis/diary';
 import CustomButton from '../../../components/CustomButton';
 import CustomInput from '../../../components/CustomInput';
+import CustomTag from '../../../components/CustomTag';
+import CustomTimer from '../../../components/CustomTimer';
+import DropdownModal from '../../../components/DropdownModal';
 import HeaderComponents from '../../../components/HeaderComponents';
 import { BACKGROUND_COLORS, COLORS, TEXT_COLORS } from '../../../constants/colors';
 import { BODY_FONT_SIZES, HEADER_FONT_SIZES } from '../../../constants/font';
+import { FONTS } from '../../../constants/font';
 import { RADIUS } from '../../../constants/radius';
-import { LAYOUT_PADDING } from '../../../constants/space';
-import useUserStore from '../../../store/sign/login';
+import { LAYOUT_PADDING, SPACING } from '../../../constants/space';
 
 const StartWorkout = () => {
   const navigation = useNavigation();
@@ -22,23 +34,25 @@ const StartWorkout = () => {
   const [selectedExercises, setSelectedExercises] = useState([]);
   const [workoutData, setWorkoutData] = useState([]);
   const [totalTime, setTotalTime] = useState({ minutes: 0, seconds: 0 });
+  const [restTime, setRestTime] = useState({ minutes: 0, seconds: 0 });
   const [isTimerVisible, setIsTimerVisible] = useState(false);
-  const [isRunning, setIsRunning] = useState(false);
   const [isReset, setIsReset] = useState(false);
   const [intervalId, setIntervalId] = useState(null);
+  const [dropdownState, setDropdownState] = useState({
+    bodyPart: '전체',
+    equipment: '전체',
+    bookmark: false,
+  });
 
   const bottomSheetModalRef = useRef(null);
   const snapPoints = useMemo(() => ['80%', '80%'], []);
-
-  const { userId } = useUserStore();
 
   /* eslint-disable */
   useEffect(() => {
     const fetchExerciseList = async () => {
       try {
         const res = await getExerciseList();
-        const nameData = res.map((item) => item.name);
-        setExerciseListData(nameData);
+        setExerciseListData(res);
       } catch (error) {
         console.log('error', error);
       }
@@ -53,6 +67,15 @@ const StartWorkout = () => {
     };
   }, [intervalId]);
   /* eslint-enable */
+
+  const filteredExerciseList = useMemo(() => {
+    return exerciseListData.filter((exercise) => {
+      const isPartMatch = dropdownState.bodyPart === '전체' || exercise.body_part === dropdownState.bodyPart;
+      const isToolMatch = dropdownState.equipment === '전체' || exercise.equipment === dropdownState.equipment;
+      const isBookmarkMatch = dropdownState.bookmark ? exercise.bookmark === true : true;
+      return isPartMatch && isToolMatch && isBookmarkMatch;
+    });
+  }, [exerciseListData, dropdownState.bodyPart, dropdownState.equipment, dropdownState.bookmark]);
 
   const handlePresentModalPress = useCallback(() => {
     bottomSheetModalRef.current?.present();
@@ -76,7 +99,6 @@ const StartWorkout = () => {
       workoutSet: [{ id: 1, weight: '', reps: '' }],
       time: 0,
       isRunning: false,
-      restTime: 0,
       isResting: false,
     }));
     setWorkoutData((prev) => [...prev, ...newWorkoutData]);
@@ -99,23 +121,8 @@ const StartWorkout = () => {
   };
   /* eslint-enable */
 
-  const handleAddExerciseSet = (workoutId) => {
-    setWorkoutData((prevData) =>
-      prevData.map(
-        (workout) =>
-          workout.id === workoutId
-            ? /* eslint-disable */
-              {
-                ...workout,
-                workoutSet: [
-                  ...workout.workoutSet,
-                  { id: workout.workoutSet.length + 1, weight: '', reps: '', isComplete: false },
-                ],
-              }
-            : workout,
-        /* eslint-enable */
-      ),
-    );
+  const handleRestTimer = () => {
+    setIsTimerVisible(!isTimerVisible);
   };
 
   const handleStartPause = (workoutId) => {
@@ -142,15 +149,13 @@ const StartWorkout = () => {
                 prevData.map((workout) => {
                   if (workout.id === workoutId && workout.isRunning) {
                     return { ...workout, time: workout.time + 1 };
-                  } else if (workout.id === workoutId && workout.isResting) {
-                    return { ...workout, restTime: workout.restTime + 1 };
                   }
                   return workout;
                 }),
               );
             }, 1000);
             setIntervalId(id);
-            return { ...workout, isRunning: true, isResting: false };
+            return { ...workout, isRunning: true };
           }
         }
         return workout;
@@ -158,21 +163,31 @@ const StartWorkout = () => {
     );
   };
 
-  const handleRest = (workoutId) => {
+  useEffect(() => {
+    return () => clearInterval(intervalId);
+  }, [intervalId]);
+
+  const handleAddWorkoutSet = (workoutId) => {
     setWorkoutData((prevData) =>
       prevData.map((workout) => {
         if (workout.id === workoutId) {
-          return { ...workout, isRunning: false, isResting: !workout.isResting };
+          if (workout.workoutSet.length >= 10) {
+            Alert.alert('알림', '세트는 최대 10개까지 추가할 수 있습니다.');
+            return workout;
+          } else {
+            const maxSetId = workout.workoutSet.reduce((maxId, set) => Math.max(maxId, set.id), 0);
+            return {
+              ...workout,
+              workoutSet: [...workout.workoutSet, { id: maxSetId + 1, weight: '', reps: '', isComplete: false }],
+            };
+          }
         }
         return workout;
       }),
     );
   };
-  useEffect(() => {
-    return () => clearInterval(intervalId);
-  }, [intervalId]);
 
-  const handleDeleteExerciseSet = (workoutId, setId) => {
+  const handleDeleteWorkoutSet = (workoutId, setId) => {
     setWorkoutData((prevData) =>
       prevData.map(
         (workout) =>
@@ -188,7 +203,7 @@ const StartWorkout = () => {
     );
   };
 
-  const handleCompleteExerciseSet = (workoutId, setId) => {
+  const handleCompleteWorkoutSet = (workoutId, setId) => {
     setWorkoutData(
       (prevData) =>
         prevData.map((workout) =>
@@ -196,9 +211,7 @@ const StartWorkout = () => {
             ? /* eslint-disable */
               {
                 ...workout,
-                workoutSet: workout.workoutSet.map((set) =>
-                  set.id === setId ? { ...set, isComplete: !set.isComplete } : set,
-                ),
+                workoutSet: workout.workoutSet.filter((set) => set.id !== setId),
               }
             : workout,
         ),
@@ -274,13 +287,19 @@ const StartWorkout = () => {
     return workoutData.reduce(
       (acc, workout) => {
         acc.totalWorkoutTime += workout.time;
-        acc.totalRestTime += workout.restTime;
         return acc;
       },
-      { totalWorkoutTime: 0, totalRestTime: 0 },
+      { totalWorkoutTime: 0 },
     );
   };
-  const { totalWorkoutTime, totalRestTime } = calculateTotalTimes();
+  const { totalWorkoutTime } = calculateTotalTimes();
+
+  const handleBookmarkToggle = () => {
+    setDropdownState((prev) => ({
+      ...prev,
+      bookmark: !prev.bookmark,
+    }));
+  };
 
   const renderWorkoutCard = ({ item }) => (
     <View style={styles.card}>
@@ -289,9 +308,6 @@ const StartWorkout = () => {
         <View style={{ flexDirection: 'row', gap: 8 }}>
           <TouchableOpacity style={styles.startButton} onPress={() => handleStartPause(item.id)}>
             <Text style={styles.startButtonText}>{item.isRunning ? '정지' : '시작'}</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.startButton} onPress={() => handleRest(item.id)}>
-            <Text style={styles.startButtonText}>{item.isResting ? '휴식 종료' : '휴식'}</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -302,10 +318,10 @@ const StartWorkout = () => {
           <Text style={styles.workoutSetText}>무게</Text>
           <Text style={styles.workoutSetText}>횟수</Text>
         </View>
-        {item.workoutSet.map((set) => (
+        {item.workoutSet.map((set, index) => (
           <View key={set.id} style={styles.workoutSetRow}>
             <View style={styles.workoutSetInfo}>
-              <Text style={styles.workoutSetText}>{set.id}</Text>
+              <Text style={styles.workoutSetText}>{index + 1}</Text>
               <CustomInput
                 size="small"
                 theme="primary"
@@ -325,18 +341,18 @@ const StartWorkout = () => {
               {set.isComplete ? (
                 <MaterialCommunityIcons name="check-circle-outline" size={24} color={COLORS.grey} />
               ) : (
-                <TouchableOpacity onPress={() => handleCompleteExerciseSet(item.id, set.id)}>
+                <TouchableOpacity onPress={() => handleCompleteWorkoutSet(item.id, set.id)}>
                   <MaterialCommunityIcons name="check-circle-outline" size={24} color={COLORS.primary} />
                 </TouchableOpacity>
               )}
 
-              <TouchableOpacity onPress={() => handleDeleteExerciseSet(item.id, set.id)}>
+              <TouchableOpacity onPress={() => handleDeleteWorkoutSet(item.id, set.id)}>
                 <MaterialCommunityIcons name="minus-circle-outline" size={24} color={TEXT_COLORS.secondary} />
               </TouchableOpacity>
             </View>
           </View>
         ))}
-        <TouchableOpacity style={styles.addSetButton} onPress={() => handleAddExerciseSet(item.id)}>
+        <TouchableOpacity style={styles.addSetButton} onPress={() => handleAddWorkoutSet(item.id)}>
           <Text style={styles.addSetButtonText}>세트 추가</Text>
         </TouchableOpacity>
       </View>
@@ -353,25 +369,26 @@ const StartWorkout = () => {
         />
       </View>
       <Text style={styles.exerciseItemText}>{item}</Text>
-      <MaterialCommunityIcons name="bookmark-outline" size={24} color={TEXT_COLORS.secondary} />
+      <TouchableOpacity>
+        <MaterialCommunityIcons name="bookmark-outline" size={24} color={TEXT_COLORS.secondary} />
+      </TouchableOpacity>
     </TouchableOpacity>
   );
 
+  const handleSortChange = useCallback((key, value) => {
+    setDropdownState((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
+  }, []);
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: BACKGROUND_COLORS.dark }}>
-      <HeaderComponents title="운동 시작" />
+      <HeaderComponents title="운동 시작" icon="timer" onRightBtnPress={handleRestTimer} />
       <View style={styles.timerContainer}>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <MaterialCommunityIcons name="timer-outline" size={24} color={COLORS.white} />
-          <Text style={{ color: COLORS.white, marginLeft: 8, fontSize: BODY_FONT_SIZES.md }}>
-            운동: {formatTime(totalWorkoutTime)}
-          </Text>
-        </View>
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <MaterialCommunityIcons name="timer-sand" size={24} color={COLORS.white} />
-          <Text style={{ color: COLORS.white, marginLeft: 8, fontSize: BODY_FONT_SIZES.md }}>
-            휴식: {formatTime(totalRestTime)}
-          </Text>
+          <Text style={styles.timerText}>운동: {formatTime(totalWorkoutTime)}</Text>
         </View>
       </View>
       {workoutData.length === 0 && (
@@ -415,6 +432,20 @@ const StartWorkout = () => {
         }
       />
 
+      <Modal visible={isTimerVisible} animationType="slide" transparent={true} onRequestClose={handleRestTimer}>
+        <TouchableWithoutFeedback onPress={handleRestTimer}>
+          <View style={styles.modalBackground}>
+            <View style={styles.modalContainer}>
+              <Text style={styles.modalTitle}>휴식시간</Text>
+              <TouchableOpacity style={{ position: 'absolute', top: 10, right: 15 }} onPress={handleRestTimer}>
+                <MaterialCommunityIcons name="close" size={24} color={COLORS.primary} />
+              </TouchableOpacity>
+              <CustomTimer time={restTime} setTime={setRestTime} handleTimerVisible={handleRestTimer} />
+            </View>
+          </View>
+        </TouchableWithoutFeedback>
+      </Modal>
+
       <BottomSheetModalProvider>
         <BottomSheetModal
           ref={bottomSheetModalRef}
@@ -429,18 +460,43 @@ const StartWorkout = () => {
             </View>
             <View style={{ flexDirection: 'row', marginVertical: 16 }}>
               <TouchableOpacity style={{ marginRight: 16 }}>
-                <CustomTag size="big" text="부위" />
+                <DropdownModal
+                  options={['전체', '상체', '하체', '팔', '등', '어깨', '가슴']}
+                  onChange={(value) => handleSortChange('bodyPart', value)}
+                  value={dropdownState.bodyPart}
+                  placeholder={'부위'}
+                  showIcon={true}
+                />
               </TouchableOpacity>
               <TouchableOpacity style={{ marginRight: 16 }}>
-                <CustomTag size="big" text="무게" />
+                <DropdownModal
+                  options={['전체', '바벨', '덤벨', '케틀벨', '머신']}
+                  onChange={(value) => handleSortChange('equipment', value)}
+                  value={dropdownState.equipment}
+                  placeholder={'도구'}
+                  showIcon={true}
+                />
               </TouchableOpacity>
-              <TouchableOpacity style={{ marginRight: 16 }}>
-                <CustomTag size="big" text="도구" />
+              <TouchableOpacity
+                style={{
+                  marginRight: 16,
+                  backgroundColor: COLORS.darkGrey,
+                  paddingVertical: SPACING.xxs,
+                  paddingHorizontal: SPACING.sm,
+                  borderRadius: RADIUS.large,
+                }}
+                onPress={handleBookmarkToggle}
+              >
+                <MaterialCommunityIcons
+                  name={dropdownState.bookmark ? 'bookmark' : 'bookmark-outline'}
+                  size={24}
+                  color={COLORS.primary}
+                />
               </TouchableOpacity>
             </View>
             <View>
               <FlatList
-                data={exerciseListData}
+                data={filteredExerciseList.map((item) => item.name)}
                 renderItem={renderExerciseList}
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={{ paddingBottom: 16, paddingHorizontal: 16 }}
@@ -494,6 +550,7 @@ const styles = StyleSheet.create({
     color: TEXT_COLORS.primary,
     fontSize: BODY_FONT_SIZES.md,
     textAlign: 'center',
+    fontFamily: FONTS.PRETENDARD[700],
   },
   header: {
     flexDirection: 'row',
@@ -503,7 +560,7 @@ const styles = StyleSheet.create({
   },
   titleText: {
     fontSize: HEADER_FONT_SIZES.sm,
-    fontWeight: 'bold',
+    fontFamily: FONTS.PRETENDARD[700],
     color: TEXT_COLORS.primary,
   },
   startButton: {
@@ -515,6 +572,7 @@ const styles = StyleSheet.create({
   startButtonText: {
     color: TEXT_COLORS.primary,
     fontSize: BODY_FONT_SIZES.md,
+    fontFamily: FONTS.PRETENDARD[700],
   },
   divider: {
     height: 1,
@@ -546,6 +604,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: TEXT_COLORS.primary,
     fontSize: BODY_FONT_SIZES.md,
+    fontFamily: FONTS.PRETENDARD[500],
   },
   addSetButton: {
     marginTop: 16,
@@ -558,6 +617,7 @@ const styles = StyleSheet.create({
   addSetButtonText: {
     color: TEXT_COLORS.secondary,
     fontSize: BODY_FONT_SIZES.md,
+    fontFamily: FONTS.PRETENDARD[700],
   },
   modalBackground: {
     flex: 1,
@@ -569,12 +629,13 @@ const styles = StyleSheet.create({
     width: '80%',
     backgroundColor: COLORS.darkBackground,
     borderRadius: RADIUS.large,
-    padding: 16,
+    padding: 40,
     alignItems: 'center',
   },
   modalTitle: {
     fontSize: HEADER_FONT_SIZES.md,
     color: TEXT_COLORS.primary,
+    fontFamily: FONTS.PRETENDARD[700],
     marginBottom: 16,
   },
 
@@ -605,11 +666,19 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: BODY_FONT_SIZES.md,
     color: TEXT_COLORS.primary,
+    fontFamily: FONTS.PRETENDARD[700],
   },
 
   exerciseHeader: {
     marginVertical: 16,
     color: TEXT_COLORS.primary,
     fontSize: HEADER_FONT_SIZES.sm,
+    fontFamily: FONTS.PRETENDARD[700],
+  },
+  timerText: {
+    color: COLORS.white,
+    marginLeft: 8,
+    fontSize: BODY_FONT_SIZES.md,
+    fontFamily: FONTS.PRETENDARD[700],
   },
 });

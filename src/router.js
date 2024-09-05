@@ -5,16 +5,19 @@ import React from 'react';
 import BottomTab from './components/BottomTab';
 import Competition from './pages/competition/Competition';
 import CompetitionCreation from './pages/competition/CompetitionCreation/CompetitionCreation';
-import CompetitionRoom1V1 from './pages/competition/CompetitionRoom1V1';
+import CompetitionRoom1VS1 from './pages/competition/CompetitionRoom1VS1';
 import CompetitionRoomRanking from './pages/competition/CompetitionRoomRanking';
 import SearchCompetition from './pages/competition/SearchCompetition';
+import DiaryMain from './pages/diary/DiaryMain';
 import FoodDiary from './pages/diary/foodDiary/FoodDiary';
 import FoodRecord from './pages/diary/foodDiary/FoodRecord';
 import FoodRecordDetail from './pages/diary/foodDiary/FoodRecordDetail';
+import FoodSearch from './pages/diary/foodDiary/FoodSearch';
 import StartWorkout from './pages/diary/workoutDiary/StartWorkout';
 import WorkoutDatePick from './pages/diary/workoutDiary/WorkoutDatePick';
 import WorkoutDiary from './pages/diary/workoutDiary/WorkoutDiary';
 import Friend from './pages/friend/Friend';
+import FriendSearch from './pages/friend/FriendSearch';
 import Home from './pages/home/Home';
 import LoginPage from './pages/login/LoginPage';
 import MyPage from './pages/mypage/MyPage';
@@ -68,6 +71,7 @@ const FoodDiaryStack = () => {
       <Stack.Screen name="FoodDiaryScreen" component={FoodDiary} />
       <Stack.Screen name="FoodDetailScreen" component={FoodRecordDetail} />
       <Stack.Screen name="FoodRecordScreen" component={FoodRecord} />
+      <Stack.Screen name="FoodSearchScreen" component={FoodSearch} />
     </Stack.Navigator>
   );
 };
@@ -85,14 +89,16 @@ const Router = () => {
   return (
     <Stack.Navigator initialRouteName="Sign" screenOptions={{ headerShown: false }}>
       <Stack.Screen name="MainTab" component={MainTab} />
-      <Stack.Screen name="WorkoutDiary" component={DiaryStack} />
-      <Stack.Screen name="CompetitionRoom1V1" component={CompetitionRoom1V1} />
-      <Stack.Screen name="CompetitionCreation" component={CompetitionCreation} />
       <Stack.Screen name="SignUp" component={SignUpPage} />
-      <Stack.Screen name="CompetitionRoomRanking" component={CompetitionRoomRanking} />
       <Stack.Screen name="Sign" component={SignStack} />
+      <Stack.Screen name="DiaryMain" component={DiaryMain} />
+      <Stack.Screen name="WorkoutDiary" component={DiaryStack} />
       <Stack.Screen name="FoodDiary" component={FoodDiaryStack} />
       <Stack.Screen name="ProfilePrivacy" component={ProfilePrivacy} />
+      <Stack.Screen name="CompetitionCreation" component={CompetitionCreation} />
+      <Stack.Screen name="CompetitionRoom1VS1" component={CompetitionRoom1VS1} />
+      <Stack.Screen name="CompetitionRoomRanking" component={CompetitionRoomRanking} />
+      <Stack.Screen name="FriendSearch" component={FriendSearch} />
     </Stack.Navigator>
   ); // 라우팅
 };

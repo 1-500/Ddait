@@ -11,7 +11,7 @@ const MyScore = ({ data }) => {
       <TouchableOpacity style={styles.scoreItemWrapper} activeOpacity={0.6}>
         <Text style={styles.exerciseNameText}>{item.name}</Text>
         <View style={{ gap: 4 }}>
-          {item.diary[item.diary.length - 1].record.map((e, i) => (
+          {item.diary[item.diary.length - 1]?.record.map((e, i) => (
             <View style={styles.recordWrapper}>
               <Text style={styles.recordText}>{e.set}</Text>
               <Text style={styles.recordText}>{`${e.weight}kg × ${e.reps}회`}</Text>
@@ -26,18 +26,20 @@ const MyScore = ({ data }) => {
   return (
     <View style={[{ flex: 1 }, LAYOUT_PADDING]}>
       <FlatList
-        data={data.scores}
-        keyExtractor={(item, index) => index}
+        data={data?.score_detail}
+        keyExtractor={(item, index) => item.name}
         renderItem={renderScoreItem}
         ItemSeparatorComponent={<View style={{ height: 10 }} />}
         ListHeaderComponent={
-          <View style={{ paddingTop: 30, paddingBottom: 16 }}>
-            <Text style={styles.titleText}>기록 현황</Text>
-            <View style={styles.totalScoreWrapper}>
-              <Text style={styles.totalScoreText}>{`총점: ${data.total_score}`}</Text>
-              <Text style={styles.weightText}>{`몸무게: ${data.weight}kg`}</Text>
+          data && (
+            <View style={{ paddingTop: 30, paddingBottom: 16 }}>
+              <Text style={styles.titleText}>기록 현황</Text>
+              <View style={styles.totalScoreWrapper}>
+                <Text style={styles.totalScoreText}>{`총점: ${data.total_score}`}</Text>
+                <Text style={styles.weightText}>{`몸무게: ${data.member_info.weight}kg`}</Text>
+              </View>
             </View>
-          </View>
+          )
         }
         ListFooterComponent={<View style={{ height: 30 }} />}
         showsVerticalScrollIndicator={false}

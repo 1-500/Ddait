@@ -86,3 +86,58 @@ export const getCompetitionDetail = async (id) => {
     }
   }
 };
+
+export const getCompetitionRecord = async (roomId) => {
+  try {
+    const response = await API.get(`/competition/record?roomId=${roomId}`);
+
+    return response.data;
+  } catch (error) {
+    console.error('Server responded with status:', error.response.status);
+
+    console.error('Response data:', error.response.data);
+  }
+};
+
+export const patchCompetitionRecord = async (body) => {
+  try {
+    const response = await API.patch('/competition/record', body);
+
+    return response.data;
+  } catch (error) {
+    console.error('Server responded with status:', error.response.status);
+
+    console.error('Response data:', error.response.data);
+  }
+};
+
+export const getCompetitionRecordDetail = async (roomId) => {
+  try {
+    const response = await API.get(`/competition/record/detail?roomId=${roomId}`);
+
+    return response.data;
+  } catch (error) {
+    console.error('Server responded with status:', error.response.status);
+
+    console.error('Response data:', error.response.data);
+  }
+};
+
+export const leaveCompetition = async (roomId) => {
+  const postData = {
+    competition_room_id: roomId,
+  };
+  try {
+    const response = await API.delete('/competition/record', { data: postData });
+    console.log('경쟁방 나가기 성공');
+    return response;
+  } catch (error) {
+    if (error.response) {
+      console.error('경쟁방 나가기 오류:', error);
+      throw error;
+    } else {
+      console.error('예상치 못한 오류 발생:', error.message);
+      throw error;
+    }
+  }
+};
