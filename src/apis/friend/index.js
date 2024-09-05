@@ -29,11 +29,10 @@ export const requestFriend = async (memberId) => {
     return response.data;
   } catch (error) {
     if (error.response) {
-      console.error('requestFriend Error:', error.response);
-
-      throw error;
+      console.error('requestFriend Error: ', error.response.data);
+      throw Error(error.response.data.message);
     } else {
-      console.error('예상치 못한 오류 발생:', error.message);
+      console.error('예상치 못한 오류 발생:', error);
       throw error;
     }
   }

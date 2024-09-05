@@ -24,7 +24,7 @@ const FriendOptionBottomSheet = forwardRef((props, ref) => {
         { onPress: () => ref.current?.close() },
       ]);
     } catch (error) {
-      Alert.alert('친구 추가 실패', '오류가 발생했습니다.');
+      Alert.alert('친구 추가 실패', error.message);
     }
   };
 
