@@ -63,7 +63,7 @@ const CompetitionRoomHeader = ({ data, onDelete }) => {
             <Octicons name="unlock" size={24} color={COLORS.lightGrey} />
           )}
         </View>
-        {data.user_status.is_host && (
+        {data.user_status.is_host && dayjs(data.date.start_date).isAfter(dayjs(), 'day') && (
           <TouchableOpacity onPress={toggleDropdown} activeOpacity={0.6}>
             <Feather name="more-horizontal" size={28} color={COLORS.white} />
           </TouchableOpacity>
