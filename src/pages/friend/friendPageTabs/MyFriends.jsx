@@ -6,10 +6,7 @@ import { LAYOUT_PADDING } from '../../../constants/space';
 
 const MyFriends = ({ data, handleOpenOptions }) => {
   const renderItem = ({ item }) => (
-    <MemberProfileItem
-      memberData={item}
-      onRightBtnPress={(id) => handleOpenOptions(id, 'friend')} // item.id와 'friend' 전달
-    />
+    <MemberProfileItem memberData={item} onRightBtnPress={(id) => handleOpenOptions(item.id, 'friend')} />
   );
 
   return (

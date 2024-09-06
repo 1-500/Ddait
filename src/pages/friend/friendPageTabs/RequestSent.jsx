@@ -8,7 +8,7 @@ const RequestSent = ({ data, handleOpenOptions }) => {
   const renderItem = ({ item }) => (
     <MemberProfileItem
       memberData={item}
-      onRightBtnPress={(id) => handleOpenOptions(id, 'requested')} // item.id와 'requested' 전달
+      onRightBtnPress={() => handleOpenOptions(item.id, 'requested')} // item.id와 'requested' 전달
     />
   );
 

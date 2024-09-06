@@ -10,7 +10,7 @@ import CustomButton from './CustomButton';
 const FriendOptionBottomSheet = forwardRef((props, ref) => {
   const { relation, memberId } = props;
   const snapPoints = [350];
-
+  // console.log(`clicked id is '${memberId}'`); //불필요한 리렌더링 체크 후 추후 수정 필요
   const renderBackdrop = useCallback(
     (props) => <BottomSheetBackdrop {...props} appearsOnIndex={0} disappearsOnIndex={-1} pressBehavior="close" />,
     [],

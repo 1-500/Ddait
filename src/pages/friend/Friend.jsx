@@ -31,13 +31,11 @@ const Friend = ({ navigation }) => {
   const renderScene = ({ route }) => {
     switch (route.key) {
       case 'myFriends':
-        return <MyFriends data={myFriends} handleOpenOptions={(memberId) => handleOpenOptions(memberId, 'friend')} />;
+        return <MyFriends data={myFriends} handleOpenOptions={handleOpenOptions} />;
       case 'reqReceived':
         return <RequestReceived data={reqReceived} />;
       case 'reqSent':
-        return (
-          <RequestSent data={reqSent} handleOpenOptions={(memberId) => handleOpenOptions(memberId, 'requested')} />
-        );
+        return <RequestSent data={reqSent} handleOpenOptions={handleOpenOptions} />;
       default:
         return null;
     }
@@ -48,6 +46,7 @@ const Friend = ({ navigation }) => {
     setSelectedRelation(relation);
     bottomSheetRef.current?.present();
   }, []);
+
   const fetchMyFriends = async () => {
     try {
       const myFriendsRes = await getMyFriends();
@@ -64,7 +63,7 @@ const Friend = ({ navigation }) => {
   };
 
   useEffect(() => {
-    if (useIsFocused) {
+    if (isFocused) {
       fetchMyFriends();
     }
   }, [isFocused]);
