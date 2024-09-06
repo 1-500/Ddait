@@ -1,5 +1,5 @@
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
-import React, { useCallback, useMemo, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { Dimensions, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import OptionSelector from '../../../components/competitionCreation/OptionSelector';
@@ -40,6 +40,24 @@ const SetRoomDetail = () => {
 
   const openEndDatePicker = useCallback(() => {
     endDateBottomSheetRef.current?.present();
+  }, []);
+
+  // 임시 코드입니다 - 날짜 선택 오늘 날짜 기준으로
+  useEffect(() => {
+    const today = new Date();
+    const formattedDate = {
+      year: today.getFullYear().toString(),
+      month: (today.getMonth() + 1).toString().padStart(2, '0'),
+      day: today.getDate().toString().padStart(2, '0'),
+    };
+
+    if (!startDate.year) {
+      setStartDate(formattedDate);
+    }
+    if (!endDate.year) {
+      setEndDate(formattedDate);
+    }
+    // eslint-disable-next-line
   }, []);
 
   const menuItems = [
