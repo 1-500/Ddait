@@ -62,6 +62,16 @@ const CompetitionRoom1VS1 = () => {
     fetchCompetitionRecord();
   }, [competitionId]);
 
+  const getResult = (data1, data2) => {
+    if (data1.total_score > data2.total_score) {
+      return 'Win';
+    } else if (data1.total_score === data2.total_score) {
+      return 'Draw';
+    } else {
+      return 'Lose';
+    }
+  };
+
   const CompetitionProfile = ({ record, result, color, style }) => {
     return (
       <View style={[styles.profileWrapper, progress === 'AFTER' && { marginTop: 15 }, style]}>
@@ -143,7 +153,7 @@ const CompetitionRoom1VS1 = () => {
           <CompetitionProfile
             record={data[0]}
             color={COLORS.primary}
-            result="Win"
+            result={getResult(data[0], data[1])}
             style={
               progress === 'IN_PROGRESS' &&
               data[1] &&
@@ -156,7 +166,7 @@ const CompetitionRoom1VS1 = () => {
           <CompetitionProfile
             record={data[1]}
             color={COLORS.secondary}
-            result="Lose"
+            result={getResult(data[1], data[0])}
             style={
               progress === 'IN_PROGRESS' &&
               data[1] &&
