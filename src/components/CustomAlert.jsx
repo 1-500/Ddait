@@ -18,16 +18,21 @@ const CustomAlert = ({
     <Modal transparent visible={visible} animationType="fade">
       <View style={styles.overlay}>
         <View style={styles.alertBox}>
-          <Text style={styles.title}>{title}</Text>
-          <Text style={styles.message}>{message}</Text>
+          <View style={styles.contentContainer}>
+            <Text style={styles.title}>{title}</Text>
+            <Text style={styles.message}>{message}</Text>
+          </View>
           <View style={styles.buttonContainer}>
             {showCancel && (
-              <TouchableOpacity style={[styles.button, styles.cancelButton]} onPress={onCancel}>
-                <Text style={styles.buttonText}>{cancelText}</Text>
-              </TouchableOpacity>
+              <>
+                <TouchableOpacity style={[styles.button, styles.cancelButton]} onPress={onCancel}>
+                  <Text style={[styles.buttonText, styles.cancelText]}>{cancelText}</Text>
+                </TouchableOpacity>
+                <View style={styles.verticalSeparator} />
+              </>
             )}
             <TouchableOpacity style={[styles.button, styles.confirmButton]} onPress={onConfirm}>
-              <Text style={styles.buttonText}>{confirmText}</Text>
+              <Text style={[styles.buttonText, styles.confirmText]}>{confirmText}</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -45,46 +50,51 @@ const styles = StyleSheet.create({
   },
   alertBox: {
     backgroundColor: COLORS.darkGreyBackground,
-    borderRadius: 10,
+    borderRadius: 16,
+    width: '80%',
+    overflow: 'hidden',
+  },
+  contentContainer: {
     padding: 20,
     alignItems: 'center',
-    width: '80%',
   },
   title: {
     color: COLORS.white,
     fontSize: FONT_SIZES.lg,
     fontFamily: FONTS.PRETENDARD[700],
-    marginBottom: 10,
+    marginBottom: 16,
+    textAlign: 'center',
   },
   message: {
     color: COLORS.white,
-    fontSize: FONT_SIZES.md,
+    fontSize: FONT_SIZES.sm,
     fontFamily: FONTS.PRETENDARD[400],
-    marginBottom: 20,
     textAlign: 'center',
   },
   buttonContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
-    width: '100%',
+    borderTopWidth: 1,
+    borderTopColor: COLORS.darkBackground,
   },
   button: {
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 5,
-    minWidth: 100,
+    flex: 1,
+    paddingVertical: 16,
     alignItems: 'center',
+    justifyContent: 'center',
   },
-  confirmButton: {
-    backgroundColor: COLORS.primary,
-  },
-  cancelButton: {
-    backgroundColor: COLORS.darkGrey,
+  verticalSeparator: {
+    width: 1,
+    backgroundColor: COLORS.darkBackground,
   },
   buttonText: {
-    color: COLORS.white,
     fontSize: FONT_SIZES.md,
-    fontFamily: FONTS.PRETENDARD[600],
+    fontFamily: FONTS.PRETENDARD[700],
+  },
+  cancelText: {
+    color: COLORS.primary,
+  },
+  confirmText: {
+    color: COLORS.red,
   },
 });
 
