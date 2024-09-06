@@ -337,7 +337,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   scoreTitleText: {
-    width: 60,
+    width: 70,
     fontSize: FONT_SIZES.sm,
     fontFamily: FONTS.PRETENDARD[700],
     color: COLORS.white,
