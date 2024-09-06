@@ -1,19 +1,15 @@
 import { useNavigation } from '@react-navigation/native';
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Alert, Image, Modal, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import * as Progress from 'react-native-progress';
 
-import { setMacroRatio, setUserWeight } from '../../../apis/food/index';
+import { createFoodDiary, setMacroRatio, setUserWeight } from '../../../apis/food/index';
 import CustomButton from '../../../components/CustomButton';
 import CustomInput from '../../../components/CustomInput';
-import DiaryCalendar from '../../../components/DiaryCalendar';
-import DiaryCalendarBottomSheet from '../../../components/DiaryCalendarBottomSheet';
-import DiaryTypePicker from '../../../components/DiaryTypePicker';
-import HeaderComponents from '../../../components/HeaderComponents';
 import { BACKGROUND_COLORS, COLORS, TEXT_COLORS } from '../../../constants/colors';
 import { FONT_SIZES, FONT_WEIGHTS, FONTS } from '../../../constants/font';
 import { RADIUS } from '../../../constants/radius';
-import { LAYOUT_PADDING } from '../../../constants/space';
+import useSelectedFoodTimeStore from '../../../store/index';
 import { calculateCarbsCalories, calculateFatCalories, calculateProteinCalories } from '../../../utils/foodDiary/index';
 
 const PlusButtonIcon = require('../../../assets/images/dietDiary/PluscircleButton.png');
@@ -34,7 +30,8 @@ const FoodDiary = () => {
   const [carbRatioState, setCarbRatioState] = useState(0);
   const [proteinRatioState, setProteinRatioState] = useState(0);
   const [fatRatioState, setFatRatioState] = useState(0);
-  const bottomSheetModalRef = useRef(null);
+
+  const { setTime } = useSelectedFoodTimeStore();
 
   const navigation = useNavigation();
 
@@ -91,8 +88,25 @@ const FoodDiary = () => {
     Alert.alert('탄단지 비율을 100으로 두어야 합니다!');
   };
 
-  const openBottomSheet = useCallback(() => {
-    bottomSheetModalRef.current?.present();
+  const handleMealTime = (time) => {
+    setTime(time);
+    navigation.navigate('FoodDiary', {
+      screen: 'FoodDetailScreen',
+    });
+  };
+
+  useEffect(() => {
+    const postFoodDiary = async () => {
+      try {
+        const result = await createFoodDiary();
+        if (result.error) {
+          throw new Error(result.error);
+        }
+      } catch (error) {
+        Alert.alert(error.message);
+      }
+    };
+    postFoodDiary();
   }, []);
 
   return (
@@ -146,17 +160,7 @@ const FoodDiary = () => {
           {items.map((item, index) => (
             <View key={index} style={styles.mealItemWrapper}>
               <Text style={styles.mealItemName}>{item.name}</Text>
-              <TouchableOpacity
-                style={styles.mealItemButton}
-                onPress={() => {
-                  navigation.navigate('FoodDiary', {
-                    screen: 'FoodDetailScreen',
-                    params: {
-                      time: `${item.name}`,
-                    },
-                  });
-                }}
-              >
+              <TouchableOpacity style={styles.mealItemButton} onPress={() => handleMealTime(item.name)}>
                 <Image source={item.icon} style={styles.icon} />
                 <Text style={styles.mealItemTitle}>{item.title}</Text>
               </TouchableOpacity>
