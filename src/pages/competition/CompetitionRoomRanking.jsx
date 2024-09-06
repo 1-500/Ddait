@@ -11,6 +11,7 @@ import {
   leaveCompetition,
 } from '../../apis/competition';
 import CompetitionRoomHeader from '../../components/CompetitionRoomHeader';
+import CustomAlert from '../../components/CustomAlert';
 import { COLORS } from '../../constants/colors';
 import { FONT_SIZES, FONT_WEIGHTS } from '../../constants/font';
 import { isInCompetitionProgress } from '../../utils/competition';
@@ -81,6 +82,13 @@ const CompetitionRoomRanking = ({ navigation }) => {
     { key: 'myScore', title: '내 점수' },
     { key: 'invite', title: '초대' },
   ]);
+  const [alertConfig, setAlertConfig] = useState({
+    visible: false,
+    title: '',
+    message: '',
+    onConfirm: null,
+    showCancel: true,
+  });
 
   const fetchCompetitionDetail = async () => {
     try {
@@ -139,55 +147,69 @@ const CompetitionRoomRanking = ({ navigation }) => {
     try {
       const res = await enterCompetition(competitionId);
       if (res.status === 200) {
+        // TODO: toast 메세지 적용
         Alert.alert('성공', '경쟁방에 참여했습니다!');
         fetchAllData();
       }
     } catch (error) {
       console.log('error: ', error);
+      // TODO: toast 메세지 적용
       Alert.alert('오류', '경쟁방에 참여에 실패했습니다!');
     }
   };
 
-  const handleLeave = async () => {
-    Alert.alert('경쟁방 나가기', '이 경쟁방에서 나가시겠습니까?', [
-      { text: '취소', style: 'cancel' },
-      {
-        text: '나가기',
-        style: 'destructive',
-        onPress: async () => {
-          try {
-            const res = await leaveCompetition(competitionId);
-            if (res.status === 200) {
-              Alert.alert('성공', '경쟁방에서 나갔습니다');
-              navigation.goBack();
-            }
-          } catch (error) {
-            console.log('error: ', error);
-            Alert.alert('오류', '경쟁방에 나가기에 실패했습니다!');
-          }
-        },
-      },
-    ]);
+  const showAlert = (config) => {
+    setAlertConfig({ ...config, visible: true });
   };
 
-  const handleDelete = useCallback(
-    (success, message) => {
-      if (success) {
-        Alert.alert('경쟁방 삭제', '경쟁방이 삭제되었습니다 😢', [
-          {
-            text: '확인',
-            onPress: () => {
-              setIsDeleted(true);
-              navigation.goBack();
-            },
-          },
-        ]);
-      } else {
-        Alert.alert('삭제 실패', message);
-      }
-    },
-    [navigation],
-  );
+  const hideAlert = () => {
+    setAlertConfig((prev) => ({ ...prev, visible: false }));
+  };
+
+  const handleLeave = () => {
+    showAlert({
+      title: '경쟁방 나가기',
+      message: '정말 이 경쟁방에서 나가시겠습니까? 😢',
+      onConfirm: async () => {
+        try {
+          const res = await leaveCompetition(competitionId);
+          if (res.status === 200) {
+            hideAlert();
+            navigation.goBack();
+          }
+        } catch (error) {
+          console.log('error', error);
+          showAlert({
+            title: '오류',
+            message: '경쟁방 나가기 중 오류가 발생했습니다',
+            showCancel: false,
+            onConfirm: hideAlert,
+          });
+        }
+      },
+    });
+  };
+
+  const handleDelete = (success, message) => {
+    if (success) {
+      showAlert({
+        title: '경쟁방 삭제',
+        message: '정말 이 경쟁방을 삭제하시겠습니까? 😢',
+        onConfirm: () => {
+          setIsDeleted(true);
+          navigation.goBack();
+        },
+      });
+    } else {
+      console.log('error', error);
+      showAlert({
+        title: '오류',
+        message: message || '경쟁방 삭제 중 오류가 발생했습니다.',
+        showCancel: false,
+        onConfirm: hideAlert,
+      });
+    }
+  };
 
   const renderScene = ({ route, jumpTo }) => {
     switch (route.key) {
@@ -239,6 +261,15 @@ const CompetitionRoomRanking = ({ navigation }) => {
         renderScene={renderScene}
         onIndexChange={setIndex}
         initialLayout={{ width: layout.width }}
+      />
+      <CustomAlert
+        visible={alertConfig.visible}
+        title={alertConfig.title}
+        message={alertConfig.message}
+        onConfirm={alertConfig.onConfirm}
+        onCancel={hideAlert}
+        showCancel={alertConfig.showCancel !== false}
+        goBackOnConfirm={alertConfig.goBackOnConfirm}
       />
     </SafeAreaView>
   );

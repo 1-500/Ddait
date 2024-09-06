@@ -98,9 +98,8 @@ const RankList = ({ data, competitionData, isInProgress, onJoin, onLeave }) => {
     return (
       <View style={styles.preview}>
         <Text style={styles.previewText}>
-          {dday}일 후 랭킹전 시작! 🏆{'\n'}
-          <Text style={{ color: COLORS.secondary }}>따잇! </Text>
-          하고 1등 할 준비 되셨나요?
+          {dday}일 후 랭킹전 시작! 🏆{'\n'} 1등 하고
+          <Text style={{ color: COLORS.secondary }}> 따잇! </Text>할 준비 되셨나요?
         </Text>
         <View>
           <TouchableOpacity style={styles.actionBtn} onPress={isParticipant ? onLeave : onJoin} activeOpacity={0.6}>

@@ -3,14 +3,19 @@ if (__DEV__) {
 }
 import { NavigationContainer } from '@react-navigation/native';
 import React from 'react';
+import { StatusBar, View } from 'react-native';
 
+import { COLORS } from './src/constants/colors';
 import Router from './src/router';
 
 function App() {
   return (
-    <NavigationContainer>
-      <Router />
-    </NavigationContainer>
+    <View style={{ flex: 1 }}>
+      <StatusBar barStyle="light-content" backgroundColor={COLORS.darkBackground} />
+      <NavigationContainer theme={{ colors: { background: COLORS.darkBackground } }}>
+        <Router />
+      </NavigationContainer>
+    </View>
   );
 }
 
