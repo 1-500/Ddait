@@ -8,7 +8,7 @@ import { SPACING } from '../constants/space';
 import CustomButton from './CustomButton';
 
 const FriendOptionBottomSheet = forwardRef((props, ref) => {
-  const { isFriend, memberId } = props;
+  const { relation, memberId } = props;
   const snapPoints = [350];
 
   const renderBackdrop = useCallback(
@@ -43,11 +43,13 @@ const FriendOptionBottomSheet = forwardRef((props, ref) => {
     >
       <View style={styles.container}>
         <CustomButton text="1:1 따잇 걸기!" onPress={() => {}} theme="primary" size="large" />
-        {!isFriend ? (
-          <CustomButton text="친구 신청" onPress={onPressRequest} theme="primary" size="large" />
-        ) : (
+        {relation === 'friend' ? (
           <CustomButton text="차단" onPress={() => {}} theme="error" size="large" />
-        )}
+        ) : relation === 'none' ? (
+          <CustomButton text="친구 신청" onPress={onPressRequest} theme="primary" size="large" />
+        ) : relation === 'requested' ? (
+          <CustomButton text="신청 취소" onPress={() => {}} theme="error" size="large" />
+        ) : null}
         <CustomButton text="취소" onPress={onPressCancel} theme="block" size="large" />
       </View>
     </BottomSheetModal>
