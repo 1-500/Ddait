@@ -1,8 +1,8 @@
 import { useNavigation } from '@react-navigation/native';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Alert, Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import { createFoodRecordByTime, getFoodBySearch } from '../../../apis/food/index';
+import { createBookMarkFoods, createFoodRecordByTime, getFoodBySearch } from '../../../apis/food/index';
 import CustomButton from '../../../components/CustomButton';
 import CustomInput from '../../../components/CustomInput';
 import HeaderComponents from '../../../components/HeaderComponents';
@@ -21,6 +21,7 @@ const FoodSearch = () => {
   const [searchText, setSearchText] = useState('');
   const [foodSearchListState, setFoodSearchListState] = useState([]);
   const [checkedFoods, setCheckedFoods] = useState([]);
+  const [bookmarkFoods, setBookmarkFoods] = useState([]);
   const { time } = useSelectedFoodTimeStore();
   const navigation = useNavigation();
 
@@ -48,6 +49,21 @@ const FoodSearch = () => {
       }
     });
   };
+  const handleBookmarkFoods = async (food) => {
+    setBookmarkFoods((prev) => {
+      const updatedFoods = prev.map((item) => {
+        if (item.id === food.id) {
+          return { ...item, isChecked: !item.isChecked };
+        }
+        return item;
+      });
+      const exists = prev.some((item) => item.id === food.id);
+      if (!exists) {
+        return [...updatedFoods, { ...food, isChecked: true }];
+      }
+      return updatedFoods;
+    });
+  };
   const handleRecordButton = () => {
     try {
       const response = createFoodRecordByTime({
@@ -62,6 +78,27 @@ const FoodSearch = () => {
     //   screen: 'FoodDetailScreen',
     // });
   };
+
+  useEffect(() => {
+    const updateBookmarkFoods = async () => {
+      try {
+        if (bookmarkFoods?.length) {
+          let result = await createBookMarkFoods({
+            bookMarkedFoods: bookmarkFoods,
+          });
+
+          if (result.error) {
+            throw new Error('서버에서 에러가 발생하여 조회를 실패하였습니다.');
+          }
+        }
+      } catch (error) {
+        Alert.alert(error.message);
+      }
+    };
+
+    updateBookmarkFoods();
+  }, [bookmarkFoods]); // 상태가 변경될 때마다 실행
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.darkBackground }}>
       <HeaderComponents title="음식 검색" />
@@ -78,14 +115,17 @@ const FoodSearch = () => {
         <ScrollView style={styles.foodListContainer}>
           {foodSearchListState?.map((food) => {
             const isChecked = checkedFoods.some((item) => item.id === food.id);
+            const bookmarkedItem = bookmarkFoods.filter((item) => item.id === food.id)[0];
             return (
               <FoodInfoCard
                 key={food.id}
                 name={food.name}
                 serving_size={food.serving_size}
                 calories={food.calories}
-                isChecked={isChecked}
+                isCheckFood={isChecked}
+                isCheckedBookmark={bookmarkedItem?.isChecked || false}
                 onHandleCheckedFoods={() => handleCheckedFoods(food)}
+                onHandleBookmarkFoods={() => handleBookmarkFoods(food)}
               />
             );
           })}
@@ -100,7 +140,15 @@ const FoodSearch = () => {
   );
 };
 
-const FoodInfoCard = ({ name, calories, serving_size, onHandleCheckedFoods, isChecked }) => {
+const FoodInfoCard = ({
+  name,
+  calories,
+  serving_size,
+  onHandleCheckedFoods,
+  onHandleBookmarkFoods,
+  isCheckFood,
+  isCheckedBookmark,
+}) => {
   return (
     <View style={styles.foodItem}>
       <View>
@@ -111,10 +159,10 @@ const FoodInfoCard = ({ name, calories, serving_size, onHandleCheckedFoods, isCh
         <Text style={{ color: 'white', marginRight: 10, fontSize: FONT_SIZES.sm }}>{calories}kcal</Text>
         <View style={{ display: 'flex', flexDirection: 'row', gap: 5 }}>
           <TouchableOpacity activeOpacity={0.6} onPress={onHandleCheckedFoods}>
-            <Image source={isChecked ? checkIcon : PlusIcon} style={{ width: 24, height: 24 }} />
+            <Image source={isCheckFood ? checkIcon : PlusIcon} style={{ width: 24, height: 24 }} />
           </TouchableOpacity>
-          <TouchableOpacity activeOpacity={0.6}>
-            <Image source={BookmarkOffIcon} style={{ width: 24, height: 24 }} />
+          <TouchableOpacity activeOpacity={0.6} onPress={onHandleBookmarkFoods}>
+            <Image source={isCheckedBookmark ? BookmarkOnIcon : BookmarkOffIcon} style={{ width: 24, height: 24 }} />
           </TouchableOpacity>
         </View>
       </View>

@@ -45,3 +45,15 @@ export const createFoodRecordByTime = async (data) => {
     return response.data;
   } catch (error) {}
 };
+export const createBookMarkFoods = async (data) => {
+  try {
+    const response = await API.post('food/bookmark/create', data);
+    return response.data;
+  } catch (error) {}
+};
+export const getBookMarkFoods = async () => {
+  try {
+    const response = await API.get('food/bookmark');
+    return response.data;
+  } catch (error) {}
+};
