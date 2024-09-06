@@ -1,13 +1,13 @@
 import React from 'react';
-import { Dimensions, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import { COLORS } from '../constants/colors';
 import { FONT_SIZES, FONTS } from '../constants/font';
 import { SPACING } from '../constants/space';
+import CustomButton from './CustomButton';
 import CustomTag from './CustomTag';
 
-const { width } = Dimensions.get('window');
 const dummyProfileImage = require('../assets/images/profile.png');
 
 const MemberProfileItem = ({ memberData, rightBtn = 'menu', onRightBtnPress = () => {} }) => {
@@ -23,6 +23,13 @@ const MemberProfileItem = ({ memberData, rightBtn = 'menu', onRightBtnPress = ()
         <TouchableOpacity onPress={onRightBtnPress} activeOpacity={0.6}>
           <MaterialCommunityIcons name="email-plus-outline" size={20} color={COLORS.white} />
         </TouchableOpacity>
+      );
+    } else if (rightBtn === 'request') {
+      return (
+        <View style={styles.btnWrapper}>
+          <CustomButton text="수락" theme="primary" size="xs" />
+          <CustomButton text="거절" theme="block" size="xs" />
+        </View>
       );
     } else {
       return <View style={{ width: 20, height: 20 }} />;
@@ -66,7 +73,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   profileInfoWrapper: {
-    maxWidth: width - 130,
     alignItems: 'flex-start',
   },
   profileImage: {
@@ -84,5 +90,11 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.PRETENDARD[500],
     color: COLORS.white,
     marginBottom: SPACING.xs,
+  },
+  btnWrapper: {
+    flexDirection: 'row',
+    flexShrink: 1,
+    justifyContent: 'flex-end',
+    gap: 8,
   },
 });
