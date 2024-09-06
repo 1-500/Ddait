@@ -227,15 +227,7 @@ const RankList = ({ data, competitionData, progress, onJoin, onLeave }) => {
         keyExtractor={(item, index) => index}
         data={data}
         renderItem={renderRankItem}
-        ListHeaderComponent={(() => {
-          if (progress === 'IN_PROGRESS') {
-            return Podium;
-          } else if (progress === 'BEFORE') {
-            return Preview;
-          } else {
-            return <></>;
-          }
-        })()}
+        ListHeaderComponent={progress === 'BEFORE' ? Preview : Podium}
         ListFooterComponent={<View style={{ height: 30 }} />}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ gap: 10 }}
