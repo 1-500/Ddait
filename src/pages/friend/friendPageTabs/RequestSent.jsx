@@ -4,11 +4,11 @@ import { FlatList, StyleSheet, View } from 'react-native';
 import MemberProfileItem from '../../../components/MemberProfileItem';
 import { LAYOUT_PADDING } from '../../../constants/space';
 
-const MyFriends = ({ data, handleOpenOptions }) => {
+const RequestSent = ({ data, handleOpenOptions }) => {
   const renderItem = ({ item }) => (
     <MemberProfileItem
       memberData={item}
-      onRightBtnPress={(id) => handleOpenOptions(id, 'friend')} // item.id와 'friend' 전달
+      onRightBtnPress={(id) => handleOpenOptions(id, 'requested')} // item.id와 'requested' 전달
     />
   );
 
@@ -32,4 +32,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default MyFriends;
+export default RequestSent;
