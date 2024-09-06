@@ -92,7 +92,7 @@ const FriendSearch = ({ navigation }) => {
             </>
           )}
         </View>
-        <FriendOptionBottomSheet ref={bottomSheetRef} isFriend={false} memberId={selectedMemberId} />
+        <FriendOptionBottomSheet ref={bottomSheetRef} relation="none" memberId={selectedMemberId} />
       </SafeAreaView>
     </BottomSheetModalProvider>
   );
