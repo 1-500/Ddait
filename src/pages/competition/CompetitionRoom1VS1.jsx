@@ -15,6 +15,7 @@ import { getCompetitionProgress } from '../../utils/competition';
 const { width } = Dimensions.get('window');
 
 const dummyProfile = require('../../assets/images/profile.png');
+const crownImage = require('../../assets/images/crown.png');
 
 /* eslint-disable */
 
@@ -61,9 +62,9 @@ const CompetitionRoom1VS1 = () => {
     fetchCompetitionRecord();
   }, [competitionId]);
 
-  const CompetitionProfile = ({ record, color, style }) => {
+  const CompetitionProfile = ({ record, result, color, style }) => {
     return (
-      <View style={[styles.profileWrapper, style]}>
+      <View style={[styles.profileWrapper, progress === 'AFTER' && { marginTop: 15 }, style]}>
         {record ? (
           <>
             <Image
@@ -77,6 +78,24 @@ const CompetitionRoom1VS1 = () => {
               </View>
               <Text style={[styles.profileText, { color: color }]}>{record.total_score}</Text>
             </View>
+            {progress === 'AFTER' && (
+              <>
+                <View
+                  style={[
+                    styles.resultTag,
+                    result === 'Win'
+                      ? { backgroundColor: color }
+                      : {
+                          borderWidth: 2,
+                          borderColor: color,
+                        },
+                  ]}
+                >
+                  <Text style={styles.resultTagText}>{result}</Text>
+                </View>
+                {result === 'Win' && <Image style={styles.crownImage} source={crownImage} />}
+              </>
+            )}
           </>
         ) : (
           <Text style={[styles.profileTailText, { color: COLORS.white }]}>아직 상대방이 참여하지 않았어요..</Text>
@@ -90,7 +109,21 @@ const CompetitionRoom1VS1 = () => {
       <View style={{ paddingBottom: 20 }}>
         <View style={styles.messageWrapper}>
           <Text style={styles.userNameText}>
-            {progress === 'BEFORE' ? '아직 경쟁 시작 전입니다' : `${data[0].member_info.nickname} 님,`}
+            {(() => {
+              if (progress === 'BEFORE') {
+                return '아직 경쟁 시작 전입니다';
+              } else if (progress === 'IN_PROGRESS') {
+                return `${data[0].member_info.nickname} 님,`;
+              } else {
+                if (data[0].total_score > data[1].total_score) {
+                  return '따잇!';
+                } else if (data[0].total_score < data[1].total_score) {
+                  return '아쉬워요.. 다음에는 따잇해봅시다!';
+                } else {
+                  return '비겼네요!';
+                }
+              }
+            })()}
           </Text>
           {progress === 'IN_PROGRESS' && (
             <Text style={styles.messageText}>
@@ -110,6 +143,7 @@ const CompetitionRoom1VS1 = () => {
           <CompetitionProfile
             record={data[0]}
             color={COLORS.primary}
+            result="Win"
             style={
               progress === 'IN_PROGRESS' &&
               data[1] &&
@@ -122,6 +156,7 @@ const CompetitionRoom1VS1 = () => {
           <CompetitionProfile
             record={data[1]}
             color={COLORS.secondary}
+            result="Lose"
             style={
               progress === 'IN_PROGRESS' &&
               data[1] &&
@@ -274,6 +309,27 @@ const styles = StyleSheet.create({
     fontSize: FONT_SIZES.sm,
     fontFamily: FONTS.PRETENDARD[500],
     color: COLORS.white,
+  },
+  resultTag: {
+    position: 'absolute',
+    bottom: -16,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: COLORS.darkGreyBackground,
+    width: 60,
+    height: 30,
+    borderRadius: 8,
+  },
+  resultTagText: {
+    fontSize: FONT_SIZES.sm,
+    fontFamily: FONTS.PRETENDARD[600],
+    color: COLORS.white,
+  },
+  crownImage: {
+    position: 'absolute',
+    top: -35,
+    width: 50,
+    height: 50,
   },
   scoreWrapper: {
     flexDirection: 'row',
