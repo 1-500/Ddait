@@ -10,11 +10,12 @@ import { COLORS } from '../../constants/colors';
 import { FONT_SIZES, FONTS } from '../../constants/font';
 import { RADIUS } from '../../constants/radius';
 import { LAYOUT_PADDING, SPACING } from '../../constants/space';
-import { isInCompetitionProgress } from '../../utils/competition';
+import { getCompetitionProgress } from '../../utils/competition';
 
 const { width } = Dimensions.get('window');
 
 const dummyProfile = require('../../assets/images/profile.png');
+const crownImage = require('../../assets/images/crown.png');
 
 /* eslint-disable */
 
@@ -24,13 +25,13 @@ const CompetitionRoom1VS1 = () => {
   const { competitionId } = route.params;
   const [competitionData, setCompetitionData] = useState();
   const [competitionRecord, setCompetitionRecord] = useState();
-  const [isInProgress, setIsInProgress] = useState(false);
+  const [progress, setProgress] = useState(false);
 
   useEffect(() => {
     const fetchCompetitionDetail = async () => {
       try {
         const result = await getCompetitionDetail(competitionId);
-        setIsInProgress(isInCompetitionProgress(result.data));
+        setProgress(getCompetitionProgress(result.data));
         setCompetitionData(result.data);
       } catch (error) {
         Alert.alert('경쟁방 상세 정보 조회 실패', error.message);
@@ -61,9 +62,19 @@ const CompetitionRoom1VS1 = () => {
     fetchCompetitionRecord();
   }, [competitionId]);
 
-  const CompetitionProfile = ({ record, color, style }) => {
+  const getResult = (data1, data2) => {
+    if (data1.total_score > data2.total_score) {
+      return 'Win';
+    } else if (data1.total_score === data2.total_score) {
+      return 'Draw';
+    } else {
+      return 'Lose';
+    }
+  };
+
+  const CompetitionProfile = ({ record, result, color, style }) => {
     return (
-      <View style={[styles.profileWrapper, style]}>
+      <View style={[styles.profileWrapper, progress === 'AFTER' && { marginTop: 15 }, style]}>
         {record ? (
           <>
             <Image
@@ -77,6 +88,24 @@ const CompetitionRoom1VS1 = () => {
               </View>
               <Text style={[styles.profileText, { color: color }]}>{record.total_score}</Text>
             </View>
+            {progress === 'AFTER' && (
+              <>
+                <View
+                  style={[
+                    styles.resultTag,
+                    result === 'Win'
+                      ? { backgroundColor: color }
+                      : {
+                          borderWidth: 2,
+                          borderColor: color,
+                        },
+                  ]}
+                >
+                  <Text style={styles.resultTagText}>{result}</Text>
+                </View>
+                {result === 'Win' && <Image style={styles.crownImage} source={crownImage} />}
+              </>
+            )}
           </>
         ) : (
           <Text style={[styles.profileTailText, { color: COLORS.white }]}>아직 상대방이 참여하지 않았어요..</Text>
@@ -86,14 +115,27 @@ const CompetitionRoom1VS1 = () => {
   };
 
   const Competition1VS1Header = ({ data }) => {
-    console.log(isInProgress);
     return (
       <View style={{ paddingBottom: 20 }}>
         <View style={styles.messageWrapper}>
           <Text style={styles.userNameText}>
-            {isInProgress ? `${data[0].member_info.nickname} 님,` : '아직 경쟁 시작 전입니다'}
+            {(() => {
+              if (progress === 'BEFORE') {
+                return '아직 경쟁 시작 전입니다';
+              } else if (progress === 'IN_PROGRESS') {
+                return `${data[0].member_info.nickname} 님,`;
+              } else {
+                if (data[0].total_score > data[1].total_score) {
+                  return '따잇!';
+                } else if (data[0].total_score < data[1].total_score) {
+                  return '아쉬워요.. 다음에는 따잇해봅시다!';
+                } else {
+                  return '비겼네요!';
+                }
+              }
+            })()}
           </Text>
-          {isInProgress && (
+          {progress === 'IN_PROGRESS' && (
             <Text style={styles.messageText}>
               {(() => {
                 if (data[0].total_score > data[1].total_score) {
@@ -111,8 +153,9 @@ const CompetitionRoom1VS1 = () => {
           <CompetitionProfile
             record={data[0]}
             color={COLORS.primary}
+            result={getResult(data[0], data[1])}
             style={
-              isInProgress &&
+              progress === 'IN_PROGRESS' &&
               data[1] &&
               data[0].total_score >= data[1].total_score && {
                 borderWidth: 3,
@@ -123,8 +166,9 @@ const CompetitionRoom1VS1 = () => {
           <CompetitionProfile
             record={data[1]}
             color={COLORS.secondary}
+            result={getResult(data[1], data[0])}
             style={
-              isInProgress &&
+              progress === 'IN_PROGRESS' &&
               data[1] &&
               data[1].total_score >= data[0].total_score && {
                 borderWidth: 3,
@@ -139,7 +183,9 @@ const CompetitionRoom1VS1 = () => {
   };
 
   const renderScoreItem = ({ item, index }) => {
-    if (isInProgress) {
+    if (progress === 'BEFORE') {
+      return <></>;
+    } else {
       return (
         <View style={styles.scoreWrapper}>
           <Text style={styles.scoreTitleText} numberOfLines={3} ellipsizeMode="tail">
@@ -183,8 +229,6 @@ const CompetitionRoom1VS1 = () => {
           </View>
         </View>
       );
-    } else {
-      return <></>;
     }
   };
 
@@ -277,13 +321,34 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.PRETENDARD[500],
     color: COLORS.white,
   },
+  resultTag: {
+    position: 'absolute',
+    bottom: -16,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: COLORS.darkGreyBackground,
+    width: 60,
+    height: 30,
+    borderRadius: 8,
+  },
+  resultTagText: {
+    fontSize: FONT_SIZES.sm,
+    fontFamily: FONTS.PRETENDARD[600],
+    color: COLORS.white,
+  },
+  crownImage: {
+    position: 'absolute',
+    top: -35,
+    width: 50,
+    height: 50,
+  },
   scoreWrapper: {
     flexDirection: 'row',
     gap: SPACING.md,
     alignItems: 'center',
   },
   scoreTitleText: {
-    width: 60,
+    width: 70,
     fontSize: FONT_SIZES.sm,
     fontFamily: FONTS.PRETENDARD[700],
     color: COLORS.white,

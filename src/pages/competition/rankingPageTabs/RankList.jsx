@@ -9,21 +9,27 @@ import { LAYOUT_PADDING, SPACING } from '../../../constants/space';
 import { calculateDday } from '../../../utils/date';
 
 const podiumImage = require('../../../assets/images/podium.png');
+const spotlightImage = require('../../../assets/images/spotlight.png');
+const crownImage = require('../../../assets/images/crown.png');
 const dummyProfile = require('../../../assets/images/profile.png');
 
 const { width: screenWidth } = Dimensions.get('window');
 
-const RankList = ({ data, competitionData, isInProgress, onJoin, onLeave }) => {
-  const [imageSize, setImageSize] = useState({ width: 0, height: 0 });
+const RankList = ({ data, competitionData, progress, onJoin, onLeave }) => {
+  const [podiumImageSize, setPodiumImageSize] = useState({ width: 0, height: 0 });
+  const [spotlightImageSize, setSpotlightImageSize] = useState({ width: 0, height: 0 });
   const [isItemOpen, setIsItemOpen] = useState([]);
 
   const rankListRef = useRef();
 
   useEffect(() => {
-    const assetSource = Image.resolveAssetSource(podiumImage);
-    const aspectRatio = assetSource.height / assetSource.width;
-    const imageWidth = screenWidth - 76;
-    setImageSize({ width: imageWidth, height: imageWidth * aspectRatio });
+    const podiumAssetSource = Image.resolveAssetSource(podiumImage);
+    const podiumAspectRatio = podiumAssetSource.height / podiumAssetSource.width;
+    const spotlightAssetSource = Image.resolveAssetSource(spotlightImage);
+    const spotlightAspectRatio = spotlightAssetSource.height / spotlightAssetSource.width;
+    const imageWidth = screenWidth - 40;
+    setPodiumImageSize({ width: imageWidth - 36, height: (imageWidth - 36) * podiumAspectRatio });
+    setSpotlightImageSize({ width: imageWidth, height: imageWidth * spotlightAspectRatio });
   }, []);
 
   useEffect(() => {
@@ -38,25 +44,44 @@ const RankList = ({ data, competitionData, isInProgress, onJoin, onLeave }) => {
         {data && (
           <View style={{ alignItems: 'center' }}>
             <View style={styles.podiumWrapper}>
-              <Image style={{ width: imageSize.width, height: imageSize.height }} source={podiumImage} />
-              {data[0] && (
+              {progress === 'AFTER' && (
                 <Image
                   style={[
-                    styles.rankerProfile,
-                    {
-                      bottom: 0.85 * imageSize.height,
-                    },
+                    styles.spotlightImage,
+                    { width: spotlightImageSize.width, height: spotlightImageSize.height },
                   ]}
-                  source={data[0].member_info.profile_image ? { uri: data[0].member_info.profile_image } : dummyProfile}
+                  source={spotlightImage}
                 />
+              )}
+              <Image style={{ width: podiumImageSize.width, height: podiumImageSize.height }} source={podiumImage} />
+              {data[0] && (
+                <>
+                  <Image
+                    style={[
+                      styles.rankerProfile,
+                      {
+                        bottom: 0.85 * podiumImageSize.height,
+                      },
+                    ]}
+                    source={
+                      data[0].member_info.profile_image ? { uri: data[0].member_info.profile_image } : dummyProfile
+                    }
+                  />
+                  {progress === 'AFTER' && (
+                    <Image
+                      style={[styles.crownImage, { bottom: 0.85 * podiumImageSize.height + 74 }]}
+                      source={crownImage}
+                    />
+                  )}
+                </>
               )}
               {data[1] && (
                 <Image
                   style={[
                     styles.rankerProfile,
                     {
-                      bottom: 0.63 * imageSize.height,
-                      left: 16 + 0.05 * imageSize.width,
+                      bottom: 0.63 * podiumImageSize.height,
+                      left: 16 + 0.05 * podiumImageSize.width,
                     },
                   ]}
                   source={data[1].member_info.profile_image ? { uri: data[1].member_info.profile_image } : dummyProfile}
@@ -67,8 +92,8 @@ const RankList = ({ data, competitionData, isInProgress, onJoin, onLeave }) => {
                   style={[
                     styles.rankerProfile,
                     {
-                      bottom: 0.49 * imageSize.height,
-                      right: 16 + 0.05 * imageSize.width,
+                      bottom: 0.49 * podiumImageSize.height,
+                      right: 16 + 0.05 * podiumImageSize.width,
                     },
                   ]}
                   source={data[2].member_info.profile_image ? { uri: data[2].member_info.profile_image } : dummyProfile}
@@ -114,7 +139,7 @@ const RankList = ({ data, competitionData, isInProgress, onJoin, onLeave }) => {
     return (
       <>
         <View style={styles.rankItemContentWrapper}>
-          <Text style={styles.rankText}>{isInProgress ? index + 1 : '-'}</Text>
+          <Text style={styles.rankText}>{progress === 'BEFORE' ? '-' : index + 1}</Text>
           <Image
             style={styles.profileImg}
             source={item.member_info.profile_image ? { uri: item.member_info.profile_image } : dummyProfile}
@@ -133,10 +158,10 @@ const RankList = ({ data, competitionData, isInProgress, onJoin, onLeave }) => {
               {`${item.total_score}점`}
             </Text>
           )}
-          {isInProgress ? (
-            <FontAwesome name={isItemOpen[index] ? 'angle-up' : 'angle-down'} size={24} color={COLORS.white} />
-          ) : (
+          {progress === 'BEFORE' ? (
             <View style={{ width: 24 }} />
+          ) : (
+            <FontAwesome name={isItemOpen[index] ? 'angle-up' : 'angle-down'} size={24} color={COLORS.white} />
           )}
         </View>
       </>
@@ -144,7 +169,7 @@ const RankList = ({ data, competitionData, isInProgress, onJoin, onLeave }) => {
   };
 
   const renderRankItem = ({ item, index }) => {
-    if (isInProgress) {
+    if (progress === 'IN_PROGRESS') {
       return (
         <TouchableOpacity
           style={[
@@ -178,7 +203,7 @@ const RankList = ({ data, competitionData, isInProgress, onJoin, onLeave }) => {
           )}
         </TouchableOpacity>
       );
-    } else {
+    } else if (progress === 'BEFORE') {
       return (
         <View
           style={[
@@ -201,7 +226,7 @@ const RankList = ({ data, competitionData, isInProgress, onJoin, onLeave }) => {
         keyExtractor={(item, index) => index}
         data={data}
         renderItem={renderRankItem}
-        ListHeaderComponent={isInProgress ? Podium : Preview}
+        ListHeaderComponent={progress === 'BEFORE' ? Preview : Podium}
         ListFooterComponent={<View style={{ height: 30 }} />}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ gap: 10 }}
@@ -215,11 +240,21 @@ export default RankList;
 const styles = StyleSheet.create({
   podiumWrapper: {
     backgroundColor: COLORS.darkGreyBackground,
-    paddingTop: 100,
+    paddingTop: 120,
     marginTop: 30,
     paddingHorizontal: 16,
     borderRadius: 16,
     alignItems: 'center',
+  },
+  spotlightImage: {
+    position: 'absolute',
+    top: 10,
+    resizeMode: 'cover',
+  },
+  crownImage: {
+    position: 'absolute',
+    width: 50,
+    height: 50,
   },
   rankerProfile: {
     position: 'absolute',

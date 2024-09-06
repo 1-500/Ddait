@@ -14,7 +14,7 @@ import CompetitionRoomHeader from '../../components/CompetitionRoomHeader';
 import CustomAlert from '../../components/CustomAlert';
 import { COLORS } from '../../constants/colors';
 import { FONT_SIZES, FONT_WEIGHTS } from '../../constants/font';
-import { isInCompetitionProgress } from '../../utils/competition';
+import { getCompetitionProgress } from '../../utils/competition';
 import Invite from './rankingPageTabs/Invite';
 import MyScore from './rankingPageTabs/MyScore';
 import RankList from './rankingPageTabs/RankList';
@@ -73,7 +73,7 @@ const CompetitionRoomRanking = ({ navigation }) => {
   const [competitionData, setCompetitionData] = useState();
   const [competitionRecord, setCompetitionRecord] = useState();
   const [competitionRecordDetail, setCompetitionRecordDetail] = useState();
-  const [isInProgress, setIsInProgress] = useState(false);
+  const [progress, setProgress] = useState(false);
   const [loading, setLoading] = useState(true);
   const [isDeleted, setIsDeleted] = useState(false);
   const [index, setIndex] = useState(0);
@@ -93,7 +93,7 @@ const CompetitionRoomRanking = ({ navigation }) => {
   const fetchCompetitionDetail = async () => {
     try {
       const result = await getCompetitionDetail(competitionId);
-      setIsInProgress(isInCompetitionProgress(result.data));
+      setProgress(getCompetitionProgress(result.data));
       setCompetitionData(result.data);
     } catch (error) {
       Alert.alert('경쟁방 상세 정보 조회 실패', error.message);
@@ -218,7 +218,7 @@ const CompetitionRoomRanking = ({ navigation }) => {
           <RankList
             data={competitionRecord}
             competitionData={competitionData}
-            isInProgress={isInProgress}
+            progress={progress}
             onJoin={handleJoin}
             onLeave={handleLeave}
             jumpTo={jumpTo}
