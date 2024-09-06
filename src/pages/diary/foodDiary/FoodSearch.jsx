@@ -20,8 +20,7 @@ const BookmarkOnIcon = require('../../../assets/images/dietDiary/bookmark.png');
 const FoodSearch = () => {
   const [searchText, setSearchText] = useState('');
   const [foodSearchListState, setFoodSearchListState] = useState([]);
-  const [checkedFoods, setCheckedFoods] = useState([]);
-  const [bookmarkFoods, setBookmarkFoods] = useState([]);
+  const [checkedFoodsState, setCheckedFoodsState] = useState([]);
   const { time } = useSelectedFoodTimeStore();
   const navigation = useNavigation();
 
@@ -40,7 +39,7 @@ const FoodSearch = () => {
     }
   }, 300);
   const handleCheckedFoods = (food) => {
-    setCheckedFoods((prev) => {
+    setCheckedFoodsState((prev) => {
       const isChecked = prev.some((item) => item.id === food.id);
       if (isChecked) {
         return prev.filter((item) => item.id !== food.id);
@@ -50,24 +49,28 @@ const FoodSearch = () => {
     });
   };
   const handleBookmarkFoods = async (food) => {
-    setBookmarkFoods((prev) => {
-      const updatedFoods = prev.map((item) => {
-        if (item.id === food.id) {
-          return { ...item, isChecked: !item.isChecked };
-        }
-        return item;
-      });
-      const exists = prev.some((item) => item.id === food.id);
-      if (!exists) {
-        return [...updatedFoods, { ...food, isChecked: true }];
-      }
-      return updatedFoods;
+    const newFoodSearchListState = foodSearchListState.map((element) => {
+      return element.id === food.id ? { ...element, isBookMarked: !element.isBookMarked } : { ...element };
     });
+    try {
+      if (newFoodSearchListState?.length) {
+        let result = await createBookMarkFoods({
+          bookMarkedFoods: newFoodSearchListState,
+        });
+
+        if (result.error) {
+          throw new Error('서버에서 에러가 발생하여 조회를 실패하였습니다.');
+        }
+      }
+    } catch (error) {
+      Alert.alert(error.message);
+    }
+    setFoodSearchListState(newFoodSearchListState);
   };
   const handleRecordButton = () => {
     try {
       const response = createFoodRecordByTime({
-        foodItems: checkedFoods,
+        foodItems: checkedFoodsState,
         meal_time: time,
         date: getFormattedDate(),
       });
@@ -78,26 +81,6 @@ const FoodSearch = () => {
     //   screen: 'FoodDetailScreen',
     // });
   };
-
-  useEffect(() => {
-    const updateBookmarkFoods = async () => {
-      try {
-        if (bookmarkFoods?.length) {
-          let result = await createBookMarkFoods({
-            bookMarkedFoods: bookmarkFoods,
-          });
-
-          if (result.error) {
-            throw new Error('서버에서 에러가 발생하여 조회를 실패하였습니다.');
-          }
-        }
-      } catch (error) {
-        Alert.alert(error.message);
-      }
-    };
-
-    updateBookmarkFoods();
-  }, [bookmarkFoods]); // 상태가 변경될 때마다 실행
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.darkBackground }}>
@@ -114,8 +97,7 @@ const FoodSearch = () => {
         </View>
         <ScrollView style={styles.foodListContainer}>
           {foodSearchListState?.map((food) => {
-            const isChecked = checkedFoods.some((item) => item.id === food.id);
-            const bookmarkedItem = bookmarkFoods.filter((item) => item.id === food.id)[0];
+            const isChecked = checkedFoodsState.some((item) => item.id === food.id);
             return (
               <FoodInfoCard
                 key={food.id}
@@ -123,7 +105,7 @@ const FoodSearch = () => {
                 serving_size={food.serving_size}
                 calories={food.calories}
                 isCheckFood={isChecked}
-                isCheckedBookmark={bookmarkedItem?.isChecked || false}
+                isCheckedBookmark={food.isBookMarked}
                 onHandleCheckedFoods={() => handleCheckedFoods(food)}
                 onHandleBookmarkFoods={() => handleBookmarkFoods(food)}
               />
@@ -132,7 +114,7 @@ const FoodSearch = () => {
         </ScrollView>
 
         <View style={styles.buttonContainer}>
-          <CustomButton size="large" text={`${checkedFoods.length}개 선택됨`} theme="secondary" />
+          <CustomButton size="large" text={`${checkedFoodsState.length}개 선택됨`} theme="secondary" />
           <CustomButton size="large" text="기록하기" theme="primary" onPress={handleRecordButton} />
         </View>
       </View>
