@@ -27,7 +27,7 @@ const WorkoutDiary = () => {
       } catch (error) {
         /*eslint-disable */
         console.log('error: ', error);
-        showToast('운동 기록을 불러오는데 실패했습니다.', 'error');
+        showToast(`에러메세지 : ${error}`, 'error', 1000, 'top', 80);
       }
     };
 
@@ -67,15 +67,6 @@ const WorkoutDiary = () => {
             <Text style={styles.messageText}>완료한 운동이 없네요!</Text>
             <Text style={styles.messageText}>오늘 운동하러 가볼까요?</Text>
           </View>
-
-          <Button
-            title="Show top Toast"
-            onPress={() => showToast('운동 기록을 불러오는데 실패했습니다.', 'error', 5000, 'top')}
-          />
-          <Button
-            title="Show Bottom Toast"
-            onPress={() => showToast('운동 기록을 불러오는데 실패했습니다.', 'error', 5000, 'bottom')}
-          />
           <CustomButton
             theme="primary"
             size="large"
