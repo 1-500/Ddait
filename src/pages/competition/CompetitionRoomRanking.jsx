@@ -74,6 +74,7 @@ const CompetitionRoomRanking = ({ navigation }) => {
   const [competitionRecordDetail, setCompetitionRecordDetail] = useState();
   const [isInProgress, setIsInProgress] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [isDeleted, setIsDeleted] = useState(false);
   const [index, setIndex] = useState(0);
   const [routes] = useState([
     { key: 'rankList', title: '랭킹' },
@@ -115,6 +116,7 @@ const CompetitionRoomRanking = ({ navigation }) => {
   };
 
   const fetchAllData = useCallback(async () => {
+    if (isDeleted) return;
     setLoading(true);
     try {
       await Promise.all([fetchCompetitionDetail(), fetchCompetitionRecord(), fetchCompetitionRecordDetail()]);
@@ -123,13 +125,15 @@ const CompetitionRoomRanking = ({ navigation }) => {
     } finally {
       setLoading(false);
     }
-  }, [competitionId]);
+  }, [competitionId, isDeleted]);
 
   const isFocused = useIsFocused();
 
   useEffect(() => {
-    fetchAllData();
-  }, [isFocused]);
+    if (!isDeleted) {
+      fetchAllData();
+    }
+  }, [isFocused, isDeleted]);
 
   const handleJoin = async () => {
     try {
@@ -166,6 +170,25 @@ const CompetitionRoomRanking = ({ navigation }) => {
     ]);
   };
 
+  const handleDelete = useCallback(
+    (success, message) => {
+      if (success) {
+        Alert.alert('경쟁방 삭제', '경쟁방이 삭제되었습니다 😢', [
+          {
+            text: '확인',
+            onPress: () => {
+              setIsDeleted(true);
+              navigation.goBack();
+            },
+          },
+        ]);
+      } else {
+        Alert.alert('삭제 실패', message);
+      }
+    },
+    [navigation],
+  );
+
   const renderScene = ({ route, jumpTo }) => {
     switch (route.key) {
       case 'rankList':
@@ -186,6 +209,10 @@ const CompetitionRoomRanking = ({ navigation }) => {
     }
   };
 
+  if (isDeleted) {
+    return null;
+  }
+
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
@@ -196,7 +223,7 @@ const CompetitionRoomRanking = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.pageContainer}>
-      {competitionData && <CompetitionRoomHeader data={competitionData} />}
+      {competitionData && <CompetitionRoomHeader data={competitionData} onDelete={handleDelete} />}
       <TabView
         renderTabBar={(props) => (
           <TabBar

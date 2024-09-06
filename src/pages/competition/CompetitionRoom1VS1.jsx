@@ -246,6 +246,7 @@ const styles = StyleSheet.create({
   profileTextWrapper: {
     flexDirection: 'row',
     gap: 4,
+    alignItems: 'center',
   },
   profileText: {
     textAlign: 'center',
