@@ -147,11 +147,13 @@ const CompetitionRoomRanking = ({ navigation }) => {
     try {
       const res = await enterCompetition(competitionId);
       if (res.status === 200) {
+        // TODO: toast 메세지 적용
         Alert.alert('성공', '경쟁방에 참여했습니다!');
         fetchAllData();
       }
     } catch (error) {
       console.log('error: ', error);
+      // TODO: toast 메세지 적용
       Alert.alert('오류', '경쟁방에 참여에 실패했습니다!');
     }
   };
@@ -167,7 +169,7 @@ const CompetitionRoomRanking = ({ navigation }) => {
   const handleLeave = () => {
     showAlert({
       title: '경쟁방 나가기',
-      message: '이 경쟁방에서 나가시겠습니까?',
+      message: '정말 이 경쟁방에서 나가시겠습니까? 😢',
       onConfirm: async () => {
         try {
           const res = await leaveCompetition(competitionId);
@@ -179,7 +181,7 @@ const CompetitionRoomRanking = ({ navigation }) => {
           console.log('error', error);
           showAlert({
             title: '오류',
-            message: '경쟁방 나가기에 오류가 발생했습니다',
+            message: '경쟁방 나가기 중 오류가 발생했습니다',
             showCancel: false,
             onConfirm: hideAlert,
           });
@@ -188,24 +190,26 @@ const CompetitionRoomRanking = ({ navigation }) => {
     });
   };
 
-  const handleDelete = useCallback(
-    (success, message) => {
-      if (success) {
-        Alert.alert('경쟁방 삭제', '경쟁방이 삭제되었습니다 😢', [
-          {
-            text: '확인',
-            onPress: () => {
-              setIsDeleted(true);
-              navigation.goBack();
-            },
-          },
-        ]);
-      } else {
-        Alert.alert('삭제 실패', message);
-      }
-    },
-    [navigation],
-  );
+  const handleDelete = (success, message) => {
+    if (success) {
+      showAlert({
+        title: '경쟁방 삭제',
+        message: '정말 이 경쟁방을 삭제하시겠습니까? 😢',
+        onConfirm: () => {
+          setIsDeleted(true);
+          navigation.goBack();
+        },
+      });
+    } else {
+      console.log('error', error);
+      showAlert({
+        title: '오류',
+        message: message || '경쟁방 삭제 중 오류가 발생했습니다.',
+        showCancel: false,
+        onConfirm: hideAlert,
+      });
+    }
+  };
 
   const renderScene = ({ route, jumpTo }) => {
     switch (route.key) {
