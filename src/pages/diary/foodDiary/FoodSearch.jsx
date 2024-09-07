@@ -8,9 +8,9 @@ import CustomInput from '../../../components/CustomInput';
 import HeaderComponents from '../../../components/HeaderComponents';
 import { BACKGROUND_COLORS, COLORS, TEXT_COLORS } from '../../../constants/colors';
 import { FONT_SIZES, FONT_WEIGHTS } from '../../../constants/font';
+import useDiaryCalendarStore from '../../../store/food/calendar/index';
 import useSelectedFoodTimeStore from '../../../store/index';
 import { debounce } from '../../../utils/foodDiary/debounce';
-import { getFormattedDate } from '../../../utils/foodDiary/index';
 
 const PlusIcon = require('../../../assets/images/dietDiary/PluscircleWhiteButton.png');
 const BookmarkOffIcon = require('../../../assets/images/dietDiary/bookmarkWhite.png');
@@ -22,6 +22,7 @@ const FoodSearch = () => {
   const [foodSearchListState, setFoodSearchListState] = useState([]);
   const [checkedFoodsState, setCheckedFoodsState] = useState([]);
   const { time } = useSelectedFoodTimeStore();
+  const { selected } = useDiaryCalendarStore();
   const navigation = useNavigation();
 
   const handleSearchInput = debounce(async (text) => {
@@ -71,7 +72,7 @@ const FoodSearch = () => {
       const response = await createFoodRecordByTime({
         foodItems: checkedFoodsState,
         meal_time: time,
-        date: getFormattedDate(),
+        date: selected,
       });
       if (response.status === 200) {
         Alert.alert(response.message);
