@@ -58,9 +58,6 @@ const StartWorkout = () => {
         // 운동 목록과 북마크 목록을 병렬로 요청하게 all메서르 사용
         const [exerciseRes, bookmarkRes] = await Promise.all([getExerciseList(), getWorkoutInfoBookmark()]);
 
-        console.log('exerciseRes :>>', exerciseRes);
-        console.log('bookmarkRes :>>', bookmarkRes);
-
         // bookmarkRes.data로 북마크 데이터를 추출하여 운동 목록과 결합
         const exerciseListWithBookmarks = exerciseRes.map((exercise) => {
           const isBookmarked = bookmarkRes.data.some((bookmark) => bookmark.workout_info_id === exercise.id);
@@ -267,14 +264,12 @@ const StartWorkout = () => {
         return;
       }
 
-      // 운동 기록 객체 생성
       const workoutRecord = {
         title: title,
         time: time,
-        workout_records, // 운동 기록 데이터
+        workout_records,
       };
 
-      // POST 요청으로 운동 기록 저장
       const res = await postWorkoutRecord(workoutRecord);
 
       /* eslint-disable */
@@ -309,28 +304,20 @@ const StartWorkout = () => {
   };
   const { totalWorkoutTime } = calculateTotalTimes();
 
-  const handleBookmarkToggle = async (workoutName, isBookMarked) => {
-    console.log(workoutName, isBookMarked);
+  const handleBookmarkToggle = async (workoutId, isBookMarked) => {
     try {
-      // isBookMarked 값을 반전시켜 북마크 추가/삭제 결정
       const newBookmarkState = !isBookMarked;
-
-      // 서버로 북마크 상태 전송 (workoutName과 새로운 북마크 상태 전달)
-      const res = await postBookmark([{ name: workoutName, isBookMarked: newBookmarkState }]);
+      const res = await postWorkoutInfoBookmark(workoutId, newBookmarkState);
+      console.log('서버 응답:', res);
 
       if (res.status === 200) {
-        // 응답이 성공적으로 오면 UI를 업데이트 (예: 북마크 상태 토글)
-        setDropdownState((prev) => ({
-          ...prev,
-          bookmark: newBookmarkState, // 새로운 북마크 상태 반영
-        }));
-
-        // 사용자에게 알림
-        showToast(`'${workoutName}'의 북마크가 ${newBookmarkState ? '추가' : '삭제'}되었습니다.`, 'success');
+        setExerciseListData((prevData) =>
+          prevData.map((item) => (item.id === workoutId ? { ...item, bookmark: newBookmarkState } : item)),
+        );
+        console.log('UI 업데이트 후 운동 데이터:', exerciseListData);
       }
     } catch (error) {
       console.error('Error updating bookmark:', error);
-      showToast('북마크 처리에 실패했습니다.', 'error');
     }
   };
 
@@ -403,7 +390,7 @@ const StartWorkout = () => {
       </View>
       <Text style={styles.exerciseItemText}>{item.name}</Text>
       <Text style={styles.exerciseItemText}>{item.bookmark}</Text>
-      <TouchableOpacity onPress={() => handleBookmarkToggle(item.name, item.bookmark)}>
+      <TouchableOpacity onPress={() => handleBookmarkToggle(item.id, item.bookmark)}>
         <MaterialCommunityIcons
           name={item.bookmark ? 'bookmark' : 'bookmark-outline'}
           size={24}

@@ -33,6 +33,15 @@ export const postWorkoutRecord = async (data) => {
 };
 
 export const postWorkoutInfoBookmark = async (workoutId, isBookMarked) => {
+  console.log('전송할 데이터:', {
+    bookMarkedWorkouts: [
+      {
+        id: workoutId,
+        isBookMarked: isBookMarked,
+      },
+    ],
+  });
+
   try {
     const res = await API.post('/workout-diary/bookmark', {
       bookMarkedWorkouts: [
