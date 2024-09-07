@@ -208,12 +208,9 @@ const CompetitionRoomRanking = ({ navigation }) => {
       message: `정말 이 경쟁방을 없애실 건가요?\n삭제하면 모든 기록이 사라져요 😢😢\n\n참가자들에게도 영향이 갈 수 있어요!`,
       onConfirm: async () => {
         try {
-          const res = await deleteCompetition(competitionData.id);
-          if (res.status === 200) {
-            hideAlert();
-            setIsDeleted(true);
-            navigation.goBack();
-          }
+          await deleteCompetition(competitionId);
+          setIsDeleted(true);
+          navigation.goBack();
         } catch (error) {
           console.log('경쟁방 삭제 실패', error);
           showAlert({
@@ -224,6 +221,7 @@ const CompetitionRoomRanking = ({ navigation }) => {
           });
         }
       },
+      onCancel: hideAlert,
     });
   };
 

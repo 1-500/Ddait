@@ -20,7 +20,7 @@ const CompetitionRoomHeader = ({ data, onDelete }) => {
 
   const toggleDropdown = () => setShowDropdown((prev) => !prev);
 
-  const handleDeletePress = async () => {
+  const handleDeletePress = () => {
     setShowDropdown(false);
     onDelete();
   };
