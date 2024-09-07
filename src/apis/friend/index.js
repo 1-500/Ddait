@@ -32,6 +32,7 @@ export const getMyFriends = async () => {
     }
   }
 };
+
 export const getReqSent = async () => {
   try {
     const response = await API.get('/friends/request/sent');
@@ -62,6 +63,7 @@ export const getReqReceived = async () => {
     }
   }
 };
+
 export const requestFriend = async (memberId) => {
   console.log('memberId:', memberId);
   const postData = {
@@ -76,6 +78,22 @@ export const requestFriend = async (memberId) => {
     if (error.response) {
       console.error('requestFriend Error: ', error.response.data);
       throw Error(error.response.data.message);
+    } else {
+      console.error('예상치 못한 오류 발생:', error);
+      throw error;
+    }
+  }
+};
+
+export const acceptRequest = async (reqId) => {
+  try {
+    const response = await API.patch(`friends/accept/?req_id=${reqId}`);
+    console.log('acceptRequest 응답:', response.data);
+    return response.data;
+  } catch (error) {
+    if (error.response.data) {
+      console.error('acceptRequest Error:', error.response.data);
+      throw error;
     } else {
       console.error('예상치 못한 오류 발생:', error);
       throw error;
