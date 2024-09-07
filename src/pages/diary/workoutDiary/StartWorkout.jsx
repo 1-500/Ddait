@@ -14,7 +14,12 @@ import {
 } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import { getExerciseList, postWorkoutInfoBookmark, postWorkoutRecord } from '../../../apis/diary';
+import {
+  getExerciseList,
+  getWorkoutInfoBookmark,
+  postWorkoutInfoBookmark,
+  postWorkoutRecord,
+} from '../../../apis/diary';
 import CustomButton from '../../../components/CustomButton';
 import CustomInput from '../../../components/CustomInput';
 import CustomTimer from '../../../components/CustomTimer';
@@ -48,16 +53,27 @@ const StartWorkout = () => {
 
   /* eslint-disable */
   useEffect(() => {
-    const fetchExerciseList = async () => {
+    const fetchExerciseData = async () => {
       try {
-        const res = await getExerciseList();
-        setExerciseListData(res);
+        // 운동 목록과 북마크 목록을 병렬로 요청하게 all메서르 사용
+        const [exerciseRes, bookmarkRes] = await Promise.all([getExerciseList(), getWorkoutInfoBookmark()]);
+
+        console.log('exerciseRes :>>', exerciseRes);
+        console.log('bookmarkRes :>>', bookmarkRes);
+
+        // bookmarkRes.data로 북마크 데이터를 추출하여 운동 목록과 결합
+        const exerciseListWithBookmarks = exerciseRes.map((exercise) => {
+          const isBookmarked = bookmarkRes.data.some((bookmark) => bookmark.workout_info_id === exercise.id);
+          return { ...exercise, bookmark: isBookmarked };
+        });
+
+        setExerciseListData(exerciseListWithBookmarks);
       } catch (error) {
-        console.log('error', error);
+        console.log('무슨 error? : ', error);
       }
     };
 
-    fetchExerciseList();
+    fetchExerciseData();
   }, []);
 
   useEffect(() => {
