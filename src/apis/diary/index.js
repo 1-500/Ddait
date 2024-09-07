@@ -1,4 +1,4 @@
-// index
+/* eslint-disable no-console */
 import { API } from '..';
 
 export const getDiaryList = async (selected) => {
@@ -29,5 +29,22 @@ export const postWorkoutRecord = async (data) => {
     return res.data;
   } catch (error) {
     return error;
+  }
+};
+
+export const postWorkoutInfoBookmark = async (workoutId, isBookMarked) => {
+  try {
+    const res = await API.post('/bookmark/workout-diary/bookmark', {
+      bookMarkedWorkouts: [
+        {
+          id: workoutId,
+          isBookMarked: isBookMarked,
+        },
+      ],
+    });
+
+    return res.data;
+  } catch (error) {
+    console.error('Error:', error);
   }
 };

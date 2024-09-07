@@ -14,10 +14,9 @@ import {
 } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import { getExerciseList, postWorkoutRecord } from '../../../apis/diary';
+import { getExerciseList, postWorkoutInfoBookmark, postWorkoutRecord } from '../../../apis/diary';
 import CustomButton from '../../../components/CustomButton';
 import CustomInput from '../../../components/CustomInput';
-import CustomTag from '../../../components/CustomTag';
 import CustomTimer from '../../../components/CustomTimer';
 import DropdownModal from '../../../components/DropdownModal';
 import HeaderComponents from '../../../components/HeaderComponents';
@@ -294,11 +293,29 @@ const StartWorkout = () => {
   };
   const { totalWorkoutTime } = calculateTotalTimes();
 
-  const handleBookmarkToggle = () => {
-    setDropdownState((prev) => ({
-      ...prev,
-      bookmark: !prev.bookmark,
-    }));
+  const handleBookmarkToggle = async (workoutName, isBookMarked) => {
+    console.log(workoutName, isBookMarked);
+    try {
+      // isBookMarked 값을 반전시켜 북마크 추가/삭제 결정
+      const newBookmarkState = !isBookMarked;
+
+      // 서버로 북마크 상태 전송 (workoutName과 새로운 북마크 상태 전달)
+      const res = await postBookmark([{ name: workoutName, isBookMarked: newBookmarkState }]);
+
+      if (res.status === 200) {
+        // 응답이 성공적으로 오면 UI를 업데이트 (예: 북마크 상태 토글)
+        setDropdownState((prev) => ({
+          ...prev,
+          bookmark: newBookmarkState, // 새로운 북마크 상태 반영
+        }));
+
+        // 사용자에게 알림
+        showToast(`'${workoutName}'의 북마크가 ${newBookmarkState ? '추가' : '삭제'}되었습니다.`, 'success');
+      }
+    } catch (error) {
+      console.error('Error updating bookmark:', error);
+      showToast('북마크 처리에 실패했습니다.', 'error');
+    }
   };
 
   const renderWorkoutCard = ({ item }) => (
@@ -360,17 +377,22 @@ const StartWorkout = () => {
   );
 
   const renderExerciseList = ({ item }) => (
-    <TouchableOpacity style={styles.exerciseItemContainer} onPress={() => handleExerciseSelect(item)}>
+    <TouchableOpacity style={styles.exerciseItemContainer} onPress={() => handleExerciseSelect(item.name)}>
       <View style={styles.exerciseCheckboxContainer}>
         <MaterialCommunityIcons
-          name={selectedExercises.includes(item) ? 'checkbox-marked' : 'checkbox-blank-outline'}
+          name={selectedExercises.includes(item.name) ? 'checkbox-marked' : 'checkbox-blank-outline'}
           size={24}
           color={COLORS.primary}
         />
       </View>
-      <Text style={styles.exerciseItemText}>{item}</Text>
-      <TouchableOpacity>
-        <MaterialCommunityIcons name="bookmark-outline" size={24} color={TEXT_COLORS.secondary} />
+      <Text style={styles.exerciseItemText}>{item.name}</Text>
+      <Text style={styles.exerciseItemText}>{item.bookmark}</Text>
+      <TouchableOpacity onPress={() => handleBookmarkToggle(item.name, item.bookmark)}>
+        <MaterialCommunityIcons
+          name={item.bookmark ? 'bookmark' : 'bookmark-outline'}
+          size={24}
+          color={item.bookmark ? COLORS.primary : TEXT_COLORS.secondary}
+        />
       </TouchableOpacity>
     </TouchableOpacity>
   );
@@ -485,7 +507,6 @@ const StartWorkout = () => {
                   paddingHorizontal: SPACING.sm,
                   borderRadius: RADIUS.large,
                 }}
-                onPress={handleBookmarkToggle}
               >
                 <MaterialCommunityIcons
                   name={dropdownState.bookmark ? 'bookmark' : 'bookmark-outline'}
@@ -496,7 +517,7 @@ const StartWorkout = () => {
             </View>
             <View>
               <FlatList
-                data={filteredExerciseList.map((item) => item.name)}
+                data={filteredExerciseList}
                 renderItem={renderExerciseList}
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={{ paddingBottom: 16, paddingHorizontal: 16 }}
