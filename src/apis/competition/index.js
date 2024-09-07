@@ -141,3 +141,21 @@ export const leaveCompetition = async (roomId) => {
     }
   }
 };
+
+export const deleteCompetition = async (roomId) => {
+  try {
+    const response = await API.delete('/competition/rooms', {
+      data: { competition_room_id: roomId },
+    });
+    console.log('deleteCompetition 응답:', response.data);
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      console.error('deleteCompetition Error:', error.response);
+      throw error;
+    } else {
+      console.error('예상치 못한 오류 발생:', error.message);
+      throw error;
+    }
+  }
+};

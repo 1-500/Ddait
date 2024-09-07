@@ -9,21 +9,27 @@ import { LAYOUT_PADDING, SPACING } from '../../../constants/space';
 import { calculateDday } from '../../../utils/date';
 
 const podiumImage = require('../../../assets/images/podium.png');
+const spotlightImage = require('../../../assets/images/spotlight.png');
+const crownImage = require('../../../assets/images/crown.png');
 const dummyProfile = require('../../../assets/images/profile.png');
 
 const { width: screenWidth } = Dimensions.get('window');
 
-const RankList = ({ data, competitionData, isInProgress, onJoin, onLeave }) => {
-  const [imageSize, setImageSize] = useState({ width: 0, height: 0 });
+const RankList = ({ data, competitionData, progress, onJoin, onLeave }) => {
+  const [podiumImageSize, setPodiumImageSize] = useState({ width: 0, height: 0 });
+  const [spotlightImageSize, setSpotlightImageSize] = useState({ width: 0, height: 0 });
   const [isItemOpen, setIsItemOpen] = useState([]);
 
   const rankListRef = useRef();
 
   useEffect(() => {
-    const assetSource = Image.resolveAssetSource(podiumImage);
-    const aspectRatio = assetSource.height / assetSource.width;
-    const imageWidth = screenWidth - 76;
-    setImageSize({ width: imageWidth, height: imageWidth * aspectRatio });
+    const podiumAssetSource = Image.resolveAssetSource(podiumImage);
+    const podiumAspectRatio = podiumAssetSource.height / podiumAssetSource.width;
+    const spotlightAssetSource = Image.resolveAssetSource(spotlightImage);
+    const spotlightAspectRatio = spotlightAssetSource.height / spotlightAssetSource.width;
+    const imageWidth = screenWidth - 40;
+    setPodiumImageSize({ width: imageWidth - 36, height: (imageWidth - 36) * podiumAspectRatio });
+    setSpotlightImageSize({ width: imageWidth, height: imageWidth * spotlightAspectRatio });
   }, []);
 
   useEffect(() => {
@@ -38,25 +44,44 @@ const RankList = ({ data, competitionData, isInProgress, onJoin, onLeave }) => {
         {data && (
           <View style={{ alignItems: 'center' }}>
             <View style={styles.podiumWrapper}>
-              <Image style={{ width: imageSize.width, height: imageSize.height }} source={podiumImage} />
-              {data[0] && (
+              {progress === 'AFTER' && (
                 <Image
                   style={[
-                    styles.rankerProfile,
-                    {
-                      bottom: 0.85 * imageSize.height,
-                    },
+                    styles.spotlightImage,
+                    { width: spotlightImageSize.width, height: spotlightImageSize.height },
                   ]}
-                  source={data[0].member_info.profile_image ? { uri: data[0].member_info.profile_image } : dummyProfile}
+                  source={spotlightImage}
                 />
+              )}
+              <Image style={{ width: podiumImageSize.width, height: podiumImageSize.height }} source={podiumImage} />
+              {data[0] && (
+                <>
+                  <Image
+                    style={[
+                      styles.rankerProfile,
+                      {
+                        bottom: 0.85 * podiumImageSize.height,
+                      },
+                    ]}
+                    source={
+                      data[0].member_info.profile_image ? { uri: data[0].member_info.profile_image } : dummyProfile
+                    }
+                  />
+                  {progress === 'AFTER' && (
+                    <Image
+                      style={[styles.crownImage, { bottom: 0.85 * podiumImageSize.height + 74 }]}
+                      source={crownImage}
+                    />
+                  )}
+                </>
               )}
               {data[1] && (
                 <Image
                   style={[
                     styles.rankerProfile,
                     {
-                      bottom: 0.63 * imageSize.height,
-                      left: 16 + 0.05 * imageSize.width,
+                      bottom: 0.63 * podiumImageSize.height,
+                      left: 16 + 0.05 * podiumImageSize.width,
                     },
                   ]}
                   source={data[1].member_info.profile_image ? { uri: data[1].member_info.profile_image } : dummyProfile}
@@ -67,8 +92,8 @@ const RankList = ({ data, competitionData, isInProgress, onJoin, onLeave }) => {
                   style={[
                     styles.rankerProfile,
                     {
-                      bottom: 0.49 * imageSize.height,
-                      right: 16 + 0.05 * imageSize.width,
+                      bottom: 0.49 * podiumImageSize.height,
+                      right: 16 + 0.05 * podiumImageSize.width,
                     },
                   ]}
                   source={data[2].member_info.profile_image ? { uri: data[2].member_info.profile_image } : dummyProfile}
@@ -98,9 +123,8 @@ const RankList = ({ data, competitionData, isInProgress, onJoin, onLeave }) => {
     return (
       <View style={styles.preview}>
         <Text style={styles.previewText}>
-          {dday}일 후 랭킹전 시작! 🏆{'\n'}
-          <Text style={{ color: COLORS.secondary }}>따잇! </Text>
-          하고 1등 할 준비 되셨나요?
+          {dday}일 후 랭킹전 시작! 🏆{'\n'} 1등 하고
+          <Text style={{ color: COLORS.secondary }}> 따잇! </Text>할 준비 되셨나요?
         </Text>
         <View>
           <TouchableOpacity style={styles.actionBtn} onPress={isParticipant ? onLeave : onJoin} activeOpacity={0.6}>
@@ -111,8 +135,41 @@ const RankList = ({ data, competitionData, isInProgress, onJoin, onLeave }) => {
     );
   };
 
+  const RankItemContent = ({ item, index }) => {
+    return (
+      <>
+        <View style={styles.rankItemContentWrapper}>
+          <Text style={styles.rankText}>{progress === 'BEFORE' ? '-' : index + 1}</Text>
+          <Image
+            style={styles.profileImg}
+            source={item.member_info.profile_image ? { uri: item.member_info.profile_image } : dummyProfile}
+          />
+          <Text style={styles.rankText}>{item.member_info.nickname}</Text>
+        </View>
+        <View style={[styles.rankItemContentWrapper, { gap: 30 }]}>
+          {!isItemOpen[index] && (
+            <Text
+              style={[
+                styles.rankText,
+                { fontFamily: FONTS.PRETENDARD[600] },
+                item.is_my_record ? { color: COLORS.white } : { color: COLORS.lightPurple },
+              ]}
+            >
+              {`${item.total_score}점`}
+            </Text>
+          )}
+          {progress === 'BEFORE' ? (
+            <View style={{ width: 24 }} />
+          ) : (
+            <FontAwesome name={isItemOpen[index] ? 'angle-up' : 'angle-down'} size={24} color={COLORS.white} />
+          )}
+        </View>
+      </>
+    );
+  };
+
   const renderRankItem = ({ item, index }) => {
-    if (isInProgress) {
+    if (progress === 'IN_PROGRESS') {
       return (
         <TouchableOpacity
           style={[
@@ -125,9 +182,7 @@ const RankList = ({ data, competitionData, isInProgress, onJoin, onLeave }) => {
           activeOpacity={0.6}
         >
           <View style={styles.rankItemHeaderWrapper}>
-            <Text style={styles.rankText}>{index + 1}</Text>
-            <Text style={styles.rankText}>{item.member_info.nickname}</Text>
-            <FontAwesome name={isItemOpen[index] ? 'angle-up' : 'angle-down'} size={24} color={COLORS.white} />
+            <RankItemContent item={item} index={index} />
           </View>
           {isItemOpen[index] && (
             <View style={styles.innerContentWrapper}>
@@ -138,13 +193,17 @@ const RankList = ({ data, competitionData, isInProgress, onJoin, onLeave }) => {
                 >{`${e.name}: ${item.score_detail[i].score}점`}</Text>
               ))}
               <Text
-                style={[styles.scoreText, { fontFamily: FONTS.PRETENDARD[600] }]}
+                style={[
+                  styles.rankText,
+                  { fontFamily: FONTS.PRETENDARD[600], marginTop: 4 },
+                  item.is_my_record ? { color: COLORS.white } : { color: COLORS.lightPurple },
+                ]}
               >{`총점: ${item.total_score}점`}</Text>
             </View>
           )}
         </TouchableOpacity>
       );
-    } else {
+    } else if (progress === 'BEFORE') {
       return (
         <View
           style={[
@@ -153,9 +212,7 @@ const RankList = ({ data, competitionData, isInProgress, onJoin, onLeave }) => {
             item.is_my_record ? { backgroundColor: COLORS.primary } : { backgroundColor: COLORS.darkGreyBackground },
           ]}
         >
-          <Text style={styles.rankText}>-</Text>
-          <Text style={styles.rankText}>{item.member_info.nickname}</Text>
-          <View />
+          <RankItemContent item={item} index={index} />
         </View>
       );
     }
@@ -169,7 +226,7 @@ const RankList = ({ data, competitionData, isInProgress, onJoin, onLeave }) => {
         keyExtractor={(item, index) => index}
         data={data}
         renderItem={renderRankItem}
-        ListHeaderComponent={isInProgress ? Podium : Preview}
+        ListHeaderComponent={progress === 'BEFORE' ? Preview : Podium}
         ListFooterComponent={<View style={{ height: 30 }} />}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ gap: 10 }}
@@ -183,11 +240,21 @@ export default RankList;
 const styles = StyleSheet.create({
   podiumWrapper: {
     backgroundColor: COLORS.darkGreyBackground,
-    paddingTop: 100,
+    paddingTop: 120,
     marginTop: 30,
     paddingHorizontal: 16,
     borderRadius: 16,
     alignItems: 'center',
+  },
+  spotlightImage: {
+    position: 'absolute',
+    top: 10,
+    resizeMode: 'cover',
+  },
+  crownImage: {
+    position: 'absolute',
+    width: 50,
+    height: 50,
   },
   rankerProfile: {
     position: 'absolute',
@@ -218,6 +285,15 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingBottom: SPACING.md,
+  },
+  rankItemContentWrapper: {
+    flexDirection: 'row',
+    gap: 10,
+    alignItems: 'center',
+  },
+  profileImg: {
+    width: 40,
+    height: 40,
   },
   rankText: {
     fontSize: FONT_SIZES.sm,

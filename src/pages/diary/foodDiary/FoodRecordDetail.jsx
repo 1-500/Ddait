@@ -1,36 +1,46 @@
-import { useNavigation } from '@react-navigation/native';
-import React, { useEffect, useState } from 'react';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import React, { useCallback, useState } from 'react';
 import { Alert, Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { getFoodRecordByTime } from '../../../apis/food/index';
 import CustomButton from '../../../components/CustomButton';
 import HeaderComponents from '../../../components/HeaderComponents';
 import { COLORS } from '../../../constants/colors';
-import { FONT_SIZES, FONTS } from '../../../constants/font';
+import { FONT_SIZES, FONT_WEIGHTS, FONTS } from '../../../constants/font';
 import { RADIUS } from '../../../constants/radius';
+import useDiaryCalendarStore from '../../../store/food/calendar/index';
+import useSelectedFoodTimeStore from '../../../store/index';
 import { calculateNutrientRatios, getTotal } from '../../../utils/foodDiary/index';
 
 const PlusButtonIcon = require('../../../assets/images/dietDiary/PluscircleButton.png');
 const MinusButtonIcon = require('../../../assets/images/dietDiary/MinusCircleButton.png');
 
-const FoodRecordDetail = ({ route }) => {
-  const { time } = route.params;
+const FoodRecordDetail = () => {
   const navigation = useNavigation();
   const [foodRecordListState, setFoodRecordListState] = useState([]);
-  useEffect(() => {
-    const fetchFoodRecord = async () => {
-      try {
-        const result = await getFoodRecordByTime();
-        if (result.error) {
-          throw new Error('서버에서 데이터를 가져오지 못했습니다.');
+  const { time } = useSelectedFoodTimeStore();
+  const { selected } = useDiaryCalendarStore();
+
+  useFocusEffect(
+    useCallback(() => {
+      const fetchFoodRecord = async () => {
+        try {
+          const result = await getFoodRecordByTime({
+            date: selected,
+            mealTime: time,
+          });
+          if (result.error) {
+            throw new Error(result.error);
+          }
+          setFoodRecordListState(result.data);
+        } catch (error) {
+          Alert.alert(error.message);
         }
-        setFoodRecordListState(result.data);
-      } catch (error) {
-        Alert.alert(error.message);
-      }
-    };
-    fetchFoodRecord();
-  }, []);
+      };
+
+      fetchFoodRecord();
+    }, [selected, time]),
+  );
 
   const macroRatio = calculateNutrientRatios(foodRecordListState);
 
@@ -83,11 +93,24 @@ const FoodRecordDetail = ({ route }) => {
           <View style={{ marginVertical: 10 }}>
             <Text style={styles.foodListTitle}>{time}</Text>
           </View>
-          {foodRecordListState?.map((food) => {
-            return (
-              <FoodInfoCard key={food.id} name={food.name} serving_size={food.serving_size} calories={food.calories} />
-            );
-          })}
+          {foodRecordListState?.length > 0 ? (
+            foodRecordListState.map((food) => {
+              return (
+                <FoodInfoCard
+                  key={food.id}
+                  name={food.name}
+                  serving_size={food.serving_size}
+                  calories={food.calories}
+                />
+              );
+            })
+          ) : (
+            <View style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+              <Text style={{ fontSize: FONT_SIZES.md, fontFamily: FONT_WEIGHTS.semiBold, color: 'white' }}>
+                등록된 음식이 없습니다.
+              </Text>
+            </View>
+          )}
         </ScrollView>
         <View style={styles.buttonContainer}>
           <CustomButton

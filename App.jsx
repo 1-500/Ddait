@@ -7,6 +7,9 @@ import Toast, { BaseToast, ErrorToast } from 'react-native-toast-message';
 
 import { TEXT_COLORS } from './src/constants/colors';
 import { FONTS } from './src/constants/font';
+import { StatusBar, View } from 'react-native';
+
+import { COLORS } from './src/constants/colors';
 import Router from './src/router';
 
 const toastConfig = {
@@ -42,10 +45,13 @@ const toastConfig = {
 
 function App() {
   return (
-    <NavigationContainer>
-      <Router />
-      <Toast config={toastConfig} />
-    </NavigationContainer>
+    <View style={{ flex: 1 }}>
+      <StatusBar barStyle="light-content" backgroundColor={COLORS.darkBackground} />
+      <NavigationContainer theme={{ colors: { background: COLORS.darkBackground } }}>
+        <Router />
+        <Toast config={toastConfig} />
+      </NavigationContainer>
+    </View>
   );
 }
 

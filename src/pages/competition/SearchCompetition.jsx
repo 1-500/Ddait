@@ -1,6 +1,7 @@
 import { useIsFocused } from '@react-navigation/native';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Alert, FlatList, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Octicons from 'react-native-vector-icons/Octicons';
 
@@ -17,7 +18,19 @@ import { formDate } from '../../utils/date';
 
 // 경쟁방 아이템 컴포넌트
 const CompetitionItem = React.memo(({ item, onPress }) => {
-  const memberTextColor = item.user_status.is_participant ? COLORS.lightPurple : COLORS.white;
+  const isHost = item.user_status.is_host;
+  const isParticipant = item.user_status.is_participant;
+
+  const memberTextColor = isHost ? COLORS.secondary : isParticipant ? COLORS.lightPurple : COLORS.white;
+  const renderIcon = () => {
+    if (isHost) {
+      return <FontAwesome6 name="crown" size={16} color={COLORS.lightGreen} />;
+    } else if (isParticipant) {
+      return <Ionicons name="person" size={16} color={COLORS.lightPurple} />;
+    } else {
+      return <Ionicons name="person" size={16} color={COLORS.semiLightGrey} />;
+    }
+  };
 
   return (
     <TouchableOpacity onPress={() => onPress(item)} style={styles.competitionContainer}>
@@ -40,12 +53,8 @@ const CompetitionItem = React.memo(({ item, onPress }) => {
         </Text>
       </View>
 
-      <View style={{ flexDirection: 'row', alignItems: 'center', gap: SPACING.xs }}>
-        {item.user_status.is_participant ? (
-          <Ionicons name="person" size={16} color={COLORS.lightPurple} />
-        ) : (
-          <Ionicons name="person" size={16} color={COLORS.semiLightGrey} />
-        )}
+      <View style={styles.competitionMemberContainer}>
+        {renderIcon()}
         <Text style={[styles.competitionMembers, { color: memberTextColor }]}>
           {item.info.current_members} / {item.info.max_members}
         </Text>
@@ -233,6 +242,11 @@ const styles = StyleSheet.create({
   competitionDate: {
     color: COLORS.semiLightGrey,
     fontFamily: FONTS.PRETENDARD[400],
+  },
+  competitionMemberContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.xs,
   },
   competitionMembers: {
     color: COLORS.white,

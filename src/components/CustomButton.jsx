@@ -9,7 +9,7 @@ import { RADIUS } from '../constants/radius';
  *
  * @param {{
  * theme: 'primary' | 'secondary' | 'error' | 'block';
- * size: 'large' | 'medium' | 'small';
+ * size: 'large' | 'medium' | 'small' | 'xs';
  * states: 'enabled' | 'cta' | 'disabled';
  * onPress: () => void;
  * text: string;
@@ -112,6 +112,13 @@ const styles = StyleSheet.create({
   size_small: {
     width: '30%',
     borderRadius: RADIUS.small,
+  },
+  //메뉴에서 사용하는 버튼의 크기입니다.
+  size_xs: {
+    minHeight: 40,
+    borderRadius: RADIUS.small,
+    width: 'auto',
+    paddingHorizontal: 10,
   },
   states_enabled: {
     backgroundColor: BUTTON_COLORS.primary,
