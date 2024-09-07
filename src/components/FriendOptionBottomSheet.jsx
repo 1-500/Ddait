@@ -2,13 +2,13 @@ import { BottomSheetBackdrop, BottomSheetModal } from '@gorhom/bottom-sheet';
 import React, { forwardRef, useCallback } from 'react';
 import { Alert, StyleSheet, View } from 'react-native';
 
-import { cancleRequest, deleteRequest, requestFriend } from '../apis/friend';
+import { cancleRequest, requestFriend } from '../apis/friend';
 import { COLORS } from '../constants/colors';
 import { SPACING } from '../constants/space';
 import CustomButton from './CustomButton';
 
 const FriendOptionBottomSheet = forwardRef((props, ref) => {
-  const { relation, memberData } = props;
+  const { relation, memberData, onUpdateData } = props;
   const snapPoints = [350];
   // console.log('clicked member:', memberData); //불필요한 리렌더링 체크 후 추후 수정 필요
   const renderBackdrop = useCallback(
@@ -43,6 +43,7 @@ const FriendOptionBottomSheet = forwardRef((props, ref) => {
           try {
             await cancleRequest(tableId);
             handleClose();
+            onUpdateData();
           } catch (error) {
             // 토스트로 변경
             //Alert.alert('친구 신청 취소 실패', error.message);

@@ -87,7 +87,12 @@ const Friend = ({ navigation }) => {
           renderScene={renderScene}
           onIndexChange={setIndex}
         />
-        <FriendOptionBottomSheet ref={bottomSheetRef} relation={selectedRelation} memberData={selectedMemberData} />
+        <FriendOptionBottomSheet
+          ref={bottomSheetRef}
+          relation={selectedRelation}
+          memberData={selectedMemberData}
+          onUpdateData={fetchMyFriends}
+        />
       </SafeAreaView>
     </BottomSheetModalProvider>
   );
