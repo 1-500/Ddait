@@ -100,3 +100,19 @@ export const acceptRequest = async (reqId) => {
     }
   }
 };
+
+export const cancleRequest = async (reqId) => {
+  try {
+    const response = await API.delete(`friends/request/?req_id=${reqId}`);
+    console.log('cancleRequest 응답:', response.data);
+    return response.data;
+  } catch (error) {
+    if (error.response.data) {
+      console.error('cancleRequest Error:', error.response.data);
+      throw error;
+    } else {
+      console.error('예상치 못한 오류 발생:', error);
+      throw error;
+    }
+  }
+};

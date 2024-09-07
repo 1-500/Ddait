@@ -18,7 +18,7 @@ const Friend = ({ navigation }) => {
   const [myFriends, setMyFriends] = useState([]);
   const [reqSent, setReqSent] = useState([]);
   const [reqReceived, setReqReceived] = useState([]);
-  const [selectedMemberId, setSelectedMemberId] = useState(null);
+  const [selectedMemberData, setSelectedMemberData] = useState([]);
   const [selectedRelation, setSelectedRelation] = useState(null);
   const bottomSheetRef = useRef(null);
   const [index, setIndex] = useState(0);
@@ -41,8 +41,8 @@ const Friend = ({ navigation }) => {
     }
   };
 
-  const handleOpenOptions = useCallback((memberId, relation) => {
-    setSelectedMemberId(memberId);
+  const handleOpenOptions = useCallback((memberData, relation) => {
+    setSelectedMemberData(memberData);
     setSelectedRelation(relation);
     bottomSheetRef.current?.present();
   }, []);
@@ -87,7 +87,7 @@ const Friend = ({ navigation }) => {
           renderScene={renderScene}
           onIndexChange={setIndex}
         />
-        <FriendOptionBottomSheet ref={bottomSheetRef} relation={selectedRelation} memberId={selectedMemberId} />
+        <FriendOptionBottomSheet ref={bottomSheetRef} relation={selectedRelation} memberData={selectedMemberData} />
       </SafeAreaView>
     </BottomSheetModalProvider>
   );
