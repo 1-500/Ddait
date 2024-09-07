@@ -14,6 +14,7 @@ const CustomAlert = ({
   showCancel = true,
   confirmText = '확인',
   cancelText = '취소',
+  verticalButtons = false,
 }) => {
   return (
     <Modal transparent visible={visible} animationType="fade">
@@ -23,16 +24,25 @@ const CustomAlert = ({
             <Text style={styles.title}>{title}</Text>
             <Text style={styles.message}>{message}</Text>
           </View>
-          <View style={[styles.buttonContainer, !showCancel && styles.singleButtonContainer]}>
+          <View
+            style={[
+              styles.buttonContainer,
+              !showCancel && styles.singleButtonContainer,
+              verticalButtons && styles.verticalButtonContainer,
+            ]}
+          >
             {showCancel && (
               <>
-                <TouchableOpacity style={[styles.button, styles.cancelButton]} onPress={onCancel}>
+                <TouchableOpacity style={[styles.button, verticalButtons && styles.verticalButton]} onPress={onCancel}>
                   <Text style={[styles.buttonText, styles.cancelText]}>{cancelText}</Text>
                 </TouchableOpacity>
-                <View style={styles.verticalSeparator} />
+                {!verticalButtons && <View style={styles.verticalSeparator} />}
               </>
             )}
-            <TouchableOpacity style={[styles.button, !showCancel && styles.singleButton]} onPress={onConfirm}>
+            <TouchableOpacity
+              style={[styles.button, !showCancel && styles.singleButton, verticalButtons && styles.verticalButton]}
+              onPress={onConfirm}
+            >
               <Text style={[styles.buttonText, showCancel ? styles.confirmText : styles.singleButtonText]}>
                 {confirmText}
               </Text>
@@ -93,6 +103,7 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: FONT_SIZES.md,
     fontFamily: FONTS.PRETENDARD[700],
+    textAlign: 'center',
   },
   cancelText: {
     color: COLORS.primary,
@@ -109,6 +120,15 @@ const styles = StyleSheet.create({
   },
   singleButtonText: {
     color: COLORS.primary,
+  },
+  verticalButtonContainer: {
+    flexDirection: 'column',
+    minHeight: 110,
+  },
+  verticalButton: {
+    borderTopWidth: 1,
+    borderTopColor: COLORS.darkBackground,
+    paddingVertical: SPACING.md,
   },
 });
 
