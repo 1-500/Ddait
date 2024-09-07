@@ -1,4 +1,3 @@
-import { getFormattedDate } from '../../utils/foodDiary/index';
 import { API } from '..';
 
 export const createFoodDiary = async (date) => {
@@ -26,7 +25,7 @@ export const setUserWeight = async (data) => {
 export const getFoodRecordByTime = async (data) => {
   try {
     const response = await API.get(
-      `food/record/?date=${getFormattedDate()}&meal_time=${encodeURIComponent('아침')}`,
+      `food/record/?date=${data.date}&meal_time=${encodeURIComponent(data.mealTime)}`,
       data,
     );
     return response.data;

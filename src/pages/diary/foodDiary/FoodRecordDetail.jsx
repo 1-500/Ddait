@@ -8,6 +8,7 @@ import HeaderComponents from '../../../components/HeaderComponents';
 import { COLORS } from '../../../constants/colors';
 import { FONT_SIZES, FONT_WEIGHTS, FONTS } from '../../../constants/font';
 import { RADIUS } from '../../../constants/radius';
+import useDiaryCalendarStore from '../../../store/food/calendar/index';
 import useSelectedFoodTimeStore from '../../../store/index';
 import { calculateNutrientRatios, getTotal } from '../../../utils/foodDiary/index';
 
@@ -18,12 +19,16 @@ const FoodRecordDetail = () => {
   const navigation = useNavigation();
   const [foodRecordListState, setFoodRecordListState] = useState([]);
   const { time } = useSelectedFoodTimeStore();
+  const { selected } = useDiaryCalendarStore();
 
   useFocusEffect(
     useCallback(() => {
       const fetchFoodRecord = async () => {
         try {
-          const result = await getFoodRecordByTime();
+          const result = await getFoodRecordByTime({
+            date: selected,
+            mealTime: time,
+          });
           if (result.error) {
             throw new Error(result.error);
           }
@@ -34,7 +39,7 @@ const FoodRecordDetail = () => {
       };
 
       fetchFoodRecord();
-    }, []),
+    }, [selected, time]),
   );
 
   const macroRatio = calculateNutrientRatios(foodRecordListState);
