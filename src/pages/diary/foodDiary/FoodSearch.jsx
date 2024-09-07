@@ -57,9 +57,8 @@ const FoodSearch = () => {
         let result = await createBookMarkFoods({
           bookMarkedFoods: newFoodSearchListState,
         });
-
         if (result.error) {
-          throw new Error('서버에서 에러가 발생하여 조회를 실패하였습니다.');
+          throw new Error('서버 오류로 인해 북마크한 데이터가 반영되지 않았습니다');
         }
       }
     } catch (error) {
@@ -67,19 +66,25 @@ const FoodSearch = () => {
     }
     setFoodSearchListState(newFoodSearchListState);
   };
-  const handleRecordButton = () => {
+  const handleRecordButton = async () => {
     try {
-      const response = createFoodRecordByTime({
+      const response = await createFoodRecordByTime({
         foodItems: checkedFoodsState,
         meal_time: time,
         date: getFormattedDate(),
       });
-      // console.log(response);
-    } catch (error) {}
+      if (response.status === 200) {
+        Alert.alert(response.message);
+      } else {
+        throw new Error('음식을 기록하는데 실패하였습니다.');
+      }
+    } catch (error) {
+      Alert.alert(error.message);
+    }
 
-    // navigation.navigate('FoodDiary', {
-    //   screen: 'FoodDetailScreen',
-    // });
+    navigation.navigate('FoodDiary', {
+      screen: 'FoodDetailScreen',
+    });
   };
 
   return (
