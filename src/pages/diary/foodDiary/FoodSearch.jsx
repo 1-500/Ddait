@@ -1,8 +1,8 @@
 import { useNavigation } from '@react-navigation/native';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Alert, Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import { createFoodRecordByTime, getFoodBySearch } from '../../../apis/food/index';
+import { createBookMarkFoods, createFoodRecordByTime, getFoodBySearch } from '../../../apis/food/index';
 import CustomButton from '../../../components/CustomButton';
 import CustomInput from '../../../components/CustomInput';
 import HeaderComponents from '../../../components/HeaderComponents';
@@ -20,7 +20,7 @@ const BookmarkOnIcon = require('../../../assets/images/dietDiary/bookmark.png');
 const FoodSearch = () => {
   const [searchText, setSearchText] = useState('');
   const [foodSearchListState, setFoodSearchListState] = useState([]);
-  const [checkedFoods, setCheckedFoods] = useState([]);
+  const [checkedFoodsState, setCheckedFoodsState] = useState([]);
   const { time } = useSelectedFoodTimeStore();
   const navigation = useNavigation();
 
@@ -39,7 +39,7 @@ const FoodSearch = () => {
     }
   }, 300);
   const handleCheckedFoods = (food) => {
-    setCheckedFoods((prev) => {
+    setCheckedFoodsState((prev) => {
       const isChecked = prev.some((item) => item.id === food.id);
       if (isChecked) {
         return prev.filter((item) => item.id !== food.id);
@@ -48,20 +48,45 @@ const FoodSearch = () => {
       }
     });
   };
-  const handleRecordButton = () => {
+  const handleBookmarkFoods = async (food) => {
+    const newFoodSearchListState = foodSearchListState.map((element) => {
+      return element.id === food.id ? { ...element, isBookMarked: !element.isBookMarked } : { ...element };
+    });
     try {
-      const response = createFoodRecordByTime({
-        foodItems: checkedFoods,
+      if (newFoodSearchListState?.length) {
+        let result = await createBookMarkFoods({
+          bookMarkedFoods: newFoodSearchListState,
+        });
+        if (result.error) {
+          throw new Error('서버 오류로 인해 북마크한 데이터가 반영되지 않았습니다');
+        }
+      }
+    } catch (error) {
+      Alert.alert(error.message);
+    }
+    setFoodSearchListState(newFoodSearchListState);
+  };
+  const handleRecordButton = async () => {
+    try {
+      const response = await createFoodRecordByTime({
+        foodItems: checkedFoodsState,
         meal_time: time,
         date: getFormattedDate(),
       });
-      // console.log(response);
-    } catch (error) {}
+      if (response.status === 200) {
+        Alert.alert(response.message);
+      } else {
+        throw new Error('음식을 기록하는데 실패하였습니다.');
+      }
+    } catch (error) {
+      Alert.alert(error.message);
+    }
 
-    // navigation.navigate('FoodDiary', {
-    //   screen: 'FoodDetailScreen',
-    // });
+    navigation.navigate('FoodDiary', {
+      screen: 'FoodDetailScreen',
+    });
   };
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.darkBackground }}>
       <HeaderComponents title="음식 검색" />
@@ -77,22 +102,24 @@ const FoodSearch = () => {
         </View>
         <ScrollView style={styles.foodListContainer}>
           {foodSearchListState?.map((food) => {
-            const isChecked = checkedFoods.some((item) => item.id === food.id);
+            const isChecked = checkedFoodsState.some((item) => item.id === food.id);
             return (
               <FoodInfoCard
                 key={food.id}
                 name={food.name}
                 serving_size={food.serving_size}
                 calories={food.calories}
-                isChecked={isChecked}
+                isCheckFood={isChecked}
+                isCheckedBookmark={food.isBookMarked}
                 onHandleCheckedFoods={() => handleCheckedFoods(food)}
+                onHandleBookmarkFoods={() => handleBookmarkFoods(food)}
               />
             );
           })}
         </ScrollView>
 
         <View style={styles.buttonContainer}>
-          <CustomButton size="large" text={`${checkedFoods.length}개 선택됨`} theme="secondary" />
+          <CustomButton size="large" text={`${checkedFoodsState.length}개 선택됨`} theme="secondary" />
           <CustomButton size="large" text="기록하기" theme="primary" onPress={handleRecordButton} />
         </View>
       </View>
@@ -100,7 +127,15 @@ const FoodSearch = () => {
   );
 };
 
-const FoodInfoCard = ({ name, calories, serving_size, onHandleCheckedFoods, isChecked }) => {
+const FoodInfoCard = ({
+  name,
+  calories,
+  serving_size,
+  onHandleCheckedFoods,
+  onHandleBookmarkFoods,
+  isCheckFood,
+  isCheckedBookmark,
+}) => {
   return (
     <View style={styles.foodItem}>
       <View>
@@ -111,10 +146,10 @@ const FoodInfoCard = ({ name, calories, serving_size, onHandleCheckedFoods, isCh
         <Text style={{ color: 'white', marginRight: 10, fontSize: FONT_SIZES.sm }}>{calories}kcal</Text>
         <View style={{ display: 'flex', flexDirection: 'row', gap: 5 }}>
           <TouchableOpacity activeOpacity={0.6} onPress={onHandleCheckedFoods}>
-            <Image source={isChecked ? checkIcon : PlusIcon} style={{ width: 24, height: 24 }} />
+            <Image source={isCheckFood ? checkIcon : PlusIcon} style={{ width: 24, height: 24 }} />
           </TouchableOpacity>
-          <TouchableOpacity activeOpacity={0.6}>
-            <Image source={BookmarkOffIcon} style={{ width: 24, height: 24 }} />
+          <TouchableOpacity activeOpacity={0.6} onPress={onHandleBookmarkFoods}>
+            <Image source={isCheckedBookmark ? BookmarkOnIcon : BookmarkOffIcon} style={{ width: 24, height: 24 }} />
           </TouchableOpacity>
         </View>
       </View>

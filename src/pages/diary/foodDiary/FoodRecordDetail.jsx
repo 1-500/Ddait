@@ -1,5 +1,5 @@
-import { useNavigation } from '@react-navigation/native';
-import React, { useEffect, useState } from 'react';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import React, { useCallback, useState } from 'react';
 import { Alert, Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { getFoodRecordByTime } from '../../../apis/food/index';
@@ -19,20 +19,23 @@ const FoodRecordDetail = () => {
   const [foodRecordListState, setFoodRecordListState] = useState([]);
   const { time } = useSelectedFoodTimeStore();
 
-  useEffect(() => {
-    const fetchFoodRecord = async () => {
-      try {
-        const result = await getFoodRecordByTime();
-        if (result.error) {
-          throw new Error(result.error);
+  useFocusEffect(
+    useCallback(() => {
+      const fetchFoodRecord = async () => {
+        try {
+          const result = await getFoodRecordByTime();
+          if (result.error) {
+            throw new Error(result.error);
+          }
+          setFoodRecordListState(result.data);
+        } catch (error) {
+          Alert.alert(error.message);
         }
-        setFoodRecordListState(result.data);
-      } catch (error) {
-        Alert.alert(error.message);
-      }
-    };
-    fetchFoodRecord();
-  }, []);
+      };
+
+      fetchFoodRecord();
+    }, []),
+  );
 
   const macroRatio = calculateNutrientRatios(foodRecordListState);
 
