@@ -5,24 +5,31 @@ import { acceptRequest } from '../../../apis/friend';
 import MemberProfileItem from '../../../components/MemberProfileItem';
 import { LAYOUT_PADDING } from '../../../constants/space';
 
-const RequestReceived = ({ data }) => {
-  // 친구 요청 수락 처리 함수
+const RequestReceived = ({ data, onUpdateData }) => {
   const handleAccept = async (tableId) => {
     try {
       await acceptRequest(tableId);
+      onUpdateData();
     } catch (error) {
       //토스트 추가
     }
   };
 
-  const handleReject = async () => {};
+  const handleReject = async (tableId) => {
+    try {
+      // 거절 API 호출
+      onUpdateData();
+    } catch (error) {
+      // 토스트 추가
+    }
+  };
 
   const renderItem = ({ item }) => (
     <MemberProfileItem
       memberData={item}
       rightBtn="request"
-      onAccept={() => handleAccept(item.table_id)} // 개별 아이템의 table_id 전달
-      onReject={() => handleReject(item.table_id)} // 개별 아이템의 table_id 전달
+      onAccept={() => handleAccept(item.table_id)}
+      onReject={() => handleReject(item.table_id)}
     />
   );
 

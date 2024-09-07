@@ -33,7 +33,7 @@ const Friend = ({ navigation }) => {
       case 'myFriends':
         return <MyFriends data={myFriends} handleOpenOptions={handleOpenOptions} />;
       case 'reqReceived':
-        return <RequestReceived data={reqReceived} />;
+        return <RequestReceived data={reqReceived} onUpdateData={fetchMyFriends} />;
       case 'reqSent':
         return <RequestSent data={reqSent} handleOpenOptions={handleOpenOptions} />;
       default:
