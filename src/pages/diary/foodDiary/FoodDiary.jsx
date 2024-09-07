@@ -9,6 +9,7 @@ import CustomInput from '../../../components/CustomInput';
 import { BACKGROUND_COLORS, COLORS, TEXT_COLORS } from '../../../constants/colors';
 import { FONT_SIZES, FONT_WEIGHTS, FONTS } from '../../../constants/font';
 import { RADIUS } from '../../../constants/radius';
+import useDiaryCalendarStore from '../../../store/food/calendar/index';
 import useSelectedFoodTimeStore from '../../../store/index';
 import { calculateCarbsCalories, calculateFatCalories, calculateProteinCalories } from '../../../utils/foodDiary/index';
 
@@ -33,6 +34,8 @@ const FoodDiary = () => {
 
   const { setTime } = useSelectedFoodTimeStore();
 
+  const { selected } = useDiaryCalendarStore();
+
   const navigation = useNavigation();
 
   const handleModal = () => {
@@ -45,6 +48,7 @@ const FoodDiary = () => {
       newUserweight = userWeightState - 0.1;
       setUserWeight({
         userWeight: parseFloat(newUserweight.toFixed(1)),
+        date: selected,
       });
     } catch (error) {
       Alert.alert('DB에 반영하지 못했습니다.');
@@ -58,6 +62,7 @@ const FoodDiary = () => {
       newUserweight = userWeightState + 0.1;
       setUserWeight({
         userWeight: parseFloat(newUserweight.toFixed(1)),
+        date: selected,
       });
     } catch (error) {
       Alert.alert('DB에 반영하지 못했습니다.');
@@ -75,6 +80,7 @@ const FoodDiary = () => {
           proteinRatio: proteinRatioState,
           fatRatio: fatRatioState,
           total_calories: totalCaloriesState,
+          date: selected,
         });
         if (result.status !== 200) {
           throw new Error();
@@ -98,7 +104,7 @@ const FoodDiary = () => {
   useEffect(() => {
     const postFoodDiary = async () => {
       try {
-        const result = await createFoodDiary();
+        const result = await createFoodDiary(selected);
         if (result.error) {
           throw new Error(result.error);
         }
@@ -107,7 +113,7 @@ const FoodDiary = () => {
       }
     };
     postFoodDiary();
-  }, []);
+  }, [selected]);
 
   return (
     <SafeAreaView style={styles.container}>

@@ -1,23 +1,22 @@
-import { getFormattedDate } from '../../utils/foodDiary/index';
 import { API } from '..';
 
-export const createFoodDiary = async () => {
+export const createFoodDiary = async (date) => {
   try {
-    const response = await API.post(`food/diary/create?date=${getFormattedDate()}`);
+    const response = await API.post(`food/diary/create?date=${date}`);
     return response.data;
   } catch (error) {}
 };
 
 export const setMacroRatio = async (data) => {
   try {
-    const response = await API.post(`food/diary/set/macroRatio?date=${getFormattedDate()}`, data);
+    const response = await API.post(`food/diary/set/macroRatio?date=${data.date}`, data);
     return response.data;
   } catch (error) {}
   return;
 };
 export const setUserWeight = async (data) => {
   try {
-    const response = await API.post(`food/diary/set/weight?date=${getFormattedDate()}`, data);
+    const response = await API.post(`food/diary/set/weight?date=${data.date}`, data);
     return response.data;
   } catch (error) {}
   return;
@@ -26,7 +25,7 @@ export const setUserWeight = async (data) => {
 export const getFoodRecordByTime = async (data) => {
   try {
     const response = await API.get(
-      `food/record/?date=${getFormattedDate()}&meal_time=${encodeURIComponent('아침')}`,
+      `food/record/?date=${data.date}&meal_time=${encodeURIComponent(data.mealTime)}`,
       data,
     );
     return response.data;
@@ -42,6 +41,24 @@ export const getFoodBySearch = async (term) => {
 export const createFoodRecordByTime = async (data) => {
   try {
     const response = await API.post('food/record/create', data);
+    return response.data;
+  } catch (error) {}
+};
+export const createBookMarkFoods = async (data) => {
+  try {
+    const response = await API.post('food/bookmark/create', data);
+    return response.data;
+  } catch (error) {}
+};
+export const getBookMarkFoods = async () => {
+  try {
+    const response = await API.get('food/bookmark');
+    return response.data;
+  } catch (error) {}
+};
+export const createCustomFood = async (data) => {
+  try {
+    const response = await API.post('food/customfood/create', data);
     return response.data;
   } catch (error) {}
 };

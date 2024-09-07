@@ -1,5 +1,5 @@
-import { useNavigation } from '@react-navigation/native';
-import React, { useEffect, useState } from 'react';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import React, { useCallback, useState } from 'react';
 import { Alert, Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { getFoodRecordByTime } from '../../../apis/food/index';
@@ -8,6 +8,7 @@ import HeaderComponents from '../../../components/HeaderComponents';
 import { COLORS } from '../../../constants/colors';
 import { FONT_SIZES, FONT_WEIGHTS, FONTS } from '../../../constants/font';
 import { RADIUS } from '../../../constants/radius';
+import useDiaryCalendarStore from '../../../store/food/calendar/index';
 import useSelectedFoodTimeStore from '../../../store/index';
 import { calculateNutrientRatios, getTotal } from '../../../utils/foodDiary/index';
 
@@ -18,21 +19,28 @@ const FoodRecordDetail = () => {
   const navigation = useNavigation();
   const [foodRecordListState, setFoodRecordListState] = useState([]);
   const { time } = useSelectedFoodTimeStore();
+  const { selected } = useDiaryCalendarStore();
 
-  useEffect(() => {
-    const fetchFoodRecord = async () => {
-      try {
-        const result = await getFoodRecordByTime();
-        if (result.error) {
-          throw new Error(result.error);
+  useFocusEffect(
+    useCallback(() => {
+      const fetchFoodRecord = async () => {
+        try {
+          const result = await getFoodRecordByTime({
+            date: selected,
+            mealTime: time,
+          });
+          if (result.error) {
+            throw new Error(result.error);
+          }
+          setFoodRecordListState(result.data);
+        } catch (error) {
+          Alert.alert(error.message);
         }
-        setFoodRecordListState(result.data);
-      } catch (error) {
-        Alert.alert(error.message);
-      }
-    };
-    fetchFoodRecord();
-  }, []);
+      };
+
+      fetchFoodRecord();
+    }, [selected, time]),
+  );
 
   const macroRatio = calculateNutrientRatios(foodRecordListState);
 
