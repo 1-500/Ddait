@@ -4,6 +4,7 @@ import { ActivityIndicator, Alert, SafeAreaView, StyleSheet, useWindowDimensions
 import { TabBar, TabView } from 'react-native-tab-view';
 
 import {
+  deleteCompetition,
   enterCompetition,
   getCompetitionDetail,
   getCompetitionRecord,
@@ -167,48 +168,61 @@ const CompetitionRoomRanking = ({ navigation }) => {
   };
 
   const handleLeave = () => {
+    const isHost = competitionData?.user_status.is_host;
+
+    if (isHost) {
+      showAlert({
+        title: '잠깐! 🚨',
+        message: `방장님, 여기서 나가시면 안돼요! 😅\n\n경쟁방을 떠나고 싶다면\n삭제 버튼을 찾아주세요 🔍\n\n( 경쟁방이 사라져요, 신중하게! )`,
+        showCancel: false,
+        onConfirm: hideAlert,
+      });
+    } else {
+      showAlert({
+        title: '앗, 잠깐만요! 🏃‍♂️💨',
+        message: `정말 떠나실 건가요? 😢\n지금 나가면 경쟁에 참가할 수 없어요!`,
+        onConfirm: async () => {
+          try {
+            const res = await leaveCompetition(competitionId);
+            if (res.status === 200) {
+              hideAlert();
+              navigation.goBack();
+            }
+          } catch (error) {
+            console.log('경쟁방 나가기 실패', error);
+            showAlert({
+              title: '앗, 문제 발생! 😓',
+              message: '경쟁방 나가기에 실패했어요.\n잠시 후 다시 시도해 주세요!',
+              showCancel: false,
+              onConfirm: hideAlert,
+            });
+          }
+        },
+      });
+    }
+  };
+
+  const handleDelete = () => {
     showAlert({
-      title: '경쟁방 나가기',
-      message: '정말 이 경쟁방에서 나가시겠습니까? 😢',
+      title: '잠깐! 🚨',
+      message: `정말 이 경쟁방을 없애실 건가요?\n삭제하면 모든 기록이 사라져요 😢😢\n\n참가자들에게도 영향이 갈 수 있어요!`,
       onConfirm: async () => {
         try {
-          const res = await leaveCompetition(competitionId);
-          if (res.status === 200) {
-            hideAlert();
-            navigation.goBack();
-          }
+          await deleteCompetition(competitionId);
+          setIsDeleted(true);
+          navigation.goBack();
         } catch (error) {
-          console.log('error', error);
+          console.log('경쟁방 삭제 실패', error);
           showAlert({
-            title: '오류',
-            message: '경쟁방 나가기 중 오류가 발생했습니다',
+            title: '앗, 문제 발생! 😓',
+            message: '경쟁방 삭제에 실패했어요.\n잠시 후 다시 시도해 주세요!',
             showCancel: false,
             onConfirm: hideAlert,
           });
         }
       },
+      onCancel: hideAlert,
     });
-  };
-
-  const handleDelete = (success, message) => {
-    if (success) {
-      showAlert({
-        title: '경쟁방 삭제',
-        message: '정말 이 경쟁방을 삭제하시겠습니까? 😢',
-        onConfirm: () => {
-          setIsDeleted(true);
-          navigation.goBack();
-        },
-      });
-    } else {
-      console.log('error', error);
-      showAlert({
-        title: '오류',
-        message: message || '경쟁방 삭제 중 오류가 발생했습니다.',
-        showCancel: false,
-        onConfirm: hideAlert,
-      });
-    }
   };
 
   const renderScene = ({ route, jumpTo }) => {

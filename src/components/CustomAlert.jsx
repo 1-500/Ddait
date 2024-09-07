@@ -3,6 +3,7 @@ import { Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { COLORS } from '../constants/colors';
 import { FONT_SIZES, FONTS } from '../constants/font';
+import { SPACING } from '../constants/space';
 
 const CustomAlert = ({
   visible,
@@ -13,6 +14,7 @@ const CustomAlert = ({
   showCancel = true,
   confirmText = '확인',
   cancelText = '취소',
+  verticalButtons = false,
 }) => {
   return (
     <Modal transparent visible={visible} animationType="fade">
@@ -22,17 +24,28 @@ const CustomAlert = ({
             <Text style={styles.title}>{title}</Text>
             <Text style={styles.message}>{message}</Text>
           </View>
-          <View style={styles.buttonContainer}>
+          <View
+            style={[
+              styles.buttonContainer,
+              !showCancel && styles.singleButtonContainer,
+              verticalButtons && styles.verticalButtonContainer,
+            ]}
+          >
             {showCancel && (
               <>
-                <TouchableOpacity style={[styles.button, styles.cancelButton]} onPress={onCancel}>
+                <TouchableOpacity style={[styles.button, verticalButtons && styles.verticalButton]} onPress={onCancel}>
                   <Text style={[styles.buttonText, styles.cancelText]}>{cancelText}</Text>
                 </TouchableOpacity>
-                <View style={styles.verticalSeparator} />
+                {!verticalButtons && <View style={styles.verticalSeparator} />}
               </>
             )}
-            <TouchableOpacity style={[styles.button, styles.confirmButton]} onPress={onConfirm}>
-              <Text style={[styles.buttonText, styles.confirmText]}>{confirmText}</Text>
+            <TouchableOpacity
+              style={[styles.button, !showCancel && styles.singleButton, verticalButtons && styles.verticalButton]}
+              onPress={onConfirm}
+            >
+              <Text style={[styles.buttonText, showCancel ? styles.confirmText : styles.singleButtonText]}>
+                {confirmText}
+              </Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -50,19 +63,19 @@ const styles = StyleSheet.create({
   },
   alertBox: {
     backgroundColor: COLORS.darkGreyBackground,
-    borderRadius: 16,
+    borderRadius: SPACING.md,
     width: '80%',
     overflow: 'hidden',
   },
   contentContainer: {
-    padding: 20,
+    padding: SPACING.lg,
     alignItems: 'center',
   },
   title: {
     color: COLORS.white,
     fontSize: FONT_SIZES.lg,
     fontFamily: FONTS.PRETENDARD[700],
-    marginBottom: 16,
+    marginBottom: SPACING.lg,
     textAlign: 'center',
   },
   message: {
@@ -70,6 +83,7 @@ const styles = StyleSheet.create({
     fontSize: FONT_SIZES.sm,
     fontFamily: FONTS.PRETENDARD[400],
     textAlign: 'center',
+    lineHeight: FONT_SIZES.sm * 1.5,
   },
   buttonContainer: {
     flexDirection: 'row',
@@ -78,7 +92,7 @@ const styles = StyleSheet.create({
   },
   button: {
     flex: 1,
-    paddingVertical: 16,
+    paddingVertical: SPACING.md,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -89,12 +103,32 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: FONT_SIZES.md,
     fontFamily: FONTS.PRETENDARD[700],
+    textAlign: 'center',
   },
   cancelText: {
     color: COLORS.primary,
   },
   confirmText: {
     color: COLORS.red,
+  },
+  singleButtonContainer: {
+    borderTopWidth: 1,
+    borderTopColor: COLORS.darkBackground,
+  },
+  singleButton: {
+    borderTopWidth: 0,
+  },
+  singleButtonText: {
+    color: COLORS.primary,
+  },
+  verticalButtonContainer: {
+    flexDirection: 'column',
+    minHeight: 110,
+  },
+  verticalButton: {
+    borderTopWidth: 1,
+    borderTopColor: COLORS.darkBackground,
+    paddingVertical: SPACING.md,
   },
 });
 

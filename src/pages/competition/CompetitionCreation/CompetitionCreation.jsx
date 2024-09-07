@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Alert, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 
 import { createCompetition, enterCompetition } from '../../../apis/competition/index';
+import CustomAlert from '../../../components/CustomAlert';
 import CustomButton from '../../../components/CustomButton';
 import HeaderComponents from '../../../components/HeaderComponents';
 import StepIndicator from '../../../components/StepIndicator';
@@ -26,6 +27,7 @@ const steps = [
 
 const CompetitionCreation = ({ navigation }) => {
   const [currentStep, setCurrentStep] = useState(1);
+  const [showAlert, setShowAlert] = useState(false);
   const {
     title,
     maxMembers,
@@ -54,19 +56,19 @@ const CompetitionCreation = ({ navigation }) => {
       hasSmartWatch;
 
     if (hasExistingData) {
-      Alert.alert('생성중이던 방이 있어요.', '생성중이던 방 정보를 불러올까요?', [
-        {
-          text: '네, 불러올게요',
-        },
-        {
-          text: '아니요 초기화할래요.',
-          onPress: () => resetState(),
-          style: 'destructive',
-        },
-      ]);
+      setShowAlert(true);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const handleAlertConfirm = () => {
+    setShowAlert(false);
+  };
+
+  const handleAlertCancel = () => {
+    setShowAlert(false);
+    resetState();
+  };
 
   const goToPrevStep = () => setCurrentStep((prev) => Math.max(prev - 1, 1));
   const goToNextStep = () => setCurrentStep((prev) => Math.min(prev + 1, steps.length));
@@ -159,6 +161,17 @@ const CompetitionCreation = ({ navigation }) => {
           )}
         </View>
       </View>
+
+      <CustomAlert
+        visible={showAlert}
+        title="저장된 방 정보가 있어요!"
+        message="작성 중이던 방 정보를 불러올까요?"
+        confirmText="네, 불러올게요."
+        cancelText="아니요, 초기화할래요."
+        onConfirm={handleAlertConfirm}
+        onCancel={handleAlertCancel}
+        verticalButtons={true}
+      />
     </SafeAreaView>
   );
 };
