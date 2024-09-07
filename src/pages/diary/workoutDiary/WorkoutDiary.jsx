@@ -1,19 +1,23 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
-import { FlatList, StyleSheet, Text, View } from 'react-native';
+import { Alert, Button, FlatList, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { getDiaryList } from '../../../apis/diary';
 import CustomButton from '../../../components/CustomButton';
+import Toast from '../../../components/Toast';
 import { BACKGROUND_COLORS, BUTTON_COLORS, COLORS, TEXT_COLORS } from '../../../constants/colors';
 import { FONT_SIZES, FONTS } from '../../../constants/font';
 import { RADIUS } from '../../../constants/radius';
 import { LAYOUT_PADDING } from '../../../constants/space';
 import useDiaryCalendarStore from '../../../store/food/calendar/index';
+import { useToastMessageStore } from '../../../store/toastMessage/toastMessage';
+import { formatDate, getEndOfWeek, getStartOfWeek, getWeekOfMonth } from '../../../utils/date';
 
 const WorkoutDiary = () => {
   const navigation = useNavigation();
   const { selected } = useDiaryCalendarStore();
   const [workoutRecords, setWorkoutRecords] = useState([]);
+  const { showToast } = useToastMessageStore();
 
   useEffect(() => {
     const fetchWorkout = async () => {
@@ -21,12 +25,16 @@ const WorkoutDiary = () => {
         const res = await getDiaryList(selected);
         setWorkoutRecords(res);
       } catch (error) {
-        // console.log('error: ', error);
+        /*eslint-disable */
+        console.log('error: ', error);
+        showToast(`에러메세지 : ${error}`, 'error', 1000, 'top', 80);
       }
     };
 
     fetchWorkout();
   }, [selected]);
+  /*eslint-enable */
+
   const handleStartWorkout = () => {
     navigation.navigate('WorkoutDiary', { screen: 'StartWorkoutScreen' });
   };
