@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Alert, Image, Modal, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import * as Progress from 'react-native-progress';
 
-import { createFoodDiary, setMacroRatio, setUserWeight } from '../../../apis/food/index';
+import { createFoodDiary, getUserFoodDiary, setMacroRatio, setUserWeight } from '../../../apis/food/index';
 import CustomButton from '../../../components/CustomButton';
 import CustomInput from '../../../components/CustomInput';
 import { BACKGROUND_COLORS, COLORS, TEXT_COLORS } from '../../../constants/colors';
@@ -26,12 +26,15 @@ const items = [
 
 const FoodDiary = () => {
   const [isVisibleModal, setIsVisibleModal] = useState(false);
-  const [userWeightState, setUserWeightState] = useState(70);
-  const [totalCaloriesState, setTotalCaloriesState] = useState(2000);
-  const [carbRatioState, setCarbRatioState] = useState(0);
-  const [proteinRatioState, setProteinRatioState] = useState(0);
-  const [fatRatioState, setFatRatioState] = useState(0);
-
+  const [userState, setUserState] = useState({
+    weight: 70,
+    totalCalories: 2000,
+    macroRatio: {
+      carbs: 0,
+      protein: 0,
+      fat: 0,
+    },
+  });
   const { setTime } = useSelectedFoodTimeStore();
 
   const { selected } = useDiaryCalendarStore();
@@ -42,44 +45,78 @@ const FoodDiary = () => {
     setIsVisibleModal(!isVisibleModal);
   };
 
-  const handleMinusWeightButton = () => {
-    let newUserweight;
+  const handleWeightInput = async (text) => {
+    let newUserweight = parseFloat(text);
+    if (isNaN(newUserweight)) {
+      return;
+    }
     try {
-      newUserweight = userWeightState - 0.1;
-      setUserWeight({
+      const result = await setUserWeight({
         userWeight: parseFloat(newUserweight.toFixed(1)),
         date: selected,
       });
+      if (result.status !== 200) {
+        throw new Error('데이터를 반영하지 못했습니다');
+      }
     } catch (error) {
-      Alert.alert('DB에 반영하지 못했습니다.');
+      Alert.alert(error.message);
     }
-    setUserWeightState(parseFloat(newUserweight.toFixed(1)));
+    setUserState((prevState) => ({
+      ...prevState,
+      weight: parseFloat(newUserweight.toFixed(1)), // 예시로 체중 업데이트
+    }));
   };
 
-  const handlePlusWeightButton = () => {
+  const handleMinusWeightButton = async () => {
     let newUserweight;
     try {
-      newUserweight = userWeightState + 0.1;
-      setUserWeight({
+      newUserweight = userState.weight - 0.1;
+      const result = await setUserWeight({
         userWeight: parseFloat(newUserweight.toFixed(1)),
         date: selected,
       });
+      if (result.status !== 200) {
+        throw new Error('데이터를 반영하지 못했습니다');
+      }
     } catch (error) {
-      Alert.alert('DB에 반영하지 못했습니다.');
+      Alert.alert(error.message);
     }
-    setUserWeightState(parseFloat(newUserweight.toFixed(1)));
+    setUserState((prevState) => ({
+      ...prevState,
+      weight: parseFloat(newUserweight.toFixed(1)), // 예시로 체중 업데이트
+    }));
+  };
+
+  const handlePlusWeightButton = async () => {
+    let newUserweight;
+    try {
+      newUserweight = userState.weight + 0.1;
+      const result = await setUserWeight({
+        userWeight: parseFloat(newUserweight.toFixed(1)),
+        date: selected,
+      });
+      if (result.status !== 200) {
+        throw new Error('데이터를 반영하지 못했습니다');
+      }
+    } catch (error) {
+      Alert.alert(error.message);
+    }
+    setUserState((prevState) => ({
+      ...prevState,
+      weight: parseFloat(newUserweight.toFixed(1)), // 예시로 체중 업데이트
+    }));
   };
 
   const handleModalConfirmButton = async () => {
-    const totalRatio = carbRatioState + proteinRatioState + fatRatioState;
+    const totalRatio = userState.macroRatio.carbs + userState.macroRatio.protein + userState.macroRatio.fat;
     if (totalRatio === 100) {
       try {
         const result = await setMacroRatio({
-          userWeight: userWeightState,
-          carbRatio: carbRatioState,
-          proteinRatio: proteinRatioState,
-          fatRatio: fatRatioState,
-          total_calories: totalCaloriesState,
+          userWeight: userState.weight,
+          carbRatio: userState.macroRatio.carbs,
+          proteinRatio: userState.macroRatio.protein,
+          fatRatio: userState.macroRatio.fat,
+          total_calories: userState.totalCalories,
           date: selected,
         });
         if (result.status !== 200) {
@@ -115,6 +152,32 @@ const FoodDiary = () => {
     postFoodDiary();
   }, [selected]);
 
+  useEffect(() => {
+    const fetchUserFoodDiary = async () => {
+      try {
+        const result = await getUserFoodDiary(selected);
+        if (result.error) {
+          throw new Error(result.error);
+        }
+        if (result.status === 200) {
+          const userInfo = result.data;
+          setUserState({
+            weight: Number(userInfo.userWeight),
+            totalCalories: Number(userInfo.totalCalories),
+            macroRatio: {
+              carbs: Number(userInfo.carbRatio),
+              protein: Number(userInfo.proteinRatio),
+              fat: Number(userInfo.fatRatio),
+            },
+          });
+        }
+      } catch (error) {
+        Alert.alert(error.message);
+      }
+    };
+    fetchUserFoodDiary();
+  }, [selected]);
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.diaryContentContainer}>
@@ -124,7 +187,15 @@ const FoodDiary = () => {
             <TouchableOpacity activeOpacity={0.6} onPress={handleMinusWeightButton}>
               <Image source={MinusButtonIcon} style={styles.weightButton} />
             </TouchableOpacity>
-            <CustomInput size="medium" theme="primary" value={`${userWeightState}kg`} style={styles.weightInput} />
+
+            <CustomInput
+              size="medium"
+              theme="primary"
+              defaultValue={`${userState.weight}`}
+              onChangeText={handleWeightInput}
+              style={styles.weightInput}
+            />
+            <Text style={{ color: 'white', fontSize: FONT_SIZES.lg }}>kg</Text>
             <TouchableOpacity activeOpacity={0.6} onPress={handlePlusWeightButton}>
               <Image source={PlusButtonIcon} style={styles.weightButton} />
             </TouchableOpacity>
@@ -137,25 +208,27 @@ const FoodDiary = () => {
               <Text style={styles.macroLabel}>탄</Text>
               <Text
                 style={styles.macroValue}
-              >{`0/${calculateCarbsCalories(carbRatioState, totalCaloriesState)}g`}</Text>
+              >{`0/${calculateCarbsCalories(userState.macroRatio.carbs, userState.totalCalories)}g`}</Text>
             </View>
             <View style={styles.macroItem}>
               <Text style={styles.macroLabel}>단</Text>
               <Text
                 style={styles.macroValue}
-              >{`0/${calculateProteinCalories(proteinRatioState, totalCaloriesState)}g`}</Text>
+              >{`0/${calculateProteinCalories(userState.macroRatio.protein, userState.totalCalories)}g`}</Text>
             </View>
             <View style={styles.macroItem}>
               <Text style={styles.macroLabel}>지</Text>
-              <Text style={styles.macroValue}>{`0/${calculateFatCalories(fatRatioState, totalCaloriesState)}g`}</Text>
+              <Text
+                style={styles.macroValue}
+              >{`0/${calculateFatCalories(userState.macroRatio.fat, userState.totalCalories)}g`}</Text>
             </View>
           </View>
           <View style={{ marginTop: 10 }}>
             <Progress.Bar progress={0.3} width={313} height={24} color="#6464FF" borderRadius={RADIUS.small} />
           </View>
           <View style={styles.calorieInfoContainer}>
-            <Text style={styles.calorieInfoText}>72.8 / {totalCaloriesState} kcal</Text>
-            <Text style={styles.calorieInfoText}>{totalCaloriesState}kcal 남음</Text>
+            <Text style={styles.calorieInfoText}>72.8 / {userState.totalCalories} kcal</Text>
+            <Text style={styles.calorieInfoText}>{userState.totalCalories}kcal 남음</Text>
           </View>
 
           <View style={styles.buttonContainer}>
@@ -184,9 +257,16 @@ const FoodDiary = () => {
                   <CustomInput
                     size="small"
                     theme="user"
-                    defaultValue={`${carbRatioState.toString()}`}
-                    value={carbRatioState}
-                    onChangeText={(text) => setCarbRatioState(Number(text))}
+                    defaultValue={`${userState.macroRatio.carbs.toString()}`}
+                    onChangeText={(text) =>
+                      setUserState((prevState) => ({
+                        ...prevState,
+                        macroRatio: {
+                          ...prevState.macroRatio,
+                          carbs: Number(text),
+                        },
+                      }))
+                    }
                   />
                   <Text style={styles.modalText}>%</Text>
                 </View>
@@ -197,8 +277,16 @@ const FoodDiary = () => {
                   <CustomInput
                     size="small"
                     theme="user"
-                    defaultValue={`${proteinRatioState.toString()}`}
-                    onChangeText={(text) => setProteinRatioState(Number(text))}
+                    defaultValue={`${userState.macroRatio.protein.toString()}`}
+                    onChangeText={(text) =>
+                      setUserState((prevState) => ({
+                        ...prevState,
+                        macroRatio: {
+                          ...prevState.macroRatio,
+                          protein: Number(text),
+                        },
+                      }))
+                    }
                   />
                   <Text style={{ color: COLORS.white, fontSize: FONT_SIZES.md }}>%</Text>
                 </View>
@@ -208,9 +296,17 @@ const FoodDiary = () => {
                 <View style={styles.modalButtonWrapper}>
                   <CustomInput
                     size="small"
-                    defaultValue={`${fatRatioState.toString()}`}
+                    defaultValue={`${userState.macroRatio.fat.toString()}`}
                     theme="user"
-                    onChangeText={(text) => setFatRatioState(Number(text))}
+                    onChangeText={(text) =>
+                      setUserState((prevState) => ({
+                        ...prevState,
+                        macroRatio: {
+                          ...prevState.macroRatio,
+                          fat: Number(text),
+                        },
+                      }))
+                    }
                   />
                   <Text style={styles.modalText}>%</Text>
                 </View>
@@ -223,8 +319,13 @@ const FoodDiary = () => {
               <CustomInput
                 size="medium"
                 theme="primary"
-                defaultValue={totalCaloriesState}
-                onChangeText={(text) => setTotalCaloriesState(text)}
+                defaultValue={userState.totalCalories.toString()}
+                onChangeText={(text) =>
+                  setUserState((prevState) => ({
+                    ...prevState,
+                    totalCalories: Number(text),
+                  }))
+                }
                 style={{ fontFamily: FONTS.PRETENDARD[400], fontSize: FONT_SIZES.md, color: COLORS.white }}
               />
 

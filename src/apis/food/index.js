@@ -62,3 +62,10 @@ export const createCustomFood = async (data) => {
     return response.data;
   } catch (error) {}
 };
+
+export const getUserFoodDiary = async (date) => {
+  try {
+    const response = await API.get(`food/diary?date=${date}`);
+    return response.data;
+  } catch (error) {}
+};
