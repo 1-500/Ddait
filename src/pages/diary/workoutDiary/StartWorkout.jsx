@@ -57,15 +57,21 @@ const StartWorkout = () => {
   useEffect(() => {
     const fetchExerciseData = async () => {
       try {
-        const [exerciseRes, bookmarkRes] = await Promise.all([getExerciseList(), getWorkoutInfoBookmark()]);
-        const bookmarkedIds = bookmarkRes.data.map((bookmark) => bookmark.workout_info_id);
-        const exerciseListWithBookmarks = exerciseRes.map((exercise) => {
-          const existingItem = exerciseListData.find((item) => item.id === exercise.id);
-          const isBookmarked = existingItem ? existingItem.bookmark : bookmarkedIds.includes(exercise.id);
-          return { ...exercise, bookmark: isBookmarked };
-        });
+        if (searchTerm === '') {
+          const [exerciseRes, bookmarkRes] = await Promise.all([getExerciseList(), getWorkoutInfoBookmark()]);
 
-        setExerciseListData(exerciseListWithBookmarks);
+          const bookmarkedIds = bookmarkRes.data.map((bookmark) => bookmark.workout_info_id);
+
+          const exerciseListWithBookmarks = exerciseRes.map((exercise) => {
+            const isBookmarked = bookmarkedIds.includes(exercise.id);
+            return { ...exercise, bookmark: isBookmarked };
+          });
+
+          setExerciseListData(exerciseListWithBookmarks);
+        } else {
+          const result = await getWorkoutSearchResult(searchTerm);
+          setExerciseListData(result.data);
+        }
       } catch (error) {
         console.log('무슨 error? : ', error);
       }
@@ -423,15 +429,6 @@ const StartWorkout = () => {
 
   const handleSearchInput = (text) => {
     setSearchTerm(text); // 검색어 업데이트
-  };
-
-  const handleSearch = async (text) => {
-    try {
-      const res = await getWorkoutSearchResult(text);
-      setExerciseListData(res.data);
-    } catch (error) {
-      console.error('Error searching exercises:', error);
-    }
   };
 
   return (
