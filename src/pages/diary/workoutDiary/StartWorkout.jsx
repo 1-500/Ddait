@@ -510,6 +510,7 @@ const StartWorkout = () => {
                   paddingHorizontal: SPACING.sm,
                   borderRadius: RADIUS.large,
                 }}
+                onPress={() => handleSortChange('bookmark', !dropdownState.bookmark)}
               >
                 <MaterialCommunityIcons
                   name={dropdownState.bookmark ? 'bookmark' : 'bookmark-outline'}
