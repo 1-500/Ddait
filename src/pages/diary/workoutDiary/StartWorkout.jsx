@@ -14,10 +14,14 @@ import {
 } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import { getExerciseList, postWorkoutRecord } from '../../../apis/diary';
+import {
+  getExerciseList,
+  getWorkoutInfoBookmark,
+  postWorkoutInfoBookmark,
+  postWorkoutRecord,
+} from '../../../apis/diary';
 import CustomButton from '../../../components/CustomButton';
 import CustomInput from '../../../components/CustomInput';
-import CustomTag from '../../../components/CustomTag';
 import CustomTimer from '../../../components/CustomTimer';
 import DropdownModal from '../../../components/DropdownModal';
 import HeaderComponents from '../../../components/HeaderComponents';
@@ -36,7 +40,6 @@ const StartWorkout = () => {
   const [totalTime, setTotalTime] = useState({ minutes: 0, seconds: 0 });
   const [restTime, setRestTime] = useState({ minutes: 0, seconds: 0 });
   const [isTimerVisible, setIsTimerVisible] = useState(false);
-  const [isReset, setIsReset] = useState(false);
   const [intervalId, setIntervalId] = useState(null);
   const [dropdownState, setDropdownState] = useState({
     bodyPart: '전체',
@@ -49,16 +52,24 @@ const StartWorkout = () => {
 
   /* eslint-disable */
   useEffect(() => {
-    const fetchExerciseList = async () => {
+    const fetchExerciseData = async () => {
       try {
-        const res = await getExerciseList();
-        setExerciseListData(res);
+        // 운동 목록과 북마크 목록을 병렬로 요청하게 all메서르 사용
+        const [exerciseRes, bookmarkRes] = await Promise.all([getExerciseList(), getWorkoutInfoBookmark()]);
+
+        // bookmarkRes.data로 북마크 데이터를 추출하여 운동 목록과 결합
+        const exerciseListWithBookmarks = exerciseRes.map((exercise) => {
+          const isBookmarked = bookmarkRes.data.some((bookmark) => bookmark.workout_info_id === exercise.id);
+          return { ...exercise, bookmark: isBookmarked };
+        });
+
+        setExerciseListData(exerciseListWithBookmarks);
       } catch (error) {
-        console.log('error', error);
+        console.log('무슨 error? : ', error);
       }
     };
 
-    fetchExerciseList();
+    fetchExerciseData();
   }, []);
 
   useEffect(() => {
@@ -252,14 +263,12 @@ const StartWorkout = () => {
         return;
       }
 
-      // 운동 기록 객체 생성
       const workoutRecord = {
         title: title,
         time: time,
-        workout_records, // 운동 기록 데이터
+        workout_records,
       };
 
-      // POST 요청으로 운동 기록 저장
       const res = await postWorkoutRecord(workoutRecord);
 
       /* eslint-disable */
@@ -294,11 +303,22 @@ const StartWorkout = () => {
   };
   const { totalWorkoutTime } = calculateTotalTimes();
 
-  const handleBookmarkToggle = () => {
-    setDropdownState((prev) => ({
-      ...prev,
-      bookmark: !prev.bookmark,
-    }));
+  const handleBookmarkToggle = async (workoutId, isBookMarked) => {
+    try {
+      const newBookmarkState = !isBookMarked;
+      const workoutData = { id: workoutId, isBookMarked: newBookmarkState };
+      const res = await postWorkoutInfoBookmark(workoutData);
+      console.log('서버 응답:', res);
+
+      if (res.status === 200) {
+        setExerciseListData((prevData) =>
+          prevData.map((item) => (item.id === workoutId ? { ...item, bookmark: newBookmarkState } : item)),
+        );
+        console.log('UI 업데이트 후 운동 데이터:', exerciseListData);
+      }
+    } catch (error) {
+      console.error('Error updating bookmark:', error);
+    }
   };
 
   const renderWorkoutCard = ({ item }) => (
@@ -360,17 +380,22 @@ const StartWorkout = () => {
   );
 
   const renderExerciseList = ({ item }) => (
-    <TouchableOpacity style={styles.exerciseItemContainer} onPress={() => handleExerciseSelect(item)}>
+    <TouchableOpacity style={styles.exerciseItemContainer} onPress={() => handleExerciseSelect(item.name)}>
       <View style={styles.exerciseCheckboxContainer}>
         <MaterialCommunityIcons
-          name={selectedExercises.includes(item) ? 'checkbox-marked' : 'checkbox-blank-outline'}
+          name={selectedExercises.includes(item.name) ? 'checkbox-marked' : 'checkbox-blank-outline'}
           size={24}
           color={COLORS.primary}
         />
       </View>
-      <Text style={styles.exerciseItemText}>{item}</Text>
-      <TouchableOpacity>
-        <MaterialCommunityIcons name="bookmark-outline" size={24} color={TEXT_COLORS.secondary} />
+      <Text style={styles.exerciseItemText}>{item.name}</Text>
+      <Text style={styles.exerciseItemText}>{item.bookmark}</Text>
+      <TouchableOpacity onPress={() => handleBookmarkToggle(item.id, item.bookmark)}>
+        <MaterialCommunityIcons
+          name={item.bookmark ? 'bookmark' : 'bookmark-outline'}
+          size={24}
+          color={item.bookmark ? COLORS.primary : TEXT_COLORS.secondary}
+        />
       </TouchableOpacity>
     </TouchableOpacity>
   );
@@ -485,7 +510,7 @@ const StartWorkout = () => {
                   paddingHorizontal: SPACING.sm,
                   borderRadius: RADIUS.large,
                 }}
-                onPress={handleBookmarkToggle}
+                onPress={() => handleSortChange('bookmark', !dropdownState.bookmark)}
               >
                 <MaterialCommunityIcons
                   name={dropdownState.bookmark ? 'bookmark' : 'bookmark-outline'}
@@ -496,7 +521,7 @@ const StartWorkout = () => {
             </View>
             <View>
               <FlatList
-                data={filteredExerciseList.map((item) => item.name)}
+                data={filteredExerciseList}
                 renderItem={renderExerciseList}
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={{ paddingBottom: 16, paddingHorizontal: 16 }}

@@ -3,13 +3,12 @@ if (__DEV__) {
 }
 import { NavigationContainer } from '@react-navigation/native';
 import React from 'react';
+import { StatusBar, View } from 'react-native';
 import Toast, { BaseToast, ErrorToast } from 'react-native-toast-message';
 
 import { TEXT_COLORS } from './src/constants/colors';
-import { FONTS } from './src/constants/font';
-import { StatusBar, View } from 'react-native';
-
 import { COLORS } from './src/constants/colors';
+import { FONTS } from './src/constants/font';
 import Router from './src/router';
 
 const toastConfig = {
