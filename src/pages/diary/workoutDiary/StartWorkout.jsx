@@ -40,7 +40,6 @@ const StartWorkout = () => {
   const [totalTime, setTotalTime] = useState({ minutes: 0, seconds: 0 });
   const [restTime, setRestTime] = useState({ minutes: 0, seconds: 0 });
   const [isTimerVisible, setIsTimerVisible] = useState(false);
-  const [isReset, setIsReset] = useState(false);
   const [intervalId, setIntervalId] = useState(null);
   const [dropdownState, setDropdownState] = useState({
     bodyPart: '전체',
@@ -307,7 +306,8 @@ const StartWorkout = () => {
   const handleBookmarkToggle = async (workoutId, isBookMarked) => {
     try {
       const newBookmarkState = !isBookMarked;
-      const res = await postWorkoutInfoBookmark(workoutId, newBookmarkState);
+      const workoutData = { id: workoutId, isBookMarked: newBookmarkState };
+      const res = await postWorkoutInfoBookmark(workoutData);
       console.log('서버 응답:', res);
 
       if (res.status === 200) {
