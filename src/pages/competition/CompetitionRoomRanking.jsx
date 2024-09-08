@@ -35,7 +35,7 @@ const CompetitionRoomRanking = ({ navigation }) => {
   const [loading, setLoading] = useState(true);
   const [isDeleted, setIsDeleted] = useState(false);
   const [index, setIndex] = useState(0);
-  const [routes] = useState([
+  const [routes, setRoutes] = useState([
     { key: 'rankList', title: '랭킹' },
     { key: 'myScore', title: '내 점수' },
     { key: 'invite', title: '초대' },
@@ -116,6 +116,22 @@ const CompetitionRoomRanking = ({ navigation }) => {
       fetchAllData();
     }
   }, [isFocused, isDeleted]);
+
+  useEffect(() => {
+    console.log(progress);
+    if (progress === 'BEFORE') {
+      setRoutes([
+        { key: 'rankList', title: '랭킹' },
+        { key: 'myScore', title: '내 점수' },
+        { key: 'invite', title: '초대' },
+      ]);
+    } else {
+      setRoutes([
+        { key: 'rankList', title: '랭킹' },
+        { key: 'myScore', title: '내 점수' },
+      ]);
+    }
+  }, [progress]);
 
   const handleJoin = async () => {
     try {
