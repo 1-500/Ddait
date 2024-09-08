@@ -159,3 +159,22 @@ export const deleteCompetition = async (roomId) => {
     }
   }
 };
+
+export const inviteCompetition = async (roomId, friendId) => {
+  try {
+    const response = await API.post('/competition/invite', {
+      competition_room_id: roomId,
+      recipient_id: friendId,
+    });
+    console.log('inviteCompetition 응답:', response.data);
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      console.error('inviteCompetition Error:', error.response);
+      return error.response;
+    } else {
+      console.error('예상치 못한 오류 발생:', error.message);
+      throw error;
+    }
+  }
+};
