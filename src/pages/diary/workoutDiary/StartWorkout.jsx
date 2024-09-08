@@ -17,6 +17,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import {
   getExerciseList,
   getWorkoutInfoBookmark,
+  getWorkoutSearchResult,
   postWorkoutInfoBookmark,
   postWorkoutRecord,
 } from '../../../apis/diary';
@@ -407,6 +408,15 @@ const StartWorkout = () => {
     }));
   }, []);
 
+  const handleSearch = async (text) => {
+    try {
+      const res = await getWorkoutSearchResult(text);
+      setExerciseListData(res.data);
+    } catch (error) {
+      console.error('Error searching exercises:', error);
+    }
+  };
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: BACKGROUND_COLORS.dark }}>
       <HeaderComponents title="운동 시작" icon="timer" onRightBtnPress={handleRestTimer} />
@@ -481,7 +491,11 @@ const StartWorkout = () => {
           <BottomSheetView style={styles.bottomSheetContainer}>
             <Text style={styles.exerciseHeader}>운동 추가</Text>
             <View>
-              <CustomInput placeholder="하고자 하는 운동을 검색해보세요." theme="search" />
+              <CustomInput
+                placeholder="하고자 하는 운동을 검색해보세요."
+                theme="search"
+                onChangeText={(text) => handleSearch(text)}
+              />
             </View>
             <View style={{ flexDirection: 'row', marginVertical: 16 }}>
               <TouchableOpacity style={{ marginRight: 16 }}>
