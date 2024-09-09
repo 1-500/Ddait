@@ -2,7 +2,7 @@ import { BottomSheetBackdrop, BottomSheetModal } from '@gorhom/bottom-sheet';
 import React, { forwardRef, useCallback } from 'react';
 import { Alert, StyleSheet, View } from 'react-native';
 
-import { cancleRequest, requestFriend } from '../apis/friend';
+import { cancelRequest, requestFriend } from '../apis/friend';
 import { COLORS } from '../constants/colors';
 import { SPACING } from '../constants/space';
 import CustomButton from './CustomButton';
@@ -41,7 +41,7 @@ const FriendOptionBottomSheet = forwardRef((props, ref) => {
         text: '확인',
         onPress: async () => {
           try {
-            await cancleRequest(tableId);
+            await cancelRequest(tableId);
             handleClose();
             onUpdateData();
           } catch (error) {
