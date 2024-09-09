@@ -107,7 +107,7 @@ const CompetitionRoomRanking = ({ navigation }) => {
 
   const fetchAllData = useCallback(async () => {
     if (isDeleted) return;
-    setLoading(true);
+    setLoadingStates({ details: true, record: true, recordDetail: true });
     try {
       await Promise.all([
         fetchCompetitionDetail(),
