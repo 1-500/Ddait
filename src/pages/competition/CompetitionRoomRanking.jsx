@@ -15,6 +15,7 @@ import CompetitionRoomHeader from '../../components/CompetitionRoomHeader';
 import CustomAlert from '../../components/CustomAlert';
 import { COLORS } from '../../constants/colors';
 import { FONT_SIZES, FONT_WEIGHTS } from '../../constants/font';
+import { useToastMessageStore } from '../../store/toastMessage/toastMessage';
 import { getCompetitionProgress } from '../../utils/competition';
 import Invite from './rankingPageTabs/Invite';
 import MyScore from './rankingPageTabs/MyScore';
@@ -78,6 +79,7 @@ const CompetitionRoomRanking = ({ navigation }) => {
   const [progress, setProgress] = useState(false);
   const [isDeleted, setIsDeleted] = useState(false);
   const [index, setIndex] = useState(0);
+  const { showToast } = useToastMessageStore();
   const [routes] = useState([
     { key: 'rankList', title: '랭킹' },
     { key: 'myScore', title: '내 점수' },
@@ -155,14 +157,12 @@ const CompetitionRoomRanking = ({ navigation }) => {
     try {
       const res = await enterCompetition(competitionId);
       if (res.status === 200) {
-        // TODO: toast 메세지 적용
-        Alert.alert('성공', '경쟁방에 참여했습니다!');
+        showToast('경쟁방에 참여했습니다!', 'success', 3000, 'top');
         fetchAllData();
       }
     } catch (error) {
       console.log('error: ', error);
-      // TODO: toast 메세지 적용
-      Alert.alert('오류', '경쟁방에 참여에 실패했습니다!');
+      showToast('경쟁방 참여에 실패했습니다.', 'error', 3000, 'top');
     }
   };
 
@@ -185,9 +185,13 @@ const CompetitionRoomRanking = ({ navigation }) => {
         try {
           if (isHost) {
             await deleteCompetition(competitionId);
+            hideAlert();
+            showToast('경쟁방이 삭제되었습니다.', 'error', 3000, 'top');
           } else {
             const res = await leaveCompetition(competitionId);
             if (res.status !== 200) throw new Error('Leave failed');
+            hideAlert();
+            showToast('경쟁방에서 나왔습니다.', 'success', 3000, 'top');
           }
           setIsDeleted(true);
           navigation.goBack();
@@ -215,6 +219,8 @@ const CompetitionRoomRanking = ({ navigation }) => {
         try {
           await deleteCompetition(competitionId);
           setIsDeleted(true);
+          hideAlert();
+          showToast('경쟁방이 삭제되었습니다.', 'error', 3000, 'top');
           navigation.goBack();
         } catch (error) {
           console.log('경쟁방 삭제 실패', error);
