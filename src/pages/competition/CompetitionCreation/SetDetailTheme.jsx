@@ -2,7 +2,7 @@ import React from 'react';
 import { Alert, Pressable, ScrollView, StyleSheet, Text } from 'react-native';
 
 import { BACKGROUND_COLORS, COLORS } from '../../../constants/colors';
-import { FONT_SIZES, FONT_WEIGHTS } from '../../../constants/font';
+import { FONT_SIZES, FONTS } from '../../../constants/font';
 import useCreateRoomStateStore from '../../../store/competition/index';
 
 const themeOptions = {
@@ -70,14 +70,12 @@ const styles = StyleSheet.create({
   titleText: {
     color: COLORS.white,
     fontSize: FONT_SIZES.lg,
-    fontWeight: FONT_WEIGHTS.bold,
-    fontFamily: 'Pretendard',
+    fontFamily: FONTS.PRETENDARD[700],
   },
   descriptionText: {
     color: COLORS.white,
     fontSize: FONT_SIZES.sm,
-    fontWeight: FONT_WEIGHTS.regular,
-    fontFamily: 'Pretendard',
+    fontFamily: FONTS.PRETENDARD[400],
   },
   selected: {
     backgroundColor: COLORS.primary,

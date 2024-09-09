@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { BACKGROUND_COLORS, COLORS } from '../constants/colors';
-import { FONT_SIZES, FONT_WEIGHTS } from '../constants/font';
+import { FONT_SIZES, FONTS } from '../constants/font';
 import CustomButton from './CustomButton';
 
 const NoOngoingCompetitions = () => (
@@ -29,7 +29,7 @@ const styles = StyleSheet.create({
     alignSelf: 'stretch',
     color: COLORS.white,
     fontSize: FONT_SIZES.md,
-    fontWeight: FONT_WEIGHTS.bold,
+    fontFamily: FONTS.PRETENDARD[700],
     paddingHorizontal: 40,
     textAlign: 'center',
   },

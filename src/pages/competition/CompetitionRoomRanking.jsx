@@ -14,7 +14,7 @@ import {
 import CompetitionRoomHeader from '../../components/CompetitionRoomHeader';
 import CustomAlert from '../../components/CustomAlert';
 import { COLORS } from '../../constants/colors';
-import { FONT_SIZES, FONT_WEIGHTS } from '../../constants/font';
+import { FONT_SIZES, FONTS } from '../../constants/font';
 import { useToastMessageStore } from '../../store/toastMessage/toastMessage';
 import { getCompetitionProgress } from '../../utils/competition';
 import Invite from './rankingPageTabs/Invite';
@@ -275,7 +275,7 @@ const CompetitionRoomRanking = ({ navigation }) => {
             {...props}
             activeColor={COLORS.white}
             inactiveColor={COLORS.lightGrey}
-            labelStyle={{ fontSize: FONT_SIZES.md, fontWeight: FONT_WEIGHTS.semiBold }}
+            labelStyle={{ fontSize: FONT_SIZES.md, fontFamily: FONTS.PRETENDARD[600] }}
             indicatorStyle={{ backgroundColor: COLORS.primary }}
             style={{ backgroundColor: COLORS.darkBackground }}
           />
