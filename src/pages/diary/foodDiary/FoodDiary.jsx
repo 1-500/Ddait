@@ -39,7 +39,7 @@ const FoodDiary = () => {
   const [isVisibleModal, setIsVisibleModal] = useState(false);
   const [userState, setUserState] = useState({
     weight: 70,
-    totalCalories: 2000,
+    totalCalories: 0,
     macroRatio: {
       carbs: 0,
       protein: 0,
@@ -71,8 +71,11 @@ const FoodDiary = () => {
     return calculateTotalNutrition(userState.mealNutritionInfo);
   }, [userState]);
 
-  const { setTime } = useSelectedFoodTimeStore();
+  const remainingCalories =
+    totalNutrition.totalCalories === 0 ? 0 : userState.totalCalories - totalNutrition.totalCalories;
+  const remainingPercentage = remainingCalories / userState.totalCalories;
 
+  const { setTime } = useSelectedFoodTimeStore();
   const { selected } = useDiaryCalendarStore();
 
   const navigation = useNavigation();
@@ -214,7 +217,7 @@ const FoodDiary = () => {
       };
 
       handleFoodDiary();
-    }, [selected]), // dependencies array
+    }, [selected]),
   );
 
   return (
@@ -263,14 +266,20 @@ const FoodDiary = () => {
             </View>
           </View>
           <View style={{ marginTop: 10 }}>
-            <Progress.Bar progress={0.3} width={313} height={24} color="#6464FF" borderRadius={RADIUS.small} />
+            <Progress.Bar
+              progress={isNaN(remainingPercentage) ? 0 : remainingPercentage}
+              width={313}
+              height={24}
+              color="#6464FF"
+              borderRadius={RADIUS.small}
+            />
           </View>
           <View style={styles.calorieInfoContainer}>
             <Text style={styles.calorieInfoText}>
               {`${totalNutrition.totalCalories}kcal / ${userState.totalCalories}kcal`}
             </Text>
             <Text style={styles.calorieInfoText}>
-              {userState.totalCalories - totalNutrition.totalCalories}
+              {remainingCalories}
               kcal 남음
             </Text>
           </View>
