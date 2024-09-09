@@ -105,13 +105,19 @@ const CompetitionRoomRanking = ({ navigation }) => {
     }
   };
 
-  const fetchAllData = useCallback(() => {
+  const fetchAllData = useCallback(async () => {
     if (isDeleted) return;
-    setLoadingStates({ details: true, record: true, recordDetail: true });
-    fetchCompetitionDetail();
-    fetchCompetitionRecord();
-    fetchCompetitionRecordDetail();
-    fetchMyFriends();
+    setLoading(true);
+    try {
+      await Promise.all([
+        fetchCompetitionDetail(),
+        fetchCompetitionRecord(),
+        fetchCompetitionRecordDetail(),
+        fetchMyFriends(),
+      ]);
+    } catch (error) {
+      Alert.alert('Error fetching friends:', error.message);
+    }
   }, [competitionId, isDeleted]);
 
   const isFocused = useIsFocused();
