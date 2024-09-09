@@ -34,7 +34,9 @@ const CustomAlert = ({
             {showCancel && (
               <>
                 <TouchableOpacity style={[styles.button, verticalButtons && styles.verticalButton]} onPress={onCancel}>
-                  <Text style={[styles.buttonText, styles.cancelText]}>{cancelText}</Text>
+                  <Text style={[styles.buttonText, verticalButtons ? styles.confirmText : styles.cancelText]}>
+                    {cancelText}
+                  </Text>
                 </TouchableOpacity>
                 {!verticalButtons && <View style={styles.verticalSeparator} />}
               </>
@@ -43,7 +45,12 @@ const CustomAlert = ({
               style={[styles.button, !showCancel && styles.singleButton, verticalButtons && styles.verticalButton]}
               onPress={onConfirm}
             >
-              <Text style={[styles.buttonText, showCancel ? styles.confirmText : styles.singleButtonText]}>
+              <Text
+                style={[
+                  styles.buttonText,
+                  showCancel ? (verticalButtons ? styles.cancelText : styles.confirmText) : styles.singleButtonText,
+                ]}
+              >
                 {confirmText}
               </Text>
             </TouchableOpacity>
