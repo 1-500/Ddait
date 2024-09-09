@@ -1,18 +1,16 @@
 import { useNavigation } from '@react-navigation/native';
 import { useFocusEffect } from '@react-navigation/native';
-import React, { useCallback, useEffect, useState } from 'react';
-import { Alert, Button, FlatList, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useCallback, useState } from 'react';
+import { FlatList, StyleSheet, Text, View } from 'react-native';
 
 import { getDiaryList } from '../../../apis/diary';
 import CustomButton from '../../../components/CustomButton';
-import Toast from '../../../components/Toast';
 import { BACKGROUND_COLORS, BUTTON_COLORS, COLORS, TEXT_COLORS } from '../../../constants/colors';
 import { FONT_SIZES, FONTS } from '../../../constants/font';
 import { RADIUS } from '../../../constants/radius';
 import { LAYOUT_PADDING } from '../../../constants/space';
 import useDiaryCalendarStore from '../../../store/food/calendar/index';
 import { useToastMessageStore } from '../../../store/toastMessage/toastMessage';
-import { formatDate, getEndOfWeek, getStartOfWeek, getWeekOfMonth } from '../../../utils/date';
 
 const WorkoutDiary = () => {
   const navigation = useNavigation();

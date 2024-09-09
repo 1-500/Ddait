@@ -142,11 +142,9 @@ const StartWorkout = () => {
       prevData.map((workout) => {
         if (workout.id === workoutId) {
           if (workout.isRunning) {
-            // 정지 버튼을 눌렀을 때 타이머를 멈춤
             clearInterval(intervalId);
             return { ...workout, isRunning: false };
           } else {
-            // 시작 버튼을 눌렀을 때 타이머를 시작
             const id = setInterval(() => {
               setTotalTime((prev) => {
                 const newSeconds = prev.seconds + 1;
@@ -243,7 +241,6 @@ const StartWorkout = () => {
       };
       const time = formatTotalTime(totalWorkoutTime);
 
-      // 각 운동에 대해 완료된 세트만 필터링하여 workout_records 배열에 저장
       const workout_records = workoutData.flatMap((workout) =>
         workout.workoutSet
           .filter((set) => set.isComplete)
@@ -257,7 +254,6 @@ const StartWorkout = () => {
           })),
       );
 
-      // 완료된 세트가 없는 경우 알림
       if (workout_records.length === 0) {
         Alert.alert('운동 기록', '완료된 세트가 없어 기록을 저장할 수 없습니다.');
         return;
@@ -272,7 +268,6 @@ const StartWorkout = () => {
       const res = await postWorkoutRecord(workoutRecord);
 
       /* eslint-disable */
-      // 응답 처리
       if (res) {
         Alert.alert('운동 기록', '정상적으로 저장되었습니다');
         navigation.navigate('DiaryMain');
