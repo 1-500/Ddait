@@ -69,3 +69,9 @@ export const getUserFoodDiary = async (date) => {
     return response.data;
   } catch (error) {}
 };
+export const getUserTotalFoodRerord = async (date) => {
+  try {
+    const response = await API.get(`food/record/total?date=${date}`);
+    return response.data;
+  } catch (error) {}
+};
