@@ -1,5 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
-import React, { useEffect, useState } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Alert, Button, FlatList, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { getDiaryList } from '../../../apis/diary';
@@ -19,20 +20,22 @@ const WorkoutDiary = () => {
   const [workoutRecords, setWorkoutRecords] = useState([]);
   const { showToast } = useToastMessageStore();
 
-  useEffect(() => {
-    const fetchWorkout = async () => {
-      try {
-        const res = await getDiaryList(selected);
-        setWorkoutRecords(res);
-      } catch (error) {
-        /*eslint-disable */
-        console.log('error: ', error);
-        showToast(`에러메세지 : ${error}`, 'error', 1000, 'top', 80);
-      }
-    };
+  /* eslint-disable */
+  useFocusEffect(
+    useCallback(() => {
+      const fetchWorkout = async () => {
+        try {
+          const res = await getDiaryList(selected);
+          setWorkoutRecords(res);
+        } catch (error) {
+          console.log('error: ', error);
+          showToast(`에러메세지 : ${error}`, 'error', 1000, 'top', 80);
+        }
+      };
 
-    fetchWorkout();
-  }, [selected]);
+      fetchWorkout();
+    }, [selected]),
+  );
   /*eslint-enable */
 
   const handleStartWorkout = () => {

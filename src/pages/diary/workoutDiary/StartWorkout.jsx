@@ -275,7 +275,7 @@ const StartWorkout = () => {
       // 응답 처리
       if (res) {
         Alert.alert('운동 기록', '정상적으로 저장되었습니다');
-        navigation.navigate('WorkoutDiaryScreen');
+        navigation.navigate('DiaryMain');
       } else {
         Alert.alert('운동 기록', '기록 저장에 실패했습니다.');
         console.error('기록 저장에 실패했습니다.', res.error);
