@@ -18,15 +18,15 @@ const FriendSearch = ({ navigation }) => {
   const [searchResults, setSearchResults] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [error, setError] = useState('');
-  const [selectedMemberId, setSelectedMemberId] = useState(null);
+  const [selectedMemberData, setSelectedMemberData] = useState(null);
 
-  const handleOpenOptions = useCallback((memberId) => {
-    setSelectedMemberId(memberId);
+  const handleOpenOptions = useCallback((memberData) => {
+    setSelectedMemberData(memberData);
     bottomSheetRef.current?.present();
   }, []);
 
   const renderItem = ({ item }) => (
-    <MemberProfileItem memberData={item} onRightBtnPress={() => handleOpenOptions(item.id)} />
+    <MemberProfileItem memberData={item} onRightBtnPress={() => handleOpenOptions(item)} />
   );
 
   useEffect(() => {
@@ -92,7 +92,7 @@ const FriendSearch = ({ navigation }) => {
             </>
           )}
         </View>
-        <FriendOptionBottomSheet ref={bottomSheetRef} relation="none" memberId={selectedMemberId} />
+        <FriendOptionBottomSheet ref={bottomSheetRef} relation="none" memberData={selectedMemberData} />
       </SafeAreaView>
     </BottomSheetModalProvider>
   );
