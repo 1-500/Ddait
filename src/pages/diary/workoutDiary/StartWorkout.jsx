@@ -99,9 +99,6 @@ const StartWorkout = () => {
   const handlePresentModalPress = useCallback(() => {
     bottomSheetModalRef.current?.present();
   }, []);
-  const handleSheetChanges = useCallback((index) => {
-    // console.log('handleSheetChanges', index);
-  }, []);
 
   const handleExerciseSelect = (exercise) => {
     if (selectedExercises.includes(exercise)) {
@@ -496,12 +493,7 @@ const StartWorkout = () => {
       </Modal>
 
       <BottomSheetModalProvider>
-        <BottomSheetModal
-          ref={bottomSheetModalRef}
-          onChange={handleSheetChanges}
-          enablePanDownToClose
-          snapPoints={snapPoints}
-        >
+        <BottomSheetModal ref={bottomSheetModalRef} enablePanDownToClose snapPoints={snapPoints}>
           <BottomSheetView style={styles.bottomSheetContainer}>
             <Text style={styles.exerciseHeader}>운동 추가</Text>
             <View>
