@@ -116,7 +116,7 @@ const CompetitionRoomRanking = ({ navigation }) => {
         setCompetitionRecord(res.data);
       }
     } catch (error) {
-      console.log('error: ', error);
+      console.log('경쟁방 기록 조회 실패: ', error);
     } finally {
       setLoadingStates((prev) => ({ ...prev, record: false }));
     }
@@ -129,7 +129,7 @@ const CompetitionRoomRanking = ({ navigation }) => {
         setCompetitionRecordDetail(res.data);
       }
     } catch (error) {
-      console.log('error: ', error);
+      console.log('경쟁방 기록 상세 조회 실패: ', error);
     } finally {
       setLoadingStates((prev) => ({ ...prev, recordDetail: false }));
     }
@@ -185,11 +185,11 @@ const CompetitionRoomRanking = ({ navigation }) => {
         try {
           if (isHost) {
             await deleteCompetition(competitionId);
-            setIsDeleted(true);
           } else {
             const res = await leaveCompetition(competitionId);
             if (res.status !== 200) throw new Error('Leave failed');
           }
+          setIsDeleted(true);
           navigation.goBack();
         } catch (error) {
           console.log('경쟁방 나가기 실패', error);
