@@ -1,6 +1,6 @@
 import { useIsFocused, useRoute } from '@react-navigation/native';
 import React, { useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, SafeAreaView, StyleSheet, useWindowDimensions, View } from 'react-native';
+import { Alert, SafeAreaView, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { TabBar, TabView } from 'react-native-tab-view';
 
 import {
@@ -19,6 +19,7 @@ import { getCompetitionProgress } from '../../utils/competition';
 import Invite from './rankingPageTabs/Invite';
 import MyScore from './rankingPageTabs/MyScore';
 import RankList from './rankingPageTabs/RankList';
+import SkeletonLoader from './rankingPageTabs/SkeletonLoader';
 
 /* eslint-disable */
 
@@ -75,7 +76,6 @@ const CompetitionRoomRanking = ({ navigation }) => {
   const [competitionRecord, setCompetitionRecord] = useState();
   const [competitionRecordDetail, setCompetitionRecordDetail] = useState();
   const [progress, setProgress] = useState(false);
-  const [loading, setLoading] = useState(true);
   const [isDeleted, setIsDeleted] = useState(false);
   const [index, setIndex] = useState(0);
   const [routes] = useState([
@@ -90,6 +90,11 @@ const CompetitionRoomRanking = ({ navigation }) => {
     onConfirm: null,
     showCancel: true,
   });
+  const [loadingStates, setLoadingStates] = useState({
+    details: true,
+    record: true,
+    recordDetail: true,
+  });
 
   const fetchCompetitionDetail = async () => {
     try {
@@ -98,6 +103,8 @@ const CompetitionRoomRanking = ({ navigation }) => {
       setCompetitionData(result.data);
     } catch (error) {
       Alert.alert('경쟁방 상세 정보 조회 실패', error.message);
+    } finally {
+      setLoadingStates((prev) => ({ ...prev, details: false }));
     }
   };
 
@@ -110,6 +117,8 @@ const CompetitionRoomRanking = ({ navigation }) => {
       }
     } catch (error) {
       console.log('error: ', error);
+    } finally {
+      setLoadingStates((prev) => ({ ...prev, record: false }));
     }
   };
 
@@ -121,19 +130,17 @@ const CompetitionRoomRanking = ({ navigation }) => {
       }
     } catch (error) {
       console.log('error: ', error);
+    } finally {
+      setLoadingStates((prev) => ({ ...prev, recordDetail: false }));
     }
   };
 
-  const fetchAllData = useCallback(async () => {
+  const fetchAllData = useCallback(() => {
     if (isDeleted) return;
-    setLoading(true);
-    try {
-      await Promise.all([fetchCompetitionDetail(), fetchCompetitionRecord(), fetchCompetitionRecordDetail()]);
-    } catch (error) {
-      console.log('fetchAllData 실패', error);
-    } finally {
-      setLoading(false);
-    }
+    setLoadingStates({ details: true, record: true, recordDetail: true });
+    fetchCompetitionDetail();
+    fetchCompetitionRecord();
+    fetchCompetitionRecordDetail();
   }, [competitionId, isDeleted]);
 
   const isFocused = useIsFocused();
@@ -228,7 +235,9 @@ const CompetitionRoomRanking = ({ navigation }) => {
   const renderScene = ({ route, jumpTo }) => {
     switch (route.key) {
       case 'rankList':
-        return (
+        return loadingStates.record ? (
+          <SkeletonLoader type="rankList" />
+        ) : (
           <RankList
             data={competitionRecord}
             competitionData={competitionData}
@@ -239,27 +248,23 @@ const CompetitionRoomRanking = ({ navigation }) => {
           />
         );
       case 'myScore':
-        return <MyScore data={competitionRecordDetail} jumpTo={jumpTo} />;
+        return loadingStates.recordDetail ? (
+          <SkeletonLoader type="myScore" />
+        ) : (
+          <MyScore data={competitionRecordDetail} />
+        );
       case 'invite':
-        return <Invite friends={dummy_data.friends} jumpTo={jumpTo} />;
+        return <Invite friends={dummy_data.friends} />;
     }
   };
 
-  if (isDeleted) {
-    return null;
-  }
-
-  if (loading) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={COLORS.primary} />
-      </View>
-    );
-  }
-
   return (
     <SafeAreaView style={styles.pageContainer}>
-      {competitionData && <CompetitionRoomHeader data={competitionData} onDelete={handleDelete} />}
+      {loadingStates.details ? (
+        <SkeletonLoader type="header" />
+      ) : (
+        competitionData && <CompetitionRoomHeader data={competitionData} onDelete={handleDelete} />
+      )}
       <TabView
         renderTabBar={(props) => (
           <TabBar
