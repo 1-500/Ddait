@@ -7,7 +7,7 @@ import CustomButton from '../../../components/CustomButton';
 import CustomInput from '../../../components/CustomInput';
 import HeaderComponents from '../../../components/HeaderComponents';
 import { BACKGROUND_COLORS, COLORS, TEXT_COLORS } from '../../../constants/colors';
-import { FONT_SIZES, FONT_WEIGHTS } from '../../../constants/font';
+import { FONT_SIZES, FONTS } from '../../../constants/font';
 import { RADIUS } from '../../../constants/radius';
 
 const PlusButtonIcon = require('../../../assets/images/dietDiary/PluscircleWhiteButton.png');
@@ -234,10 +234,12 @@ const styles = StyleSheet.create({
   activeTagText: {
     color: TEXT_COLORS.primary,
     fontSize: FONT_SIZES.sm,
+    fontFamily: FONTS.PRETENDARD[400],
   },
   tagText: {
     color: TEXT_COLORS.secondary,
     fontSize: FONT_SIZES.sm,
+    fontFamily: FONTS.PRETENDARD[400],
   },
   foodListContainer: {
     marginVertical: 15,
@@ -246,7 +248,7 @@ const styles = StyleSheet.create({
   foodListTitle: {
     color: 'white',
     fontSize: FONT_SIZES.lg,
-    fontWeight: FONT_WEIGHTS.bold,
+    fontFamily: FONTS.PRETENDARD[700],
     marginBottom: 10,
   },
   foodItem: {

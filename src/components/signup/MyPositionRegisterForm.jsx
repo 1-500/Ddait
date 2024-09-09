@@ -1,6 +1,7 @@
 import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import { WebView } from 'react-native-webview';
 
+import { FONTS } from '../../constants/font';
 import useUserFormStore from '../../store/sign/signup';
 
 const MyPositionRegisterForm = () => {
@@ -38,12 +39,12 @@ const styles = StyleSheet.create({
   headerText: {
     color: 'white',
     fontSize: 20,
-    fontWeight: '600',
+    fontFamily: FONTS.PRETENDARD[600],
   },
   subHeaderText: {
     color: '#D9D9D9',
     fontSize: 16,
-    fontWeight: '600',
+    fontFamily: FONTS.PRETENDARD[600],
     marginTop: 10,
   },
 });

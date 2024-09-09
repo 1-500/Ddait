@@ -6,7 +6,7 @@ import { getFoodRecordByTime } from '../../../apis/food/index';
 import CustomButton from '../../../components/CustomButton';
 import HeaderComponents from '../../../components/HeaderComponents';
 import { COLORS } from '../../../constants/colors';
-import { FONT_SIZES, FONT_WEIGHTS, FONTS } from '../../../constants/font';
+import { FONT_SIZES, FONTS } from '../../../constants/font';
 import { RADIUS } from '../../../constants/radius';
 import useDiaryCalendarStore from '../../../store/food/calendar/index';
 import useSelectedFoodTimeStore from '../../../store/index';
@@ -106,7 +106,7 @@ const FoodRecordDetail = () => {
             })
           ) : (
             <View style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-              <Text style={{ fontSize: FONT_SIZES.md, fontFamily: FONT_WEIGHTS.semiBold, color: 'white' }}>
+              <Text style={{ fontSize: FONT_SIZES.md, fontFamily: FONTS.PRETENDARD[600], color: 'white' }}>
                 등록된 음식이 없습니다.
               </Text>
             </View>
@@ -206,6 +206,7 @@ const styles = StyleSheet.create({
   },
   macroText: {
     color: 'white',
+    fontFamily: FONTS.PRETENDARD[400],
   },
 
   foodListTitle: {

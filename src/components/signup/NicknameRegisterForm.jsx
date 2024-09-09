@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native';
 
-import { FONT_SIZES } from '../../constants/font';
+import { FONT_SIZES, FONTS } from '../../constants/font';
 import useUserFormStore from '../../store/sign/signup';
 import CustomInput from '../CustomInput';
 
@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
   headerText: {
     color: 'white',
     fontSize: 20,
-    fontWeight: '600',
+    fontFamily: FONTS.PRETENDARD[600],
   },
   inputContainer: {
     marginTop: 16,

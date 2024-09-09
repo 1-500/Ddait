@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { KeyboardAvoidingView, StyleSheet, Text, View } from 'react-native';
 
 import CustomInput from '../../components/CustomInput';
-import { FONT_SIZES } from '../../constants/font';
+import { FONT_SIZES, FONTS } from '../../constants/font';
 import useUserFormStore from '../../store/sign/signup';
 import { validateEmail } from '../../utils/validate';
 
@@ -89,12 +89,12 @@ const styles = StyleSheet.create({
   headerText: {
     color: 'white',
     fontSize: 20,
-    fontWeight: '600',
+    fontFamily: FONTS.PRETENDARD[600],
   },
   subHeaderText: {
     color: '#D9D9D9',
     fontSize: 16,
-    fontWeight: '600',
+    fontFamily: FONTS.PRETENDARD[600],
     marginTop: 10,
   },
   inputContainer: {

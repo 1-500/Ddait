@@ -2,7 +2,7 @@ import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import { FONT_SIZES, HEADER_FONT_SIZES } from '../../constants/font';
+import { FONT_SIZES, FONTS, HEADER_FONT_SIZES } from '../../constants/font';
 import useUserFormStore from '../../store/sign/signup';
 import DatePickerBottomSheet from '../DatePickerBottomSheet';
 
@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
   dateText: {
     color: 'white',
     fontSize: 24,
-    fontWeight: 'bold',
+    fontFamily: FONTS.PRETENDARD[700],
     marginBottom: 20,
   },
   pickerContainer: {
@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
   headerText: {
     color: 'white',
     fontSize: HEADER_FONT_SIZES.sm,
-    fontWeight: '600',
+    fontFamily: FONTS.PRETENDARD[600],
     marginBottom: 20,
   },
   pickersWrapper: {
@@ -89,6 +89,7 @@ const styles = StyleSheet.create({
   buttonText: {
     color: 'white',
     fontSize: 18,
+    fontFamily: FONTS.PRETENDARD[400],
   },
 });
 
