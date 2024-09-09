@@ -8,6 +8,7 @@ import {
   SafeAreaView,
   StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
   TouchableWithoutFeedback,
   View,
@@ -46,6 +47,8 @@ const StartWorkout = () => {
     equipment: '전체',
     bookmark: false,
   });
+  const [workoutTitle, setWorkoutTitle] = useState('아침운동');
+  const [editWorkoutTitle, setEditWorkoutTitle] = useState(false);
 
   const bottomSheetModalRef = useRef(null);
   const snapPoints = useMemo(() => ['80%', '80%'], []);
@@ -54,10 +57,8 @@ const StartWorkout = () => {
   useEffect(() => {
     const fetchExerciseData = async () => {
       try {
-        // 운동 목록과 북마크 목록을 병렬로 요청하게 all메서르 사용
         const [exerciseRes, bookmarkRes] = await Promise.all([getExerciseList(), getWorkoutInfoBookmark()]);
 
-        // bookmarkRes.data로 북마크 데이터를 추출하여 운동 목록과 결합
         const exerciseListWithBookmarks = exerciseRes.map((exercise) => {
           const isBookmarked = bookmarkRes.data.some((bookmark) => bookmark.workout_info_id === exercise.id);
           return { ...exercise, bookmark: isBookmarked };
@@ -214,25 +215,24 @@ const StartWorkout = () => {
     );
   };
 
+  /* eslint-disable */
   const handleCompleteWorkoutSet = (workoutId, setId) => {
-    setWorkoutData(
-      (prevData) =>
-        prevData.map((workout) =>
-          workout.id === workoutId
-            ? /* eslint-disable */
-              {
-                ...workout,
-                workoutSet: workout.workoutSet.filter((set) => set.id !== setId),
-              }
-            : workout,
-        ),
-      /* eslint-enable */
+    setWorkoutData((prevData) =>
+      prevData.map((workout) =>
+        workout.id === workoutId
+          ? {
+              ...workout,
+              workoutSet: workout.workoutSet.map((set) => (set.id === setId ? { ...set, isComplete: true } : set)),
+            }
+          : workout,
+      ),
     );
   };
+  /* eslint-enable */
 
   const handleSaveWorkoutRecord = async () => {
     try {
-      const title = '아침운동';
+      const title = workoutTitle;
       const totalWorkoutTime = workoutData.reduce((total, workout) => total + workout.time, 0);
 
       const formatTotalTime = (seconds) => {
@@ -407,10 +407,42 @@ const StartWorkout = () => {
     }));
   }, []);
 
+  const handleTitleChange = (text) => {
+    setWorkoutTitle(text);
+  };
+
+  const handleSaveTitle = () => {
+    setEditWorkoutTitle(false);
+  };
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: BACKGROUND_COLORS.dark }}>
       <HeaderComponents title="운동 시작" icon="timer" onRightBtnPress={handleRestTimer} />
+
       <View style={styles.timerContainer}>
+        {editWorkoutTitle ? (
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <TextInput
+              value={workoutTitle}
+              onChangeText={handleTitleChange}
+              style={styles.workoutTitleInput}
+              onBlur={handleSaveTitle}
+              autoFocus
+            />
+            <TouchableOpacity onPress={handleSaveTitle}>
+              <MaterialCommunityIcons name="check" size={24} color={COLORS.secondary} />
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <TouchableOpacity
+            style={{ flexDirection: 'row', alignItems: 'center' }}
+            onPress={() => setEditWorkoutTitle(true)}
+          >
+            <Text style={styles.workoutTitle}>{workoutTitle}</Text>
+            <MaterialCommunityIcons name="pencil-outline" size={20} color={COLORS.white} />
+          </TouchableOpacity>
+        )}
+
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <MaterialCommunityIcons name="timer-outline" size={24} color={COLORS.white} />
           <Text style={styles.timerText}>운동: {formatTime(totalWorkoutTime)}</Text>
@@ -549,8 +581,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     height: 60,
     paddingVertical: 16,
+    paddingHorizontal: 20,
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
   },
   diaryContentContainer: {
     paddingTop: 16,
@@ -703,6 +736,18 @@ const styles = StyleSheet.create({
   timerText: {
     color: COLORS.white,
     marginLeft: 8,
+    fontSize: BODY_FONT_SIZES.md,
+    fontFamily: FONTS.PRETENDARD[700],
+  },
+  workoutTitle: {
+    color: COLORS.white,
+    marginRight: 8,
+    fontSize: BODY_FONT_SIZES.md,
+    fontFamily: FONTS.PRETENDARD[700],
+  },
+  workoutTitleInput: {
+    color: COLORS.white,
+    marginRight: 8,
     fontSize: BODY_FONT_SIZES.md,
     fontFamily: FONTS.PRETENDARD[700],
   },
