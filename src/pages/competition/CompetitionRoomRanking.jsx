@@ -11,6 +11,7 @@ import {
   getCompetitionRecordDetail,
   leaveCompetition,
 } from '../../apis/competition';
+import { getMyFriends } from '../../apis/friend';
 import CompetitionRoomHeader from '../../components/CompetitionRoomHeader';
 import CustomAlert from '../../components/CustomAlert';
 import { COLORS } from '../../constants/colors';
@@ -24,63 +25,19 @@ import SkeletonLoader from './rankingPageTabs/SkeletonLoader';
 
 /* eslint-disable */
 
-const dummy_data = {
-  friends: [
-    {
-      nickname: '따잇1',
-      introduce: '소개글입니다',
-      preferred_sport: '다이어트',
-    },
-    {
-      nickname: '따잇2',
-      introduce: '소개글입니다',
-      preferred_sport: '걷기',
-    },
-    {
-      nickname: '따잇3',
-      introduce: '소개글입니다',
-      preferred_sport: '등산',
-    },
-    {
-      nickname: '따잇4',
-      introduce: '소개글입니다',
-      preferred_sport: '웨이트',
-    },
-    {
-      nickname: '따잇5',
-      introduce: '소개글입니다',
-      preferred_sport: '다이어트',
-    },
-    {
-      nickname: '따잇6',
-      introduce: '소개글입니다',
-      preferred_sport: '걷기',
-    },
-    {
-      nickname: '따잇7',
-      introduce: '소개글입니다',
-      preferred_sport: '등산',
-    },
-    {
-      nickname: '따잇8',
-      introduce: '소개글입니다',
-      preferred_sport: '웨이트',
-    },
-  ],
-};
-
 const CompetitionRoomRanking = ({ navigation }) => {
   const layout = useWindowDimensions();
   const route = useRoute();
   const { competitionId } = route.params;
+  const { showToast } = useToastMessageStore();
   const [competitionData, setCompetitionData] = useState();
   const [competitionRecord, setCompetitionRecord] = useState();
   const [competitionRecordDetail, setCompetitionRecordDetail] = useState();
+  const [myFriends, setMyFriends] = useState();
   const [progress, setProgress] = useState(false);
   const [isDeleted, setIsDeleted] = useState(false);
   const [index, setIndex] = useState(0);
-  const { showToast } = useToastMessageStore();
-  const [routes] = useState([
+  const [routes, setRoutes] = useState([
     { key: 'rankList', title: '랭킹' },
     { key: 'myScore', title: '내 점수' },
     { key: 'invite', title: '초대' },
@@ -137,12 +94,24 @@ const CompetitionRoomRanking = ({ navigation }) => {
     }
   };
 
+  const fetchMyFriends = async () => {
+    try {
+      const res = await getMyFriends();
+      if (res.status === 200) {
+        setMyFriends(res.data);
+      }
+    } catch (error) {
+      Alert.alert('Error fetching friends:', error.message);
+    }
+  };
+
   const fetchAllData = useCallback(() => {
     if (isDeleted) return;
     setLoadingStates({ details: true, record: true, recordDetail: true });
     fetchCompetitionDetail();
     fetchCompetitionRecord();
     fetchCompetitionRecordDetail();
+    fetchMyFriends();
   }, [competitionId, isDeleted]);
 
   const isFocused = useIsFocused();
@@ -153,16 +122,32 @@ const CompetitionRoomRanking = ({ navigation }) => {
     }
   }, [isFocused, isDeleted]);
 
+  useEffect(() => {
+    console.log(progress);
+    if (progress === 'BEFORE') {
+      setRoutes([
+        { key: 'rankList', title: '랭킹' },
+        { key: 'myScore', title: '내 점수' },
+        { key: 'invite', title: '초대' },
+      ]);
+    } else {
+      setRoutes([
+        { key: 'rankList', title: '랭킹' },
+        { key: 'myScore', title: '내 점수' },
+      ]);
+    }
+  }, [progress]);
+
   const handleJoin = async () => {
     try {
       const res = await enterCompetition(competitionId);
       if (res.status === 200) {
-        showToast('경쟁방에 참여했습니다!', 'success', 3000, 'top');
+        showToast('🎉 새로운 경쟁에 참여하셨습니다!', 'success', 3000, 'top');
         fetchAllData();
       }
     } catch (error) {
       console.log('error: ', error);
-      showToast('경쟁방 참여에 실패했습니다.', 'error', 3000, 'top');
+      showToast('🚫 문제 발생! 다시 시도해주세요.', 'error', 3000, 'top');
     }
   };
 
@@ -186,12 +171,12 @@ const CompetitionRoomRanking = ({ navigation }) => {
           if (isHost) {
             await deleteCompetition(competitionId);
             hideAlert();
-            showToast('경쟁방이 삭제되었습니다.', 'error', 3000, 'top');
+            showToast('💥 경쟁방이 삭제되었습니다.', 'error', 3000, 'top');
           } else {
             const res = await leaveCompetition(competitionId);
             if (res.status !== 200) throw new Error('Leave failed');
             hideAlert();
-            showToast('경쟁방에서 나왔습니다.', 'success', 3000, 'top');
+            showToast('👋 경쟁방에서 나가셨습니다.', 'error', 3000, 'top');
           }
           setIsDeleted(true);
           navigation.goBack();
@@ -220,7 +205,7 @@ const CompetitionRoomRanking = ({ navigation }) => {
           await deleteCompetition(competitionId);
           setIsDeleted(true);
           hideAlert();
-          showToast('경쟁방이 삭제되었습니다.', 'error', 3000, 'top');
+          showToast('💥 경쟁방이 삭제되었습니다.', 'error', 3000, 'top');
           navigation.goBack();
         } catch (error) {
           console.log('경쟁방 삭제 실패', error);
@@ -258,7 +243,7 @@ const CompetitionRoomRanking = ({ navigation }) => {
           <MyScore data={competitionRecordDetail} />
         );
       case 'invite':
-        return <Invite friends={dummy_data.friends} />;
+        return <Invite competitionId={competitionId} friends={myFriends} jumpTo={jumpTo} />;
     }
   };
 
