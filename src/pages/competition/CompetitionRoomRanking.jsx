@@ -11,6 +11,7 @@ import {
   getCompetitionRecordDetail,
   leaveCompetition,
 } from '../../apis/competition';
+import { getMyFriends } from '../../apis/friend';
 import CompetitionRoomHeader from '../../components/CompetitionRoomHeader';
 import CustomAlert from '../../components/CustomAlert';
 import { COLORS } from '../../constants/colors';
@@ -22,51 +23,6 @@ import RankList from './rankingPageTabs/RankList';
 
 /* eslint-disable */
 
-const dummy_data = {
-  friends: [
-    {
-      nickname: '따잇1',
-      introduce: '소개글입니다',
-      preferred_sport: '다이어트',
-    },
-    {
-      nickname: '따잇2',
-      introduce: '소개글입니다',
-      preferred_sport: '걷기',
-    },
-    {
-      nickname: '따잇3',
-      introduce: '소개글입니다',
-      preferred_sport: '등산',
-    },
-    {
-      nickname: '따잇4',
-      introduce: '소개글입니다',
-      preferred_sport: '웨이트',
-    },
-    {
-      nickname: '따잇5',
-      introduce: '소개글입니다',
-      preferred_sport: '다이어트',
-    },
-    {
-      nickname: '따잇6',
-      introduce: '소개글입니다',
-      preferred_sport: '걷기',
-    },
-    {
-      nickname: '따잇7',
-      introduce: '소개글입니다',
-      preferred_sport: '등산',
-    },
-    {
-      nickname: '따잇8',
-      introduce: '소개글입니다',
-      preferred_sport: '웨이트',
-    },
-  ],
-};
-
 const CompetitionRoomRanking = ({ navigation }) => {
   const layout = useWindowDimensions();
   const route = useRoute();
@@ -74,11 +30,12 @@ const CompetitionRoomRanking = ({ navigation }) => {
   const [competitionData, setCompetitionData] = useState();
   const [competitionRecord, setCompetitionRecord] = useState();
   const [competitionRecordDetail, setCompetitionRecordDetail] = useState();
+  const [myFriends, setMyFriends] = useState();
   const [progress, setProgress] = useState(false);
   const [loading, setLoading] = useState(true);
   const [isDeleted, setIsDeleted] = useState(false);
   const [index, setIndex] = useState(0);
-  const [routes] = useState([
+  const [routes, setRoutes] = useState([
     { key: 'rankList', title: '랭킹' },
     { key: 'myScore', title: '내 점수' },
     { key: 'invite', title: '초대' },
@@ -124,11 +81,27 @@ const CompetitionRoomRanking = ({ navigation }) => {
     }
   };
 
+  const fetchMyFriends = async () => {
+    try {
+      const res = await getMyFriends();
+      if (res.status === 200) {
+        setMyFriends(res.data);
+      }
+    } catch (error) {
+      Alert.alert('Error fetching friends:', error.message);
+    }
+  };
+
   const fetchAllData = useCallback(async () => {
     if (isDeleted) return;
     setLoading(true);
     try {
-      await Promise.all([fetchCompetitionDetail(), fetchCompetitionRecord(), fetchCompetitionRecordDetail()]);
+      await Promise.all([
+        fetchCompetitionDetail(),
+        fetchCompetitionRecord(),
+        fetchCompetitionRecordDetail(),
+        fetchMyFriends(),
+      ]);
     } catch (error) {
       console.log('fetchAllData 실패', error);
     } finally {
@@ -143,6 +116,22 @@ const CompetitionRoomRanking = ({ navigation }) => {
       fetchAllData();
     }
   }, [isFocused, isDeleted]);
+
+  useEffect(() => {
+    console.log(progress);
+    if (progress === 'BEFORE') {
+      setRoutes([
+        { key: 'rankList', title: '랭킹' },
+        { key: 'myScore', title: '내 점수' },
+        { key: 'invite', title: '초대' },
+      ]);
+    } else {
+      setRoutes([
+        { key: 'rankList', title: '랭킹' },
+        { key: 'myScore', title: '내 점수' },
+      ]);
+    }
+  }, [progress]);
 
   const handleJoin = async () => {
     try {
@@ -241,7 +230,7 @@ const CompetitionRoomRanking = ({ navigation }) => {
       case 'myScore':
         return <MyScore data={competitionRecordDetail} jumpTo={jumpTo} />;
       case 'invite':
-        return <Invite friends={dummy_data.friends} jumpTo={jumpTo} />;
+        return <Invite competitionId={competitionId} friends={myFriends} jumpTo={jumpTo} />;
     }
   };
 
