@@ -180,9 +180,23 @@ const CompetitionRoomRanking = ({ navigation }) => {
     if (isHost) {
       showAlert({
         title: '잠깐! 🚨',
-        message: `방장님, 여기서 나가시면 안돼요! 😅\n\n경쟁방을 떠나고 싶다면\n삭제 버튼을 찾아주세요 🔍\n\n( 경쟁방이 사라져요, 신중하게! )`,
-        showCancel: false,
-        onConfirm: hideAlert,
+        message: `방장님이 나가시면 기록이 삭제됩니다 🥹\n\경쟁방이 사라져요, 신중하게!`,
+        onConfirm: async () => {
+          try {
+            await deleteCompetition(competitionId);
+            setIsDeleted(true);
+            navigation.goBack();
+          } catch (error) {
+            console.log('경쟁방 나가기 실패', error);
+            showAlert({
+              title: '앗, 문제 발생! 😓',
+              message: '경쟁방 나가기에 실패했어요.\n잠시 후 다시 시도해 주세요!',
+              showCancel: false,
+              onConfirm: hideAlert,
+            });
+          }
+        },
+        onCancel: hideAlert,
       });
     } else {
       showAlert({
