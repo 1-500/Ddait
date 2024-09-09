@@ -1,5 +1,5 @@
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Alert, Image, Modal, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import * as Progress from 'react-native-progress';
 
@@ -17,7 +17,12 @@ import { FONT_SIZES, FONT_WEIGHTS, FONTS } from '../../../constants/font';
 import { RADIUS } from '../../../constants/radius';
 import useDiaryCalendarStore from '../../../store/food/calendar/index';
 import useSelectedFoodTimeStore from '../../../store/index';
-import { calculateCarbsCalories, calculateFatCalories, calculateProteinCalories } from '../../../utils/foodDiary/index';
+import {
+  calculateCarbsCalories,
+  calculateFatCalories,
+  calculateProteinCalories,
+  calculateTotalNutrition,
+} from '../../../utils/foodDiary/index';
 
 const PlusButtonIcon = require('../../../assets/images/dietDiary/PluscircleButton.png');
 const MinusButtonIcon = require('../../../assets/images/dietDiary/MinusCircleButton.png');
@@ -61,6 +66,11 @@ const FoodDiary = () => {
       },
     },
   });
+
+  const totalNutrition = useMemo(() => {
+    return calculateTotalNutrition(userState.mealNutritionInfo);
+  }, [userState]);
+
   const { setTime } = useSelectedFoodTimeStore();
 
   const { selected } = useDiaryCalendarStore();
@@ -237,19 +247,19 @@ const FoodDiary = () => {
               <Text style={styles.macroLabel}>탄</Text>
               <Text
                 style={styles.macroValue}
-              >{`${userState.mealNutritionInfo?.아침.totalCarbs + userState.mealNutritionInfo?.점심.totalCarbs + userState.mealNutritionInfo?.저녁.totalCarbs || 0}/${calculateCarbsCalories(userState.macroRatio.carbs, userState.totalCalories)}g`}</Text>
+              >{`${totalNutrition.totalCarbs}/${calculateCarbsCalories(userState.macroRatio.carbs, userState.totalCalories)}g`}</Text>
             </View>
             <View style={styles.macroItem}>
               <Text style={styles.macroLabel}>단</Text>
               <Text
                 style={styles.macroValue}
-              >{`${userState.mealNutritionInfo?.아침.totalProtein + userState.mealNutritionInfo?.점심.totalProtein + userState.mealNutritionInfo?.저녁.totalProtein || 0}/${calculateProteinCalories(userState.macroRatio.protein, userState.totalCalories)}g`}</Text>
+              >{`${totalNutrition.totalProtein}/${calculateProteinCalories(userState.macroRatio.protein, userState.totalCalories)}g`}</Text>
             </View>
             <View style={styles.macroItem}>
               <Text style={styles.macroLabel}>지</Text>
               <Text
                 style={styles.macroValue}
-              >{`${userState.mealNutritionInfo?.아침.totalFat + userState.mealNutritionInfo?.점심.totalFat + userState.mealNutritionInfo?.저녁.totalFat || 0}/${calculateFatCalories(userState.macroRatio.fat, userState.totalCalories)}g`}</Text>
+              >{`${totalNutrition.totalFat}/${calculateFatCalories(userState.macroRatio.fat, userState.totalCalories)}g`}</Text>
             </View>
           </View>
           <View style={{ marginTop: 10 }}>
@@ -257,13 +267,10 @@ const FoodDiary = () => {
           </View>
           <View style={styles.calorieInfoContainer}>
             <Text style={styles.calorieInfoText}>
-              {`${userState.mealNutritionInfo?.아침.totalCalories + userState.mealNutritionInfo?.점심.totalCalories + userState.mealNutritionInfo?.저녁.totalCalories}kcal / ${userState.totalCalories}kcal`}
+              {`${totalNutrition.totalCalories}kcal / ${userState.totalCalories}kcal`}
             </Text>
             <Text style={styles.calorieInfoText}>
-              {userState.totalCalories -
-                userState.mealNutritionInfo?.아침.totalCalories +
-                userState.mealNutritionInfo?.점심.totalCalories +
-                userState.mealNutritionInfo?.저녁.totalCalories}
+              {userState.totalCalories - totalNutrition.totalCalories}
               kcal 남음
             </Text>
           </View>
@@ -280,7 +287,7 @@ const FoodDiary = () => {
                 <Image source={item.icon} style={{ width: 24, height: 24 }} />
                 <Text
                   style={styles.mealItemTitle}
-                >{`${userState.mealNutritionInfo?.[item.name].totalCalories || 0}kcal`}</Text>
+                >{`${(userState.mealNutritionInfo && userState.mealNutritionInfo[item.name]?.totalCalories) || 0}kcal`}</Text>
               </TouchableOpacity>
             </View>
           ))}
