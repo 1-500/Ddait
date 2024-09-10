@@ -11,7 +11,7 @@ import {
   getCompetitionRecordDetail,
   leaveCompetition,
 } from '../../apis/competition';
-import { getMyFriends, getMyFriendsNotParticipant } from '../../apis/friend';
+import { getMyFriendsNotParticipant } from '../../apis/friend';
 import CompetitionRoomHeader from '../../components/CompetitionRoomHeader';
 import CustomAlert from '../../components/CustomAlert';
 import { COLORS } from '../../constants/colors';

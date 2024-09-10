@@ -5,7 +5,7 @@ import { TabBar, TabView } from 'react-native-tab-view';
 
 import { deleteCompetition, getCompetitionDetail, getCompetitionRecordDetail } from '../../apis/competition';
 import { getCompetitionRecord } from '../../apis/competition';
-import { getMyFriends } from '../../apis/friend';
+import { getMyFriendsNotParticipant } from '../../apis/friend';
 import CompetitionRoomHeader from '../../components/CompetitionRoomHeader';
 import CustomAlert from '../../components/CustomAlert';
 import { COLORS } from '../../constants/colors';
@@ -98,9 +98,9 @@ const CompetitionRoom1VS1 = ({ navigation }) => {
     }
   };
 
-  const fetchMyFriends = async () => {
+  const fetchMyFriendsNotParticipant = async () => {
     try {
-      const res = await getMyFriends();
+      const res = await getMyFriendsNotParticipant(competitionId);
       if (res.status === 200) {
         setMyFriends(res.data);
       }
@@ -117,7 +117,7 @@ const CompetitionRoom1VS1 = ({ navigation }) => {
         fetchCompetitionDetail(),
         fetchCompetitionRecord(),
         fetchCompetitionRecordDetail(),
-        fetchMyFriends(),
+        fetchMyFriendsNotParticipant(),
       ]);
     } catch (error) {
       Alert.alert('Error fetching friends:', error.message);
