@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Alert, Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { postLogout } from '../../apis/mypage/index';
 import CustomAlert from '../../components/CustomAlert';
@@ -107,7 +107,7 @@ const MyPage = ({ navigation }) => {
           </View>
           <View style={styles.badgeWrapper}>
             {badges.map((badge, index) => (
-              <Image source={defaultBadge} style={{ width: 50, height: 50 }} />
+              <Image key={index} source={defaultBadge} style={{ width: 50, height: 50 }} />
             ))}
           </View>
         </View>
