@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Image, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import ImagePicker from 'react-native-image-crop-picker';
 
 import { updateProfile } from '../../apis/mypage';
 import CustomAlert from '../../components/CustomAlert';
@@ -24,6 +25,7 @@ const ProfileEdit = ({ navigation }) => {
   }));
   const [newNickname, setNewNickname] = useState(nickname || '');
   const [newIntroduce, setNewIntroduce] = useState(introduce || '');
+  const [newProfileImage, setNewProfileImage] = useState(null);
   const { showToast } = useToastMessageStore();
   const [alertConfig, setAlertConfig] = useState({
     visible: false,
@@ -39,6 +41,26 @@ const ProfileEdit = ({ navigation }) => {
 
   const hideAlert = () => {
     setAlertConfig((prev) => ({ ...prev, visible: false }));
+  };
+
+  const handleImageUpload = () => {
+    ImagePicker.openPicker({
+      width: 300,
+      height: 300,
+      cropping: true,
+      cropperCircleOverlay: true,
+      compressImageMaxWidth: 300,
+      compressImageMaxHeight: 300,
+      compressImageQuality: 0.7,
+    })
+      .then((image) => {
+        setNewProfileImage(image.path);
+      })
+      .catch((error) => {
+        if (error.code !== 'E_PICKER_CANCELLED') {
+          showToast('이미지 선택 중 오류가 발생했습니다.', 'error', 2000, 'top');
+        }
+      });
   };
 
   const handleSave = async () => {
@@ -89,8 +111,13 @@ const ProfileEdit = ({ navigation }) => {
       <HeaderComponents title="회원 정보 수정" icon="save" onRightBtnPress={handleSave} />
       <ScrollView style={styles.container}>
         <View style={styles.profileImgWrapper}>
-          <Image source={profileImageUrl ? { uri: profileImageUrl } : defaultProfile} style={styles.profileImg} />
-          <CustomButton theme="primary" size="xs" text="이미지 업로드" />
+          <Image
+            source={
+              newProfileImage ? { uri: newProfileImage } : profileImageUrl ? { uri: profileImageUrl } : defaultProfile
+            }
+            style={styles.profileImg}
+          />
+          <CustomButton theme="primary" size="xs" text="이미지 선택" onPress={handleImageUpload} />
         </View>
         <View style={styles.sectionWrapper}>
           <Text style={styles.sectionTitle}>닉네임</Text>
@@ -155,6 +182,7 @@ const styles = StyleSheet.create({
   profileImg: {
     width: 120,
     height: 120,
+    borderRadius: 100,
   },
   sectionWrapper: {
     gap: SPACING.xs,
