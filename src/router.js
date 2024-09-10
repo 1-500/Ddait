@@ -21,7 +21,9 @@ import FriendSearch from './pages/friend/FriendSearch';
 import Home from './pages/home/Home';
 import LoginPage from './pages/login/LoginPage';
 import MyPage from './pages/mypage/MyPage';
+import ProfileEdit from './pages/mypage/ProfileEdit';
 import ProfilePrivacy from './pages/mypage/ProfilePrivacy';
+import Setting from './pages/mypage/Setting';
 import SignUpPage from './pages/signup/SignUpPage';
 import SocialLogin from './pages/socialLogin/SocialLogin';
 import Splash from './pages/splash/Splash';
@@ -97,6 +99,8 @@ const Router = () => {
       <Stack.Screen name="DiaryMain" component={DiaryMain} />
       <Stack.Screen name="WorkoutDiary" component={WorkoutDiaryStack} />
       <Stack.Screen name="FoodDiary" component={FoodDiaryStack} />
+      <Stack.Screen name="Setting" component={Setting} />
+      <Stack.Screen name="ProfileEdit" component={ProfileEdit} />
       <Stack.Screen name="ProfilePrivacy" component={ProfilePrivacy} />
       <Stack.Screen name="CompetitionCreation" component={CompetitionCreation} />
       <Stack.Screen name="CompetitionRoom1VS1" component={CompetitionRoom1VS1} />
@@ -104,7 +108,7 @@ const Router = () => {
       <Stack.Screen name="FriendSearch" component={FriendSearch} />
       <Stack.Screen name="Test" component={Test} />
     </Stack.Navigator>
-  ); // 라우팅
+  ); // 라우팅stac
 };
 
 export default Router;

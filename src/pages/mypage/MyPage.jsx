@@ -18,7 +18,6 @@ const defaultBadge = require('../../assets/images/badge-default.png');
 const MyPage = ({ navigation }) => {
   // 임시 뱃지 배열
   const badges = [defaultBadge, defaultBadge, defaultBadge, defaultBadge, defaultBadge];
-  const [isPushOn, setIsPushOn] = useState(true); // 푸시 알림 기본값: On (임시)
   const { clearUser, nickname, userEmail, bio, profileImageUrl } = useUserStore();
   const { showToast } = useToastMessageStore();
   const [alertConfig, setAlertConfig] = useState({
@@ -65,7 +64,7 @@ const MyPage = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <HeaderComponents icon="setting" title="마이페이지" />
+      <HeaderComponents icon="setting" title="마이페이지" onRightBtnPress={() => navigation.navigate('Setting')} />
       <ScrollView contentContainerStyle={{ flexGrow: 1, paddingBottom: 120 }}>
         {/* 프로필 정보 */}
         <View style={styles.profileContainer}>
@@ -85,7 +84,12 @@ const MyPage = ({ navigation }) => {
             </View>
           </View>
           <View style={styles.buttonWrapper}>
-            <CustomButton theme="primary" size="medium" text="회원 정보 수정" />
+            <CustomButton
+              theme="primary"
+              size="medium"
+              text="회원 정보 수정"
+              onPress={() => navigation.navigate('ProfileEdit')}
+            />
             <CustomButton theme="primary" size="medium" text="로그아웃" onPress={handleLogoutButton} />
           </View>
         </View>
@@ -105,22 +109,15 @@ const MyPage = ({ navigation }) => {
           </View>
         </View>
 
-        {/* 설정 메뉴 */}
+        {/* 나의 기록 */}
         <View>
-          <Text style={[styles.subTitle, styles.settingTitle]}>설정</Text>
+          <Text style={[styles.subTitle, styles.settingTitle]}>나의 기록</Text>
           <View style={styles.divider} />
           <SettingItem
-            title={'프로필 공개 범위'}
-            description={'공개하면 친구 추천에 나타납니다'}
+            title={'경쟁 내역'}
+            description={'지난 경쟁 히스토리 보기'}
             rightBtn="arrow"
-            onPress={() => navigation.navigate('ProfilePrivacy')}
-          />
-          <SettingItem
-            title={'푸시알림'}
-            description={isPushOn ? '따잇의 소식을 받아보고 있습니다' : '푸시 알림을 켜서 따잇의 소식을 받아보세요'}
-            rightBtn="toggle"
-            isToggled={isPushOn}
-            onToggle={() => setIsPushOn(!isPushOn)}
+            onPress={() => Alert.alert('운동 기록 통계 페이지로 이동')}
           />
           <SettingItem
             title={'운동 기록 통계'}
