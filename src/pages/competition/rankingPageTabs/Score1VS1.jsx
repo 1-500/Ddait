@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dimensions, FlatList, Image, StyleSheet, Text, View } from 'react-native';
+import { Dimensions, FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import CustomTag from '../../../components/CustomTag';
 import { COLORS } from '../../../constants/colors';
@@ -14,7 +14,7 @@ const { width } = Dimensions.get('window');
 const dummyProfile = require('../../../assets/images/profile.png');
 const crownImage = require('../../../assets/images/crown.png');
 
-const Score1VS1 = ({ data, progress }) => {
+const Score1VS1 = ({ data, progress, isParticipant, onLeave }) => {
   const maxGraphWidth = width - 200;
   const minGraphWidth = 10;
 
@@ -141,6 +141,13 @@ const Score1VS1 = ({ data, progress }) => {
             }
           />
           <CustomTag size="small" text="vs" style={styles.vsTag} textStyle={styles.vsTagText} />
+        </View>
+        <View style={{ alignItems: 'center' }}>
+          {progress === 'BEFORE' && isParticipant && (
+            <TouchableOpacity style={styles.actionBtn} onPress={onLeave} activeOpacity={0.6}>
+              <Text style={styles.actionBtnText}>나가기</Text>
+            </TouchableOpacity>
+          )}
         </View>
       </View>
     );
@@ -321,5 +328,18 @@ const styles = StyleSheet.create({
     fontSize: FONT_SIZES.sm,
     fontFamily: FONTS.PRETENDARD[400],
     color: COLORS.white,
+  },
+  actionBtn: {
+    backgroundColor: COLORS.secondary,
+    marginTop: SPACING.lg,
+    paddingHorizontal: 36,
+    paddingVertical: 6,
+    borderRadius: 50,
+  },
+  actionBtnText: {
+    fontSize: FONT_SIZES.sm,
+    fontFamily: FONTS.PRETENDARD[600],
+    lineHeight: 20,
+    color: '#FFF',
   },
 });

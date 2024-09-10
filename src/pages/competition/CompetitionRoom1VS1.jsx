@@ -3,7 +3,12 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { Alert, SafeAreaView, StyleSheet, useWindowDimensions } from 'react-native';
 import { TabBar, TabView } from 'react-native-tab-view';
 
-import { deleteCompetition, getCompetitionDetail, getCompetitionRecordDetail } from '../../apis/competition';
+import {
+  deleteCompetition,
+  getCompetitionDetail,
+  getCompetitionRecordDetail,
+  leaveCompetition,
+} from '../../apis/competition';
 import { getCompetitionRecord } from '../../apis/competition';
 import { getMyFriendsNotParticipant } from '../../apis/friend';
 import CompetitionRoomHeader from '../../components/CompetitionRoomHeader';
@@ -156,6 +161,43 @@ const CompetitionRoom1VS1 = ({ navigation }) => {
     setAlertConfig((prev) => ({ ...prev, visible: false }));
   };
 
+  const handleLeave = () => {
+    const isHost = competitionData?.user_status.is_host;
+    const alertConfig = {
+      title: isHost ? '잠깐! 🚨' : '앗, 잠깐만요! 🏃‍♂️💨',
+      message: isHost
+        ? `방장님이 나가시면 기록이 삭제됩니다 🥹\n경쟁방이 사라져요, 신중하게!`
+        : `정말 떠나실 건가요? 😢\n지금 나가면 경쟁에 참가할 수 없어요!`,
+      onConfirm: async () => {
+        try {
+          if (isHost) {
+            await deleteCompetition(competitionId);
+            hideAlert();
+            showToast('💥 경쟁방이 삭제되었습니다.', 'error', 3000, 'top');
+          } else {
+            const res = await leaveCompetition(competitionId);
+            if (res.status !== 200) throw new Error('Leave failed');
+            hideAlert();
+            showToast('👋 경쟁방에서 나가셨습니다.', 'error', 3000, 'top');
+          }
+          setIsDeleted(true);
+          navigation.goBack();
+        } catch (error) {
+          console.log('경쟁방 나가기 실패', error);
+          showAlert({
+            title: '앗, 문제 발생! 😓',
+            message: '경쟁방 나가기에 실패했어요.\n잠시 후 다시 시도해 주세요!',
+            showCancel: false,
+            onConfirm: hideAlert,
+          });
+        }
+      },
+      onCancel: hideAlert,
+    };
+
+    showAlert(alertConfig);
+  };
+
   const handleDelete = () => {
     showAlert({
       title: '잠깐! 🚨',
@@ -187,7 +229,13 @@ const CompetitionRoom1VS1 = ({ navigation }) => {
         return loadingStates.record ? (
           <SkeletonLoader type="rankList" />
         ) : (
-          <Score1VS1 data={competitionRecord} progress={progress} jumpTo={jumpTo} />
+          <Score1VS1
+            data={competitionRecord}
+            progress={progress}
+            isParticipant={isParticipant}
+            jumpTo={jumpTo}
+            onLeave={handleLeave}
+          />
         );
       case 'myScore':
         return loadingStates.recordDetail ? (
