@@ -108,7 +108,7 @@ const Router = () => {
       <Stack.Screen name="FriendSearch" component={FriendSearch} />
       <Stack.Screen name="Test" component={Test} />
     </Stack.Navigator>
-  ); // 라우팅stac
+  ); // 라우팅
 };
 
 export default Router;

@@ -201,8 +201,9 @@ const styles = StyleSheet.create({
     color: COLORS.white,
     fontSize: FONT_SIZES.md,
     fontFamily: FONTS.PRETENDARD[400],
-    height: 46,
+    height: 48,
     justifyContent: 'center',
+    lineHeight: FONT_SIZES.md * 1.5,
   },
   multilineInput: {
     height: 84,
