@@ -1,14 +1,16 @@
-import { useRoute } from '@react-navigation/native';
+import { useIsFocused, useRoute } from '@react-navigation/native';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Alert, SafeAreaView, StyleSheet, useWindowDimensions } from 'react-native';
 import { TabBar, TabView } from 'react-native-tab-view';
 
-import { getCompetitionDetail, getCompetitionRecordDetail } from '../../apis/competition';
+import { deleteCompetition, getCompetitionDetail, getCompetitionRecordDetail } from '../../apis/competition';
 import { getCompetitionRecord } from '../../apis/competition';
 import { getMyFriends } from '../../apis/friend';
 import CompetitionRoomHeader from '../../components/CompetitionRoomHeader';
+import CustomAlert from '../../components/CustomAlert';
 import { COLORS } from '../../constants/colors';
 import { FONT_SIZES, FONTS } from '../../constants/font';
+import { useToastMessageStore } from '../../store/toastMessage/toastMessage';
 import { getCompetitionProgress } from '../../utils/competition';
 import Invite from './rankingPageTabs/Invite';
 import MyScore from './rankingPageTabs/MyScore';
@@ -17,21 +19,30 @@ import SkeletonLoader from './rankingPageTabs/SkeletonLoader';
 
 /* eslint-disable */
 
-const CompetitionRoom1VS1 = () => {
+const CompetitionRoom1VS1 = ({ navigation }) => {
   const layout = useWindowDimensions();
   const route = useRoute();
   const { competitionId, isParticipant } = route.params;
+  const { showToast } = useToastMessageStore();
   const [competitionData, setCompetitionData] = useState();
   const [competitionRecord, setCompetitionRecord] = useState();
   const [competitionRecordDetail, setCompetitionRecordDetail] = useState();
   const [myFriends, setMyFriends] = useState();
   const [progress, setProgress] = useState(false);
+  const [isDeleted, setIsDeleted] = useState(false);
   const [index, setIndex] = useState(0);
   const [routes, setRoutes] = useState([
     { key: 'score1VS1', title: '결과' },
     { key: 'myScore', title: '내 점수' },
     { key: 'invite', title: '초대' },
   ]);
+  const [alertConfig, setAlertConfig] = useState({
+    visible: false,
+    title: '',
+    message: '',
+    onConfirm: null,
+    showCancel: true,
+  });
   const [loadingStates, setLoadingStates] = useState({
     details: true,
     record: true,
@@ -99,6 +110,8 @@ const CompetitionRoom1VS1 = () => {
   };
 
   const fetchAllData = useCallback(async () => {
+    if (isDeleted) return;
+    setLoadingStates({ details: true, record: true, recordDetail: true });
     try {
       await Promise.all([
         fetchCompetitionDetail(),
@@ -109,11 +122,15 @@ const CompetitionRoom1VS1 = () => {
     } catch (error) {
       Alert.alert('Error fetching friends:', error.message);
     }
-  }, [competitionId]);
+  }, [competitionId, isDeleted]);
+
+  const isFocused = useIsFocused();
 
   useEffect(() => {
-    fetchAllData();
-  }, [competitionId]);
+    if (!isDeleted) {
+      fetchAllData();
+    }
+  }, [isFocused, isDeleted]);
 
   useEffect(() => {
     console.log(progress);
@@ -130,6 +147,39 @@ const CompetitionRoom1VS1 = () => {
       ]);
     }
   }, [progress, isParticipant]);
+
+  const showAlert = (config) => {
+    setAlertConfig({ ...config, visible: true });
+  };
+
+  const hideAlert = () => {
+    setAlertConfig((prev) => ({ ...prev, visible: false }));
+  };
+
+  const handleDelete = () => {
+    showAlert({
+      title: '잠깐! 🚨',
+      message: `정말 이 경쟁방을 없애실 건가요?\n삭제하면 모든 기록이 사라져요 😢😢\n\n참가자들에게도 영향이 갈 수 있어요!`,
+      onConfirm: async () => {
+        try {
+          await deleteCompetition(competitionId);
+          setIsDeleted(true);
+          hideAlert();
+          showToast('💥 경쟁방이 삭제되었습니다.', 'error', 3000, 'top');
+          navigation.goBack();
+        } catch (error) {
+          console.log('경쟁방 삭제 실패', error);
+          showAlert({
+            title: '앗, 문제 발생! 😓',
+            message: '경쟁방 삭제에 실패했어요.\n잠시 후 다시 시도해 주세요!',
+            showCancel: false,
+            onConfirm: hideAlert,
+          });
+        }
+      },
+      onCancel: hideAlert,
+    });
+  };
 
   const renderScene = ({ route, jumpTo }) => {
     switch (route.key) {
@@ -155,7 +205,7 @@ const CompetitionRoom1VS1 = () => {
       {loadingStates.details ? (
         <SkeletonLoader type="header" />
       ) : (
-        competitionData && <CompetitionRoomHeader data={competitionData} />
+        competitionData && <CompetitionRoomHeader data={competitionData} onDelete={handleDelete} />
       )}
       <TabView
         renderTabBar={(props) => (
@@ -172,6 +222,15 @@ const CompetitionRoom1VS1 = () => {
         renderScene={renderScene}
         onIndexChange={setIndex}
         initialLayout={{ width: layout.width }}
+      />
+      <CustomAlert
+        visible={alertConfig.visible}
+        title={alertConfig.title}
+        message={alertConfig.message}
+        onConfirm={alertConfig.onConfirm}
+        onCancel={hideAlert}
+        showCancel={alertConfig.showCancel !== false}
+        goBackOnConfirm={alertConfig.goBackOnConfirm}
       />
     </SafeAreaView>
   );
