@@ -2,15 +2,16 @@ import React, { useState } from 'react';
 import { Alert, Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { postLogout } from '../../apis/mypage/index';
+import CustomAlert from '../../components/CustomAlert';
 import CustomButton from '../../components/CustomButton';
 import CustomTag from '../../components/CustomTag';
 import HeaderComponents from '../../components/HeaderComponents';
 import SettingItem from '../../components/SettingItem';
 import { COLORS } from '../../constants/colors';
 import { FONT_SIZES, FONTS } from '../../constants/font';
-import { LAYOUT_PADDING } from '../../constants/space';
-import { SPACING } from '../../constants/space';
+import { LAYOUT_PADDING, SPACING } from '../../constants/space';
 import useUserStore from '../../store/sign/login';
+import { useToastMessageStore } from '../../store/toastMessage/toastMessage';
 
 const defaultBadge = require('../../assets/images/badge-default.png');
 
@@ -19,19 +20,49 @@ const MyPage = ({ navigation }) => {
   const badges = [defaultBadge, defaultBadge, defaultBadge, defaultBadge, defaultBadge];
   const [isPushOn, setIsPushOn] = useState(true); // 푸시 알림 기본값: On (임시)
   const { clearUser, nickname, userEmail, bio, profileImageUrl } = useUserStore();
+  const { showToast } = useToastMessageStore();
+  const [alertConfig, setAlertConfig] = useState({
+    visible: false,
+    title: '',
+    message: '',
+    onConfirm: null,
+    showCancel: true,
+  });
 
-  const handleLogoutButton = async () => {
-    const result = await postLogout();
-    if (result.status === 200) {
-      Alert.alert('로그아웃 하였습니다!');
-      clearUser();
-      navigation.navigate('Sign', {
-        screen: 'Login',
-      });
-    } else {
-      Alert.alert('로그아웃 실패하였습니다');
-    }
+  const showAlert = (config) => {
+    setAlertConfig({ ...config, visible: true });
   };
+
+  const hideAlert = () => {
+    setAlertConfig((prev) => ({ ...prev, visible: false }));
+  };
+
+  const handleLogoutButton = () => {
+    showAlert({
+      title: '로그아웃',
+      message: '정말 로그아웃 하시겠어요?\n다음에 또 만나요! 👋 ',
+      onConfirm: async () => {
+        try {
+          const result = await postLogout();
+          if (result.status === 200) {
+            clearUser();
+            hideAlert();
+            showToast('👋 로그아웃 되었습니다. 다음에 또 봐요!', 'success', 3000, 'top');
+            navigation.navigate('Sign', {
+              screen: 'Login',
+            });
+          } else {
+            throw new Error('Logout failed');
+          }
+        } catch (error) {
+          hideAlert();
+          showToast('🚫 로그아웃에 실패했어요. 다시 시도해 주세요!', 'error', 3000, 'top');
+        }
+      },
+      onCancel: hideAlert,
+    });
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <HeaderComponents icon="setting" title="마이페이지" />
@@ -111,6 +142,14 @@ const MyPage = ({ navigation }) => {
           />
         </View>
       </ScrollView>
+      <CustomAlert
+        visible={alertConfig.visible}
+        title={alertConfig.title}
+        message={alertConfig.message}
+        onConfirm={alertConfig.onConfirm}
+        onCancel={hideAlert}
+        showCancel={alertConfig.showCancel !== false}
+      />
     </SafeAreaView>
   );
 };
