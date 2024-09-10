@@ -90,7 +90,7 @@ const MyPage = ({ navigation }) => {
               text="회원 정보 수정"
               onPress={() => navigation.navigate('ProfileEdit')}
             />
-            <CustomButton theme="primary" size="medium" text="로그아웃" onPress={handleLogoutButton} />
+            <CustomButton theme="error" size="medium" text="로그아웃" onPress={handleLogoutButton} />
           </View>
         </View>
 
