@@ -2,7 +2,7 @@ import { BottomSheetBackdrop, BottomSheetModal } from '@gorhom/bottom-sheet';
 import React, { forwardRef, useCallback } from 'react';
 import { Alert, StyleSheet, View } from 'react-native';
 
-import { cancelRequest, requestFriend } from '../apis/friend';
+import { deleteFriend, requestFriend } from '../apis/friend';
 import { COLORS } from '../constants/colors';
 import { SPACING } from '../constants/space';
 import CustomButton from './CustomButton';
@@ -16,11 +16,12 @@ const FriendOptionBottomSheet = forwardRef((props, ref) => {
     [],
   );
 
-  const onPressRequest = async () => {
+  const onPressRequest = async (type) => {
     try {
       const memberId = memberData.id;
       const res = await requestFriend(memberId);
       const nickname = res.data.friend_member_nickname;
+
       Alert.alert('친구 추가', `${nickname}님에게 친구 요청을 보냈어요.\n 승인을 기다려주세요!`, [
         { onPress: () => ref.current?.close() },
       ]);
@@ -28,10 +29,15 @@ const FriendOptionBottomSheet = forwardRef((props, ref) => {
       Alert.alert('친구 추가 실패', error.message);
     }
   };
-
-  const onPressCancel = () => {
+  const handleDelete = (type) => {
     const tableId = memberData.table_id;
-    Alert.alert('친구 신청 취소', `${memberData.nickname}님에게 보낸 친구 요청을 정말 취소하시겠어요?`, [
+    const alertTitle = type === 'block' ? '친구 차단' : '친구 신청 취소';
+    const alertMessage =
+      type === 'block'
+        ? `${memberData.nickname}님을 정말 차단하시겠어요?`
+        : `${memberData.nickname}님에게 보낸 친구 요청을 정말 취소하시겠어요?`;
+
+    Alert.alert(alertTitle, alertMessage, [
       {
         text: '취소',
         onPress: handleClose,
@@ -41,11 +47,11 @@ const FriendOptionBottomSheet = forwardRef((props, ref) => {
         text: '확인',
         onPress: async () => {
           try {
-            await cancelRequest(tableId);
+            await deleteFriend(tableId);
             handleClose();
             onUpdateData();
           } catch (error) {
-            // 토스트로 변경
+            // 토스트로 변경 예정
             //Alert.alert('친구 신청 취소 실패', error.message);
           }
         },
@@ -69,11 +75,11 @@ const FriendOptionBottomSheet = forwardRef((props, ref) => {
       <View style={styles.container}>
         <CustomButton text="1:1 따잇 걸기!" onPress={() => {}} theme="primary" size="large" />
         {relation === 'friend' ? (
-          <CustomButton text="차단" onPress={() => {}} theme="error" size="large" />
+          <CustomButton text="차단" onPress={() => handleDelete('block')} theme="error" size="large" />
         ) : relation === 'none' ? (
           <CustomButton text="친구 신청" onPress={onPressRequest} theme="primary" size="large" />
         ) : relation === 'requested' ? (
-          <CustomButton text="신청 취소" onPress={onPressCancel} theme="error" size="large" />
+          <CustomButton text="신청 취소" onPress={() => handleDelete('req')} theme="error" size="large" />
         ) : null}
         <CustomButton text="취소" onPress={handleClose} theme="block" size="large" />
       </View>

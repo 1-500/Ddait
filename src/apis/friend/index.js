@@ -35,7 +35,7 @@ export const getMyFriends = async () => {
 
 export const getReqSent = async () => {
   try {
-    const response = await API.get('/friends/request/sent');
+    const response = await API.get('/friends/request/send');
     console.log('getReqSent 응답:', response.data);
     return response.data;
   } catch (error) {
@@ -50,7 +50,7 @@ export const getReqSent = async () => {
 };
 export const getReqReceived = async () => {
   try {
-    const response = await API.get('/friends/request/received');
+    const response = await API.get('/friends/request/receive');
     console.log('getReqReceived 응답:', response.data);
     return response.data;
   } catch (error) {
@@ -109,6 +109,22 @@ export const cancelRequest = async (reqId) => {
   } catch (error) {
     if (error.response.data) {
       console.error('cancelRequest Error:', error.response.data);
+      throw error;
+    } else {
+      console.error('예상치 못한 오류 발생:', error);
+      throw error;
+    }
+  }
+};
+
+export const deleteFriend = async (reqId) => {
+  try {
+    const response = await API.delete(`friends/?req_id=${reqId}`);
+    console.log('deleteFriend 응답:', response.data);
+    return response.data;
+  } catch (error) {
+    if (error.response.data) {
+      console.error('deleteFriend Error:', error.response.data);
       throw error;
     } else {
       console.error('예상치 못한 오류 발생:', error);
