@@ -20,7 +20,7 @@ const LoginPage = () => {
   const [emailInput, setEmailInput] = useState();
   const [passwordInput, setPasswordInput] = useState();
 
-  const { setToken, setUserEmail } = useUserStore();
+  const { setToken, setUserEmail, setUserInfo } = useUserStore();
 
   const handleEmailInput = (text) => {
     setEmailInput(text);
@@ -50,6 +50,14 @@ const LoginPage = () => {
             refreshToken: refresh_token,
           });
           setUserEmail(user.email);
+          setUserInfo({
+            userEmail: user.email,
+            userId: result.userId,
+            nickname: result.nickname,
+            profileImageUrl: result.profileImageUrl,
+            bio: result.bio,
+          });
+
           Alert.alert('로그인 하였습니다!');
           navigation.navigate('MainTab', {
             screen: 'Home',

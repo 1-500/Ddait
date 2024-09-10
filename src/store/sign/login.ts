@@ -16,11 +16,18 @@ interface UserState {
   socialEmail: string | null;
   userEmail: string | null;
   userId: string | null;
+  nickname: string | null;
+  profileImageUrl: string | null;
+  bio: string | null;
   setUserLevel: (level: number) => void;
   setUserEmail: (email: string) => void;
   setUserId: (id: string) => void;
   setToken: (token: Token) => void; // 메서드 타입 변경
   setSocialEmail: (email: string) => void;
+  setNickname: (nickname: string) => void;
+  setProfileImageUrl: (url: string) => void;
+  setBio: (bio: string) => void;
+  setUserInfo: (userInfo: Partial<UserState>) => void;
   clearUser: () => void;
 }
 
@@ -32,12 +39,29 @@ const useUserStore = create<UserState>()(
       socialEmail: null,
       userEmail: null,
       userId: null,
+      nickname: null,
+      profileImageUrl: null,
+      bio: null,
       setUserEmail: (email) => set({ userEmail: email }),
       setUserId: (id) => set({ userId: id }),
       setUserLevel: (level) => set({ userLevel: level }),
       setToken: (token) => set({ token }), // 객체를 설정
       setSocialEmail: (socialEmail) => set({ socialEmail }),
-      clearUser: () => set({ userLevel: null, token: null, socialEmail: null }),
+      setNickname: (nickname) => set({ nickname }),
+      setProfileImageUrl: (url) => set({ profileImageUrl: url }),
+      setBio: (bio) => set({ bio }),
+      setUserInfo: (userInfo) => set(userInfo),
+      clearUser: () =>
+        set({
+          userLevel: null,
+          token: null,
+          socialEmail: null,
+          userEmail: null,
+          userId: null,
+          nickname: null,
+          profileImageUrl: null,
+          bio: null,
+        }),
     }),
     {
       name: 'user-storage',
