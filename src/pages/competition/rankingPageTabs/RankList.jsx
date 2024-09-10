@@ -117,7 +117,7 @@ const RankList = ({ data, competitionData, progress, onJoin, onLeave }) => {
 
   const Preview = () => {
     const isParticipant = competitionData?.user_status?.is_participant;
-    const startDate = dayjs(competitionData.date.start_date);
+    const startDate = dayjs(competitionData?.date.start_date);
     const dday = calculateDday(startDate);
 
     return (
