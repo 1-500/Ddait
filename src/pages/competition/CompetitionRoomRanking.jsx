@@ -105,17 +105,6 @@ const CompetitionRoomRanking = ({ navigation }) => {
     }
   };
 
-  const fetchMyFriends = async () => {
-    try {
-      const res = await getMyFriends();
-      if (res.status === 200) {
-        setMyFriends(res.data);
-      }
-    } catch (error) {
-      Alert.alert('Error fetching friends:', error.message);
-    }
-  };
-
   const fetchAllData = useCallback(async () => {
     if (isDeleted) return;
     setLoadingStates({ details: true, record: true, recordDetail: true });
