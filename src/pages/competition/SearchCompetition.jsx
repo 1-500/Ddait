@@ -38,9 +38,9 @@ const CompetitionItem = React.memo(({ item, onPress }) => {
         <View style={styles.titleContainer}>
           <Text style={styles.competitionTitle}>{item.title}</Text>
           {item.settings.is_private ? (
-            <Octicons name="lock" size={16} color={COLORS.primary} />
+            <Octicons name="lock" size={16} color={COLORS.lightGrey} />
           ) : (
-            <Octicons name="unlock" size={16} color={COLORS.lightGrey} />
+            <Octicons name="unlock" size={16} color={COLORS.primary} />
           )}
         </View>
         <View style={{ flexDirection: 'row', gap: SPACING.xxs }}>
