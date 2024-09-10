@@ -98,7 +98,10 @@ const MyPage = ({ navigation }) => {
         <View style={styles.badgeContainer}>
           <View style={styles.badgeTitleWrapper}>
             <Text style={styles.subTitle}>획득한 뱃지</Text>
-            <TouchableOpacity onPress={() => Alert.alert('뱃지 상세 페이지로 이동')} activeOpacity={0.6}>
+            <TouchableOpacity
+              onPress={() => showToast('아직 준비 중인 기능이에요! 💪', 'error', 2000, 'bottom')}
+              activeOpacity={0.6}
+            >
               <Text style={styles.seeMore}>더보기</Text>
             </TouchableOpacity>
           </View>
@@ -115,15 +118,15 @@ const MyPage = ({ navigation }) => {
           <View style={styles.divider} />
           <SettingItem
             title={'경쟁 내역'}
-            description={'지난 경쟁 히스토리 보기'}
+            description={'종료된 경쟁 결과 보기'}
             rightBtn="arrow"
-            onPress={() => Alert.alert('운동 기록 통계 페이지로 이동')}
+            onPress={() => showToast('아직 준비 중인 기능이에요! 💪', 'error', 2000, 'bottom')}
           />
           <SettingItem
             title={'운동 기록 통계'}
             description={'운동 통계 데이터 보기'}
             rightBtn="arrow"
-            onPress={() => Alert.alert('운동 기록 통계 페이지로 이동')}
+            onPress={() => showToast('아직 준비 중인 기능이에요! 💪', 'error', 2000, 'bottom')}
           />
         </View>
 
@@ -135,7 +138,7 @@ const MyPage = ({ navigation }) => {
             title={'FAQ'}
             description={'자주 묻는 질문'}
             rightBtn="arrow"
-            onPress={() => Alert.alert('FAQ 페이지로 이동')}
+            onPress={() => showToast('아직 준비 중인 기능이에요! 💪', 'error', 2000, 'bottom')}
           />
         </View>
       </ScrollView>
