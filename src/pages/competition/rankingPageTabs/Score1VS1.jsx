@@ -15,7 +15,8 @@ const dummyProfile = require('../../../assets/images/profile.png');
 const crownImage = require('../../../assets/images/crown.png');
 
 const Score1VS1 = ({ data, progress }) => {
-  const maxGraphWidth = width - 180;
+  const maxGraphWidth = width - 200;
+  const minGraphWidth = 10;
 
   const getResult = (data1, data2) => {
     if (data1.total_score > data2.total_score) {
@@ -162,8 +163,9 @@ const Score1VS1 = ({ data, progress }) => {
                   data[1] && {
                     backgroundColor: COLORS.primary,
                     width:
+                      minGraphWidth +
                       (maxGraphWidth * data[0].score_detail[index].score) /
-                      (Math.max(data[1].score_detail[index].score, data[0].score_detail[index].score) || 1),
+                        (Math.max(data[1].score_detail[index].score, data[0].score_detail[index].score) || 1),
                   },
                 ]}
               />
@@ -176,8 +178,9 @@ const Score1VS1 = ({ data, progress }) => {
                   data[1] && {
                     backgroundColor: COLORS.secondary,
                     width:
+                      minGraphWidth +
                       (maxGraphWidth * data[1].score_detail[index].score) /
-                      (Math.max(data[0].score_detail[index].score, data[1].score_detail[index].score) || 1),
+                        (Math.max(data[0].score_detail[index].score, data[1].score_detail[index].score) || 1),
                   },
                 ]}
               />
