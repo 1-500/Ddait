@@ -2,7 +2,7 @@ import React from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
 
 import { BACKGROUND_COLORS, TAG_COLORS, TEXT_COLORS } from '../constants/colors';
-import { FONT_SIZES } from '../constants/font';
+import { FONT_SIZES, FONTS } from '../constants/font';
 
 /**
  * CustomCard Component
@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 16,
-    fontWeight: 'bold',
+    fontFamily: FONTS.PRETENDARD[700],
     color: TEXT_COLORS.primary,
   },
   additionalInfo: {
@@ -73,6 +73,7 @@ const styles = StyleSheet.create({
   },
   additionalInfoText: {
     fontSize: FONT_SIZES.xs,
+    fontFamily: FONTS.PRETENDARD[400],
     color: TEXT_COLORS.primary,
     marginLeft: 4,
   },
@@ -90,6 +91,7 @@ const styles = StyleSheet.create({
     color: TEXT_COLORS.primary,
     marginLeft: 4,
     fontSize: FONT_SIZES.xs,
+    fontFamily: FONTS.PRETENDARD[400],
   },
   footer: {
     marginTop: 8,
@@ -98,6 +100,7 @@ const styles = StyleSheet.create({
   },
   footerText: {
     fontSize: FONT_SIZES.xs,
+    fontFamily: FONTS.PRETENDARD[400],
     color: TEXT_COLORS.primary,
   },
 });

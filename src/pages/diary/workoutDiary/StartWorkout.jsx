@@ -18,6 +18,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import {
   getExerciseList,
   getWorkoutInfoBookmark,
+  getWorkoutSearchResult,
   postWorkoutInfoBookmark,
   postWorkoutRecord,
 } from '../../../apis/diary';
@@ -31,6 +32,7 @@ import { BODY_FONT_SIZES, HEADER_FONT_SIZES } from '../../../constants/font';
 import { FONTS } from '../../../constants/font';
 import { RADIUS } from '../../../constants/radius';
 import { LAYOUT_PADDING, SPACING } from '../../../constants/space';
+import { debounce } from '../../../utils/foodDiary/debounce';
 
 const StartWorkout = () => {
   const navigation = useNavigation();
@@ -49,6 +51,8 @@ const StartWorkout = () => {
   });
   const [workoutTitle, setWorkoutTitle] = useState('아침운동');
   const [editWorkoutTitle, setEditWorkoutTitle] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+
 
   const bottomSheetModalRef = useRef(null);
   const snapPoints = useMemo(() => ['80%', '80%'], []);
@@ -63,15 +67,27 @@ const StartWorkout = () => {
           const isBookmarked = bookmarkRes.data.some((bookmark) => bookmark.workout_info_id === exercise.id);
           return { ...exercise, bookmark: isBookmarked };
         });
+        
+        if (searchTerm === '') {
+          const [exerciseRes, bookmarkRes] = await Promise.all([getExerciseList(), getWorkoutInfoBookmark()]);
+          const bookmarkedIds = bookmarkRes.data.map((bookmark) => bookmark.workout_info_id);
+          const exerciseListWithBookmarks = exerciseRes.map((exercise) => {
+            const isBookmarked = bookmarkedIds.includes(exercise.id);
+            return { ...exercise, bookmark: isBookmarked };
+          });
 
-        setExerciseListData(exerciseListWithBookmarks);
+          setExerciseListData(exerciseListWithBookmarks);
+        } else {
+          const result = await getWorkoutSearchResult(searchTerm);
+          setExerciseListData(result.data);
+        }
       } catch (error) {
         console.log('무슨 error? : ', error);
       }
     };
 
     fetchExerciseData();
-  }, []);
+  }, [searchTerm]);
 
   useEffect(() => {
     return () => {
@@ -91,9 +107,6 @@ const StartWorkout = () => {
 
   const handlePresentModalPress = useCallback(() => {
     bottomSheetModalRef.current?.present();
-  }, []);
-  const handleSheetChanges = useCallback((index) => {
-    // console.log('handleSheetChanges', index);
   }, []);
 
   const handleExerciseSelect = (exercise) => {
@@ -402,12 +415,32 @@ const StartWorkout = () => {
     }));
   }, []);
 
+
   const handleTitleChange = (text) => {
     setWorkoutTitle(text);
   };
 
   const handleSaveTitle = () => {
     setEditWorkoutTitle(false);
+  }
+
+  const debouncedSearch = debounce(async (term) => {
+    try {
+      const result = await getWorkoutSearchResult(term);
+      setExerciseListData(result.data);
+    } catch (error) {
+      console.error('검색 중 오류 발생:', error);
+    }
+  }, 300);
+
+  useEffect(() => {
+    if (searchTerm) {
+      debouncedSearch(searchTerm); // 검색어가 있을 때에만 호출
+    }
+  }, [searchTerm]);
+
+  const handleSearchInput = (text) => {
+    setSearchTerm(text); // 검색어 업데이트
   };
 
   return (
@@ -499,16 +532,15 @@ const StartWorkout = () => {
       </Modal>
 
       <BottomSheetModalProvider>
-        <BottomSheetModal
-          ref={bottomSheetModalRef}
-          onChange={handleSheetChanges}
-          enablePanDownToClose
-          snapPoints={snapPoints}
-        >
+        <BottomSheetModal ref={bottomSheetModalRef} enablePanDownToClose snapPoints={snapPoints}>
           <BottomSheetView style={styles.bottomSheetContainer}>
             <Text style={styles.exerciseHeader}>운동 추가</Text>
             <View>
-              <CustomInput placeholder="하고자 하는 운동을 검색해보세요." theme="search" />
+              <CustomInput
+                placeholder="하고자 하는 운동을 검색해보세요."
+                theme="search"
+                onChangeText={(text) => handleSearchInput(text)}
+              />
             </View>
             <View style={{ flexDirection: 'row', marginVertical: 16 }}>
               <TouchableOpacity style={{ marginRight: 16 }}>

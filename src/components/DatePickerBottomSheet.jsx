@@ -5,6 +5,7 @@ import { Dimensions, StyleSheet, Text, View } from 'react-native';
 const windowWidth = Dimensions.get('window');
 import React, { forwardRef, useMemo } from 'react';
 
+import { FONT_SIZES, FONTS } from '../constants/font';
 import { getDays, getMonths, getYears } from '../utils/date';
 import CustomButton from './CustomButton';
 
@@ -91,8 +92,8 @@ const styles = StyleSheet.create({
   },
   headerText: {
     color: 'white',
-    fontSize: 20,
-    fontWeight: '600',
+    fontSize: FONT_SIZES.lg,
+    fontFamily: FONTS.PRETENDARD[600],
     marginBottom: 20,
   },
   pickersWrapper: {

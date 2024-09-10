@@ -7,7 +7,7 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Octicons from 'react-native-vector-icons/Octicons';
 
 import { COLORS } from '../constants/colors';
-import { FONT_SIZES, FONT_WEIGHTS, FONTS } from '../constants/font';
+import { FONT_SIZES, FONTS } from '../constants/font';
 import { RADIUS } from '../constants/radius';
 import { SPACING } from '../constants/space';
 import CustomTag from './CustomTag';
@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
   },
   headerTitleText: {
     fontSize: 24,
-    fontWeight: FONT_WEIGHTS.semiBold,
+    fontFamily: FONTS.PRETENDARD[600],
     lineHeight: 32,
     color: COLORS.white,
   },
@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
   },
   periodText: {
     fontSize: FONT_SIZES.xs,
-    fontWeight: FONT_WEIGHTS.medium,
+    fontFamily: FONTS.PRETENDARD[500],
     color: COLORS.semiLightGrey,
   },
   modalOverlay: {

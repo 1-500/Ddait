@@ -27,15 +27,7 @@ export const HEADER_FONT_SIZES = {
   xl: 36,
 };
 
-// Font weights
-export const FONT_WEIGHTS = {
-  regular: '400',
-  medium: '500',
-  semiBold: '600',
-  bold: '700',
-};
-
-// Pretendard
+// Pretendard - font weights
 export const FONTS = {
   PRETENDARD: {
     300: 'Pretendard-Light',

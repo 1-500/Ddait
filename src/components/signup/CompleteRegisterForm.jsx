@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import { Alert, StyleSheet, Text, View } from 'react-native';
 
 import { emailAccountId, socialLoginAccountId } from '../../apis/signup/index';
+import { FONTS } from '../../constants/font';
 import useUserStore from '../../store/sign/login';
 import useUserFormStore from '../../store/sign/signup';
 
@@ -71,12 +72,12 @@ const styles = StyleSheet.create({
   headerText: {
     color: 'white',
     fontSize: 20,
-    fontWeight: '600',
+    fontFamily: FONTS.PRETENDARD[600],
   },
   subHeaderText: {
     color: '#D9D9D9',
     fontSize: 16,
-    fontWeight: '600',
+    fontFamily: FONTS.PRETENDARD[600],
     marginTop: 15,
   },
 });

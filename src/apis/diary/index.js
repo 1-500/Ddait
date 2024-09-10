@@ -58,3 +58,15 @@ export const getWorkoutInfoBookmark = async () => {
     return [];
   }
 };
+
+export const getWorkoutSearchResult = async (searchTerm) => {
+  try {
+    const res = await API.get(`/workout-diary/search?q=${encodeURIComponent(searchTerm)}`, {
+      withCredentials: true,
+    });
+    return res.data;
+  } catch (error) {
+    console.error('Error searching workout:', error);
+    return error;
+  }
+};

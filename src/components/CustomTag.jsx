@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { TAG_COLORS } from '../constants/colors';
-import { FONT_WEIGHTS, FONTS } from '../constants/font';
+import { FONTS } from '../constants/font';
 import { FONT_SIZES } from '../constants/font';
 import { RADIUS } from '../constants/radius';
 

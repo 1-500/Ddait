@@ -7,7 +7,7 @@ import CustomButton from '../../../components/CustomButton';
 import CustomInput from '../../../components/CustomInput';
 import HeaderComponents from '../../../components/HeaderComponents';
 import { BACKGROUND_COLORS, COLORS, TEXT_COLORS } from '../../../constants/colors';
-import { FONT_SIZES, FONT_WEIGHTS } from '../../../constants/font';
+import { FONT_SIZES, FONTS } from '../../../constants/font';
 import useDiaryCalendarStore from '../../../store/food/calendar/index';
 import useSelectedFoodTimeStore from '../../../store/index';
 import { debounce } from '../../../utils/foodDiary/debounce';
@@ -172,7 +172,7 @@ const styles = StyleSheet.create({
   foodListTitle: {
     color: 'white',
     fontSize: FONT_SIZES.lg,
-    fontWeight: FONT_WEIGHTS.bold,
+    fontFamily: FONTS.PRETENDARD[700],
     marginBottom: 10,
   },
   foodItem: {

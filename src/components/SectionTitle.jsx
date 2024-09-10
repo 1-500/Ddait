@@ -2,7 +2,7 @@ import React from 'react';
 import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { COLORS } from '../constants/colors';
-import { FONT_SIZES, FONT_WEIGHTS, HEADER_FONT_SIZES } from '../constants/font';
+import { FONT_SIZES, FONTS, HEADER_FONT_SIZES } from '../constants/font';
 import { ELEMENT_VERTICAL_MARGIN } from '../constants/space';
 
 /**
@@ -50,11 +50,12 @@ const styles = StyleSheet.create({
   },
   titleText: {
     fontSize: HEADER_FONT_SIZES.sm,
-    fontWeight: FONT_WEIGHTS.bold,
+    fontFamily: FONTS.PRETENDARD[700],
     color: COLORS.white,
   },
   moreText: {
     fontSize: FONT_SIZES.sm,
+    fontFamily: FONTS.PRETENDARD[400],
     color: COLORS.white,
   },
 });

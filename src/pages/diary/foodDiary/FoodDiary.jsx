@@ -7,7 +7,7 @@ import { createFoodDiary, setMacroRatio, setUserWeight } from '../../../apis/foo
 import CustomButton from '../../../components/CustomButton';
 import CustomInput from '../../../components/CustomInput';
 import { BACKGROUND_COLORS, COLORS, TEXT_COLORS } from '../../../constants/colors';
-import { FONT_SIZES, FONT_WEIGHTS, FONTS } from '../../../constants/font';
+import { FONT_SIZES, FONTS } from '../../../constants/font';
 import { RADIUS } from '../../../constants/radius';
 import useDiaryCalendarStore from '../../../store/food/calendar/index';
 import useSelectedFoodTimeStore from '../../../store/index';

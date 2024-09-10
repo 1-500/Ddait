@@ -40,7 +40,7 @@ export const enterCompetition = async (roomId) => {
 export const getMyCompetition = async () => {
   try {
     const response = await API.get('/competition/rooms/my');
-    console.log('getMyCompetition 응답:', response.data);
+    // console.log('getMyCompetition 응답:', response.data);
     return response.data;
   } catch (error) {
     if (error.response) {
@@ -57,7 +57,7 @@ export const getMyCompetition = async () => {
 export const getAllCompetitions = async () => {
   try {
     const response = await API.get('competition/rooms');
-    console.log('getAllCompetitions 응답:', response.data);
+    // console.log('getAllCompetitions 응답:', response.data);
     return response.data;
   } catch (error) {
     if (error.response) {
@@ -74,7 +74,7 @@ export const getAllCompetitions = async () => {
 export const getCompetitionDetail = async (id) => {
   try {
     const response = await API.get(`competition/rooms/${id}`);
-    console.log('getCompetitionDetail 응답:', response.data);
+    // console.log('getCompetitionDetail 응답:', response.data);
     return response.data;
   } catch (error) {
     if (error.response) {
@@ -96,6 +96,7 @@ export const getCompetitionRecord = async (roomId) => {
     console.error('Server responded with status:', error.response.status);
 
     console.error('Response data:', error.response.data);
+    throw error;
   }
 };
 
@@ -117,9 +118,14 @@ export const getCompetitionRecordDetail = async (roomId) => {
 
     return response.data;
   } catch (error) {
+    if (error.response && error.response.status === 406) {
+      // 406 에러는 record detail이 없는 경우로 처리 (참가전)
+      return { data: null, status: 200 };
+    }
     console.error('Server responded with status:', error.response.status);
 
     console.error('Response data:', error.response.data);
+    throw error;
   }
 };
 
@@ -153,6 +159,25 @@ export const deleteCompetition = async (roomId) => {
     if (error.response) {
       console.error('deleteCompetition Error:', error.response);
       throw error;
+    } else {
+      console.error('예상치 못한 오류 발생:', error.message);
+      throw error;
+    }
+  }
+};
+
+export const inviteCompetition = async (roomId, friendId) => {
+  try {
+    const response = await API.post('/competition/invite', {
+      competition_room_id: roomId,
+      recipient_id: friendId,
+    });
+    console.log('inviteCompetition 응답:', response.data);
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      console.error('inviteCompetition Error:', error.response);
+      return error.response;
     } else {
       console.error('예상치 못한 오류 발생:', error.message);
       throw error;

@@ -2,7 +2,7 @@ import React from 'react';
 import { Alert, Image, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { BACKGROUND_COLORS, COLORS } from '../../../constants/colors';
-import { FONT_SIZES, FONT_WEIGHTS } from '../../../constants/font';
+import { FONT_SIZES, FONTS } from '../../../constants/font';
 import useCompetitionRoomStore from '../../../store/competition/index'; // Zustand 스토어를 가져옵니다
 
 const sportsCategory = [
@@ -66,9 +66,8 @@ const styles = StyleSheet.create({
   boxText: {
     alignSelf: 'stretch',
     fontSize: FONT_SIZES.lg,
-    fontWeight: FONT_WEIGHTS.bold,
+    fontFamily: FONTS.PRETENDARD[700],
     color: COLORS.white,
-    fontFamily: 'Pretendard',
   },
   icon: {
     width: 100,

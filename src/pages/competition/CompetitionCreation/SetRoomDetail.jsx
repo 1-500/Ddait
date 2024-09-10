@@ -6,7 +6,7 @@ import OptionSelector from '../../../components/competitionCreation/OptionSelect
 import DatePickerBottomSheet from '../../../components/DatePickerBottomSheet';
 import Toggle from '../../../components/Toggle';
 import { COLORS } from '../../../constants/colors';
-import { FONT_SIZES, FONT_WEIGHTS } from '../../../constants/font';
+import { FONT_SIZES, FONTS } from '../../../constants/font';
 
 const { width } = Dimensions.get('window');
 
@@ -160,12 +160,12 @@ const styles = StyleSheet.create({
   },
   menuText: {
     fontSize: FONT_SIZES.lg,
-    fontWeight: FONT_WEIGHTS.medium,
-    fontFamily: 'Pretendard',
+    fontFamily: FONTS.PRETENDARD[500],
     color: COLORS.white,
   },
   subText: {
     fontSize: FONT_SIZES.sm,
+    fontFamily: FONTS.PRETENDARD[400],
     color: COLORS.lightGrey,
   },
   periodSelectorContainer: {
@@ -176,7 +176,7 @@ const styles = StyleSheet.create({
   },
   dateSeparator: {
     color: COLORS.white,
-    fontWeight: FONT_WEIGHTS.semiBold,
+    fontFamily: FONTS.PRETENDARD[600],
   },
 });
 
