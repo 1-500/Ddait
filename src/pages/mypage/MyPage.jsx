@@ -12,15 +12,14 @@ import { LAYOUT_PADDING } from '../../constants/space';
 import { SPACING } from '../../constants/space';
 import useUserStore from '../../store/sign/login';
 
-const dummyProfile = require('../../assets/images/profile.png');
 const defaultBadge = require('../../assets/images/badge-default.png');
 
 const MyPage = ({ navigation }) => {
   // 임시 뱃지 배열
   const badges = [defaultBadge, defaultBadge, defaultBadge, defaultBadge, defaultBadge];
-  // 푸시 알림 기본값: On (임시)
-  const [isPushOn, setIsPushOn] = useState(true);
-  const { clearUser } = useUserStore();
+  const [isPushOn, setIsPushOn] = useState(true); // 푸시 알림 기본값: On (임시)
+  const { clearUser, nickname, userEmail, bio, profileImageUrl } = useUserStore();
+
   const handleLogoutButton = async () => {
     const result = await postLogout();
     if (result.status === 200) {
@@ -40,15 +39,18 @@ const MyPage = ({ navigation }) => {
         {/* 프로필 정보 */}
         <View style={styles.profileContainer}>
           <View style={{ flexDirection: 'row', gap: SPACING.md }}>
-            <Image source={dummyProfile} style={styles.profileImg} />
+            <Image
+              source={profileImageUrl ? { uri: profileImageUrl } : require('../../assets/images/default-profile.png')}
+              style={styles.profileImg}
+            />
             <View style={{ gap: 6 }}>
-              <Text style={styles.nameText}>따잇</Text>
-              <Text style={styles.emailText}>testemail@gmail.com</Text>
+              <Text style={styles.nameText}>{nickname}</Text>
+              <Text style={styles.emailText}>{userEmail}</Text>
               <View style={{ flexDirection: 'row', gap: 6 }}>
                 <CustomTag size="small" text="웨이트" />
                 <CustomTag size="small" text="다이어트" />
               </View>
-              <Text style={styles.introduceText}>소개글입니다</Text>
+              <Text style={styles.bioText}>{bio || '따잇에서 나를 소개해볼까요? 👋'}</Text>
             </View>
           </View>
           <View style={styles.buttonWrapper}>
@@ -137,7 +139,7 @@ const styles = StyleSheet.create({
     color: COLORS.semiLightGrey,
     fontFamily: FONTS.PRETENDARD[400],
   },
-  introduceText: {
+  bioText: {
     color: COLORS.white,
     marginTop: 2,
     fontFamily: FONTS.PRETENDARD[400],
