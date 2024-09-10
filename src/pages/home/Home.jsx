@@ -14,6 +14,7 @@ import { RADIUS } from '../../constants/radius';
 import { ELEMENT_VERTICAL_MARGIN, LAYOUT_PADDING, SPACING } from '../../constants/space';
 import useUserStore from '../../store/sign/login';
 
+const defaultProfile = require('../../assets/images/default-profile.png');
 const dummyDates = [
   { date: '2024-08-05', value: 50 },
   { date: '2024-08-10', value: 80 },
@@ -25,7 +26,7 @@ const dummyDates = [
 const Home = ({ navigation }) => {
   const [competition, setCompetition] = useState();
   const isFocused = useIsFocused(); // 현재 화면이 포커스 상태인지 확인
-  const { nickname, profileImageUrl, bio } = useUserStore();
+  const { nickname, profileImageUrl, introduce } = useUserStore();
 
   const fetchMyCompetitions = async () => {
     try {
@@ -73,7 +74,7 @@ const Home = ({ navigation }) => {
     <SafeAreaView style={styles.safeArea}>
       <HeaderComponents icon="home" />
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
-        <ProfileSection data={{ nickname, profileImageUrl, bio }} />
+        <ProfileSection data={{ nickname, profileImageUrl, introduce }} />
         <SectionTitle title="진행중인 경쟁" showMore={true} navigation={navigation} navigateTo="Competition" />
         <View style={{ marginBottom: SPACING.md }}>
           {competition ? (
@@ -91,13 +92,12 @@ const Home = ({ navigation }) => {
 
 const ProfileSection = ({ data }) => (
   <View style={styles.profileContainer}>
-    <Image
-      style={styles.profileImg}
-      source={data.profileImageUrl ? { uri: data.profileImageUrl } : require('../../assets/images/default-profile.png')}
-    />
+    <Image style={styles.profileImg} source={data.profileImageUrl ? { uri: data.profileImageUrl } : defaultProfile} />
     <View style={styles.textWrapper}>
       <Text style={styles.lgBoldText}>{`${data.nickname}님,`}</Text>
-      <Text style={styles.bioText}>{data.bio || '따잇에서 나를 소개해볼까요? 👋'}</Text>
+      <Text style={styles.introduceText} numberOfLines={1} ellipsizeMode="tail">
+        {data.introduce || '따잇에서 나를 소개해볼까요? 👋'}
+      </Text>
     </View>
   </View>
 );
@@ -130,6 +130,7 @@ const styles = StyleSheet.create({
     borderRadius: 40,
   },
   textWrapper: {
+    flexShrink: 1,
     flexDirection: 'column',
     gap: SPACING.xxs,
   },
@@ -138,7 +139,7 @@ const styles = StyleSheet.create({
     fontSize: HEADER_FONT_SIZES.lg,
     fontFamily: FONTS.PRETENDARD[700],
   },
-  bioText: {
+  introduceText: {
     color: COLORS.semiLightGrey,
     fontSize: FONT_SIZES.sm,
     fontFamily: FONTS.PRETENDARD[400],

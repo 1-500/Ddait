@@ -14,11 +14,12 @@ import useUserStore from '../../store/sign/login';
 import { useToastMessageStore } from '../../store/toastMessage/toastMessage';
 
 const defaultBadge = require('../../assets/images/badge-default.png');
+const defaultProfile = require('../../assets/images/default-profile.png');
 
 const MyPage = ({ navigation }) => {
   // 임시 뱃지 배열
   const badges = [defaultBadge, defaultBadge, defaultBadge, defaultBadge, defaultBadge];
-  const { clearUser, nickname, userEmail, bio, profileImageUrl } = useUserStore();
+  const { clearUser, nickname, userEmail, introduce, profileImageUrl } = useUserStore();
   const { showToast } = useToastMessageStore();
   const [alertConfig, setAlertConfig] = useState({
     visible: false,
@@ -69,18 +70,17 @@ const MyPage = ({ navigation }) => {
         {/* 프로필 정보 */}
         <View style={styles.profileContainer}>
           <View style={{ flexDirection: 'row', gap: SPACING.md }}>
-            <Image
-              source={profileImageUrl ? { uri: profileImageUrl } : require('../../assets/images/default-profile.png')}
-              style={styles.profileImg}
-            />
-            <View style={{ gap: 6 }}>
+            <Image source={profileImageUrl ? { uri: profileImageUrl } : defaultProfile} style={styles.profileImg} />
+            <View style={{ flexShrink: 1, gap: 6 }}>
               <Text style={styles.nameText}>{nickname}</Text>
               <Text style={styles.emailText}>{userEmail}</Text>
               <View style={{ flexDirection: 'row', gap: 6 }}>
                 <CustomTag size="small" text="웨이트" />
                 <CustomTag size="small" text="다이어트" />
               </View>
-              <Text style={styles.bioText}>{bio || '따잇에서 나를 소개해볼까요? 👋'}</Text>
+              <Text style={styles.introduceText} numberOfLines={1} ellipsizeMode="tail">
+                {introduce || '따잇에서 나를 소개해볼까요? 👋'}
+              </Text>
             </View>
           </View>
           <View style={styles.buttonWrapper}>
@@ -178,7 +178,7 @@ const styles = StyleSheet.create({
     color: COLORS.semiLightGrey,
     fontFamily: FONTS.PRETENDARD[400],
   },
-  bioText: {
+  introduceText: {
     color: COLORS.white,
     marginTop: 2,
     fontFamily: FONTS.PRETENDARD[400],

@@ -8,12 +8,16 @@ import { COLORS } from '../../constants/colors';
 import { FONT_SIZES, FONTS } from '../../constants/font';
 import { RADIUS } from '../../constants/radius';
 import { LAYOUT_PADDING, SPACING } from '../../constants/space';
+import useUserStore from '../../store/sign/login';
 import { useToastMessageStore } from '../../store/toastMessage/toastMessage';
 import SetSportsCategory from '../competition/CompetitionCreation/SetSportsCategory';
 
 const defaultProfile = require('../../assets/images/default-profile.png');
 
 const ProfileEdit = ({ navigation }) => {
+  const { nickname, introduce, profileImageUrl } = useUserStore();
+  const [newNickname, setNewNickname] = useState(nickname || '');
+  const [newIntroduce, setNewIntroduce] = useState(introduce || '');
   const { showToast } = useToastMessageStore();
   const [alertConfig, setAlertConfig] = useState({
     visible: false,
@@ -53,12 +57,18 @@ const ProfileEdit = ({ navigation }) => {
       <HeaderComponents title="회원 정보 수정" icon="save" />
       <ScrollView style={styles.container}>
         <View style={styles.profileImgWrapper}>
-          <Image source={defaultProfile} style={styles.profileImg} />
+          <Image source={profileImageUrl ? { uri: profileImageUrl } : defaultProfile} style={styles.profileImg} />
           <CustomButton theme="primary" size="xs" text="이미지 업로드" />
         </View>
         <View style={styles.sectionWrapper}>
           <Text style={styles.sectionTitle}>닉네임</Text>
-          <TextInput style={styles.input} placeholder="닉네임을 입력하세요" placeholderTextColor={'#7676AC'} />
+          <TextInput
+            style={styles.input}
+            placeholder="어떻게 불리고 싶으신가요?"
+            placeholderTextColor={'#7676AC'}
+            value={newNickname}
+            onChangeText={setNewNickname}
+          />
         </View>
         <View style={styles.sectionWrapper}>
           <Text style={styles.sectionTitle}>소개</Text>
@@ -69,6 +79,8 @@ const ProfileEdit = ({ navigation }) => {
             multiline={true}
             numberOfLines={2}
             textAlignVertical="top"
+            value={newIntroduce}
+            onChangeText={setNewIntroduce}
           />
         </View>
 

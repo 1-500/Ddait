@@ -55,7 +55,7 @@ const LoginPage = () => {
             userId: result.userId,
             nickname: result.nickname,
             profileImageUrl: result.profileImageUrl,
-            bio: result.bio,
+            introduce: result.introduce,
           });
 
           Alert.alert('로그인 하였습니다!');

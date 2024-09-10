@@ -18,7 +18,7 @@ interface UserState {
   userId: string | null;
   nickname: string | null;
   profileImageUrl: string | null;
-  bio: string | null;
+  introduce: string | null;
   setUserLevel: (level: number) => void;
   setUserEmail: (email: string) => void;
   setUserId: (id: string) => void;
@@ -26,7 +26,7 @@ interface UserState {
   setSocialEmail: (email: string) => void;
   setNickname: (nickname: string) => void;
   setProfileImageUrl: (url: string) => void;
-  setBio: (bio: string) => void;
+  setIntroduce: (introduce: string) => void;
   setUserInfo: (userInfo: Partial<UserState>) => void;
   clearUser: () => void;
 }
@@ -41,7 +41,7 @@ const useUserStore = create<UserState>()(
       userId: null,
       nickname: null,
       profileImageUrl: null,
-      bio: null,
+      introduce: null,
       setUserEmail: (email) => set({ userEmail: email }),
       setUserId: (id) => set({ userId: id }),
       setUserLevel: (level) => set({ userLevel: level }),
@@ -49,7 +49,7 @@ const useUserStore = create<UserState>()(
       setSocialEmail: (socialEmail) => set({ socialEmail }),
       setNickname: (nickname) => set({ nickname }),
       setProfileImageUrl: (url) => set({ profileImageUrl: url }),
-      setBio: (bio) => set({ bio }),
+      setIntroduce: (introduce) => set({ introduce }),
       setUserInfo: (userInfo) => set(userInfo),
       clearUser: () =>
         set({
@@ -60,7 +60,7 @@ const useUserStore = create<UserState>()(
           userId: null,
           nickname: null,
           profileImageUrl: null,
-          bio: null,
+          introduce: null,
         }),
     }),
     {
