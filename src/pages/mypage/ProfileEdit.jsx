@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Image, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
+import { updateProfile } from '../../apis/mypage';
 import CustomAlert from '../../components/CustomAlert';
 import CustomButton from '../../components/CustomButton';
 import HeaderComponents from '../../components/HeaderComponents';
@@ -15,7 +16,12 @@ import SetSportsCategory from '../competition/CompetitionCreation/SetSportsCateg
 const defaultProfile = require('../../assets/images/default-profile.png');
 
 const ProfileEdit = ({ navigation }) => {
-  const { nickname, introduce, profileImageUrl } = useUserStore();
+  const { nickname, introduce, profileImageUrl, setUserInfo } = useUserStore((state) => ({
+    nickname: state.nickname,
+    introduce: state.introduce,
+    profileImageUrl: state.profileImageUrl,
+    setUserInfo: state.setUserInfo,
+  }));
   const [newNickname, setNewNickname] = useState(nickname || '');
   const [newIntroduce, setNewIntroduce] = useState(introduce || '');
   const { showToast } = useToastMessageStore();
@@ -35,6 +41,31 @@ const ProfileEdit = ({ navigation }) => {
     setAlertConfig((prev) => ({ ...prev, visible: false }));
   };
 
+  const handleSave = async () => {
+    try {
+      const updatedData = {};
+      if (newNickname !== nickname) {
+        updatedData.nickname = newNickname;
+      }
+      if (newIntroduce !== introduce) {
+        updatedData.introduce = newIntroduce;
+      }
+
+      if (Object.keys(updatedData).length === 0) {
+        showToast('💥 변경된 정보가 없습니다!', 'error', 2000, 'top');
+        return;
+      }
+
+      const result = await updateProfile(updatedData);
+      setUserInfo(result.data);
+
+      showToast('프로필이 업데이트 되었습니다! 😋', 'success', 2000, 'top');
+      navigation.goBack();
+    } catch (error) {
+      showToast(error.message || '잠시 후 다시 시도해주세요', 'error', 2000, 'top');
+    }
+  };
+
   const handleDeleteAccount = () => {
     showAlert({
       title: '잠깐! 🚨',
@@ -43,18 +74,19 @@ const ProfileEdit = ({ navigation }) => {
         try {
           // 회원 탈퇴 api
           hideAlert();
-          showToast('💥 회원 탈퇴가 완료되었습니다.', 'success', 3000, 'top');
+          showToast('💥 회원 탈퇴가 완료되었습니다.', 'success', 2000, 'top');
           // navigation.navigate('Login');
         } catch (error) {
-          showToast('잠시 후 다시 시도해주세요.', 'error', 3000, 'top');
+          showToast('잠시 후 다시 시도해주세요.', 'error', 2000, 'top');
         }
       },
       onCancel: hideAlert,
     });
   };
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <HeaderComponents title="회원 정보 수정" icon="save" />
+      <HeaderComponents title="회원 정보 수정" icon="save" onRightBtnPress={handleSave} />
       <ScrollView style={styles.container}>
         <View style={styles.profileImgWrapper}>
           <Image source={profileImageUrl ? { uri: profileImageUrl } : defaultProfile} style={styles.profileImg} />
