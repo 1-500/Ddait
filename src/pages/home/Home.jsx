@@ -64,9 +64,10 @@ const Home = ({ navigation }) => {
 
   const handleCompetitionPress = (item) => {
     if (item.info.max_members === 2) {
-      navigation.navigate('CompetitionRoom1VS1', { competitionId: item.id });
+      navigation.navigate('CompetitionRoom1VS1', { competitionId: item.id, isParticipant: true });
+
     } else {
-      navigation.navigate('CompetitionRoomRanking', { competitionId: item.id });
+      navigation.navigate('CompetitionRoomRanking', { competitionId: item.id, isParticipant: true });
     }
   };
 
