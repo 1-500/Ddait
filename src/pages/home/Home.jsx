@@ -12,6 +12,7 @@ import { BACKGROUND_COLORS, COLORS } from '../../constants/colors';
 import { FONT_SIZES, FONTS, HEADER_FONT_SIZES } from '../../constants/font';
 import { RADIUS } from '../../constants/radius';
 import { ELEMENT_VERTICAL_MARGIN, LAYOUT_PADDING, SPACING } from '../../constants/space';
+import { useCompetitionStore } from '../../store/competition';
 
 const userData = {
   //전역상태에서 추후 가져오도록 수정
@@ -51,6 +52,7 @@ const Home = ({ navigation }) => {
         }, competitions[0]);
 
         setCompetition(closestCompetition);
+        useCompetitionStore.setState({ competitionList: competitions });
       } else {
         setCompetition(null);
       }
