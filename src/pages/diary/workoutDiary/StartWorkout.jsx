@@ -15,7 +15,6 @@ import {
 } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import { patchCompetitionRecord } from '../../../apis/competition';
 import {
   getExerciseList,
   getWorkoutInfoBookmark,
@@ -33,8 +32,6 @@ import { BODY_FONT_SIZES, HEADER_FONT_SIZES } from '../../../constants/font';
 import { FONTS } from '../../../constants/font';
 import { RADIUS } from '../../../constants/radius';
 import { LAYOUT_PADDING, SPACING } from '../../../constants/space';
-import { useCompetitionStore } from '../../../store/competition';
-import { useToastMessageStore } from '../../../store/toastMessage/toastMessage';
 import { debounce } from '../../../utils/foodDiary/debounce';
 
 const StartWorkout = () => {
@@ -56,6 +53,7 @@ const StartWorkout = () => {
   const [editWorkoutTitle, setEditWorkoutTitle] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
 
+
   const bottomSheetModalRef = useRef(null);
   const snapPoints = useMemo(() => ['80%', '80%'], []);
 
@@ -69,7 +67,7 @@ const StartWorkout = () => {
           const isBookmarked = bookmarkRes.data.some((bookmark) => bookmark.workout_info_id === exercise.id);
           return { ...exercise, bookmark: isBookmarked };
         });
-
+        
         if (searchTerm === '') {
           const [exerciseRes, bookmarkRes] = await Promise.all([getExerciseList(), getWorkoutInfoBookmark()]);
           const bookmarkedIds = bookmarkRes.data.map((bookmark) => bookmark.workout_info_id);
@@ -126,6 +124,7 @@ const StartWorkout = () => {
       workoutSet: [{ id: 1, weight: '', reps: '' }],
       time: 0,
       isRunning: false,
+      isResting: false,
     }));
     setWorkoutData((prev) => [...prev, ...newWorkoutData]);
     setSelectedExercises([]);
@@ -242,61 +241,6 @@ const StartWorkout = () => {
   };
   /* eslint-enable */
 
-  /* eslint-disable */
-  const updateCompetitionRecord = async () => {
-    const { showToast } = useToastMessageStore();
-    try {
-      const { competitionList } = useCompetitionStore.getState();
-
-      const validCompetitions = competitionList.filter(
-        (competition) => competition.info.competition_theme === '3대측정내기',
-      );
-
-      if (validCompetitions.length === 0) {
-        showToast('경쟁 기록이 없습니다.', 'error', 1000, 'top', 80);
-        return;
-      }
-
-      for (const competition of validCompetitions) {
-        const competitionRoomId = competition.id;
-
-        const workout_records = workoutData.flatMap((workout) =>
-          workout.workoutSet
-            .filter((set) => set.isComplete)
-            .map((set) => ({
-              workout_info: {
-                name: workout.title,
-              },
-              weight: set.weight,
-              reps: set.reps,
-              set: set.id,
-            })),
-        );
-
-        if (workout_records.length === 0) {
-          showToast('완료된 세트가 없어 기록을 저장할 수 없습니다.', 'error', 1000, 'top', 80);
-          return;
-        }
-
-        const workoutRecord = {
-          competition_room_id: competitionRoomId,
-          workout_records,
-        };
-
-        const res = await patchCompetitionRecord(workoutRecord);
-
-        if (res.status === 200) {
-          showToast('경쟁 기록이 성공적으로 최신화되었습니다.', 'success', 1000, 'top', 80);
-        } else {
-          showToast('경쟁 기록 업데이트 실패.', 'error', 1000, 'top', 80);
-        }
-      }
-    } catch (error) {
-      console.error('경쟁 기록 업데이트 중 오류 발생:', error);
-    }
-  };
-  /* eslint-enable */
-
   const handleSaveWorkoutRecord = async () => {
     try {
       const title = workoutTitle;
@@ -339,8 +283,6 @@ const StartWorkout = () => {
       /* eslint-disable */
       if (res) {
         Alert.alert('운동 기록', '정상적으로 저장되었습니다');
-        updateCompetitionRecord();
-
         navigation.navigate('DiaryMain');
       } else {
         Alert.alert('운동 기록', '기록 저장에 실패했습니다.');
@@ -473,13 +415,14 @@ const StartWorkout = () => {
     }));
   }, []);
 
+
   const handleTitleChange = (text) => {
     setWorkoutTitle(text);
   };
 
   const handleSaveTitle = () => {
     setEditWorkoutTitle(false);
-  };
+  }
 
   const debouncedSearch = debounce(async (term) => {
     try {
