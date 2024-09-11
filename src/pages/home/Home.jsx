@@ -12,6 +12,7 @@ import { BACKGROUND_COLORS, COLORS } from '../../constants/colors';
 import { FONT_SIZES, FONTS, HEADER_FONT_SIZES } from '../../constants/font';
 import { RADIUS } from '../../constants/radius';
 import { ELEMENT_VERTICAL_MARGIN, LAYOUT_PADDING, SPACING } from '../../constants/space';
+import { useCompetitionStore } from '../../store/competition';
 import useUserStore from '../../store/sign/login';
 
 const defaultProfile = require('../../assets/images/default-profile.png');
@@ -65,7 +66,6 @@ const Home = ({ navigation }) => {
   const handleCompetitionPress = (item) => {
     if (item.info.max_members === 2) {
       navigation.navigate('CompetitionRoom1VS1', { competitionId: item.id, isParticipant: true });
-
     } else {
       navigation.navigate('CompetitionRoomRanking', { competitionId: item.id, isParticipant: true });
     }
