@@ -62,3 +62,21 @@ export const calculateNutrientRatios = (array) => {
     fatRatio: Math.floor((totalNutrients.fat / total) * 100),
   };
 };
+
+export function calculateTotalNutrition(mealNutritionInfo) {
+  const totalNutrition = {
+    totalCalories: 0,
+    totalCarbs: 0,
+    totalProtein: 0,
+    totalFat: 0,
+  };
+
+  for (const meal in mealNutritionInfo) {
+    totalNutrition.totalCalories += mealNutritionInfo[meal].totalCalories || 0;
+    totalNutrition.totalCarbs += mealNutritionInfo[meal].totalCarbs || 0;
+    totalNutrition.totalProtein += mealNutritionInfo[meal].totalProtein || 0;
+    totalNutrition.totalFat += mealNutritionInfo[meal].totalFat || 0;
+  }
+
+  return totalNutrition;
+}

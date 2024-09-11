@@ -1,9 +1,10 @@
 import React from 'react';
-import { Alert, Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { BACKGROUND_COLORS, COLORS } from '../../../constants/colors';
 import { FONT_SIZES, FONTS } from '../../../constants/font';
 import useCompetitionRoomStore from '../../../store/competition/index'; // Zustand 스토어를 가져옵니다
+import { useToastMessageStore } from '../../../store/toastMessage/toastMessage';
 
 const sportsCategory = [
   { title: '웨이트트레이닝', imgSource: require('../../../assets/images/lifting-weights.png') },
@@ -14,11 +15,12 @@ const sportsCategory = [
 
 const SetSportsCategory = () => {
   const { competitionType, setCompetitionType } = useCompetitionRoomStore();
+  const { showToast } = useToastMessageStore();
 
   const handlePress = (title) => {
     const unavailables = ['등산', '러닝', '다이어트'];
     if (unavailables.includes(title)) {
-      Alert.alert('아직 준비 중인 기능이에요! 곧 찾아뵐게요 💪');
+      showToast('아직 준비 중인 기능이에요! 곧 찾아뵐게요 💪', 'success', 2000, 'top');
     } else {
       setCompetitionType(title);
     }

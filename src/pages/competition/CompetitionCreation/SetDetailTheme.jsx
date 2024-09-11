@@ -4,6 +4,7 @@ import { Alert, Pressable, ScrollView, StyleSheet, Text } from 'react-native';
 import { BACKGROUND_COLORS, COLORS } from '../../../constants/colors';
 import { FONT_SIZES, FONTS } from '../../../constants/font';
 import useCreateRoomStateStore from '../../../store/competition/index';
+import { useToastMessageStore } from '../../../store/toastMessage/toastMessage';
 
 const themeOptions = {
   웨이트트레이닝: [
@@ -18,12 +19,13 @@ const themeOptions = {
 const SetDetailTheme = () => {
   const { competitionTheme, competitionType, setCompetitionTheme } = useCreateRoomStateStore();
   const themeList = themeOptions[competitionType] || [];
+  const { showToast } = useToastMessageStore();
 
   const handlePress = (title) => {
     const selectedTheme = themeList.find((item) => item.title === title);
 
     if (title === '스쿼트 내기') {
-      Alert.alert('아직 준비 중인 기능이에요! 곧 찾아뵐게요 💪');
+      showToast('아직 준비 중인 기능이에요!', 'error', 1000, 'top', 50);
     } else if (selectedTheme) {
       setCompetitionTheme(selectedTheme.competitionTheme);
     }

@@ -41,9 +41,9 @@ const CompetitionRoomHeader = ({ data, onDelete }) => {
           </TouchableOpacity>
           <Text style={styles.headerTitleText}>{data.title}</Text>
           {data.settings.is_private ? (
-            <Octicons name="lock" size={24} color={COLORS.primary} />
+            <Octicons name="lock" size={24} color={COLORS.lightGrey} />
           ) : (
-            <Octicons name="unlock" size={24} color={COLORS.lightGrey} />
+            <Octicons name="unlock" size={24} color={COLORS.primary} />
           )}
         </View>
         {data.user_status.is_host && dayjs(data.date.start_date).isAfter(dayjs(), 'day') && (

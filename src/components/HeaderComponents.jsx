@@ -75,6 +75,12 @@ const HeaderComponents = ({ icon = 'none', title = '', onRightBtnPress = () => {
             <MaterialCommunityIcons name="dots-vertical" size={24} color={COLORS.white} />
           </TouchableOpacity>
         );
+      case 'save':
+        return (
+          <TouchableOpacity style={styles.btnWrapper} onPress={onRightBtnPress} activeOpacity={0.6}>
+            <Text style={styles.saveText}>저장</Text>
+          </TouchableOpacity>
+        );
       default:
         return <View style={styles.btnWrapper} />;
     }
@@ -148,5 +154,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: SPACING.xs,
+  },
+  saveText: {
+    fontSize: 18,
+    fontFamily: FONTS.PRETENDARD[700],
+    color: COLORS.primary,
   },
 });
