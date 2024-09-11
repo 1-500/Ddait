@@ -42,6 +42,7 @@ const MyScore = ({ data }) => {
           )
         }
         ListFooterComponent={<View style={{ height: 30 }} />}
+        ListEmptyComponent={<Text style={styles.emptyText}>아직 참가하지 않아 내 점수가 없어요..</Text>}
         showsVerticalScrollIndicator={false}
       />
     </View>
@@ -92,5 +93,11 @@ const styles = StyleSheet.create({
     fontSize: FONT_SIZES.sm,
     fontFamily: FONTS.PRETENDARD[500],
     color: COLORS.white,
+  },
+  emptyText: {
+    fontSize: FONT_SIZES.md,
+    fontFamily: FONTS.PRETENDARD[500],
+    color: COLORS.white,
+    marginTop: 20,
   },
 });

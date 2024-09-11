@@ -1,253 +1,285 @@
-import { useRoute } from '@react-navigation/native';
-import React, { useEffect, useState } from 'react';
-import { Alert, Dimensions, FlatList, Image, SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import { useIsFocused, useRoute } from '@react-navigation/native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Alert, SafeAreaView, StyleSheet, useWindowDimensions } from 'react-native';
+import { TabBar, TabView } from 'react-native-tab-view';
 
-import { getCompetitionDetail } from '../../apis/competition';
+import {
+  deleteCompetition,
+  getCompetitionDetail,
+  getCompetitionRecordDetail,
+  leaveCompetition,
+} from '../../apis/competition';
 import { getCompetitionRecord } from '../../apis/competition';
+import { getMyFriendsNotParticipant } from '../../apis/friend';
 import CompetitionRoomHeader from '../../components/CompetitionRoomHeader';
-import CustomTag from '../../components/CustomTag';
+import CustomAlert from '../../components/CustomAlert';
 import { COLORS } from '../../constants/colors';
 import { FONT_SIZES, FONTS } from '../../constants/font';
-import { RADIUS } from '../../constants/radius';
-import { LAYOUT_PADDING, SPACING } from '../../constants/space';
+import { useToastMessageStore } from '../../store/toastMessage/toastMessage';
 import { getCompetitionProgress } from '../../utils/competition';
-
-const { width } = Dimensions.get('window');
-
-const dummyProfile = require('../../assets/images/profile.png');
-const crownImage = require('../../assets/images/crown.png');
+import Invite from './rankingPageTabs/Invite';
+import MyScore from './rankingPageTabs/MyScore';
+import Score1VS1 from './rankingPageTabs/Score1VS1';
+import SkeletonLoader from './rankingPageTabs/SkeletonLoader';
 
 /* eslint-disable */
 
-const CompetitionRoom1VS1 = () => {
-  const maxGraphWidth = width - 180;
+const CompetitionRoom1VS1 = ({ navigation }) => {
+  const layout = useWindowDimensions();
   const route = useRoute();
-  const { competitionId } = route.params;
+  const { competitionId, isParticipant } = route.params;
+  const { showToast } = useToastMessageStore();
   const [competitionData, setCompetitionData] = useState();
   const [competitionRecord, setCompetitionRecord] = useState();
+  const [competitionRecordDetail, setCompetitionRecordDetail] = useState();
+  const [myFriends, setMyFriends] = useState();
   const [progress, setProgress] = useState(false);
+  const [isDeleted, setIsDeleted] = useState(false);
+  const [index, setIndex] = useState(0);
+  const [routes, setRoutes] = useState([
+    { key: 'score1VS1', title: '결과' },
+    { key: 'myScore', title: '내 점수' },
+    { key: 'invite', title: '초대' },
+  ]);
+  const [alertConfig, setAlertConfig] = useState({
+    visible: false,
+    title: '',
+    message: '',
+    onConfirm: null,
+    showCancel: true,
+  });
+  const [loadingStates, setLoadingStates] = useState({
+    details: true,
+    record: true,
+    recordDetail: true,
+  });
 
-  useEffect(() => {
-    const fetchCompetitionDetail = async () => {
-      try {
-        const result = await getCompetitionDetail(competitionId);
-        setProgress(getCompetitionProgress(result.data));
-        setCompetitionData(result.data);
-      } catch (error) {
-        Alert.alert('경쟁방 상세 정보 조회 실패', error.message);
-      }
-    };
-
-    const fetchCompetitionRecord = async () => {
-      try {
-        const res = await getCompetitionRecord(competitionId);
-        if (res.status === 200) {
-          const sortedData = res.data.sort((a, b) => {
-            if (a.is_my_record && !b.is_my_record) {
-              return -1;
-            } else if (!a.is_my_record && b.is_my_record) {
-              return 1;
-            } else {
-              return 0;
-            }
-          });
-          setCompetitionRecord(sortedData);
-        }
-      } catch (error) {
-        console.log('error: ', error);
-      }
-    };
-
-    fetchCompetitionDetail();
-    fetchCompetitionRecord();
-  }, [competitionId]);
-
-  const getResult = (data1, data2) => {
-    if (data1.total_score > data2.total_score) {
-      return 'Win';
-    } else if (data1.total_score === data2.total_score) {
-      return 'Draw';
-    } else {
-      return 'Lose';
+  const fetchCompetitionDetail = async () => {
+    try {
+      const result = await getCompetitionDetail(competitionId);
+      setProgress(getCompetitionProgress(result.data));
+      setCompetitionData(result.data);
+    } catch (error) {
+      Alert.alert('경쟁방 상세 정보 조회 실패', error.message);
+    } finally {
+      setLoadingStates((prev) => ({ ...prev, details: false }));
     }
   };
 
-  const CompetitionProfile = ({ record, result, color, style }) => {
-    return (
-      <View style={[styles.profileWrapper, progress === 'AFTER' && { marginTop: 15 }, style]}>
-        {record ? (
-          <>
-            <Image
-              style={{ width: 80, height: 80 }}
-              source={record.member_info.profile_image ? { uri: record.member_info.profile_image } : dummyProfile}
-            />
-            <View>
-              <View style={styles.profileTextWrapper}>
-                <Text style={styles.profileText}>{record.member_info.nickname}</Text>
-                <Text style={styles.profileTailText}>님</Text>
-              </View>
-              <Text style={[styles.profileText, { color: color }]}>{record.total_score}</Text>
-            </View>
-            {progress === 'AFTER' && (
-              <>
-                <View
-                  style={[
-                    styles.resultTag,
-                    result === 'Win'
-                      ? { backgroundColor: color }
-                      : {
-                          borderWidth: 2,
-                          borderColor: color,
-                        },
-                  ]}
-                >
-                  <Text style={styles.resultTagText}>{result}</Text>
-                </View>
-                {result === 'Win' && <Image style={styles.crownImage} source={crownImage} />}
-              </>
-            )}
-          </>
-        ) : (
-          <Text style={[styles.profileTailText, { color: COLORS.white }]}>아직 상대방이 참여하지 않았어요..</Text>
-        )}
-      </View>
-    );
+  const fetchCompetitionRecord = async () => {
+    try {
+      const res = await getCompetitionRecord(competitionId);
+      if (res.status === 200) {
+        const sortedData = res.data.sort((a, b) => {
+          if (a.is_my_record && !b.is_my_record) {
+            return -1;
+          } else if (!a.is_my_record && b.is_my_record) {
+            return 1;
+          } else {
+            return 0;
+          }
+        });
+        setCompetitionRecord(sortedData);
+      }
+    } catch (error) {
+      console.log('error: ', error);
+    } finally {
+      setLoadingStates((prev) => ({ ...prev, record: false }));
+    }
   };
 
-  const Competition1VS1Header = ({ data }) => {
-    return (
-      <View style={{ paddingBottom: 20 }}>
-        <View style={styles.messageWrapper}>
-          <Text style={styles.userNameText}>
-            {(() => {
-              if (progress === 'BEFORE') {
-                return '아직 경쟁 시작 전입니다';
-              } else if (progress === 'IN_PROGRESS') {
-                return `${data[0].member_info.nickname} 님,`;
-              } else {
-                if (data[0].total_score > data[1].total_score) {
-                  return '따잇!';
-                } else if (data[0].total_score < data[1].total_score) {
-                  return '아쉬워요.. 다음에는 따잇해봅시다!';
-                } else {
-                  return '비겼네요!';
-                }
-              }
-            })()}
-          </Text>
-          {progress === 'IN_PROGRESS' && (
-            <Text style={styles.messageText}>
-              {(() => {
-                if (data[0].total_score > data[1].total_score) {
-                  return '지금 이기고 있네요! 계속 가봅시다';
-                } else if (data[0].total_score < data[1].total_score) {
-                  return '지고있어요.. 조금만 더 힘내요!';
-                } else {
-                  return '비기고 있어요! 조금만 더 해봅시다';
-                }
-              })()}
-            </Text>
-          )}
-        </View>
-        <View style={styles.profileContainer}>
-          <CompetitionProfile
-            record={data[0]}
-            color={COLORS.primary}
-            result={getResult(data[0], data[1])}
-            style={
-              progress === 'IN_PROGRESS' &&
-              data[1] &&
-              data[0].total_score >= data[1].total_score && {
-                borderWidth: 3,
-                borderColor: COLORS.primary,
-              }
-            }
-          />
-          <CompetitionProfile
-            record={data[1]}
-            color={COLORS.secondary}
-            result={getResult(data[1], data[0])}
-            style={
-              progress === 'IN_PROGRESS' &&
-              data[1] &&
-              data[1].total_score >= data[0].total_score && {
-                borderWidth: 3,
-                borderColor: COLORS.secondary,
-              }
-            }
-          />
-          <CustomTag size="small" text="vs" style={styles.vsTag} textStyle={styles.vsTagText} />
-        </View>
-      </View>
-    );
+  const fetchCompetitionRecordDetail = async () => {
+    try {
+      if (isParticipant) {
+        const res = await getCompetitionRecordDetail(competitionId);
+        if (res.status === 200) {
+          setCompetitionRecordDetail(res.data);
+        }
+      }
+    } catch (error) {
+      console.log('경쟁방 기록 상세 조회 실패: ', error);
+    } finally {
+      setLoadingStates((prev) => ({ ...prev, recordDetail: false }));
+    }
   };
 
-  const renderScoreItem = ({ item, index }) => {
-    if (progress === 'BEFORE') {
-      return <></>;
+  const fetchMyFriendsNotParticipant = async () => {
+    try {
+      const res = await getMyFriendsNotParticipant(competitionId);
+      if (res.status === 200) {
+        setMyFriends(res.data);
+      }
+    } catch (error) {
+      Alert.alert('Error fetching friends:', error.message);
+    }
+  };
+
+  const fetchAllData = useCallback(async () => {
+    if (isDeleted) return;
+    setLoadingStates({ details: true, record: true, recordDetail: true });
+    try {
+      await Promise.all([
+        fetchCompetitionDetail(),
+        fetchCompetitionRecord(),
+        fetchCompetitionRecordDetail(),
+        fetchMyFriendsNotParticipant(),
+      ]);
+    } catch (error) {
+      Alert.alert('Error fetching friends:', error.message);
+    }
+  }, [competitionId, isDeleted]);
+
+  const isFocused = useIsFocused();
+
+  useEffect(() => {
+    if (!isDeleted) {
+      fetchAllData();
+    }
+  }, [isFocused, isDeleted]);
+
+  useEffect(() => {
+    console.log(progress);
+    if (progress === 'BEFORE' && isParticipant) {
+      setRoutes([
+        { key: 'score1VS1', title: '결과' },
+        { key: 'myScore', title: '내 점수' },
+        { key: 'invite', title: '초대' },
+      ]);
     } else {
-      return (
-        <View style={styles.scoreWrapper}>
-          <Text style={styles.scoreTitleText} numberOfLines={3} ellipsizeMode="tail">
-            {item.name}
-          </Text>
-          <View style={styles.graphContainer}>
-            <View style={styles.graphWrapper}>
-              <View
-                style={[
-                  styles.graph,
-                  competitionRecord[1] && {
-                    backgroundColor: COLORS.primary,
-                    width:
-                      (maxGraphWidth * competitionRecord[0].score_detail[index].score) /
-                      (Math.max(
-                        competitionRecord[1].score_detail[index].score,
-                        competitionRecord[0].score_detail[index].score,
-                      ) || 1),
-                  },
-                ]}
-              />
-              <Text style={styles.scoreText}>{competitionRecord[0].score_detail[index].score}</Text>
-            </View>
-            <View style={styles.graphWrapper}>
-              <View
-                style={[
-                  styles.graph,
-                  competitionRecord[1] && {
-                    backgroundColor: COLORS.secondary,
-                    width:
-                      (maxGraphWidth * competitionRecord[1].score_detail[index].score) /
-                      (Math.max(
-                        competitionRecord[0].score_detail[index].score,
-                        competitionRecord[1].score_detail[index].score,
-                      ) || 1),
-                  },
-                ]}
-              />
-              <Text style={styles.scoreText}>{competitionRecord[1].score_detail[index].score}</Text>
-            </View>
-          </View>
-        </View>
-      );
+      setRoutes([
+        { key: 'score1VS1', title: '결과' },
+        { key: 'myScore', title: '내 점수' },
+      ]);
+    }
+  }, [progress, isParticipant]);
+
+  const showAlert = (config) => {
+    setAlertConfig({ ...config, visible: true });
+  };
+
+  const hideAlert = () => {
+    setAlertConfig((prev) => ({ ...prev, visible: false }));
+  };
+
+  const handleLeave = () => {
+    const isHost = competitionData?.user_status.is_host;
+    const alertConfig = {
+      title: isHost ? '잠깐! 🚨' : '앗, 잠깐만요! 🏃‍♂️💨',
+      message: isHost
+        ? `방장님이 나가시면 기록이 삭제됩니다 🥹\n경쟁방이 사라져요, 신중하게!`
+        : `정말 떠나실 건가요? 😢\n지금 나가면 경쟁에 참가할 수 없어요!`,
+      onConfirm: async () => {
+        try {
+          if (isHost) {
+            await deleteCompetition(competitionId);
+            hideAlert();
+            showToast('💥 경쟁방이 삭제되었습니다.', 'error', 3000, 'top');
+          } else {
+            const res = await leaveCompetition(competitionId);
+            if (res.status !== 200) throw new Error('Leave failed');
+            hideAlert();
+            showToast('👋 경쟁방에서 나가셨습니다.', 'error', 3000, 'top');
+          }
+          setIsDeleted(true);
+          navigation.goBack();
+        } catch (error) {
+          console.log('경쟁방 나가기 실패', error);
+          showAlert({
+            title: '앗, 문제 발생! 😓',
+            message: '경쟁방 나가기에 실패했어요.\n잠시 후 다시 시도해 주세요!',
+            showCancel: false,
+            onConfirm: hideAlert,
+          });
+        }
+      },
+      onCancel: hideAlert,
+    };
+
+    showAlert(alertConfig);
+  };
+
+  const handleDelete = () => {
+    showAlert({
+      title: '잠깐! 🚨',
+      message: `정말 이 경쟁방을 없애실 건가요?\n삭제하면 모든 기록이 사라져요 😢😢\n\n참가자들에게도 영향이 갈 수 있어요!`,
+      onConfirm: async () => {
+        try {
+          await deleteCompetition(competitionId);
+          setIsDeleted(true);
+          hideAlert();
+          showToast('💥 경쟁방이 삭제되었습니다.', 'error', 3000, 'top');
+          navigation.goBack();
+        } catch (error) {
+          console.log('경쟁방 삭제 실패', error);
+          showAlert({
+            title: '앗, 문제 발생! 😓',
+            message: '경쟁방 삭제에 실패했어요.\n잠시 후 다시 시도해 주세요!',
+            showCancel: false,
+            onConfirm: hideAlert,
+          });
+        }
+      },
+      onCancel: hideAlert,
+    });
+  };
+
+  const renderScene = ({ route, jumpTo }) => {
+    switch (route.key) {
+      case 'score1VS1':
+        return loadingStates.record ? (
+          <SkeletonLoader type="rankList" />
+        ) : (
+          <Score1VS1
+            data={competitionRecord}
+            progress={progress}
+            isParticipant={isParticipant}
+            jumpTo={jumpTo}
+            onLeave={handleLeave}
+          />
+        );
+      case 'myScore':
+        return loadingStates.recordDetail ? (
+          <SkeletonLoader type="myScore" />
+        ) : (
+          <MyScore data={competitionRecordDetail} />
+        );
+      case 'invite':
+        return <Invite competitionId={competitionId} friends={myFriends} jumpTo={jumpTo} />;
     }
   };
 
   return (
     <SafeAreaView style={styles.pageContainer}>
-      {competitionData && <CompetitionRoomHeader data={competitionData} />}
-      {competitionRecord && (
-        <View style={[{ paddingTop: 30 }, LAYOUT_PADDING]}>
-          <FlatList
-            data={competitionRecord[0].score_detail}
-            keyExtractor={(item, index) => item.name}
-            renderItem={renderScoreItem}
-            ListHeaderComponent={<Competition1VS1Header data={competitionRecord} />}
-            ListFooterComponent={<View style={{ height: 30 }} />}
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={{ gap: 10 }}
-          />
-        </View>
+      {loadingStates.details ? (
+        <SkeletonLoader type="header" />
+      ) : (
+        competitionData && <CompetitionRoomHeader data={competitionData} onDelete={handleDelete} />
       )}
+      <TabView
+        renderTabBar={(props) => (
+          <TabBar
+            {...props}
+            activeColor={COLORS.white}
+            inactiveColor={COLORS.lightGrey}
+            labelStyle={{ fontSize: FONT_SIZES.md, fontFamily: FONTS.PRETENDARD[600] }}
+            indicatorStyle={{ backgroundColor: COLORS.primary }}
+            style={{ backgroundColor: COLORS.darkBackground }}
+          />
+        )}
+        navigationState={{ index, routes }}
+        renderScene={renderScene}
+        onIndexChange={setIndex}
+        initialLayout={{ width: layout.width }}
+      />
+      <CustomAlert
+        visible={alertConfig.visible}
+        title={alertConfig.title}
+        message={alertConfig.message}
+        onConfirm={alertConfig.onConfirm}
+        onCancel={hideAlert}
+        showCancel={alertConfig.showCancel !== false}
+        goBackOnConfirm={alertConfig.goBackOnConfirm}
+      />
     </SafeAreaView>
   );
 };
@@ -258,115 +290,5 @@ const styles = StyleSheet.create({
   pageContainer: {
     flex: 1,
     backgroundColor: COLORS.darkBackground,
-  },
-  messageWrapper: {
-    gap: 2,
-  },
-  userNameText: {
-    fontSize: FONT_SIZES.xl,
-    fontFamily: FONTS.PRETENDARD[700],
-    color: COLORS.white,
-  },
-  messageText: {
-    fontSize: FONT_SIZES.sm,
-    fontFamily: FONTS.PRETENDARD[400],
-    color: COLORS.white,
-  },
-  profileContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 20,
-  },
-  profileWrapper: {
-    width: width / 2 - 30,
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: 10,
-    paddingHorizontal: 12,
-    paddingVertical: 20,
-    borderRadius: 30,
-    backgroundColor: COLORS.darkGreyBackground,
-  },
-  profileTextWrapper: {
-    flexDirection: 'row',
-    gap: 4,
-    alignItems: 'center',
-  },
-  profileText: {
-    textAlign: 'center',
-    fontSize: FONT_SIZES.md,
-    fontFamily: FONTS.PRETENDARD[700],
-    lineHeight: 24,
-    color: COLORS.white,
-  },
-  profileTailText: {
-    textAlign: 'center',
-    textAlignVertical: 'bottom',
-    fontSize: FONT_SIZES.sm,
-    fontFamily: FONTS.PRETENDARD[500],
-    color: COLORS.semiLightGrey,
-  },
-  vsTag: {
-    position: 'absolute',
-    top: 76,
-    left: width / 2 - 40,
-    width: 40,
-    height: 34,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: COLORS.black,
-  },
-  vsTagText: {
-    fontSize: FONT_SIZES.sm,
-    fontFamily: FONTS.PRETENDARD[500],
-    color: COLORS.white,
-  },
-  resultTag: {
-    position: 'absolute',
-    bottom: -16,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: COLORS.darkGreyBackground,
-    width: 60,
-    height: 30,
-    borderRadius: 8,
-  },
-  resultTagText: {
-    fontSize: FONT_SIZES.sm,
-    fontFamily: FONTS.PRETENDARD[600],
-    color: COLORS.white,
-  },
-  crownImage: {
-    position: 'absolute',
-    top: -35,
-    width: 50,
-    height: 50,
-  },
-  scoreWrapper: {
-    flexDirection: 'row',
-    gap: SPACING.md,
-    alignItems: 'center',
-  },
-  scoreTitleText: {
-    width: 70,
-    fontSize: FONT_SIZES.sm,
-    fontFamily: FONTS.PRETENDARD[700],
-    color: COLORS.white,
-  },
-  graphContainer: {
-    gap: 2,
-  },
-  graphWrapper: {
-    flexDirection: 'row',
-    gap: SPACING.md,
-  },
-  graph: {
-    height: 20,
-    borderRadius: RADIUS.small,
-  },
-  scoreText: {
-    fontSize: FONT_SIZES.sm,
-    fontFamily: FONTS.PRETENDARD[400],
-    color: COLORS.white,
   },
 });

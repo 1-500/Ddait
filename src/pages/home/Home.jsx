@@ -13,13 +13,9 @@ import { FONT_SIZES, FONTS, HEADER_FONT_SIZES } from '../../constants/font';
 import { RADIUS } from '../../constants/radius';
 import { ELEMENT_VERTICAL_MARGIN, LAYOUT_PADDING, SPACING } from '../../constants/space';
 import { useCompetitionStore } from '../../store/competition';
+import useUserStore from '../../store/sign/login';
 
-const userData = {
-  //전역상태에서 추후 가져오도록 수정
-  nickname: '따잇',
-  profile: 'https://ipsf.net/wp-content/uploads/2021/12/dummy-image-square-300x300.webp',
-};
-
+const defaultProfile = require('../../assets/images/default-profile.png');
 const dummyDates = [
   { date: '2024-08-05', value: 50 },
   { date: '2024-08-10', value: 80 },
@@ -31,6 +27,7 @@ const dummyDates = [
 const Home = ({ navigation }) => {
   const [competition, setCompetition] = useState();
   const isFocused = useIsFocused(); // 현재 화면이 포커스 상태인지 확인
+  const { nickname, profileImageUrl, introduce } = useUserStore();
 
   const fetchMyCompetitions = async () => {
     try {
@@ -68,10 +65,10 @@ const Home = ({ navigation }) => {
   }, [isFocused]);
 
   const handleCompetitionPress = (item) => {
-    if (item.max_members === 2) {
-      navigation.navigate('CompetitionRoom1VS1', { competitionId: item.id });
+    if (item.info.max_members === 2) {
+      navigation.navigate('CompetitionRoom1VS1', { competitionId: item.id, isParticipant: true });
     } else {
-      navigation.navigate('CompetitionRoomRanking', { competitionId: item.id });
+      navigation.navigate('CompetitionRoomRanking', { competitionId: item.id, isParticipant: true });
     }
   };
 
@@ -79,7 +76,7 @@ const Home = ({ navigation }) => {
     <SafeAreaView style={styles.safeArea}>
       <HeaderComponents icon="home" />
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
-        <ProfileSection data={userData} />
+        <ProfileSection data={{ nickname, profileImageUrl, introduce }} />
         <SectionTitle title="진행중인 경쟁" showMore={true} navigation={navigation} navigateTo="Competition" />
         <View style={{ marginBottom: SPACING.md }}>
           {competition ? (
@@ -97,10 +94,12 @@ const Home = ({ navigation }) => {
 
 const ProfileSection = ({ data }) => (
   <View style={styles.profileContainer}>
-    <Image style={styles.profileImg} source={{ uri: data.profile }} />
+    <Image style={styles.profileImg} source={data.profileImageUrl ? { uri: data.profileImageUrl } : defaultProfile} />
     <View style={styles.textWrapper}>
       <Text style={styles.lgBoldText}>{`${data.nickname}님,`}</Text>
-      <Text style={styles.mdText}>안녕하세요</Text>
+      <Text style={styles.introduceText} numberOfLines={1} ellipsizeMode="tail">
+        {data.introduce || '따잇에서 나를 소개해볼까요? 👋'}
+      </Text>
     </View>
   </View>
 );
@@ -123,7 +122,7 @@ const styles = StyleSheet.create({
   },
   profileContainer: {
     flexDirection: 'row',
-    gap: SPACING.md,
+    gap: SPACING.sm,
     alignItems: 'center',
     marginBottom: SPACING.md,
   },
@@ -133,17 +132,20 @@ const styles = StyleSheet.create({
     borderRadius: 40,
   },
   textWrapper: {
+    flexShrink: 1,
     flexDirection: 'column',
+    gap: SPACING.xxs,
   },
   lgBoldText: {
     color: COLORS.white,
     fontSize: HEADER_FONT_SIZES.lg,
     fontFamily: FONTS.PRETENDARD[700],
   },
-  mdText: {
-    color: COLORS.white,
-    fontSize: FONT_SIZES.md,
+  introduceText: {
+    color: COLORS.semiLightGrey,
+    fontSize: FONT_SIZES.sm,
     fontFamily: FONTS.PRETENDARD[400],
+    lineHeight: FONT_SIZES.sm * 1.5,
   },
   cardContainer: {
     backgroundColor: BACKGROUND_COLORS.greyDark,

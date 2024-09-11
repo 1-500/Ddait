@@ -1,7 +1,6 @@
 import { useIsFocused } from '@react-navigation/native';
-import React, { useCallback, useEffect, useState } from 'react';
-import { Alert, FlatList, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { Alert, FlatList, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 
 import { getMyCompetition } from '../../apis/competition';
 import CustomButton from '../../components/CustomButton';
@@ -10,9 +9,11 @@ import { COLORS } from '../../constants/colors';
 import { FONT_SIZES, FONTS, HEADER_FONT_SIZES } from '../../constants/font';
 import { RADIUS } from '../../constants/radius';
 import { LAYOUT_PADDING, SPACING } from '../../constants/space';
+import useUserStore from '../../store/sign/login';
 
 const Competition = ({ navigation }) => {
   const [myCompetitions, setMyCompetitions] = useState([]);
+  const nickname = useUserStore((state) => state.nickname);
   const isFocused = useIsFocused();
 
   useEffect(() => {
@@ -30,9 +31,9 @@ const Competition = ({ navigation }) => {
   const handleCompetitionPress = useCallback(
     (item) => {
       if (item.info.max_members === 2) {
-        navigation.navigate('CompetitionRoom1VS1', { competitionId: item.id });
+        navigation.navigate('CompetitionRoom1VS1', { competitionId: item.id, isParticipant: true });
       } else {
-        navigation.navigate('CompetitionRoomRanking', { competitionId: item.id });
+        navigation.navigate('CompetitionRoomRanking', { competitionId: item.id, isParticipant: true });
       }
     },
     [navigation],
@@ -43,23 +44,26 @@ const Competition = ({ navigation }) => {
     [handleCompetitionPress],
   );
 
-  const ListHeader = () => (
-    <View style={{ marginTop: SPACING.lg }}>
-      <View style={styles.header}>
-        <Text style={styles.headerText}>따잇님,</Text>
-        <Text style={{ fontSize: 50 }}>🏋️</Text>
-      </View>
-      <Text style={styles.subHeader}>오늘의 경쟁 상황을 확인해보세요!</Text>
+  const ListHeader = useMemo(
+    () => () => (
+      <View style={{ marginTop: SPACING.lg }}>
+        <View style={styles.header}>
+          <Text style={styles.headerText}>{nickname}님,</Text>
+          <Text style={{ fontSize: 50 }}>🏋️</Text>
+        </View>
+        <Text style={styles.subHeader}>오늘의 경쟁 상황을 확인해보세요!</Text>
 
-      <View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginBottom: SPACING.xs }}>
-        <CustomButton
-          theme="primary"
-          size="medium"
-          text="+ 다른 경쟁도 볼래요"
-          onPress={() => navigation.navigate('SearchCompetition')}
-        />
+        <View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginBottom: SPACING.xs }}>
+          <CustomButton
+            theme="primary"
+            size="medium"
+            text="+ 다른 경쟁도 볼래요"
+            onPress={() => navigation.navigate('SearchCompetition')}
+          />
+        </View>
       </View>
-    </View>
+    ),
+    [nickname, navigation],
   );
 
   const ListFooter = () => (

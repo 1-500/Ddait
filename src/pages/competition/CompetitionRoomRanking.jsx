@@ -11,7 +11,7 @@ import {
   getCompetitionRecordDetail,
   leaveCompetition,
 } from '../../apis/competition';
-import { getMyFriends } from '../../apis/friend';
+import { getMyFriendsNotParticipant } from '../../apis/friend';
 import CompetitionRoomHeader from '../../components/CompetitionRoomHeader';
 import CustomAlert from '../../components/CustomAlert';
 import { COLORS } from '../../constants/colors';
@@ -28,7 +28,7 @@ import SkeletonLoader from './rankingPageTabs/SkeletonLoader';
 const CompetitionRoomRanking = ({ navigation }) => {
   const layout = useWindowDimensions();
   const route = useRoute();
-  const { competitionId } = route.params;
+  const { competitionId, isParticipant } = route.params;
   const { showToast } = useToastMessageStore();
   const [competitionData, setCompetitionData] = useState();
   const [competitionRecord, setCompetitionRecord] = useState();
@@ -36,6 +36,7 @@ const CompetitionRoomRanking = ({ navigation }) => {
   const [myFriends, setMyFriends] = useState();
   const [progress, setProgress] = useState(false);
   const [isDeleted, setIsDeleted] = useState(false);
+  const [isParticipantState, setIsParticipantState] = useState(isParticipant);
   const [index, setIndex] = useState(0);
   const [routes, setRoutes] = useState([
     { key: 'rankList', title: '랭킹' },
@@ -83,9 +84,11 @@ const CompetitionRoomRanking = ({ navigation }) => {
 
   const fetchCompetitionRecordDetail = async () => {
     try {
-      const res = await getCompetitionRecordDetail(competitionId);
-      if (res.status === 200) {
-        setCompetitionRecordDetail(res.data);
+      if (isParticipant) {
+        const res = await getCompetitionRecordDetail(competitionId);
+        if (res.status === 200) {
+          setCompetitionRecordDetail(res.data);
+        }
       }
     } catch (error) {
       console.log('경쟁방 기록 상세 조회 실패: ', error);
@@ -94,9 +97,9 @@ const CompetitionRoomRanking = ({ navigation }) => {
     }
   };
 
-  const fetchMyFriends = async () => {
+  const fetchMyFriendsNotParticipant = async () => {
     try {
-      const res = await getMyFriends();
+      const res = await getMyFriendsNotParticipant(competitionId);
       if (res.status === 200) {
         setMyFriends(res.data);
       }
@@ -113,7 +116,7 @@ const CompetitionRoomRanking = ({ navigation }) => {
         fetchCompetitionDetail(),
         fetchCompetitionRecord(),
         fetchCompetitionRecordDetail(),
-        fetchMyFriends(),
+        fetchMyFriendsNotParticipant(),
       ]);
     } catch (error) {
       Alert.alert('Error fetching friends:', error.message);
@@ -130,7 +133,7 @@ const CompetitionRoomRanking = ({ navigation }) => {
 
   useEffect(() => {
     console.log(progress);
-    if (progress === 'BEFORE') {
+    if (progress === 'BEFORE' && isParticipantState) {
       setRoutes([
         { key: 'rankList', title: '랭킹' },
         { key: 'myScore', title: '내 점수' },
@@ -142,13 +145,14 @@ const CompetitionRoomRanking = ({ navigation }) => {
         { key: 'myScore', title: '내 점수' },
       ]);
     }
-  }, [progress]);
+  }, [progress, isParticipantState]);
 
   const handleJoin = async () => {
     try {
       const res = await enterCompetition(competitionId);
       if (res.status === 200) {
         showToast('🎉 새로운 경쟁에 참여하셨습니다!', 'success', 3000, 'top');
+        setIsParticipantState(true);
         fetchAllData();
       }
     } catch (error) {
