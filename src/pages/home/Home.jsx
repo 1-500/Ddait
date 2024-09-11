@@ -49,7 +49,6 @@ const Home = ({ navigation }) => {
         }, competitions[0]);
 
         setCompetition(closestCompetition);
-        useCompetitionStore.setState({ competitionList: competitions });
       } else {
         setCompetition(null);
       }
