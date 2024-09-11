@@ -12,7 +12,11 @@ import { BACKGROUND_COLORS, COLORS } from '../../constants/colors';
 import { FONT_SIZES, FONTS, HEADER_FONT_SIZES } from '../../constants/font';
 import { RADIUS } from '../../constants/radius';
 import { ELEMENT_VERTICAL_MARGIN, LAYOUT_PADDING, SPACING } from '../../constants/space';
+<<<<<<< ISSUE-289--운동-완료시-경쟁-점수화-요청
+import { useCompetitionStore } from '../../store/competition';
+=======
 import useUserStore from '../../store/sign/login';
+>>>>>>> develop
 
 const defaultProfile = require('../../assets/images/default-profile.png');
 const dummyDates = [
@@ -48,6 +52,7 @@ const Home = ({ navigation }) => {
         }, competitions[0]);
 
         setCompetition(closestCompetition);
+        useCompetitionStore.setState({ competitionList: competitions });
       } else {
         setCompetition(null);
       }
