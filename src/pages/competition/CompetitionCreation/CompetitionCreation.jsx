@@ -101,7 +101,6 @@ const CompetitionCreation = ({ navigation }) => {
     }
   };
 
-  // 경쟁방 생성 및 입장 핸들링 함수
   const handleSubmit = async () => {
     if (!isStepValid()) {
       Alert.alert('경고', '모든 항목을 기입해야 경쟁방을 생성할 수 있어요.');

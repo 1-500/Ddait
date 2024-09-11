@@ -1,26 +1,31 @@
 import React from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
 
-import { acceptRequest } from '../../../apis/friend';
+import { acceptRequest, deleteFriend } from '../../../apis/friend';
 import MemberProfileItem from '../../../components/MemberProfileItem';
 import { LAYOUT_PADDING } from '../../../constants/space';
+import { useToastMessageStore } from '../../../store/toastMessage/toastMessage';
 
 const RequestReceived = ({ data, onUpdateData }) => {
+  const { showToast } = useToastMessageStore();
+
   const handleAccept = async (tableId) => {
     try {
       await acceptRequest(tableId);
+      showToast('친구 요청을 수락했어요!', 'success', 3000, 'top', 80);
       onUpdateData();
     } catch (error) {
-      //토스트 추가
+      showToast('친구 요청 수락에 실패했어요.', 'error', 3000, 'top', 80);
     }
   };
 
   const handleReject = async (tableId) => {
     try {
-      // 거절 API 호출
+      await deleteFriend(tableId);
+      showToast('친구 요청을 거절했어요.', 'success', 3000, 'top', 80);
       onUpdateData();
     } catch (error) {
-      // 토스트 추가
+      showToast('친구 요청 거절에 실패했어요.', 'error', 3000, 'top', 80);
     }
   };
 
