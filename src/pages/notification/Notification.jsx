@@ -62,17 +62,17 @@ const Notification = ({ navigation }) => {
   const [notification, setNotification] = useState([]);
 
   useEffect(() => {
-    const fetchNotification = async () => {
-      try {
-        const result = await getNotification();
-        setNotification(result.data);
-      } catch (error) {
-        showToast(`알림 정보 조회 실패: ${error.message}`, 'error');
-      }
-    };
-
     fetchNotification();
   }, [isFocused]);
+
+  const fetchNotification = async () => {
+    try {
+      const result = await getNotification();
+      setNotification(result.data);
+    } catch (error) {
+      showToast(`알림 정보 조회 실패: ${error.message}`, 'error');
+    }
+  };
 
   const fetchCompetitionDetail = async (id) => {
     try {
@@ -106,6 +106,9 @@ const Notification = ({ navigation }) => {
 
     if (!notification.read) {
       await patchNotification(notification.id, true);
+      if (notification.type === 'null') {
+        fetchNotification();
+      }
     }
   };
 
