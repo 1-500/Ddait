@@ -3,14 +3,16 @@ if (__DEV__) {
 }
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { NavigationContainer } from '@react-navigation/native';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { StatusBar, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Toast, { BaseToast, ErrorToast } from 'react-native-toast-message';
 
+import { setupFirebaseMessaging } from './firebaseConfig';
 import { TEXT_COLORS } from './src/constants/colors';
 import { COLORS } from './src/constants/colors';
 import { FONTS } from './src/constants/font';
+import useCompetitionInviteUpdates from './src/hooks/useCompetitionInviteUpdates';
 import Router from './src/router';
 
 const toastConfig = {
@@ -45,6 +47,22 @@ const toastConfig = {
 };
 
 function App() {
+  useCompetitionInviteUpdates();
+  useEffect(() => {
+    // Firebase 메시징 설정 및 구독
+    const { unsubscribeOnMessage, unsubscribeOnTokenRefresh } = setupFirebaseMessaging();
+
+    // 컴포넌트 언마운트 시 구독 해제
+    return () => {
+      if (unsubscribeOnMessage) {
+        unsubscribeOnMessage();
+      }
+      if (unsubscribeOnTokenRefresh) {
+        unsubscribeOnTokenRefresh();
+      }
+    };
+  }, []);
+
   return (
     <View style={{ flex: 1 }}>
       <GestureHandlerRootView>

@@ -91,3 +91,6 @@ yarn.lock
 
 # Editor settings
 settings.json
+
+# Firebase google-services.json
+android/app/google-services.json
