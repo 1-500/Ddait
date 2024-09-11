@@ -71,6 +71,10 @@ const Friend = ({ navigation }) => {
     }
   }, [showToast]);
 
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
   const hideAlert = () => {
     setAlertConfig((prev) => ({ ...prev, visible: false }));
   };
