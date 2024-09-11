@@ -1,10 +1,10 @@
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef } from 'react';
 import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import { FONT_SIZES, HEADER_FONT_SIZES } from '../../constants/font';
+import { FONTS, HEADER_FONT_SIZES } from '../../constants/font';
 import useUserFormStore from '../../store/sign/signup';
-import DatePickerBottomSheet from '../DatePickerBottomSheet';
+import DatePickerBottomSheet from '../BottomSheet/DatePickerBottomSheet';
 
 const windowWidth = Dimensions.get('window').width;
 
@@ -12,29 +12,27 @@ const BirthDayRegisterForm = () => {
   const { selectedDate, setSelectedDate, nickName } = useUserFormStore();
 
   const bottomSheetModalRef = useRef(null);
-  const snapPoints = useMemo(() => ['50%', '70%'], []);
+  const snapPoints = useMemo(() => ['70%', '50%'], []);
   const handlePresentModalPress = useCallback(() => {
     bottomSheetModalRef.current?.present();
   }, []);
 
   return (
-    <BottomSheetModalProvider>
-      <View style={styles.container}>
-        <Text style={styles.topText}>{nickName}님의 생일을 알려주세요!</Text>
-        <TouchableOpacity onPress={handlePresentModalPress}>
-          <Text style={styles.dateText}>
-            {selectedDate.year} / {selectedDate.month} / {selectedDate.day}
-          </Text>
-        </TouchableOpacity>
-        <DatePickerBottomSheet
-          selectedDate={selectedDate}
-          setSelectedDate={setSelectedDate}
-          title="생년월일 입력해주세요"
-          ref={bottomSheetModalRef}
-          snapPoints={snapPoints}
-        />
-      </View>
-    </BottomSheetModalProvider>
+    <View style={styles.container}>
+      <Text style={styles.topText}>{nickName}님의 생일을 알려주세요!</Text>
+      <TouchableOpacity onPress={handlePresentModalPress}>
+        <Text style={styles.dateText}>
+          {selectedDate.year} / {selectedDate.month} / {selectedDate.day}
+        </Text>
+      </TouchableOpacity>
+      <DatePickerBottomSheet
+        selectedDate={selectedDate}
+        setSelectedDate={setSelectedDate}
+        title="생년월일 입력해주세요"
+        ref={bottomSheetModalRef}
+        snapPoints={snapPoints}
+      />
+    </View>
   );
 };
 
@@ -53,7 +51,7 @@ const styles = StyleSheet.create({
   dateText: {
     color: 'white',
     fontSize: 24,
-    fontWeight: 'bold',
+    fontFamily: FONTS.PRETENDARD[700],
     marginBottom: 20,
   },
   pickerContainer: {
@@ -66,7 +64,7 @@ const styles = StyleSheet.create({
   headerText: {
     color: 'white',
     fontSize: HEADER_FONT_SIZES.sm,
-    fontWeight: '600',
+    fontFamily: FONTS.PRETENDARD[600],
     marginBottom: 20,
   },
   pickersWrapper: {
@@ -89,6 +87,7 @@ const styles = StyleSheet.create({
   buttonText: {
     color: 'white',
     fontSize: 18,
+    fontFamily: FONTS.PRETENDARD[400],
   },
 });
 

@@ -8,15 +8,18 @@ import {
   SafeAreaView,
   StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
+import { patchCompetitionRecord } from '../../../apis/competition';
 import {
   getExerciseList,
   getWorkoutInfoBookmark,
+  getWorkoutSearchResult,
   postWorkoutInfoBookmark,
   postWorkoutRecord,
 } from '../../../apis/diary';
@@ -30,6 +33,9 @@ import { BODY_FONT_SIZES, HEADER_FONT_SIZES } from '../../../constants/font';
 import { FONTS } from '../../../constants/font';
 import { RADIUS } from '../../../constants/radius';
 import { LAYOUT_PADDING, SPACING } from '../../../constants/space';
+import { useCompetitionStore } from '../../../store/competition';
+import { useToastMessageStore } from '../../../store/toastMessage/toastMessage';
+import { debounce } from '../../../utils/foodDiary/debounce';
 
 const StartWorkout = () => {
   const navigation = useNavigation();
@@ -46,6 +52,12 @@ const StartWorkout = () => {
     equipment: '전체',
     bookmark: false,
   });
+  const [workoutTitle, setWorkoutTitle] = useState('아침운동');
+  const [editWorkoutTitle, setEditWorkoutTitle] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const { showToast } = useToastMessageStore();
+  // const { competitionList } = useCompetitionStore.getState();
+  const { competitionList } = useCompetitionStore();
 
   const bottomSheetModalRef = useRef(null);
   const snapPoints = useMemo(() => ['80%', '80%'], []);
@@ -54,23 +66,33 @@ const StartWorkout = () => {
   useEffect(() => {
     const fetchExerciseData = async () => {
       try {
-        // 운동 목록과 북마크 목록을 병렬로 요청하게 all메서르 사용
         const [exerciseRes, bookmarkRes] = await Promise.all([getExerciseList(), getWorkoutInfoBookmark()]);
 
-        // bookmarkRes.data로 북마크 데이터를 추출하여 운동 목록과 결합
         const exerciseListWithBookmarks = exerciseRes.map((exercise) => {
           const isBookmarked = bookmarkRes.data.some((bookmark) => bookmark.workout_info_id === exercise.id);
           return { ...exercise, bookmark: isBookmarked };
         });
 
-        setExerciseListData(exerciseListWithBookmarks);
+        if (searchTerm === '') {
+          const [exerciseRes, bookmarkRes] = await Promise.all([getExerciseList(), getWorkoutInfoBookmark()]);
+          const bookmarkedIds = bookmarkRes.data.map((bookmark) => bookmark.workout_info_id);
+          const exerciseListWithBookmarks = exerciseRes.map((exercise) => {
+            const isBookmarked = bookmarkedIds.includes(exercise.id);
+            return { ...exercise, bookmark: isBookmarked };
+          });
+
+          setExerciseListData(exerciseListWithBookmarks);
+        } else {
+          const result = await getWorkoutSearchResult(searchTerm);
+          setExerciseListData(result.data);
+        }
       } catch (error) {
         console.log('무슨 error? : ', error);
       }
     };
 
     fetchExerciseData();
-  }, []);
+  }, [searchTerm]);
 
   useEffect(() => {
     return () => {
@@ -90,9 +112,6 @@ const StartWorkout = () => {
 
   const handlePresentModalPress = useCallback(() => {
     bottomSheetModalRef.current?.present();
-  }, []);
-  const handleSheetChanges = useCallback((index) => {
-    // console.log('handleSheetChanges', index);
   }, []);
 
   const handleExerciseSelect = (exercise) => {
@@ -141,11 +160,9 @@ const StartWorkout = () => {
       prevData.map((workout) => {
         if (workout.id === workoutId) {
           if (workout.isRunning) {
-            // 정지 버튼을 눌렀을 때 타이머를 멈춤
             clearInterval(intervalId);
             return { ...workout, isRunning: false };
           } else {
-            // 시작 버튼을 눌렀을 때 타이머를 시작
             const id = setInterval(() => {
               setTotalTime((prev) => {
                 const newSeconds = prev.seconds + 1;
@@ -214,25 +231,82 @@ const StartWorkout = () => {
     );
   };
 
+  /* eslint-disable */
   const handleCompleteWorkoutSet = (workoutId, setId) => {
-    setWorkoutData(
-      (prevData) =>
-        prevData.map((workout) =>
-          workout.id === workoutId
-            ? /* eslint-disable */
-              {
-                ...workout,
-                workoutSet: workout.workoutSet.filter((set) => set.id !== setId),
-              }
-            : workout,
-        ),
-      /* eslint-enable */
+    setWorkoutData((prevData) =>
+      prevData.map((workout) =>
+        workout.id === workoutId
+          ? {
+              ...workout,
+              workoutSet: workout.workoutSet.map((set) => (set.id === setId ? { ...set, isComplete: true } : set)),
+            }
+          : workout,
+      ),
     );
   };
+  /* eslint-enable */
+
+  /* eslint-disable */
+  const updateCompetitionRecord = async () => {
+    const today = new Date();
+    try {
+      const validCompetitions = competitionList.filter((competition) => {
+        const startDate = new Date(competition.date.start_date);
+        const endDate = new Date(competition.date.end_date);
+
+        return competition.info.competition_theme === '3대측정내기' && startDate <= today && endDate >= today;
+      });
+
+      if (validCompetitions.length === 0) {
+        showToast('경쟁 기록이 없습니다.', 'error', 1000, 'top', 80);
+        return;
+      }
+
+      for (const competition of validCompetitions) {
+        const competitionRoomId = competition.id;
+        console.log('competitionRoomId :>>', competitionRoomId);
+        const workout_records = workoutData.flatMap((workout) =>
+          workout.workoutSet
+            .filter((set) => set.isComplete)
+            .map((set) => ({
+              workout_info: {
+                name: workout.title,
+              },
+              weight: set.weight,
+              reps: set.reps,
+              set: set.id,
+            })),
+        );
+
+        if (workout_records.length === 0) {
+          showToast('완료된 세트가 없어 기록을 저장할 수 없습니다.', 'error', 1000, 'top', 80);
+          return;
+        }
+
+        const workoutRecord = {
+          competition_room_id: competitionRoomId,
+          // workout_records,
+        };
+
+        console.log('갱신할 roomid입니다 :>>', workoutRecord);
+
+        const res = await patchCompetitionRecord(workoutRecord);
+
+        if (res.status === 200) {
+          showToast('경쟁 기록이 성공적으로 최신화되었습니다.', 'success', 1000, 'top', 80);
+        } else {
+          showToast('경쟁 기록 업데이트 실패.', 'error', 1000, 'top', 80);
+        }
+      }
+    } catch (error) {
+      console.error('경쟁 기록 업데이트 중 오류 발생:', error);
+    }
+  };
+  /* eslint-enable */
 
   const handleSaveWorkoutRecord = async () => {
     try {
-      const title = '아침운동';
+      const title = workoutTitle;
       const totalWorkoutTime = workoutData.reduce((total, workout) => total + workout.time, 0);
 
       const formatTotalTime = (seconds) => {
@@ -243,7 +317,6 @@ const StartWorkout = () => {
       };
       const time = formatTotalTime(totalWorkoutTime);
 
-      // 각 운동에 대해 완료된 세트만 필터링하여 workout_records 배열에 저장
       const workout_records = workoutData.flatMap((workout) =>
         workout.workoutSet
           .filter((set) => set.isComplete)
@@ -257,7 +330,6 @@ const StartWorkout = () => {
           })),
       );
 
-      // 완료된 세트가 없는 경우 알림
       if (workout_records.length === 0) {
         Alert.alert('운동 기록', '완료된 세트가 없어 기록을 저장할 수 없습니다.');
         return;
@@ -272,10 +344,9 @@ const StartWorkout = () => {
       const res = await postWorkoutRecord(workoutRecord);
 
       /* eslint-disable */
-      // 응답 처리
       if (res) {
         Alert.alert('운동 기록', '정상적으로 저장되었습니다');
-        navigation.navigate('WorkoutDiaryScreen');
+        navigation.navigate('DiaryMain');
       } else {
         Alert.alert('운동 기록', '기록 저장에 실패했습니다.');
         console.error('기록 저장에 실패했습니다.', res.error);
@@ -407,10 +478,61 @@ const StartWorkout = () => {
     }));
   }, []);
 
+  const handleTitleChange = (text) => {
+    setWorkoutTitle(text);
+  };
+
+  const handleSaveTitle = () => {
+    setEditWorkoutTitle(false);
+  };
+
+  const debouncedSearch = debounce(async (term) => {
+    try {
+      const result = await getWorkoutSearchResult(term);
+      setExerciseListData(result.data);
+    } catch (error) {
+      console.error('검색 중 오류 발생:', error);
+    }
+  }, 300);
+
+  useEffect(() => {
+    if (searchTerm) {
+      debouncedSearch(searchTerm); // 검색어가 있을 때에만 호출
+    }
+  }, [searchTerm]);
+
+  const handleSearchInput = (text) => {
+    setSearchTerm(text); // 검색어 업데이트
+  };
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: BACKGROUND_COLORS.dark }}>
       <HeaderComponents title="운동 시작" icon="timer" onRightBtnPress={handleRestTimer} />
+
       <View style={styles.timerContainer}>
+        {editWorkoutTitle ? (
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <TextInput
+              value={workoutTitle}
+              onChangeText={handleTitleChange}
+              style={styles.workoutTitleInput}
+              onBlur={handleSaveTitle}
+              autoFocus
+            />
+            <TouchableOpacity onPress={handleSaveTitle}>
+              <MaterialCommunityIcons name="check" size={24} color={COLORS.secondary} />
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <TouchableOpacity
+            style={{ flexDirection: 'row', alignItems: 'center' }}
+            onPress={() => setEditWorkoutTitle(true)}
+          >
+            <Text style={styles.workoutTitle}>{workoutTitle}</Text>
+            <MaterialCommunityIcons name="pencil-outline" size={20} color={COLORS.white} />
+          </TouchableOpacity>
+        )}
+
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <MaterialCommunityIcons name="timer-outline" size={24} color={COLORS.white} />
           <Text style={styles.timerText}>운동: {formatTime(totalWorkoutTime)}</Text>
@@ -472,16 +594,15 @@ const StartWorkout = () => {
       </Modal>
 
       <BottomSheetModalProvider>
-        <BottomSheetModal
-          ref={bottomSheetModalRef}
-          onChange={handleSheetChanges}
-          enablePanDownToClose
-          snapPoints={snapPoints}
-        >
+        <BottomSheetModal ref={bottomSheetModalRef} enablePanDownToClose snapPoints={snapPoints}>
           <BottomSheetView style={styles.bottomSheetContainer}>
             <Text style={styles.exerciseHeader}>운동 추가</Text>
             <View>
-              <CustomInput placeholder="하고자 하는 운동을 검색해보세요." theme="search" />
+              <CustomInput
+                placeholder="하고자 하는 운동을 검색해보세요."
+                theme="search"
+                onChangeText={(text) => handleSearchInput(text)}
+              />
             </View>
             <View style={{ flexDirection: 'row', marginVertical: 16 }}>
               <TouchableOpacity style={{ marginRight: 16 }}>
@@ -549,8 +670,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     height: 60,
     paddingVertical: 16,
+    paddingHorizontal: 20,
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
   },
   diaryContentContainer: {
     paddingTop: 16,
@@ -703,6 +825,18 @@ const styles = StyleSheet.create({
   timerText: {
     color: COLORS.white,
     marginLeft: 8,
+    fontSize: BODY_FONT_SIZES.md,
+    fontFamily: FONTS.PRETENDARD[700],
+  },
+  workoutTitle: {
+    color: COLORS.white,
+    marginRight: 8,
+    fontSize: BODY_FONT_SIZES.md,
+    fontFamily: FONTS.PRETENDARD[700],
+  },
+  workoutTitleInput: {
+    color: COLORS.white,
+    marginRight: 8,
     fontSize: BODY_FONT_SIZES.md,
     fontFamily: FONTS.PRETENDARD[700],
   },

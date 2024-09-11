@@ -31,22 +31,32 @@ const CustomAlert = ({
               verticalButtons && styles.verticalButtonContainer,
             ]}
           >
-            {showCancel && (
+            {verticalButtons ? (
               <>
-                <TouchableOpacity style={[styles.button, verticalButtons && styles.verticalButton]} onPress={onCancel}>
-                  <Text style={[styles.buttonText, styles.cancelText]}>{cancelText}</Text>
+                <TouchableOpacity style={[styles.button, styles.verticalButton]} onPress={onConfirm}>
+                  <Text style={[styles.buttonText, styles.basicText]}>{confirmText}</Text>
                 </TouchableOpacity>
-                {!verticalButtons && <View style={styles.verticalSeparator} />}
+                <TouchableOpacity style={[styles.button, styles.verticalButton]} onPress={onCancel}>
+                  <Text style={[styles.buttonText, styles.redText]}>{cancelText}</Text>
+                </TouchableOpacity>
+              </>
+            ) : (
+              <>
+                {showCancel && (
+                  <>
+                    <TouchableOpacity style={styles.button} onPress={onCancel}>
+                      <Text style={[styles.buttonText, styles.basicText]}>{cancelText}</Text>
+                    </TouchableOpacity>
+                    <View style={styles.verticalSeparator} />
+                  </>
+                )}
+                <TouchableOpacity style={[styles.button, !showCancel && styles.singleButton]} onPress={onConfirm}>
+                  <Text style={[styles.buttonText, showCancel ? styles.redText : styles.singleButtonText]}>
+                    {confirmText}
+                  </Text>
+                </TouchableOpacity>
               </>
             )}
-            <TouchableOpacity
-              style={[styles.button, !showCancel && styles.singleButton, verticalButtons && styles.verticalButton]}
-              onPress={onConfirm}
-            >
-              <Text style={[styles.buttonText, showCancel ? styles.confirmText : styles.singleButtonText]}>
-                {confirmText}
-              </Text>
-            </TouchableOpacity>
           </View>
         </View>
       </View>
@@ -105,10 +115,10 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.PRETENDARD[700],
     textAlign: 'center',
   },
-  cancelText: {
+  basicText: {
     color: COLORS.primary,
   },
-  confirmText: {
+  redText: {
     color: COLORS.red,
   },
   singleButtonContainer: {

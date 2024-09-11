@@ -5,7 +5,7 @@ import { inviteCompetition } from '../../../apis/competition';
 import CustomAlert from '../../../components/CustomAlert';
 import MemberProfileItem from '../../../components/MemberProfileItem';
 import { COLORS } from '../../../constants/colors';
-import { FONT_SIZES, FONT_WEIGHTS } from '../../../constants/font';
+import { FONT_SIZES, FONTS } from '../../../constants/font';
 import { LAYOUT_PADDING, SPACING } from '../../../constants/space';
 import { useToastMessageStore } from '../../../store/toastMessage/toastMessage';
 
@@ -90,14 +90,14 @@ const styles = StyleSheet.create({
   },
   inviteBtnText: {
     fontSize: FONT_SIZES.sm,
-    fontWeight: FONT_WEIGHTS.bold,
+    fontFamily: FONTS.PRETENDARD[700],
     color: COLORS.white,
   },
   friendListHeaderText: {
     marginTop: SPACING.xl,
     marginBottom: SPACING.xs,
     fontSize: FONT_SIZES.sm,
-    fontWeight: FONT_WEIGHTS.bold,
+    fontFamily: FONTS.PRETENDARD[700],
     color: COLORS.white,
   },
 });

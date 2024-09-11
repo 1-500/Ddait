@@ -38,9 +38,9 @@ const CompetitionItem = React.memo(({ item, onPress }) => {
         <View style={styles.titleContainer}>
           <Text style={styles.competitionTitle}>{item.title}</Text>
           {item.settings.is_private ? (
-            <Octicons name="lock" size={16} color={COLORS.primary} />
+            <Octicons name="lock" size={16} color={COLORS.lightGrey} />
           ) : (
-            <Octicons name="unlock" size={16} color={COLORS.lightGrey} />
+            <Octicons name="unlock" size={16} color={COLORS.primary} />
           )}
         </View>
         <View style={{ flexDirection: 'row', gap: SPACING.xxs }}>
@@ -85,9 +85,15 @@ const SearchCompetition = ({ navigation }) => {
   const handleCompetitionPress = useCallback(
     (item) => {
       if (item.info.max_members === 2) {
-        navigation.navigate('CompetitionRoom1VS1', { competitionId: item.id });
+        navigation.navigate('CompetitionRoom1VS1', {
+          competitionId: item.id,
+          isParticipant: item.user_status.is_participant,
+        });
       } else {
-        navigation.navigate('CompetitionRoomRanking', { competitionId: item.id });
+        navigation.navigate('CompetitionRoomRanking', {
+          competitionId: item.id,
+          isParticipant: item.user_status.is_participant,
+        });
       }
     },
     [navigation],

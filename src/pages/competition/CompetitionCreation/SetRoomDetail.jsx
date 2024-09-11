@@ -1,12 +1,11 @@
-import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { Dimensions, ScrollView, StyleSheet, Text, View } from 'react-native';
 
+import DatePickerBottomSheet from '../../../components/BottomSheet/DatePickerBottomSheet';
 import OptionSelector from '../../../components/competitionCreation/OptionSelector';
-import DatePickerBottomSheet from '../../../components/DatePickerBottomSheet';
 import Toggle from '../../../components/Toggle';
 import { COLORS } from '../../../constants/colors';
-import { FONT_SIZES, FONT_WEIGHTS } from '../../../constants/font';
+import { FONT_SIZES, FONTS } from '../../../constants/font';
 
 const { width } = Dimensions.get('window');
 
@@ -30,7 +29,7 @@ const SetRoomDetail = () => {
   } = useCreateRoomStateStore();
 
   // 바텀 시트
-  const snapPoints = useMemo(() => ['50%', '70%'], []);
+  const snapPoints = useMemo(() => ['70%', '50%'], []);
   const startDateBottomSheetRef = useRef(null);
   const endDateBottomSheetRef = useRef(null);
 
@@ -57,8 +56,7 @@ const SetRoomDetail = () => {
     if (!endDate.year) {
       setEndDate(formattedDate);
     }
-    // eslint-disable-next-line
-  }, []);
+  }, [endDate.year, setEndDate, setStartDate, startDate.year]);
 
   const menuItems = [
     {
@@ -97,33 +95,31 @@ const SetRoomDetail = () => {
   ];
 
   return (
-    <BottomSheetModalProvider>
-      <ScrollView style={styles.scrollView}>
-        {menuItems.map((item, index) => (
-          <MenuItem
-            key={index}
-            title={item.title}
-            subTitle={item.subTitle}
-            component={item.component}
-            isLast={index === menuItems.length - 1}
-          />
-        ))}
-        <DatePickerBottomSheet
-          ref={startDateBottomSheetRef}
-          selectedDate={startDate}
-          setSelectedDate={setStartDate}
-          title="시작 날짜를 선택하세요"
-          snapPoints={snapPoints}
+    <ScrollView style={styles.scrollView}>
+      {menuItems.map((item, index) => (
+        <MenuItem
+          key={index}
+          title={item.title}
+          subTitle={item.subTitle}
+          component={item.component}
+          isLast={index === menuItems.length - 1}
         />
-        <DatePickerBottomSheet
-          ref={endDateBottomSheetRef}
-          selectedDate={endDate}
-          setSelectedDate={setEndDate}
-          title="종료 날짜를 선택하세요"
-          snapPoints={snapPoints}
-        />
-      </ScrollView>
-    </BottomSheetModalProvider>
+      ))}
+      <DatePickerBottomSheet
+        ref={startDateBottomSheetRef}
+        selectedDate={startDate}
+        setSelectedDate={setStartDate}
+        title="시작 날짜를 선택하세요"
+        snapPoints={snapPoints}
+      />
+      <DatePickerBottomSheet
+        ref={endDateBottomSheetRef}
+        selectedDate={endDate}
+        setSelectedDate={setEndDate}
+        title="종료 날짜를 선택하세요"
+        snapPoints={snapPoints}
+      />
+    </ScrollView>
   );
 };
 
@@ -160,12 +156,12 @@ const styles = StyleSheet.create({
   },
   menuText: {
     fontSize: FONT_SIZES.lg,
-    fontWeight: FONT_WEIGHTS.medium,
-    fontFamily: 'Pretendard',
+    fontFamily: FONTS.PRETENDARD[500],
     color: COLORS.white,
   },
   subText: {
     fontSize: FONT_SIZES.sm,
+    fontFamily: FONTS.PRETENDARD[400],
     color: COLORS.lightGrey,
   },
   periodSelectorContainer: {
@@ -176,7 +172,7 @@ const styles = StyleSheet.create({
   },
   dateSeparator: {
     color: COLORS.white,
-    fontWeight: FONT_WEIGHTS.semiBold,
+    fontFamily: FONTS.PRETENDARD[600],
   },
 });
 

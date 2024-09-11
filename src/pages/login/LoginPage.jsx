@@ -6,7 +6,7 @@ import { emailLogin } from '../../apis/login/index';
 import CustomButton from '../../components/CustomButton';
 import CustomInput from '../../components/CustomInput';
 import { COLORS } from '../../constants/colors';
-import { FONT_SIZES, FONT_WEIGHTS, HEADER_FONT_SIZES } from '../../constants/font';
+import { FONT_SIZES, FONTS, HEADER_FONT_SIZES } from '../../constants/font';
 import useUserStore from '../../store/sign/login';
 
 const ThumbnailLogo = require('../../assets/images/login/thumnailLogo.png');
@@ -20,7 +20,7 @@ const LoginPage = () => {
   const [emailInput, setEmailInput] = useState();
   const [passwordInput, setPasswordInput] = useState();
 
-  const { setToken, setUserEmail } = useUserStore();
+  const { setToken, setUserEmail, setUserInfo } = useUserStore();
 
   const handleEmailInput = (text) => {
     setEmailInput(text);
@@ -50,6 +50,14 @@ const LoginPage = () => {
             refreshToken: refresh_token,
           });
           setUserEmail(user.email);
+          setUserInfo({
+            userEmail: user.email,
+            userId: result.userId,
+            nickname: result.nickname,
+            profileImageUrl: result.profileImageUrl,
+            introduce: result.introduce,
+          });
+
           Alert.alert('로그인 하였습니다!');
           navigation.navigate('MainTab', {
             screen: 'Home',
@@ -192,8 +200,8 @@ const styles = StyleSheet.create({
   },
   headerText: {
     color: COLORS.white,
-    fontWeight: 'bold',
     fontSize: HEADER_FONT_SIZES.sm,
+    fontFamily: FONTS.PRETENDARD[700],
     textAlign: 'center',
   },
   formContainer: {
@@ -220,7 +228,7 @@ const styles = StyleSheet.create({
   },
   linkText: {
     color: COLORS.primary,
-    fontWeight: FONT_WEIGHTS.semiBold,
+    fontFamily: FONTS.PRETENDARD[600],
     paddingHorizontal: 10,
   },
   divider: {
@@ -236,7 +244,7 @@ const styles = StyleSheet.create({
   },
   snsText: {
     color: COLORS.primary,
-    fontWeight: FONT_WEIGHTS.semiBold,
+    fontFamily: FONTS.PRETENDARD[600],
     textAlign: 'center',
   },
   iconContainer: {
@@ -251,7 +259,7 @@ const styles = StyleSheet.create({
   },
   viewText: {
     color: COLORS.white,
-    fontWeight: FONT_WEIGHTS.semiBold,
+    fontFamily: FONTS.PRETENDARD[600],
     textAlign: 'center',
     marginVertical: 10,
   },

@@ -2,7 +2,7 @@ import React from 'react';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { COLORS } from '../../constants/colors';
-import { FONT_WEIGHTS } from '../../constants/font';
+import { FONTS } from '../../constants/font';
 import CustomInput from '../CustomInput';
 const calendar = require('../../assets/images/calendar.png');
 
@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
   },
   dateSeparator: {
     color: COLORS.white,
-    fontWeight: FONT_WEIGHTS.semiBold,
+    fontFamily: FONTS.PRETENDARD[600],
   },
 });
 export default PeroidSelector;

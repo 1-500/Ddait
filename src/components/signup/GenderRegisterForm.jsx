@@ -1,6 +1,7 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { COLORS } from '../../constants/colors';
+import { FONTS } from '../../constants/font';
 import useUserFormStore from '../../store/sign/signup';
 const MaleIcon = require('../../assets/images/maleIcon.png');
 const FemaleIcon = require('../../assets/images/femaleIcon.png');
@@ -54,12 +55,12 @@ const styles = StyleSheet.create({
   headerText: {
     color: 'white',
     fontSize: 20,
-    fontWeight: '600',
+    fontFamily: FONTS.PRETENDARD[600],
   },
   subHeaderText: {
     color: '#D9D9D9',
     fontSize: 16,
-    fontWeight: '600',
+    fontFamily: FONTS.PRETENDARD[600],
     marginTop: 15,
   },
 

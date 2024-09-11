@@ -10,7 +10,7 @@ import CustomTag from './CustomTag';
 
 const dummyProfileImage = require('../assets/images/profile.png');
 
-const MemberProfileItem = ({ memberData, rightBtn = 'menu', onRightBtnPress = () => {} }) => {
+const MemberProfileItem = ({ memberData, onAccept, onReject, rightBtn = 'menu', onRightBtnPress = () => {} }) => {
   const renderRightBtn = () => {
     if (rightBtn === 'menu') {
       return (
@@ -27,8 +27,8 @@ const MemberProfileItem = ({ memberData, rightBtn = 'menu', onRightBtnPress = ()
     } else if (rightBtn === 'request') {
       return (
         <View style={styles.btnWrapper}>
-          <CustomButton text="수락" theme="primary" size="xs" />
-          <CustomButton text="거절" theme="block" size="xs" />
+          <CustomButton text="수락" theme="primary" size="xs" onPress={() => onAccept(memberData.id)} />
+          <CustomButton text="거절" theme="block" size="xs" onPress={() => onReject(memberData.id)} />
         </View>
       );
     } else {

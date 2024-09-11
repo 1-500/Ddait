@@ -7,7 +7,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 
 import { COLORS } from '../constants/colors';
-import { FONT_WEIGHTS, HEADER_FONT_SIZES } from '../constants/font';
+import { FONTS, HEADER_FONT_SIZES } from '../constants/font';
 import { SPACING } from '../constants/space';
 
 const appLogoImage = require('../assets/images/app-logo.png');
@@ -75,6 +75,12 @@ const HeaderComponents = ({ icon = 'none', title = '', onRightBtnPress = () => {
             <MaterialCommunityIcons name="dots-vertical" size={24} color={COLORS.white} />
           </TouchableOpacity>
         );
+      case 'save':
+        return (
+          <TouchableOpacity style={styles.btnWrapper} onPress={onRightBtnPress} activeOpacity={0.6}>
+            <Text style={styles.saveText}>저장</Text>
+          </TouchableOpacity>
+        );
       default:
         return <View style={styles.btnWrapper} />;
     }
@@ -135,18 +141,23 @@ const styles = StyleSheet.create({
   },
   titleText: {
     fontSize: HEADER_FONT_SIZES.sm,
-    fontWeight: FONT_WEIGHTS.bold,
+    fontFamily: FONTS.PRETENDARD[700],
     lineHeight: 44,
     color: COLORS.white,
   },
   submitBtnTitle: {
     fontSize: 16,
-    fontWeight: FONT_WEIGHTS.semiBold,
+    fontFamily: FONTS.PRETENDARD[600],
     color: COLORS.primary,
   },
   dateWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: SPACING.xs,
+  },
+  saveText: {
+    fontSize: 18,
+    fontFamily: FONTS.PRETENDARD[700],
+    color: COLORS.primary,
   },
 });

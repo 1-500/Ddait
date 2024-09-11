@@ -21,9 +21,12 @@ import FriendSearch from './pages/friend/FriendSearch';
 import Home from './pages/home/Home';
 import LoginPage from './pages/login/LoginPage';
 import MyPage from './pages/mypage/MyPage';
+import ProfileEdit from './pages/mypage/ProfileEdit';
 import ProfilePrivacy from './pages/mypage/ProfilePrivacy';
+import Setting from './pages/mypage/Setting';
 import SignUpPage from './pages/signup/SignUpPage';
 import SocialLogin from './pages/socialLogin/SocialLogin';
+import Splash from './pages/splash/Splash';
 import Test from './pages/Test';
 
 const Stack = createStackNavigator();
@@ -88,13 +91,16 @@ const CompetitionStack = () => {
 
 const Router = () => {
   return (
-    <Stack.Navigator initialRouteName="Sign" screenOptions={{ headerShown: false }}>
+    <Stack.Navigator initialRouteName="Splash" screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="Splash" component={Splash} />
+      <Stack.Screen name="Sign" component={SignStack} />
       <Stack.Screen name="MainTab" component={MainTab} />
       <Stack.Screen name="SignUp" component={SignUpPage} />
-      <Stack.Screen name="Sign" component={SignStack} />
       <Stack.Screen name="DiaryMain" component={DiaryMain} />
       <Stack.Screen name="WorkoutDiary" component={WorkoutDiaryStack} />
       <Stack.Screen name="FoodDiary" component={FoodDiaryStack} />
+      <Stack.Screen name="Setting" component={Setting} />
+      <Stack.Screen name="ProfileEdit" component={ProfileEdit} />
       <Stack.Screen name="ProfilePrivacy" component={ProfilePrivacy} />
       <Stack.Screen name="CompetitionCreation" component={CompetitionCreation} />
       <Stack.Screen name="CompetitionRoom1VS1" component={CompetitionRoom1VS1} />

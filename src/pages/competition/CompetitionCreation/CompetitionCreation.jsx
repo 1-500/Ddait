@@ -7,7 +7,7 @@ import CustomButton from '../../../components/CustomButton';
 import HeaderComponents from '../../../components/HeaderComponents';
 import StepIndicator from '../../../components/StepIndicator';
 import { BACKGROUND_COLORS, COLORS } from '../../../constants/colors';
-import { FONT_WEIGHTS, HEADER_FONT_SIZES } from '../../../constants/font';
+import { FONTS, HEADER_FONT_SIZES } from '../../../constants/font';
 import { ELEMENT_VERTICAL_MARGIN, LAYOUT_PADDING } from '../../../constants/space';
 import useCreateRoomStateStore from '../../../store/competition/index';
 import { formatDate_ISO8601 } from '../../../utils/date';
@@ -101,7 +101,6 @@ const CompetitionCreation = ({ navigation }) => {
     }
   };
 
-  // 경쟁방 생성 및 입장 핸들링 함수
   const handleSubmit = async () => {
     if (!isStepValid()) {
       Alert.alert('경고', '모든 항목을 기입해야 경쟁방을 생성할 수 있어요.');
@@ -129,8 +128,8 @@ const CompetitionCreation = ({ navigation }) => {
       Alert.alert('경쟁방 생성', `'${title}' 경쟁방이 생성되었습니다!`);
 
       maxMembers === 2
-        ? navigation.navigate('CompetitionRoom1VS1', { competitionId: roomId })
-        : navigation.navigate('CompetitionRoomRanking', { competitionId: roomId });
+        ? navigation.navigate('CompetitionRoom1VS1', { competitionId: roomId, isParticipant: true })
+        : navigation.navigate('CompetitionRoomRanking', { competitionId: roomId, isParticipant: true });
 
       resetState();
     } catch (error) {
@@ -188,8 +187,7 @@ const styles = StyleSheet.create({
   },
   stepText: {
     fontSize: HEADER_FONT_SIZES.sm,
-    fontWeight: FONT_WEIGHTS.bold,
-    fontFamily: 'Pretendard',
+    fontFamily: FONTS.PRETENDARD[700],
     color: COLORS.white,
     marginVertical: 28,
   },

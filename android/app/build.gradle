@@ -114,6 +114,9 @@ dependencies {
     } else {
         implementation jscFlavor
     }
+    implementation project(':lottie-react-native')
+    implementation 'com.airbnb.android:lottie:6.5.0'
+    implementation project(':react-native-image-crop-picker')
 }
 
 apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)

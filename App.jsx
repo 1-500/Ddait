@@ -1,9 +1,11 @@
 if (__DEV__) {
   require('./ReactotronConfig');
 }
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { NavigationContainer } from '@react-navigation/native';
 import React, { useEffect } from 'react';
 import { StatusBar, View } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Toast, { BaseToast, ErrorToast } from 'react-native-toast-message';
 
 import { setupFirebaseMessaging } from './firebaseConfig';
@@ -63,11 +65,15 @@ function App() {
 
   return (
     <View style={{ flex: 1 }}>
-      <StatusBar barStyle="light-content" backgroundColor={COLORS.darkBackground} />
-      <NavigationContainer theme={{ colors: { background: COLORS.darkBackground } }}>
-        <Router />
-        <Toast config={toastConfig} />
-      </NavigationContainer>
+      <GestureHandlerRootView>
+        <StatusBar barStyle="light-content" backgroundColor={COLORS.darkBackground} />
+        <NavigationContainer theme={{ colors: { background: COLORS.darkBackground } }}>
+          <BottomSheetModalProvider>
+            <Router />
+            <Toast config={toastConfig} />
+          </BottomSheetModalProvider>
+        </NavigationContainer>
+      </GestureHandlerRootView>
     </View>
   );
 }

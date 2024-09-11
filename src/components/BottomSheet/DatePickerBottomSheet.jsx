@@ -5,23 +5,14 @@ import { Dimensions, StyleSheet, Text, View } from 'react-native';
 const windowWidth = Dimensions.get('window');
 import React, { forwardRef, useMemo } from 'react';
 
-import { getDays, getMonths, getYears } from '../utils/date';
-import CustomButton from './CustomButton';
+import { FONT_SIZES, FONTS } from '../../constants/font';
+import { getDays, getMonths, getYears } from '../../utils/date';
+import CustomButton from '../CustomButton';
 
 const months = getMonths();
 const years = getYears();
 const days = getDays();
 
-// snapPoints [] array형태로 받음 ['50%','70%'] 화면상에서 몇퍼센트 비율로 보여줄지 설정
-// 필요한 페이지에서 BottomSheetModalProvider 최상단에 주입
-
-// 상위 컴포넌트에서  옆에있는 상태 정의 const [selectedDate, setSelectedDate] = useState({
-//     month: '9',
-//     day: '17',
-//     year: '2021',
-//   });
-//
-// title 은 헤더 text
 const DatePickerBottomSheet = forwardRef(({ snapPoints, title, selectedDate, setSelectedDate }, ref) => {
   const snapPointsValue = useMemo(() => snapPoints, [snapPoints]);
   const handleCloseModal = () => ref.current?.close();
@@ -91,8 +82,8 @@ const styles = StyleSheet.create({
   },
   headerText: {
     color: 'white',
-    fontSize: 20,
-    fontWeight: '600',
+    fontSize: FONT_SIZES.lg,
+    fontFamily: FONTS.PRETENDARD[600],
     marginBottom: 20,
   },
   pickersWrapper: {

@@ -1,17 +1,28 @@
-import { useNavigation } from '@react-navigation/native';
-import React, { useEffect, useState } from 'react';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Alert, Image, Modal, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import * as Progress from 'react-native-progress';
 
-import { createFoodDiary, setMacroRatio, setUserWeight } from '../../../apis/food/index';
+import {
+  createFoodDiary,
+  getUserFoodDiary,
+  getUserTotalFoodRerord,
+  setMacroRatio,
+  setUserWeight,
+} from '../../../apis/food/index';
 import CustomButton from '../../../components/CustomButton';
 import CustomInput from '../../../components/CustomInput';
 import { BACKGROUND_COLORS, COLORS, TEXT_COLORS } from '../../../constants/colors';
-import { FONT_SIZES, FONT_WEIGHTS, FONTS } from '../../../constants/font';
+import { FONT_SIZES, FONTS } from '../../../constants/font';
 import { RADIUS } from '../../../constants/radius';
 import useDiaryCalendarStore from '../../../store/food/calendar/index';
 import useSelectedFoodTimeStore from '../../../store/index';
-import { calculateCarbsCalories, calculateFatCalories, calculateProteinCalories } from '../../../utils/foodDiary/index';
+import {
+  calculateCarbsCalories,
+  calculateFatCalories,
+  calculateProteinCalories,
+  calculateTotalNutrition,
+} from '../../../utils/foodDiary/index';
 
 const PlusButtonIcon = require('../../../assets/images/dietDiary/PluscircleButton.png');
 const MinusButtonIcon = require('../../../assets/images/dietDiary/MinusCircleButton.png');
@@ -20,20 +31,51 @@ const items = [
   { name: '아침', title: '400kcal', icon: require('../../../assets/images/sun-horizon.png') },
   { name: '점심', title: '800kcal', icon: require('../../../assets/images/sun.png') },
   { name: '저녁', title: '500kcal', icon: require('../../../assets/images/moon.png') },
-  { name: '간식', title: '', icon: require('../../../assets/images/candy.png') },
-  { name: '물', title: '', icon: require('../../../assets/images/water.png') },
+  // { name: '간식', title: '', icon: require('../../../assets/images/candy.png') },
+  // { name: '물', title: '', icon: require('../../../assets/images/water.png') },
 ];
 
 const FoodDiary = () => {
   const [isVisibleModal, setIsVisibleModal] = useState(false);
-  const [userWeightState, setUserWeightState] = useState(70);
-  const [totalCaloriesState, setTotalCaloriesState] = useState(2000);
-  const [carbRatioState, setCarbRatioState] = useState(0);
-  const [proteinRatioState, setProteinRatioState] = useState(0);
-  const [fatRatioState, setFatRatioState] = useState(0);
+  const [userState, setUserState] = useState({
+    weight: 70,
+    totalCalories: 0,
+    macroRatio: {
+      carbs: 0,
+      protein: 0,
+      fat: 0,
+    },
+    mealNutritionInfo: {
+      아침: {
+        totalCalories: 0,
+        totalCarbs: 0,
+        totalProtein: 0,
+        totalFat: 0,
+      },
+      점심: {
+        totalCalories: 0,
+        totalCarbs: 0,
+        totalProtein: 0,
+        totalFat: 0,
+      },
+      저녁: {
+        totalCalories: 0,
+        totalCarbs: 0,
+        totalProtein: 0,
+        totalFat: 0,
+      },
+    },
+  });
+
+  const totalNutrition = useMemo(() => {
+    return calculateTotalNutrition(userState.mealNutritionInfo);
+  }, [userState]);
+
+  const remainingCalories =
+    totalNutrition.totalCalories === 0 ? 0 : userState.totalCalories - totalNutrition.totalCalories;
+  const remainingPercentage = 1 - remainingCalories / userState.totalCalories;
 
   const { setTime } = useSelectedFoodTimeStore();
-
   const { selected } = useDiaryCalendarStore();
 
   const navigation = useNavigation();
@@ -42,44 +84,78 @@ const FoodDiary = () => {
     setIsVisibleModal(!isVisibleModal);
   };
 
-  const handleMinusWeightButton = () => {
-    let newUserweight;
+  const handleWeightInput = async (text) => {
+    let newUserweight = parseFloat(text);
+    if (isNaN(newUserweight)) {
+      return;
+    }
     try {
-      newUserweight = userWeightState - 0.1;
-      setUserWeight({
+      const result = await setUserWeight({
         userWeight: parseFloat(newUserweight.toFixed(1)),
         date: selected,
       });
+      if (result.status !== 200) {
+        throw new Error('데이터를 반영하지 못했습니다');
+      }
     } catch (error) {
-      Alert.alert('DB에 반영하지 못했습니다.');
+      Alert.alert(error.message);
     }
-    setUserWeightState(parseFloat(newUserweight.toFixed(1)));
+    setUserState((prevState) => ({
+      ...prevState,
+      weight: parseFloat(newUserweight.toFixed(1)), // 예시로 체중 업데이트
+    }));
   };
 
-  const handlePlusWeightButton = () => {
+  const handleMinusWeightButton = async () => {
     let newUserweight;
     try {
-      newUserweight = userWeightState + 0.1;
-      setUserWeight({
+      newUserweight = userState.weight - 0.1;
+      const result = await setUserWeight({
         userWeight: parseFloat(newUserweight.toFixed(1)),
         date: selected,
       });
+      if (result.status !== 200) {
+        throw new Error('데이터를 반영하지 못했습니다');
+      }
     } catch (error) {
-      Alert.alert('DB에 반영하지 못했습니다.');
+      Alert.alert(error.message);
     }
-    setUserWeightState(parseFloat(newUserweight.toFixed(1)));
+    setUserState((prevState) => ({
+      ...prevState,
+      weight: parseFloat(newUserweight.toFixed(1)), // 예시로 체중 업데이트
+    }));
+  };
+
+  const handlePlusWeightButton = async () => {
+    let newUserweight;
+    try {
+      newUserweight = userState.weight + 0.1;
+      const result = await setUserWeight({
+        userWeight: parseFloat(newUserweight.toFixed(1)),
+        date: selected,
+      });
+      if (result.status !== 200) {
+        throw new Error('데이터를 반영하지 못했습니다');
+      }
+    } catch (error) {
+      Alert.alert(error.message);
+    }
+    setUserState((prevState) => ({
+      ...prevState,
+      weight: parseFloat(newUserweight.toFixed(1)), // 예시로 체중 업데이트
+    }));
   };
 
   const handleModalConfirmButton = async () => {
-    const totalRatio = carbRatioState + proteinRatioState + fatRatioState;
+    const totalRatio = userState.macroRatio.carbs + userState.macroRatio.protein + userState.macroRatio.fat;
     if (totalRatio === 100) {
       try {
         const result = await setMacroRatio({
-          userWeight: userWeightState,
-          carbRatio: carbRatioState,
-          proteinRatio: proteinRatioState,
-          fatRatio: fatRatioState,
-          total_calories: totalCaloriesState,
+          userWeight: userState.weight,
+          carbRatio: userState.macroRatio.carbs,
+          proteinRatio: userState.macroRatio.protein,
+          fatRatio: userState.macroRatio.fat,
+          total_calories: userState.totalCalories,
           date: selected,
         });
         if (result.status !== 200) {
@@ -101,19 +177,48 @@ const FoodDiary = () => {
     });
   };
 
-  useEffect(() => {
-    const postFoodDiary = async () => {
-      try {
-        const result = await createFoodDiary(selected);
-        if (result.error) {
-          throw new Error(result.error);
+  useFocusEffect(
+    useCallback(() => {
+      const handleFoodDiary = async () => {
+        try {
+          const postResult = await createFoodDiary(selected);
+          if (postResult.error) {
+            throw new Error(postResult.error);
+          }
+
+          const foodDiaryResult = await getUserFoodDiary(selected);
+          if (foodDiaryResult.error) {
+            throw new Error(foodDiaryResult.error);
+          }
+
+          if (foodDiaryResult.status === 200) {
+            const userInfo = foodDiaryResult.data;
+            setUserState({
+              weight: Number(userInfo.userWeight) || 0,
+              totalCalories: Number(userInfo.totalCalories) || 0,
+              macroRatio: {
+                carbs: Number(userInfo.carbRatio) || 0,
+                protein: Number(userInfo.proteinRatio) || 0,
+                fat: Number(userInfo.fatRatio) || 0,
+              },
+            });
+          }
+
+          const totalFoodRecordResult = await getUserTotalFoodRerord(selected);
+          if (totalFoodRecordResult.status === 200) {
+            setUserState((prevState) => ({
+              ...prevState,
+              mealNutritionInfo: totalFoodRecordResult.data,
+            }));
+          }
+        } catch (error) {
+          Alert.alert(error.message);
         }
-      } catch (error) {
-        Alert.alert(error.message);
-      }
-    };
-    postFoodDiary();
-  }, [selected]);
+      };
+
+      handleFoodDiary();
+    }, [selected]),
+  );
 
   return (
     <SafeAreaView style={styles.container}>
@@ -124,7 +229,15 @@ const FoodDiary = () => {
             <TouchableOpacity activeOpacity={0.6} onPress={handleMinusWeightButton}>
               <Image source={MinusButtonIcon} style={styles.weightButton} />
             </TouchableOpacity>
-            <CustomInput size="medium" theme="primary" value={`${userWeightState}kg`} style={styles.weightInput} />
+
+            <CustomInput
+              size="medium"
+              theme="primary"
+              defaultValue={`${userState.weight}`}
+              onChangeText={handleWeightInput}
+              style={styles.weightInput}
+            />
+            <Text style={{ color: 'white', fontSize: FONT_SIZES.lg }}>kg</Text>
             <TouchableOpacity activeOpacity={0.6} onPress={handlePlusWeightButton}>
               <Image source={PlusButtonIcon} style={styles.weightButton} />
             </TouchableOpacity>
@@ -137,25 +250,38 @@ const FoodDiary = () => {
               <Text style={styles.macroLabel}>탄</Text>
               <Text
                 style={styles.macroValue}
-              >{`0/${calculateCarbsCalories(carbRatioState, totalCaloriesState)}g`}</Text>
+              >{`${totalNutrition.totalCarbs}/${calculateCarbsCalories(userState.macroRatio.carbs, userState.totalCalories)}g`}</Text>
             </View>
             <View style={styles.macroItem}>
               <Text style={styles.macroLabel}>단</Text>
               <Text
                 style={styles.macroValue}
-              >{`0/${calculateProteinCalories(proteinRatioState, totalCaloriesState)}g`}</Text>
+              >{`${totalNutrition.totalProtein}/${calculateProteinCalories(userState.macroRatio.protein, userState.totalCalories)}g`}</Text>
             </View>
             <View style={styles.macroItem}>
               <Text style={styles.macroLabel}>지</Text>
-              <Text style={styles.macroValue}>{`0/${calculateFatCalories(fatRatioState, totalCaloriesState)}g`}</Text>
+              <Text
+                style={styles.macroValue}
+              >{`${totalNutrition.totalFat}/${calculateFatCalories(userState.macroRatio.fat, userState.totalCalories)}g`}</Text>
             </View>
           </View>
           <View style={{ marginTop: 10 }}>
-            <Progress.Bar progress={0.3} width={313} height={24} color="#6464FF" borderRadius={RADIUS.small} />
+            <Progress.Bar
+              progress={isNaN(remainingPercentage) ? 0 : remainingPercentage}
+              width={313}
+              height={24}
+              color="#6464FF"
+              borderRadius={RADIUS.small}
+            />
           </View>
           <View style={styles.calorieInfoContainer}>
-            <Text style={styles.calorieInfoText}>72.8 / {totalCaloriesState} kcal</Text>
-            <Text style={styles.calorieInfoText}>{totalCaloriesState}kcal 남음</Text>
+            <Text style={styles.calorieInfoText}>
+              {`${totalNutrition.totalCalories}kcal / ${userState.totalCalories}kcal`}
+            </Text>
+            <Text style={styles.calorieInfoText}>
+              {remainingCalories}
+              kcal 남음
+            </Text>
           </View>
 
           <View style={styles.buttonContainer}>
@@ -167,8 +293,10 @@ const FoodDiary = () => {
             <View key={index} style={styles.mealItemWrapper}>
               <Text style={styles.mealItemName}>{item.name}</Text>
               <TouchableOpacity style={styles.mealItemButton} onPress={() => handleMealTime(item.name)}>
-                <Image source={item.icon} style={styles.icon} />
-                <Text style={styles.mealItemTitle}>{item.title}</Text>
+                <Image source={item.icon} style={{ width: 24, height: 24 }} />
+                <Text
+                  style={styles.mealItemTitle}
+                >{`${(userState.mealNutritionInfo && userState.mealNutritionInfo[item.name]?.totalCalories) || 0}kcal`}</Text>
               </TouchableOpacity>
             </View>
           ))}
@@ -184,9 +312,16 @@ const FoodDiary = () => {
                   <CustomInput
                     size="small"
                     theme="user"
-                    defaultValue={`${carbRatioState.toString()}`}
-                    value={carbRatioState}
-                    onChangeText={(text) => setCarbRatioState(Number(text))}
+                    defaultValue={`${userState.macroRatio.carbs.toString()}`}
+                    onChangeText={(text) =>
+                      setUserState((prevState) => ({
+                        ...prevState,
+                        macroRatio: {
+                          ...prevState.macroRatio,
+                          carbs: Number(text),
+                        },
+                      }))
+                    }
                   />
                   <Text style={styles.modalText}>%</Text>
                 </View>
@@ -197,8 +332,16 @@ const FoodDiary = () => {
                   <CustomInput
                     size="small"
                     theme="user"
-                    defaultValue={`${proteinRatioState.toString()}`}
-                    onChangeText={(text) => setProteinRatioState(Number(text))}
+                    defaultValue={`${userState.macroRatio.protein.toString()}`}
+                    onChangeText={(text) =>
+                      setUserState((prevState) => ({
+                        ...prevState,
+                        macroRatio: {
+                          ...prevState.macroRatio,
+                          protein: Number(text),
+                        },
+                      }))
+                    }
                   />
                   <Text style={{ color: COLORS.white, fontSize: FONT_SIZES.md }}>%</Text>
                 </View>
@@ -208,9 +351,17 @@ const FoodDiary = () => {
                 <View style={styles.modalButtonWrapper}>
                   <CustomInput
                     size="small"
-                    defaultValue={`${fatRatioState.toString()}`}
+                    defaultValue={`${userState.macroRatio.fat.toString()}`}
                     theme="user"
-                    onChangeText={(text) => setFatRatioState(Number(text))}
+                    onChangeText={(text) =>
+                      setUserState((prevState) => ({
+                        ...prevState,
+                        macroRatio: {
+                          ...prevState.macroRatio,
+                          fat: Number(text),
+                        },
+                      }))
+                    }
                   />
                   <Text style={styles.modalText}>%</Text>
                 </View>
@@ -223,8 +374,13 @@ const FoodDiary = () => {
               <CustomInput
                 size="medium"
                 theme="primary"
-                defaultValue={totalCaloriesState}
-                onChangeText={(text) => setTotalCaloriesState(text)}
+                defaultValue={userState.totalCalories.toString()}
+                onChangeText={(text) =>
+                  setUserState((prevState) => ({
+                    ...prevState,
+                    totalCalories: Number(text),
+                  }))
+                }
                 style={{ fontFamily: FONTS.PRETENDARD[400], fontSize: FONT_SIZES.md, color: COLORS.white }}
               />
 
@@ -349,7 +505,7 @@ const styles = StyleSheet.create({
   },
   mealItemTitle: {
     color: 'white',
-    fontSize: FONT_SIZES.xs,
+    fontSize: FONT_SIZES.xxs,
     fontFamily: FONTS.PRETENDARD[600],
   },
   modalBackground: {

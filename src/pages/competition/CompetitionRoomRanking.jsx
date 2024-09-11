@@ -1,6 +1,6 @@
 import { useIsFocused, useRoute } from '@react-navigation/native';
 import React, { useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, SafeAreaView, StyleSheet, useWindowDimensions, View } from 'react-native';
+import { Alert, SafeAreaView, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { TabBar, TabView } from 'react-native-tab-view';
 
 import {
@@ -11,29 +11,32 @@ import {
   getCompetitionRecordDetail,
   leaveCompetition,
 } from '../../apis/competition';
-import { getMyFriends } from '../../apis/friend';
+import { getMyFriendsNotParticipant } from '../../apis/friend';
 import CompetitionRoomHeader from '../../components/CompetitionRoomHeader';
 import CustomAlert from '../../components/CustomAlert';
 import { COLORS } from '../../constants/colors';
-import { FONT_SIZES, FONT_WEIGHTS } from '../../constants/font';
+import { FONT_SIZES, FONTS } from '../../constants/font';
+import { useToastMessageStore } from '../../store/toastMessage/toastMessage';
 import { getCompetitionProgress } from '../../utils/competition';
 import Invite from './rankingPageTabs/Invite';
 import MyScore from './rankingPageTabs/MyScore';
 import RankList from './rankingPageTabs/RankList';
+import SkeletonLoader from './rankingPageTabs/SkeletonLoader';
 
 /* eslint-disable */
 
 const CompetitionRoomRanking = ({ navigation }) => {
   const layout = useWindowDimensions();
   const route = useRoute();
-  const { competitionId } = route.params;
+  const { competitionId, isParticipant } = route.params;
+  const { showToast } = useToastMessageStore();
   const [competitionData, setCompetitionData] = useState();
   const [competitionRecord, setCompetitionRecord] = useState();
   const [competitionRecordDetail, setCompetitionRecordDetail] = useState();
   const [myFriends, setMyFriends] = useState();
   const [progress, setProgress] = useState(false);
-  const [loading, setLoading] = useState(true);
   const [isDeleted, setIsDeleted] = useState(false);
+  const [isParticipantState, setIsParticipantState] = useState(isParticipant);
   const [index, setIndex] = useState(0);
   const [routes, setRoutes] = useState([
     { key: 'rankList', title: '랭킹' },
@@ -47,6 +50,11 @@ const CompetitionRoomRanking = ({ navigation }) => {
     onConfirm: null,
     showCancel: true,
   });
+  const [loadingStates, setLoadingStates] = useState({
+    details: true,
+    record: true,
+    recordDetail: true,
+  });
 
   const fetchCompetitionDetail = async () => {
     try {
@@ -55,6 +63,8 @@ const CompetitionRoomRanking = ({ navigation }) => {
       setCompetitionData(result.data);
     } catch (error) {
       Alert.alert('경쟁방 상세 정보 조회 실패', error.message);
+    } finally {
+      setLoadingStates((prev) => ({ ...prev, details: false }));
     }
   };
 
@@ -66,24 +76,30 @@ const CompetitionRoomRanking = ({ navigation }) => {
         setCompetitionRecord(res.data);
       }
     } catch (error) {
-      console.log('error: ', error);
+      console.log('경쟁방 기록 조회 실패: ', error);
+    } finally {
+      setLoadingStates((prev) => ({ ...prev, record: false }));
     }
   };
 
   const fetchCompetitionRecordDetail = async () => {
     try {
-      const res = await getCompetitionRecordDetail(competitionId);
-      if (res.status === 200) {
-        setCompetitionRecordDetail(res.data);
+      if (isParticipant) {
+        const res = await getCompetitionRecordDetail(competitionId);
+        if (res.status === 200) {
+          setCompetitionRecordDetail(res.data);
+        }
       }
     } catch (error) {
-      console.log('error: ', error);
+      console.log('경쟁방 기록 상세 조회 실패: ', error);
+    } finally {
+      setLoadingStates((prev) => ({ ...prev, recordDetail: false }));
     }
   };
 
-  const fetchMyFriends = async () => {
+  const fetchMyFriendsNotParticipant = async () => {
     try {
-      const res = await getMyFriends();
+      const res = await getMyFriendsNotParticipant(competitionId);
       if (res.status === 200) {
         setMyFriends(res.data);
       }
@@ -94,18 +110,16 @@ const CompetitionRoomRanking = ({ navigation }) => {
 
   const fetchAllData = useCallback(async () => {
     if (isDeleted) return;
-    setLoading(true);
+    setLoadingStates({ details: true, record: true, recordDetail: true });
     try {
       await Promise.all([
         fetchCompetitionDetail(),
         fetchCompetitionRecord(),
         fetchCompetitionRecordDetail(),
-        fetchMyFriends(),
+        fetchMyFriendsNotParticipant(),
       ]);
     } catch (error) {
-      console.log('fetchAllData 실패', error);
-    } finally {
-      setLoading(false);
+      Alert.alert('Error fetching friends:', error.message);
     }
   }, [competitionId, isDeleted]);
 
@@ -119,7 +133,7 @@ const CompetitionRoomRanking = ({ navigation }) => {
 
   useEffect(() => {
     console.log(progress);
-    if (progress === 'BEFORE') {
+    if (progress === 'BEFORE' && isParticipantState) {
       setRoutes([
         { key: 'rankList', title: '랭킹' },
         { key: 'myScore', title: '내 점수' },
@@ -131,20 +145,19 @@ const CompetitionRoomRanking = ({ navigation }) => {
         { key: 'myScore', title: '내 점수' },
       ]);
     }
-  }, [progress]);
+  }, [progress, isParticipantState]);
 
   const handleJoin = async () => {
     try {
       const res = await enterCompetition(competitionId);
       if (res.status === 200) {
-        // TODO: toast 메세지 적용
-        Alert.alert('성공', '경쟁방에 참여했습니다!');
+        showToast('🎉 새로운 경쟁에 참여하셨습니다!', 'success', 3000, 'top');
+        setIsParticipantState(true);
         fetchAllData();
       }
     } catch (error) {
       console.log('error: ', error);
-      // TODO: toast 메세지 적용
-      Alert.alert('오류', '경쟁방에 참여에 실패했습니다!');
+      showToast('🚫 문제 발생! 다시 시도해주세요.', 'error', 3000, 'top');
     }
   };
 
@@ -158,37 +171,39 @@ const CompetitionRoomRanking = ({ navigation }) => {
 
   const handleLeave = () => {
     const isHost = competitionData?.user_status.is_host;
-
-    if (isHost) {
-      showAlert({
-        title: '잠깐! 🚨',
-        message: `방장님, 여기서 나가시면 안돼요! 😅\n\n경쟁방을 떠나고 싶다면\n삭제 버튼을 찾아주세요 🔍\n\n( 경쟁방이 사라져요, 신중하게! )`,
-        showCancel: false,
-        onConfirm: hideAlert,
-      });
-    } else {
-      showAlert({
-        title: '앗, 잠깐만요! 🏃‍♂️💨',
-        message: `정말 떠나실 건가요? 😢\n지금 나가면 경쟁에 참가할 수 없어요!`,
-        onConfirm: async () => {
-          try {
+    const alertConfig = {
+      title: isHost ? '잠깐! 🚨' : '앗, 잠깐만요! 🏃‍♂️💨',
+      message: isHost
+        ? `방장님이 나가시면 기록이 삭제됩니다 🥹\n경쟁방이 사라져요, 신중하게!`
+        : `정말 떠나실 건가요? 😢\n지금 나가면 경쟁에 참가할 수 없어요!`,
+      onConfirm: async () => {
+        try {
+          if (isHost) {
+            await deleteCompetition(competitionId);
+            hideAlert();
+            showToast('💥 경쟁방이 삭제되었습니다.', 'error', 3000, 'top');
+          } else {
             const res = await leaveCompetition(competitionId);
-            if (res.status === 200) {
-              hideAlert();
-              navigation.goBack();
-            }
-          } catch (error) {
-            console.log('경쟁방 나가기 실패', error);
-            showAlert({
-              title: '앗, 문제 발생! 😓',
-              message: '경쟁방 나가기에 실패했어요.\n잠시 후 다시 시도해 주세요!',
-              showCancel: false,
-              onConfirm: hideAlert,
-            });
+            if (res.status !== 200) throw new Error('Leave failed');
+            hideAlert();
+            showToast('👋 경쟁방에서 나가셨습니다.', 'error', 3000, 'top');
           }
-        },
-      });
-    }
+          setIsDeleted(true);
+          navigation.goBack();
+        } catch (error) {
+          console.log('경쟁방 나가기 실패', error);
+          showAlert({
+            title: '앗, 문제 발생! 😓',
+            message: '경쟁방 나가기에 실패했어요.\n잠시 후 다시 시도해 주세요!',
+            showCancel: false,
+            onConfirm: hideAlert,
+          });
+        }
+      },
+      onCancel: hideAlert,
+    };
+
+    showAlert(alertConfig);
   };
 
   const handleDelete = () => {
@@ -199,6 +214,8 @@ const CompetitionRoomRanking = ({ navigation }) => {
         try {
           await deleteCompetition(competitionId);
           setIsDeleted(true);
+          hideAlert();
+          showToast('💥 경쟁방이 삭제되었습니다.', 'error', 3000, 'top');
           navigation.goBack();
         } catch (error) {
           console.log('경쟁방 삭제 실패', error);
@@ -217,7 +234,9 @@ const CompetitionRoomRanking = ({ navigation }) => {
   const renderScene = ({ route, jumpTo }) => {
     switch (route.key) {
       case 'rankList':
-        return (
+        return loadingStates.record ? (
+          <SkeletonLoader type="rankList" />
+        ) : (
           <RankList
             data={competitionRecord}
             competitionData={competitionData}
@@ -228,34 +247,30 @@ const CompetitionRoomRanking = ({ navigation }) => {
           />
         );
       case 'myScore':
-        return <MyScore data={competitionRecordDetail} jumpTo={jumpTo} />;
+        return loadingStates.recordDetail ? (
+          <SkeletonLoader type="myScore" />
+        ) : (
+          <MyScore data={competitionRecordDetail} />
+        );
       case 'invite':
         return <Invite competitionId={competitionId} friends={myFriends} jumpTo={jumpTo} />;
     }
   };
 
-  if (isDeleted) {
-    return null;
-  }
-
-  if (loading) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={COLORS.primary} />
-      </View>
-    );
-  }
-
   return (
     <SafeAreaView style={styles.pageContainer}>
-      {competitionData && <CompetitionRoomHeader data={competitionData} onDelete={handleDelete} />}
+      {loadingStates.details ? (
+        <SkeletonLoader type="header" />
+      ) : (
+        competitionData && <CompetitionRoomHeader data={competitionData} onDelete={handleDelete} />
+      )}
       <TabView
         renderTabBar={(props) => (
           <TabBar
             {...props}
             activeColor={COLORS.white}
             inactiveColor={COLORS.lightGrey}
-            labelStyle={{ fontSize: FONT_SIZES.md, fontWeight: FONT_WEIGHTS.semiBold }}
+            labelStyle={{ fontSize: FONT_SIZES.md, fontFamily: FONTS.PRETENDARD[600] }}
             indicatorStyle={{ backgroundColor: COLORS.primary }}
             style={{ backgroundColor: COLORS.darkBackground }}
           />

@@ -2,6 +2,7 @@ import React from 'react';
 import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { COLORS } from '../../constants/colors';
+import { FONTS } from '../../constants/font';
 
 /**
  * @param {{
@@ -70,8 +71,7 @@ const styles = StyleSheet.create({
   optionText: {
     width: 21,
     fontSize: 16,
-    fontWeight: '600',
-    fontFamily: 'Pretendard',
+    fontFamily: FONTS.PRETENDARD[600],
     color: COLORS.white,
     textAlign: 'center',
   },

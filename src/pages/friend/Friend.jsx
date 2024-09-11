@@ -1,14 +1,16 @@
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { useIsFocused } from '@react-navigation/native';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Alert, SafeAreaView, StyleSheet } from 'react-native';
+import { SafeAreaView, StyleSheet } from 'react-native';
 import { TabBar, TabView } from 'react-native-tab-view';
 
 import { getMyFriends, getReqReceived, getReqSent } from '../../apis/friend';
-import FriendOptionBottomSheet from '../../components/FriendOptionBottomSheet';
+import FriendOptionBottomSheet from '../../components/BottomSheet/FriendOptionBottomSheet';
+import CustomAlert from '../../components/CustomAlert';
 import HeaderComponents from '../../components/HeaderComponents';
 import { COLORS } from '../../constants/colors';
 import { FONT_SIZES, FONTS } from '../../constants/font';
+import { useToastMessageStore } from '../../store/toastMessage/toastMessage';
 import MyFriends from './friendPageTabs/MyFriends';
 import RequestReceived from './friendPageTabs/RequestReceived';
 import RequestSent from './friendPageTabs/RequestSent';
@@ -18,9 +20,18 @@ const Friend = ({ navigation }) => {
   const [myFriends, setMyFriends] = useState([]);
   const [reqSent, setReqSent] = useState([]);
   const [reqReceived, setReqReceived] = useState([]);
-  const [selectedMemberId, setSelectedMemberId] = useState(null);
+  const [selectedMemberData, setSelectedMemberData] = useState([]);
   const [selectedRelation, setSelectedRelation] = useState(null);
   const bottomSheetRef = useRef(null);
+  const { showToast } = useToastMessageStore();
+  const [alertVisible, setAlertVisible] = useState(false); // Alert 표시 여부
+  const [alertConfig, setAlertConfig] = useState({
+    visible: false,
+    title: '',
+    message: '',
+    onConfirm: null,
+    showCancel: true,
+  });
   const [index, setIndex] = useState(0);
   const [routes] = useState([
     { key: 'myFriends', title: '내 친구' },
@@ -33,7 +44,7 @@ const Friend = ({ navigation }) => {
       case 'myFriends':
         return <MyFriends data={myFriends} handleOpenOptions={handleOpenOptions} />;
       case 'reqReceived':
-        return <RequestReceived data={reqReceived} />;
+        return <RequestReceived data={reqReceived} onUpdateData={fetchData} />;
       case 'reqSent':
         return <RequestSent data={reqSent} handleOpenOptions={handleOpenOptions} />;
       default:
@@ -41,55 +52,69 @@ const Friend = ({ navigation }) => {
     }
   };
 
-  const handleOpenOptions = useCallback((memberId, relation) => {
-    setSelectedMemberId(memberId);
+  const handleOpenOptions = useCallback((memberData, relation) => {
+    setSelectedMemberData(memberData);
     setSelectedRelation(relation);
     bottomSheetRef.current?.present();
   }, []);
 
-  const fetchMyFriends = async () => {
+  const fetchData = useCallback(async () => {
     try {
-      const myFriendsRes = await getMyFriends();
-      setMyFriends(myFriendsRes.data);
-
-      const reqSentRes = await getReqSent();
-      setReqSent(reqSentRes.data);
-
-      const reqReceivedRes = await getReqReceived();
-      setReqReceived(reqReceivedRes.data);
+      const friends = await getMyFriends();
+      setMyFriends(friends.data);
+      const sentRequests = await getReqSent();
+      setReqSent(sentRequests.data);
+      const receivedRequests = await getReqReceived();
+      setReqReceived(receivedRequests.data);
     } catch (error) {
-      Alert.alert('Error fetching friends:', error.message);
+      showToast('🚫 문제 발생! 다시 시도해주세요.', 'error', 'top');
     }
-  };
+  }, [showToast]);
 
   useEffect(() => {
     if (isFocused) {
-      fetchMyFriends();
+      fetchData();
     }
-  }, [isFocused]);
+  }, [fetchData, isFocused]);
 
+  const hideAlert = () => {
+    setAlertConfig((prev) => ({ ...prev, visible: false }));
+  };
   return (
-    <BottomSheetModalProvider>
-      <SafeAreaView style={styles.safeArea}>
-        <HeaderComponents icon="search" title="친구 목록" onRightBtnPress={() => navigation.navigate('FriendSearch')} />
-        <TabView
-          renderTabBar={(props) => (
-            <TabBar
-              {...props}
-              activeColor={COLORS.white}
-              inactiveColor={COLORS.lightGrey}
-              labelStyle={{ fontSize: FONT_SIZES.md, fontFamily: FONTS.PRETENDARD[600] }}
-              indicatorStyle={{ backgroundColor: COLORS.primary }}
-              style={{ backgroundColor: COLORS.darkBackground }}
-            />
-          )}
-          navigationState={{ index, routes }}
-          renderScene={renderScene}
-          onIndexChange={setIndex}
-        />
-        <FriendOptionBottomSheet ref={bottomSheetRef} relation={selectedRelation} memberId={selectedMemberId} />
-      </SafeAreaView>
-    </BottomSheetModalProvider>
+    <SafeAreaView style={styles.safeArea}>
+      <HeaderComponents icon="search" title="친구 목록" onRightBtnPress={() => navigation.navigate('FriendSearch')} />
+      <TabView
+        renderTabBar={(props) => (
+          <TabBar
+            {...props}
+            activeColor={COLORS.white}
+            inactiveColor={COLORS.lightGrey}
+            labelStyle={{ fontSize: FONT_SIZES.md, fontFamily: FONTS.PRETENDARD[600] }}
+            indicatorStyle={{ backgroundColor: COLORS.primary }}
+            style={{ backgroundColor: COLORS.darkBackground }}
+          />
+        )}
+        navigationState={{ index, routes }}
+        renderScene={renderScene}
+        onIndexChange={setIndex}
+      />
+      <FriendOptionBottomSheet
+        ref={bottomSheetRef}
+        relation={selectedRelation}
+        memberData={selectedMemberData}
+        onUpdateData={fetchData}
+        setAlertVisible={setAlertVisible}
+        setAlertConfig={setAlertConfig}
+      />
+      <CustomAlert
+        visible={alertConfig.visible}
+        title={alertConfig.title}
+        message={alertConfig.message}
+        onConfirm={alertConfig.onConfirm}
+        onCancel={hideAlert}
+        showCancel={alertConfig.showCancel}
+      />
+    </SafeAreaView>
   );
 };
 
