@@ -11,7 +11,7 @@ import {
   getCompetitionRecordDetail,
   leaveCompetition,
 } from '../../apis/competition';
-import { getMyFriends } from '../../apis/friend';
+import { getMyFriendsNotParticipant } from '../../apis/friend';
 import CompetitionRoomHeader from '../../components/CompetitionRoomHeader';
 import CustomAlert from '../../components/CustomAlert';
 import { COLORS } from '../../constants/colors';
@@ -36,6 +36,7 @@ const CompetitionRoomRanking = ({ navigation }) => {
   const [myFriends, setMyFriends] = useState();
   const [progress, setProgress] = useState(false);
   const [isDeleted, setIsDeleted] = useState(false);
+  const [isParticipantState, setIsParticipantState] = useState(isParticipant);
   const [index, setIndex] = useState(0);
   const [routes, setRoutes] = useState([
     { key: 'rankList', title: '랭킹' },
@@ -96,9 +97,9 @@ const CompetitionRoomRanking = ({ navigation }) => {
     }
   };
 
-  const fetchMyFriends = async () => {
+  const fetchMyFriendsNotParticipant = async () => {
     try {
-      const res = await getMyFriends();
+      const res = await getMyFriendsNotParticipant(competitionId);
       if (res.status === 200) {
         setMyFriends(res.data);
       }
@@ -115,7 +116,7 @@ const CompetitionRoomRanking = ({ navigation }) => {
         fetchCompetitionDetail(),
         fetchCompetitionRecord(),
         fetchCompetitionRecordDetail(),
-        fetchMyFriends(),
+        fetchMyFriendsNotParticipant(),
       ]);
     } catch (error) {
       Alert.alert('Error fetching friends:', error.message);
@@ -132,7 +133,7 @@ const CompetitionRoomRanking = ({ navigation }) => {
 
   useEffect(() => {
     console.log(progress);
-    if (progress === 'BEFORE' && isParticipant) {
+    if (progress === 'BEFORE' && isParticipantState) {
       setRoutes([
         { key: 'rankList', title: '랭킹' },
         { key: 'myScore', title: '내 점수' },
@@ -144,13 +145,14 @@ const CompetitionRoomRanking = ({ navigation }) => {
         { key: 'myScore', title: '내 점수' },
       ]);
     }
-  }, [progress, isParticipant]);
+  }, [progress, isParticipantState]);
 
   const handleJoin = async () => {
     try {
       const res = await enterCompetition(competitionId);
       if (res.status === 200) {
         showToast('🎉 새로운 경쟁에 참여하셨습니다!', 'success', 3000, 'top');
+        setIsParticipantState(true);
         fetchAllData();
       }
     } catch (error) {

@@ -20,7 +20,7 @@ const SetSportsCategory = () => {
   const handlePress = (title) => {
     const unavailables = ['등산', '러닝', '다이어트'];
     if (unavailables.includes(title)) {
-      showToast('아직 준비 중인 기능이에요!', 'error', 1000, 'top', 50);
+      showToast('아직 준비 중인 기능이에요! 곧 찾아뵐게요 💪', 'success', 2000, 'top');
     } else {
       setCompetitionType(title);
     }

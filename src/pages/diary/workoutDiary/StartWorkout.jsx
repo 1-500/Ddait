@@ -15,6 +15,7 @@ import {
 } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
+import { patchCompetitionRecord } from '../../../apis/competition';
 import {
   getExerciseList,
   getWorkoutInfoBookmark,
@@ -32,6 +33,8 @@ import { BODY_FONT_SIZES, HEADER_FONT_SIZES } from '../../../constants/font';
 import { FONTS } from '../../../constants/font';
 import { RADIUS } from '../../../constants/radius';
 import { LAYOUT_PADDING, SPACING } from '../../../constants/space';
+import { useCompetitionStore } from '../../../store/competition';
+import { useToastMessageStore } from '../../../store/toastMessage/toastMessage';
 import { debounce } from '../../../utils/foodDiary/debounce';
 
 const StartWorkout = () => {
@@ -52,6 +55,9 @@ const StartWorkout = () => {
   const [workoutTitle, setWorkoutTitle] = useState('아침운동');
   const [editWorkoutTitle, setEditWorkoutTitle] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const { showToast } = useToastMessageStore();
+  // const { competitionList } = useCompetitionStore.getState();
+  const { competitionList } = useCompetitionStore();
 
   const bottomSheetModalRef = useRef(null);
   const snapPoints = useMemo(() => ['80%', '80%'], []);
@@ -237,6 +243,64 @@ const StartWorkout = () => {
           : workout,
       ),
     );
+  };
+  /* eslint-enable */
+
+  /* eslint-disable */
+  const updateCompetitionRecord = async () => {
+    const today = new Date();
+    try {
+      const validCompetitions = competitionList.filter((competition) => {
+        const startDate = new Date(competition.date.start_date);
+        const endDate = new Date(competition.date.end_date);
+
+        return competition.info.competition_theme === '3대측정내기' && startDate <= today && endDate >= today;
+      });
+
+      if (validCompetitions.length === 0) {
+        showToast('경쟁 기록이 없습니다.', 'error', 1000, 'top', 80);
+        return;
+      }
+
+      for (const competition of validCompetitions) {
+        const competitionRoomId = competition.id;
+        console.log('competitionRoomId :>>', competitionRoomId);
+        const workout_records = workoutData.flatMap((workout) =>
+          workout.workoutSet
+            .filter((set) => set.isComplete)
+            .map((set) => ({
+              workout_info: {
+                name: workout.title,
+              },
+              weight: set.weight,
+              reps: set.reps,
+              set: set.id,
+            })),
+        );
+
+        if (workout_records.length === 0) {
+          showToast('완료된 세트가 없어 기록을 저장할 수 없습니다.', 'error', 1000, 'top', 80);
+          return;
+        }
+
+        const workoutRecord = {
+          competition_room_id: competitionRoomId,
+          // workout_records,
+        };
+
+        console.log('갱신할 roomid입니다 :>>', workoutRecord);
+
+        const res = await patchCompetitionRecord(workoutRecord);
+
+        if (res.status === 200) {
+          showToast('경쟁 기록이 성공적으로 최신화되었습니다.', 'success', 1000, 'top', 80);
+        } else {
+          showToast('경쟁 기록 업데이트 실패.', 'error', 1000, 'top', 80);
+        }
+      }
+    } catch (error) {
+      console.error('경쟁 기록 업데이트 중 오류 발생:', error);
+    }
   };
   /* eslint-enable */
 
