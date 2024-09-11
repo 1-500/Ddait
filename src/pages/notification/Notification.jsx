@@ -104,7 +104,9 @@ const Notification = ({ navigation }) => {
         break;
     }
 
-    await patchNotification(notification.id, true);
+    if (!notification.read) {
+      await patchNotification(notification.id, true);
+    }
   };
 
   const renderNotificationItem = ({ item, index }) => {
