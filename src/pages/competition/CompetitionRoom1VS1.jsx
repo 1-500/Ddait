@@ -107,9 +107,11 @@ const CompetitionRoom1VS1 = ({ navigation }) => {
 
   const fetchMyFriendsNotParticipant = async () => {
     try {
-      const res = await getMyFriendsNotParticipant(competitionId);
-      if (res.status === 200) {
-        setMyFriends(res.data);
+      if (isParticipant) {
+        const res = await getMyFriendsNotParticipant(competitionId);
+        if (res.status === 200) {
+          setMyFriends(res.data);
+        }
       }
     } catch (error) {
       Alert.alert('Error fetching friends:', error.message);
