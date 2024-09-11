@@ -263,7 +263,7 @@ const StartWorkout = () => {
 
       for (const competition of validCompetitions) {
         const competitionRoomId = competition.id;
-        // console.log('competitionRoomId :>>', competitionRoomId);
+        console.log('competitionRoomId :>>', competitionRoomId);
         const workout_records = workoutData.flatMap((workout) =>
           workout.workoutSet
             .filter((set) => set.isComplete)
