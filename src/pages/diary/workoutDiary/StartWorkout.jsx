@@ -53,7 +53,6 @@ const StartWorkout = () => {
   const [editWorkoutTitle, setEditWorkoutTitle] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
 
-
   const bottomSheetModalRef = useRef(null);
   const snapPoints = useMemo(() => ['80%', '80%'], []);
 
@@ -67,7 +66,7 @@ const StartWorkout = () => {
           const isBookmarked = bookmarkRes.data.some((bookmark) => bookmark.workout_info_id === exercise.id);
           return { ...exercise, bookmark: isBookmarked };
         });
-        
+
         if (searchTerm === '') {
           const [exerciseRes, bookmarkRes] = await Promise.all([getExerciseList(), getWorkoutInfoBookmark()]);
           const bookmarkedIds = bookmarkRes.data.map((bookmark) => bookmark.workout_info_id);
@@ -415,14 +414,13 @@ const StartWorkout = () => {
     }));
   }, []);
 
-
   const handleTitleChange = (text) => {
     setWorkoutTitle(text);
   };
 
   const handleSaveTitle = () => {
     setEditWorkoutTitle(false);
-  }
+  };
 
   const debouncedSearch = debounce(async (term) => {
     try {

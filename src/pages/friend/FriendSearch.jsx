@@ -1,12 +1,11 @@
-import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Alert, FlatList, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { dummyFriends } from '../../apis/dummydata';
 import { searchUser } from '../../apis/friend/index';
+import FriendOptionBottomSheet from '../../components/BottomSheet/FriendOptionBottomSheet';
 import CustomAlert from '../../components/CustomAlert';
 import CustomButton from '../../components/CustomButton';
-import FriendOptionBottomSheet from '../../components/FriendOptionBottomSheet';
 import SearchHeader from '../../components/Header/SearchHeader';
 import MemberProfileItem from '../../components/MemberProfileItem';
 import SectionTitle from '../../components/SectionTitle';
@@ -66,62 +65,60 @@ const FriendSearch = ({ navigation }) => {
   };
 
   return (
-    <BottomSheetModalProvider>
-      <SafeAreaView style={styles.safeArea}>
-        <SearchHeader navigation={navigation} searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
-        <View style={styles.contentContainer}>
-          {searchQuery.trim() === '' ? (
-            <ScrollView showsVerticalScrollIndicator={false}>
-              <View style={styles.mapSearchWrapper}>
-                <Text style={styles.lgText}>따잇님</Text>
-                <Text style={styles.mdText}>주변에 있는 따잇러도 찾아보시지 않으실래요?</Text>
-                <CustomButton style={styles.btnLayout} theme="primary" size="medium" text="지도에서 따잇러 찾기" />
-              </View>
-              <SectionTitle title="추천 친구" />
-              <View>
-                {dummyFriends.map((friend) => (
-                  <MemberProfileItem
-                    key={friend.id}
-                    memberData={friend}
-                    onRightBtnPress={() => handleOpenOptions(friend)}
-                  />
-                ))}
-              </View>
-            </ScrollView>
-          ) : (
-            <>
-              {searchResults?.length > 0 ? (
-                <FlatList
-                  data={searchResults}
-                  renderItem={renderItem}
-                  keyExtractor={(item) => item.id}
-                  showsVerticalScrollIndicator={false}
+    <SafeAreaView style={styles.safeArea}>
+      <SearchHeader navigation={navigation} searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+      <View style={styles.contentContainer}>
+        {searchQuery.trim() === '' ? (
+          <ScrollView showsVerticalScrollIndicator={false}>
+            <View style={styles.mapSearchWrapper}>
+              <Text style={styles.lgText}>따잇님</Text>
+              <Text style={styles.mdText}>주변에 있는 따잇러도 찾아보시지 않으실래요?</Text>
+              <CustomButton style={styles.btnLayout} theme="primary" size="medium" text="지도에서 따잇러 찾기" />
+            </View>
+            <SectionTitle title="추천 친구" />
+            <View>
+              {dummyFriends.map((friend) => (
+                <MemberProfileItem
+                  key={friend.id}
+                  memberData={friend}
+                  onRightBtnPress={() => handleOpenOptions(friend)}
                 />
-              ) : (
-                <View style={styles.errorContainer}>
-                  <Text style={[styles.mdText, { textAlign: 'center' }]}>{error}</Text>
-                </View>
-              )}
-            </>
-          )}
-        </View>
-        <FriendOptionBottomSheet
-          ref={bottomSheetRef}
-          relation="none"
-          memberData={selectedMemberData}
-          setAlertVisible={setAlertVisible}
-          setAlertConfig={setAlertConfig}
-        />
-        <CustomAlert
-          visible={alertConfig.visible}
-          title={alertConfig.title}
-          message={alertConfig.message}
-          onConfirm={alertConfig.onConfirm}
-          onCancel={hideAlert}
-          showCancel={alertConfig.showCancel}
-        />
-      </SafeAreaView>
-    </BottomSheetModalProvider>
+              ))}
+            </View>
+          </ScrollView>
+        ) : (
+          <>
+            {searchResults?.length > 0 ? (
+              <FlatList
+                data={searchResults}
+                renderItem={renderItem}
+                keyExtractor={(item) => item.id}
+                showsVerticalScrollIndicator={false}
+              />
+            ) : (
+              <View style={styles.errorContainer}>
+                <Text style={[styles.mdText, { textAlign: 'center' }]}>{error}</Text>
+              </View>
+            )}
+          </>
+        )}
+      </View>
+      <FriendOptionBottomSheet
+        ref={bottomSheetRef}
+        relation="none"
+        memberData={selectedMemberData}
+        setAlertVisible={setAlertVisible}
+        setAlertConfig={setAlertConfig}
+      />
+      <CustomAlert
+        visible={alertConfig.visible}
+        title={alertConfig.title}
+        message={alertConfig.message}
+        onConfirm={alertConfig.onConfirm}
+        onCancel={hideAlert}
+        showCancel={alertConfig.showCancel}
+      />
+    </SafeAreaView>
   );
 };
 

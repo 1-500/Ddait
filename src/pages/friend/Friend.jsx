@@ -5,8 +5,8 @@ import { SafeAreaView, StyleSheet } from 'react-native';
 import { TabBar, TabView } from 'react-native-tab-view';
 
 import { getMyFriends, getReqReceived, getReqSent } from '../../apis/friend';
+import FriendOptionBottomSheet from '../../components/BottomSheet/FriendOptionBottomSheet';
 import CustomAlert from '../../components/CustomAlert';
-import FriendOptionBottomSheet from '../../components/FriendOptionBottomSheet';
 import HeaderComponents from '../../components/HeaderComponents';
 import { COLORS } from '../../constants/colors';
 import { FONT_SIZES, FONTS } from '../../constants/font';

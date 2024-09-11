@@ -2,11 +2,11 @@ import { BottomSheetBackdrop, BottomSheetModal } from '@gorhom/bottom-sheet';
 import React, { forwardRef, useCallback } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import { deleteFriend, requestFriend } from '../apis/friend';
-import { COLORS } from '../constants/colors';
-import { SPACING } from '../constants/space';
-import { useToastMessageStore } from '../store/toastMessage/toastMessage';
-import CustomButton from './CustomButton';
+import { deleteFriend, requestFriend } from '../../apis/friend';
+import { COLORS } from '../../constants/colors';
+import { SPACING } from '../../constants/space';
+import { useToastMessageStore } from '../../store/toastMessage/toastMessage';
+import CustomButton from '../CustomButton';
 
 const FriendOptionBottomSheet = forwardRef((props, ref) => {
   const { showToast } = useToastMessageStore();
