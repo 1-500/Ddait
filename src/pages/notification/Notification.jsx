@@ -204,12 +204,12 @@ const styles = StyleSheet.create({
   titleText: {
     fontSize: FONT_SIZES.md,
     fontFamily: FONTS.PRETENDARD[600],
-    maxWidth: width - 120,
+    maxWidth: width - 130,
   },
   messageText: {
     fontSize: FONT_SIZES.sm,
     fontFamily: FONTS.PRETENDARD[400],
-    maxWidth: width - 120,
+    maxWidth: width - 130,
   },
   emptyText: {
     fontSize: FONT_SIZES.md,
@@ -218,7 +218,7 @@ const styles = StyleSheet.create({
     color: COLORS.white,
   },
   relativeTime: {
-    width: 40,
+    width: 50,
     justifyContent: 'center',
     alignItems: 'center',
   },
