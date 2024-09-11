@@ -73,7 +73,7 @@ const FoodDiary = () => {
 
   const remainingCalories =
     totalNutrition.totalCalories === 0 ? 0 : userState.totalCalories - totalNutrition.totalCalories;
-  const remainingPercentage = remainingCalories / userState.totalCalories;
+  const remainingPercentage = 1 - remainingCalories / userState.totalCalories;
 
   const { setTime } = useSelectedFoodTimeStore();
   const { selected } = useDiaryCalendarStore();
