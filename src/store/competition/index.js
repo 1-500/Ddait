@@ -36,9 +36,4 @@ const useCreateRoomStateStore = create((set) => ({
     }),
 }));
 
-export const useCompetitionStore = create((set) => ({
-  competitionList: [],
-  setCompetitionList: (competitionList) => set({ competitionList }),
-}));
-
 export default useCreateRoomStateStore;
