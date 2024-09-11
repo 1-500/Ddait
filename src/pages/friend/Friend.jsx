@@ -18,7 +18,7 @@ import RequestSent from './friendPageTabs/RequestSent';
 const Friend = ({ navigation }) => {
   const isFocused = useIsFocused();
   const route = useRoute();
-  const { initialIndex } = route.params;
+  const initialIndex = route.params?.initialIndex;
   const [myFriends, setMyFriends] = useState([]);
   const [reqSent, setReqSent] = useState([]);
   const [reqReceived, setReqReceived] = useState([]);
