@@ -15,6 +15,7 @@ import {
 } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
+import { patchCompetitionRecord } from '../../../apis/competition';
 import {
   getExerciseList,
   getWorkoutInfoBookmark,
@@ -32,6 +33,8 @@ import { BODY_FONT_SIZES, HEADER_FONT_SIZES } from '../../../constants/font';
 import { FONTS } from '../../../constants/font';
 import { RADIUS } from '../../../constants/radius';
 import { LAYOUT_PADDING, SPACING } from '../../../constants/space';
+import { useCompetitionStore } from '../../../store/competition';
+import { useToastMessageStore } from '../../../store/toastMessage/toastMessage';
 import { debounce } from '../../../utils/foodDiary/debounce';
 
 const StartWorkout = () => {
@@ -56,7 +59,6 @@ const StartWorkout = () => {
   // const { competitionList } = useCompetitionStore.getState();
   const { competitionList } = useCompetitionStore();
 
-
   const bottomSheetModalRef = useRef(null);
   const snapPoints = useMemo(() => ['80%', '80%'], []);
 
@@ -70,7 +72,7 @@ const StartWorkout = () => {
           const isBookmarked = bookmarkRes.data.some((bookmark) => bookmark.workout_info_id === exercise.id);
           return { ...exercise, bookmark: isBookmarked };
         });
-        
+
         if (searchTerm === '') {
           const [exerciseRes, bookmarkRes] = await Promise.all([getExerciseList(), getWorkoutInfoBookmark()]);
           const bookmarkedIds = bookmarkRes.data.map((bookmark) => bookmark.workout_info_id);
@@ -476,14 +478,13 @@ const StartWorkout = () => {
     }));
   }, []);
 
-
   const handleTitleChange = (text) => {
     setWorkoutTitle(text);
   };
 
   const handleSaveTitle = () => {
     setEditWorkoutTitle(false);
-  }
+  };
 
   const debouncedSearch = debounce(async (term) => {
     try {

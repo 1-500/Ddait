@@ -28,6 +28,7 @@ const Home = ({ navigation }) => {
   const [competition, setCompetition] = useState();
   const isFocused = useIsFocused(); // 현재 화면이 포커스 상태인지 확인
   const { nickname, profileImageUrl, introduce } = useUserStore();
+  const { setCompetitionList } = useCompetitionStore();
 
   const fetchMyCompetitions = async () => {
     try {
@@ -49,6 +50,7 @@ const Home = ({ navigation }) => {
         }, competitions[0]);
 
         setCompetition(closestCompetition);
+        setCompetitionList(competition);
       } else {
         setCompetition(null);
       }
@@ -56,12 +58,13 @@ const Home = ({ navigation }) => {
       Alert.alert('Error fetching competitions:', error.message);
     }
   };
-
+  /* eslint-disable */
   useEffect(() => {
     if (isFocused) {
       fetchMyCompetitions();
     }
   }, [isFocused]);
+  /* eslint-enable */
 
   const handleCompetitionPress = (item) => {
     if (item.info.max_members === 2) {
