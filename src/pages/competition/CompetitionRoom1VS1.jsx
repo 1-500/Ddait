@@ -92,7 +92,7 @@ const CompetitionRoom1VS1 = ({ navigation }) => {
 
   const fetchCompetitionRecordDetail = async () => {
     try {
-      if (isParticipant) {
+      if (isParticipant || isParticipantState) {
         const res = await getCompetitionRecordDetail(competitionId);
         if (res.status === 200) {
           setCompetitionRecordDetail(res.data);
@@ -107,7 +107,7 @@ const CompetitionRoom1VS1 = ({ navigation }) => {
 
   const fetchMyFriendsNotParticipant = async () => {
     try {
-      if (isParticipant) {
+      if (isParticipant || isParticipantState) {
         const res = await getMyFriendsNotParticipant(competitionId);
         if (res.status === 200) {
           setMyFriends(res.data);
