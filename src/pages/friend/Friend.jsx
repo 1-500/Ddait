@@ -72,49 +72,49 @@ const Friend = ({ navigation }) => {
   }, [showToast]);
 
   useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+    if (isFocused) {
+      fetchData();
+    }
+  }, [fetchData, isFocused]);
 
   const hideAlert = () => {
     setAlertConfig((prev) => ({ ...prev, visible: false }));
   };
   return (
-    <BottomSheetModalProvider>
-      <SafeAreaView style={styles.safeArea}>
-        <HeaderComponents icon="search" title="친구 목록" onRightBtnPress={() => navigation.navigate('FriendSearch')} />
-        <TabView
-          renderTabBar={(props) => (
-            <TabBar
-              {...props}
-              activeColor={COLORS.white}
-              inactiveColor={COLORS.lightGrey}
-              labelStyle={{ fontSize: FONT_SIZES.md, fontFamily: FONTS.PRETENDARD[600] }}
-              indicatorStyle={{ backgroundColor: COLORS.primary }}
-              style={{ backgroundColor: COLORS.darkBackground }}
-            />
-          )}
-          navigationState={{ index, routes }}
-          renderScene={renderScene}
-          onIndexChange={setIndex}
-        />
-        <FriendOptionBottomSheet
-          ref={bottomSheetRef}
-          relation={selectedRelation}
-          memberData={selectedMemberData}
-          onUpdateData={fetchData}
-          setAlertVisible={setAlertVisible}
-          setAlertConfig={setAlertConfig}
-        />
-        <CustomAlert
-          visible={alertConfig.visible}
-          title={alertConfig.title}
-          message={alertConfig.message}
-          onConfirm={alertConfig.onConfirm}
-          onCancel={hideAlert}
-          showCancel={alertConfig.showCancel}
-        />
-      </SafeAreaView>
-    </BottomSheetModalProvider>
+    <SafeAreaView style={styles.safeArea}>
+      <HeaderComponents icon="search" title="친구 목록" onRightBtnPress={() => navigation.navigate('FriendSearch')} />
+      <TabView
+        renderTabBar={(props) => (
+          <TabBar
+            {...props}
+            activeColor={COLORS.white}
+            inactiveColor={COLORS.lightGrey}
+            labelStyle={{ fontSize: FONT_SIZES.md, fontFamily: FONTS.PRETENDARD[600] }}
+            indicatorStyle={{ backgroundColor: COLORS.primary }}
+            style={{ backgroundColor: COLORS.darkBackground }}
+          />
+        )}
+        navigationState={{ index, routes }}
+        renderScene={renderScene}
+        onIndexChange={setIndex}
+      />
+      <FriendOptionBottomSheet
+        ref={bottomSheetRef}
+        relation={selectedRelation}
+        memberData={selectedMemberData}
+        onUpdateData={fetchData}
+        setAlertVisible={setAlertVisible}
+        setAlertConfig={setAlertConfig}
+      />
+      <CustomAlert
+        visible={alertConfig.visible}
+        title={alertConfig.title}
+        message={alertConfig.message}
+        onConfirm={alertConfig.onConfirm}
+        onCancel={hideAlert}
+        showCancel={alertConfig.showCancel}
+      />
+    </SafeAreaView>
   );
 };
 

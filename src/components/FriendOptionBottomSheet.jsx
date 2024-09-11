@@ -10,8 +10,8 @@ import CustomButton from './CustomButton';
 
 const FriendOptionBottomSheet = forwardRef((props, ref) => {
   const { showToast } = useToastMessageStore();
-  const { relation, memberData, onUpdateData, setAlertVisible, setAlertConfig } = props;
-  const snapPoints = [350];
+  const { relation, memberData, onUpdateData, setAlertConfig } = props;
+  const snapPoints = [260];
 
   const renderBackdrop = useCallback(
     (props) => <BottomSheetBackdrop {...props} appearsOnIndex={0} disappearsOnIndex={-1} pressBehavior="close" />,
@@ -31,7 +31,7 @@ const FriendOptionBottomSheet = forwardRef((props, ref) => {
       const memberId = memberData.id;
       const res = await requestFriend(memberId);
       const nickname = res.data.friend_member_nickname;
-      showToast(`${nickname}님에게 친구 요청을 보냈어요.\n 승인을 기다려주세요!`, 'success', 3000, 'top', 80);
+      showToast(`${nickname}님에게 친구 요청을 보냈어요.`, 'success', 3000, 'bottom');
       handleClose();
     } catch (error) {
       showAlert({
