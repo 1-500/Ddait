@@ -55,6 +55,9 @@ const StartWorkout = () => {
   const [workoutTitle, setWorkoutTitle] = useState('아침운동');
   const [editWorkoutTitle, setEditWorkoutTitle] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const { showToast } = useToastMessageStore();
+  // const { competitionList } = useCompetitionStore.getState();
+  const { competitionList } = useCompetitionStore();
 
   const bottomSheetModalRef = useRef(null);
   const snapPoints = useMemo(() => ['80%', '80%'], []);
@@ -244,13 +247,14 @@ const StartWorkout = () => {
 
   /* eslint-disable */
   const updateCompetitionRecord = async () => {
-    const { showToast } = useToastMessageStore();
+    const today = new Date();
     try {
-      const { competitionList } = useCompetitionStore.getState();
+      const validCompetitions = competitionList.filter((competition) => {
+        const startDate = new Date(competition.date.start_date);
+        const endDate = new Date(competition.date.end_date);
 
-      const validCompetitions = competitionList.filter(
-        (competition) => competition.info.competition_theme === '3대측정내기',
-      );
+        return competition.info.competition_theme === '3대측정내기' && startDate <= today && endDate >= today;
+      });
 
       if (validCompetitions.length === 0) {
         showToast('경쟁 기록이 없습니다.', 'error', 1000, 'top', 80);
@@ -259,7 +263,7 @@ const StartWorkout = () => {
 
       for (const competition of validCompetitions) {
         const competitionRoomId = competition.id;
-
+        // console.log('competitionRoomId :>>', competitionRoomId);
         const workout_records = workoutData.flatMap((workout) =>
           workout.workoutSet
             .filter((set) => set.isComplete)
@@ -280,8 +284,10 @@ const StartWorkout = () => {
 
         const workoutRecord = {
           competition_room_id: competitionRoomId,
-          workout_records,
+          // workout_records,
         };
+
+        console.log('갱신할 roomid입니다 :>>', workoutRecord);
 
         const res = await patchCompetitionRecord(workoutRecord);
 
