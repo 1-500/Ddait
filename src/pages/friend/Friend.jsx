@@ -79,6 +79,10 @@ const Friend = ({ navigation }) => {
     }
   }, [fetchData, isFocused]);
 
+  useEffect(() => {
+    setIndex(initialIndex);
+  }, [initialIndex]);
+
   const hideAlert = () => {
     setAlertConfig((prev) => ({ ...prev, visible: false }));
   };
