@@ -1,62 +1,79 @@
 import { BottomSheetBackdrop, BottomSheetModal } from '@gorhom/bottom-sheet';
 import React, { forwardRef, useCallback } from 'react';
-import { Alert, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { deleteFriend, requestFriend } from '../apis/friend';
 import { COLORS } from '../constants/colors';
 import { SPACING } from '../constants/space';
+import { useToastMessageStore } from '../store/toastMessage/toastMessage';
 import CustomButton from './CustomButton';
 
 const FriendOptionBottomSheet = forwardRef((props, ref) => {
-  const { relation, memberData, onUpdateData } = props;
+  const { showToast } = useToastMessageStore();
+  const { relation, memberData, onUpdateData, setAlertVisible, setAlertConfig } = props;
   const snapPoints = [350];
-  // console.log('clicked member:', memberData); //불필요한 리렌더링 체크 후 추후 수정 필요
+
   const renderBackdrop = useCallback(
     (props) => <BottomSheetBackdrop {...props} appearsOnIndex={0} disappearsOnIndex={-1} pressBehavior="close" />,
     [],
   );
 
-  const onPressRequest = async (type) => {
+  const showAlert = (config) => {
+    setAlertConfig({ ...config, visible: true });
+  };
+
+  const hideAlert = () => {
+    setAlertConfig((prev) => ({ ...prev, visible: false }));
+  };
+
+  const onPressRequest = async () => {
     try {
       const memberId = memberData.id;
       const res = await requestFriend(memberId);
       const nickname = res.data.friend_member_nickname;
-
-      Alert.alert('친구 추가', `${nickname}님에게 친구 요청을 보냈어요.\n 승인을 기다려주세요!`, [
-        { onPress: () => ref.current?.close() },
-      ]);
+      showToast(`${nickname}님에게 친구 요청을 보냈어요.\n 승인을 기다려주세요!`, 'success', 3000, 'top', 80);
+      handleClose();
     } catch (error) {
-      Alert.alert('친구 추가 실패', error.message);
+      showAlert({
+        title: '친구 요청 실패',
+        message: error.message,
+        showCancel: false,
+        onConfirm: hideAlert,
+      });
+      handleClose();
     }
   };
-  const handleDelete = (type) => {
+
+  const handleDelete = async (type) => {
     const tableId = memberData.table_id;
     const alertTitle = type === 'block' ? '친구 차단' : '친구 신청 취소';
-    const alertMessage =
-      type === 'block'
-        ? `${memberData.nickname}님을 정말 차단하시겠어요?`
-        : `${memberData.nickname}님에게 보낸 친구 요청을 정말 취소하시겠어요?`;
+    const alertMessage = `${memberData.nickname}님을 정말 차단하시겠어요?`;
 
-    Alert.alert(alertTitle, alertMessage, [
-      {
-        text: '취소',
-        onPress: handleClose,
-        style: 'cancel',
-      },
-      {
-        text: '확인',
-        onPress: async () => {
+    if (type === 'block') {
+      showAlert({
+        title: alertTitle,
+        message: alertMessage,
+        onConfirm: async () => {
           try {
             await deleteFriend(tableId);
-            handleClose();
+            showToast(`${memberData.nickname}님을 차단했어요.`, 'success', 3000, 'top', 80);
             onUpdateData();
+            hideAlert();
           } catch (error) {
-            // 토스트로 변경 예정
-            //Alert.alert('친구 신청 취소 실패', error.message);
+            showToast(error.message, 'error', 3000, 'top', 80);
           }
         },
-      },
-    ]);
+      });
+    } else {
+      try {
+        await deleteFriend(tableId);
+        showToast(`${memberData.nickname}님에게 보낸 요청을 취소했어요.`, 'success', 3000, 'top', 80);
+        onUpdateData();
+      } catch (error) {
+        showToast(error.message, 'error', 3000, 'top', 80);
+      }
+    }
+    handleClose();
   };
 
   const handleClose = () => {

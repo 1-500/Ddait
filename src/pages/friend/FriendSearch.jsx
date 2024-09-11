@@ -4,6 +4,7 @@ import { Alert, FlatList, SafeAreaView, ScrollView, StyleSheet, Text, View } fro
 
 import { dummyFriends } from '../../apis/dummydata';
 import { searchUser } from '../../apis/friend/index';
+import CustomAlert from '../../components/CustomAlert';
 import CustomButton from '../../components/CustomButton';
 import FriendOptionBottomSheet from '../../components/FriendOptionBottomSheet';
 import SearchHeader from '../../components/Header/SearchHeader';
@@ -19,6 +20,14 @@ const FriendSearch = ({ navigation }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [error, setError] = useState('');
   const [selectedMemberData, setSelectedMemberData] = useState(null);
+  const [alertVisible, setAlertVisible] = useState(false); // Alert 표시 여부
+  const [alertConfig, setAlertConfig] = useState({
+    visible: false,
+    title: '',
+    message: '',
+    onConfirm: null,
+    showCancel: true,
+  });
 
   const handleOpenOptions = useCallback((memberData) => {
     setSelectedMemberData(memberData);
@@ -52,6 +61,10 @@ const FriendSearch = ({ navigation }) => {
     handleSearch();
   }, [searchQuery]);
 
+  const hideAlert = () => {
+    setAlertConfig((prev) => ({ ...prev, visible: false }));
+  };
+
   return (
     <BottomSheetModalProvider>
       <SafeAreaView style={styles.safeArea}>
@@ -70,7 +83,7 @@ const FriendSearch = ({ navigation }) => {
                   <MemberProfileItem
                     key={friend.id}
                     memberData={friend}
-                    onRightBtnPress={() => handleOpenOptions(friend.id)}
+                    onRightBtnPress={() => handleOpenOptions(friend)}
                   />
                 ))}
               </View>
@@ -92,13 +105,25 @@ const FriendSearch = ({ navigation }) => {
             </>
           )}
         </View>
-        <FriendOptionBottomSheet ref={bottomSheetRef} relation="none" memberData={selectedMemberData} />
+        <FriendOptionBottomSheet
+          ref={bottomSheetRef}
+          relation="none"
+          memberData={selectedMemberData}
+          setAlertVisible={setAlertVisible}
+          setAlertConfig={setAlertConfig}
+        />
+        <CustomAlert
+          visible={alertConfig.visible}
+          title={alertConfig.title}
+          message={alertConfig.message}
+          onConfirm={alertConfig.onConfirm}
+          onCancel={hideAlert}
+          showCancel={alertConfig.showCancel}
+        />
       </SafeAreaView>
     </BottomSheetModalProvider>
   );
 };
-
-export default FriendSearch;
 
 const styles = StyleSheet.create({
   safeArea: {
@@ -134,3 +159,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 });
+
+export default FriendSearch;
