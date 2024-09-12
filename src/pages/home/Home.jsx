@@ -78,7 +78,7 @@ const Home = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <HeaderComponents icon="home" />
+      <HeaderComponents icon="home" onRightBtnPress={() => navigation.navigate('Notification')} />
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
         <ProfileSection data={{ nickname, profileImageUrl, introduce }} />
         <SectionTitle title="진행중인 경쟁" showMore={true} navigation={navigation} navigateTo="Competition" />

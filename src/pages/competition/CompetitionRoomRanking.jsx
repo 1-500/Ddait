@@ -84,7 +84,7 @@ const CompetitionRoomRanking = ({ navigation }) => {
 
   const fetchCompetitionRecordDetail = async () => {
     try {
-      if (isParticipant) {
+      if (isParticipant || isParticipantState) {
         const res = await getCompetitionRecordDetail(competitionId);
         if (res.status === 200) {
           setCompetitionRecordDetail(res.data);
@@ -99,9 +99,11 @@ const CompetitionRoomRanking = ({ navigation }) => {
 
   const fetchMyFriendsNotParticipant = async () => {
     try {
-      const res = await getMyFriendsNotParticipant(competitionId);
-      if (res.status === 200) {
-        setMyFriends(res.data);
+      if (isParticipant || isParticipantState) {
+        const res = await getMyFriendsNotParticipant(competitionId);
+        if (res.status === 200) {
+          setMyFriends(res.data);
+        }
       }
     } catch (error) {
       Alert.alert('Error fetching friends:', error.message);

@@ -1,7 +1,9 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { useNavigation } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import React from 'react';
+import React, { useEffect } from 'react';
 
+import { setupFirebaseMessaging } from '../firebaseConfig';
 import BottomTab from './components/BottomTab';
 import Competition from './pages/competition/Competition';
 import CompetitionCreation from './pages/competition/CompetitionCreation/CompetitionCreation';
@@ -24,10 +26,12 @@ import MyPage from './pages/mypage/MyPage';
 import ProfileEdit from './pages/mypage/ProfileEdit';
 import ProfilePrivacy from './pages/mypage/ProfilePrivacy';
 import Setting from './pages/mypage/Setting';
+import Notification from './pages/notification/Notification';
 import SignUpPage from './pages/signup/SignUpPage';
 import SocialLogin from './pages/socialLogin/SocialLogin';
 import Splash from './pages/splash/Splash';
 import Test from './pages/Test';
+import { useToastMessageStore } from './store/toastMessage/toastMessage';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -90,11 +94,34 @@ const CompetitionStack = () => {
 };
 
 const Router = () => {
+  const navigation = useNavigation();
+  const { showToast } = useToastMessageStore();
+
+  useEffect(() => {
+    // Firebase 메시징 설정 및 구독
+    const { unsubscribeOnMessage, unsubscribeOnNotificationOpenedApp, unsubscribeOnTokenRefresh } =
+      setupFirebaseMessaging(navigation, showToast);
+
+    // 컴포넌트 언마운트 시 구독 해제
+    return () => {
+      if (unsubscribeOnMessage) {
+        unsubscribeOnMessage();
+      }
+      if (unsubscribeOnNotificationOpenedApp) {
+        unsubscribeOnNotificationOpenedApp();
+      }
+      if (unsubscribeOnTokenRefresh) {
+        unsubscribeOnTokenRefresh();
+      }
+    };
+  }, [navigation, showToast]);
+
   return (
     <Stack.Navigator initialRouteName="Splash" screenOptions={{ headerShown: false }}>
       <Stack.Screen name="Splash" component={Splash} />
       <Stack.Screen name="Sign" component={SignStack} />
       <Stack.Screen name="MainTab" component={MainTab} />
+      <Stack.Screen name="Notification" component={Notification} />
       <Stack.Screen name="SignUp" component={SignUpPage} />
       <Stack.Screen name="DiaryMain" component={DiaryMain} />
       <Stack.Screen name="WorkoutDiary" component={WorkoutDiaryStack} />
