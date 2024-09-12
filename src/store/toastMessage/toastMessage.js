@@ -1,5 +1,25 @@
+import { Dimensions, Platform } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { create } from 'zustand';
+
+const { height } = Dimensions.get('window');
+
+const getTopOffset = () => {
+  if (Platform.OS === 'ios') {
+    if (height >= 812) {
+      return 80;
+    }
+    return 50;
+  }
+  return 30;
+};
+
+const getBottomOffset = () => {
+  if (Platform.OS === 'ios') {
+    return 80;
+  }
+  return 30;
+};
 
 export const useToastMessageStore = create((set) => ({
   /**
@@ -28,9 +48,9 @@ export const useToastMessageStore = create((set) => ({
     };
 
     if (position === 'top') {
-      toastConfig.topOffset = offSetValue;
+      toastConfig.topOffset = offSetValue || getTopOffset();
     } else {
-      toastConfig.bottomOffset = offSetValue;
+      toastConfig.bottomOffset = offSetValue || getBottomOffset();
     }
 
     Toast.show(toastConfig);

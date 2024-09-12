@@ -2,7 +2,6 @@ import { BottomSheetModal, BottomSheetModalProvider, BottomSheetView } from '@go
 import { useNavigation } from '@react-navigation/native';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
-  Alert,
   FlatList,
   Modal,
   SafeAreaView,
@@ -200,7 +199,7 @@ const StartWorkout = () => {
       prevData.map((workout) => {
         if (workout.id === workoutId) {
           if (workout.workoutSet.length >= 10) {
-            Alert.alert('알림', '세트는 최대 10개까지 추가할 수 있습니다.');
+            showToast('세트는 최대 10개까지 추가할 수 있습니다.', 'error', 2000, 'top');
             return workout;
           } else {
             const maxSetId = workout.workoutSet.reduce((maxId, set) => Math.max(maxId, set.id), 0);
@@ -279,7 +278,7 @@ const StartWorkout = () => {
         );
 
         if (workout_records.length === 0) {
-          showToast('완료된 세트가 없어 기록을 저장할 수 없습니다.', 'error', 1000, 'top', 80);
+          showToast('완료된 세트가 없어 기록을 저장할 수 없습니다.', 'error', 1000, 'top');
           return;
         }
 
@@ -331,7 +330,7 @@ const StartWorkout = () => {
       );
 
       if (workout_records.length === 0) {
-        Alert.alert('운동 기록', '완료된 세트가 없어 기록을 저장할 수 없습니다.');
+        showToast('완료된 세트가 없어 기록을 저장할 수 없습니다.', 'error', 1000, 'top');
         return;
       }
 
@@ -345,10 +344,10 @@ const StartWorkout = () => {
 
       /* eslint-disable */
       if (res) {
-        Alert.alert('운동 기록', '정상적으로 저장되었습니다');
+        showToast('운동기록이 정상적으로 저장되었습니다', 'success', 1000, 'top');
         navigation.navigate('DiaryMain');
       } else {
-        Alert.alert('운동 기록', '기록 저장에 실패했습니다.');
+        showToast('기록 저장에 실패했습니다.', 'error', 1000, 'top');
         console.error('기록 저장에 실패했습니다.', res.error);
       }
     } catch (error) {
@@ -646,7 +645,7 @@ const StartWorkout = () => {
                 renderItem={renderExerciseList}
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={{ paddingBottom: 16, paddingHorizontal: 16 }}
-                keyExtractor={(item, index) => index.toString()}
+                keyExtractor={(_, index) => index.toString()}
               />
               <CustomButton
                 theme="primary"

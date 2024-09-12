@@ -1,6 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
-import { Alert, Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { emailLogin } from '../../apis/login/index';
 import CustomButton from '../../components/CustomButton';
@@ -8,6 +8,7 @@ import CustomInput from '../../components/CustomInput';
 import { COLORS } from '../../constants/colors';
 import { FONT_SIZES, FONTS, HEADER_FONT_SIZES } from '../../constants/font';
 import useUserStore from '../../store/sign/login';
+import { useToastMessageStore } from '../../store/toastMessage/toastMessage';
 
 const ThumbnailLogo = require('../../assets/images/login/thumnailLogo.png');
 const GoogleIcon = require('../../assets/images/login/googleIcon.png');
@@ -21,6 +22,7 @@ const LoginPage = () => {
   const [passwordInput, setPasswordInput] = useState();
 
   const { setToken, setUserEmail, setUserInfo } = useUserStore();
+  const { showToast } = useToastMessageStore();
 
   const handleEmailInput = (text) => {
     setEmailInput(text);
@@ -39,7 +41,7 @@ const LoginPage = () => {
         }),
       );
       if (result.status === 403) {
-        Alert.alert(result.message);
+        showToast(result.message, 'error', 2000, 'top');
         return;
       } else {
         if (result.status === 200) {
@@ -58,16 +60,15 @@ const LoginPage = () => {
             introduce: result.introduce,
           });
 
-          Alert.alert('로그인 하였습니다!');
           navigation.navigate('MainTab', {
             screen: 'Home',
           });
         } else {
-          Alert.alert(result.message);
+          showToast(result.message, 'error', 2000, 'top');
         }
       }
     } else {
-      Alert.alert('이메일 패스워드를 입력하세요!');
+      showToast('이메일 패스워드를 입력하세요!', 'error', 2000, 'top');
     }
   };
 
