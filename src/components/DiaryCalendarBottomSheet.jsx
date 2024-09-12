@@ -21,7 +21,7 @@ const DiaryCalendarBottomSheet = forwardRef(({}, ref) => {
     const selectedCalendarDateString = selectedCalendarDate.toISOString().split('T')[0];
     setSelected(selectedCalendarDateString);
     setSelectedDayInfo(selectedCalendarDate);
-    const weekOfMonth = `${selectedCalendarDate.getMonth() + 1}월 ${getWeekOfMonth(selectedCalendarDate)}째주`;
+    const weekOfMonth = `${selectedCalendarDate.getMonth() + 1}월 ${getWeekOfMonth(selectedCalendarDate)}주차`;
     setWeekOfMonth(weekOfMonth);
     updateWeekDays(selectedCalendarDate);
     ref.current?.close();

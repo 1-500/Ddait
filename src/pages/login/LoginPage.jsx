@@ -1,12 +1,22 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
-import { Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+  Image,
+  KeyboardAvoidingView,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
 import { emailLogin } from '../../apis/login/index';
 import CustomButton from '../../components/CustomButton';
 import CustomInput from '../../components/CustomInput';
 import { COLORS } from '../../constants/colors';
 import { FONT_SIZES, FONTS, HEADER_FONT_SIZES } from '../../constants/font';
+import { LAYOUT_PADDING } from '../../constants/space';
 import useUserStore from '../../store/sign/login';
 import { useToastMessageStore } from '../../store/toastMessage/toastMessage';
 
@@ -74,101 +84,102 @@ const LoginPage = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.content}>
-        <View style={styles.logoContainer}>
-          <Image source={ThumbnailLogo} style={styles.logo} />
-          <View style={styles.textContainer}>
-            <Text style={styles.headerText}>따잇과 함께, 잇따라 함께하는 운동 습관 ! 게임 어쩌구!</Text>
+      <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
+        <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+          <View style={styles.logoContainer}>
+            <Image source={ThumbnailLogo} style={styles.logo} />
+            <View style={styles.textContainer}>
+              <Text style={styles.headerText}>{'경쟁하며 기르는 운동 습관! \n 운동을 더 즐겁게, 친구와 따잇! 👊'}</Text>
+            </View>
           </View>
-        </View>
-        <View style={styles.formContainer}>
-          <CustomInput
-            size="large"
-            theme="user"
-            placeholder="이메일을 입력해주세요"
-            onChangeText={handleEmailInput}
-            style={{ fontSize: FONT_SIZES.sm }}
-          />
-          <CustomInput
-            size="large"
-            theme="user"
-            placeholder="비밀번호를 입력해주세요"
-            onChangeText={handlePasswordInput}
-            secureTextEntry={true}
-            style={{ fontSize: FONT_SIZES.sm }}
-          />
-          <View style={{ marginVertical: 20, width: '100%' }}>
-            <CustomButton size="large" text="로그인" theme="primary" onPress={handleLoginButton} />
+          <View style={styles.formContainer}>
+            <CustomInput
+              size="large"
+              theme="user"
+              placeholder="이메일을 입력해주세요"
+              onChangeText={handleEmailInput}
+              style={{ fontSize: FONT_SIZES.sm }}
+            />
+            <CustomInput
+              size="large"
+              theme="user"
+              placeholder="비밀번호를 입력해주세요"
+              onChangeText={handlePasswordInput}
+              secureTextEntry={true}
+              style={{ fontSize: FONT_SIZES.sm }}
+            />
+            <View style={{ marginVertical: 20, width: '100%' }}>
+              <CustomButton size="large" text="로그인" theme="primary" onPress={handleLoginButton} />
+            </View>
+            <View style={styles.linkContainer}>
+              <TouchableOpacity
+                activeOpacity={0.6}
+                onPress={() =>
+                  navigation.navigate('Sign', {
+                    screen: 'SignUp',
+                  })
+                }
+              >
+                <Text style={styles.linkText}>회원가입하기</Text>
+              </TouchableOpacity>
+              <View style={styles.divider} />
+              <TouchableOpacity activeOpacity={0.6}>
+                <Text style={styles.linkText}>비밀번호 찾기</Text>
+              </TouchableOpacity>
+            </View>
           </View>
-          <View style={styles.linkContainer}>
-            <TouchableOpacity
-              activeOpacity={0.6}
-              onPress={() =>
-                navigation.navigate('Sign', {
-                  screen: 'SignUp',
-                })
-              }
-            >
-              <Text style={styles.linkText}>회원가입하기</Text>
-            </TouchableOpacity>
-            <View style={styles.divider} />
+          <View style={styles.snsContainer}>
+            <Text style={styles.snsText}>SNS 로그인</Text>
+            <View style={styles.iconContainer}>
+              <TouchableOpacity
+                activeOpacity={0.6}
+                onPress={() =>
+                  navigation.navigate('Sign', {
+                    screen: 'SocialLogin',
+                    params: {
+                      provider: 'naver',
+                    },
+                  })
+                }
+              >
+                <Image source={NaverIcon} style={styles.snsIcon} />
+              </TouchableOpacity>
+              <TouchableOpacity
+                activeOpacity={0.6}
+                onPress={() =>
+                  navigation.navigate('Sign', {
+                    screen: 'SocialLogin',
+                    params: {
+                      provider: 'kakao',
+                    },
+                  })
+                }
+              >
+                <Image source={KakaoIcon} style={styles.snsIcon} />
+              </TouchableOpacity>
+              <TouchableOpacity
+                activeOpacity={0.6}
+                onPress={() =>
+                  navigation.navigate('Sign', {
+                    screen: 'SocialLogin',
+                    params: {
+                      provider: 'google',
+                    },
+                  })
+                }
+              >
+                <Image source={GoogleIcon} style={styles.snsIcon} />
+              </TouchableOpacity>
+              <TouchableOpacity activeOpacity={0.6}>
+                <Image source={AppleIcon} style={styles.snsIcon} />
+              </TouchableOpacity>
+            </View>
             <TouchableOpacity activeOpacity={0.6}>
-              <Text style={styles.linkText}>비밀번호 찾기</Text>
+              <Text style={styles.viewText}>구경만 할래요</Text>
             </TouchableOpacity>
           </View>
-        </View>
-
-        <View style={styles.snsContainer}>
-          <Text style={styles.snsText}>SNS 로그인</Text>
-          <View style={styles.iconContainer}>
-            <TouchableOpacity
-              activeOpacity={0.6}
-              onPress={() =>
-                navigation.navigate('Sign', {
-                  screen: 'SocialLogin',
-                  params: {
-                    provider: 'naver',
-                  },
-                })
-              }
-            >
-              <Image source={NaverIcon} style={styles.snsIcon} />
-            </TouchableOpacity>
-            <TouchableOpacity
-              activeOpacity={0.6}
-              onPress={() =>
-                navigation.navigate('Sign', {
-                  screen: 'SocialLogin',
-                  params: {
-                    provider: 'kakao',
-                  },
-                })
-              }
-            >
-              <Image source={KakaoIcon} style={styles.snsIcon} />
-            </TouchableOpacity>
-            <TouchableOpacity
-              activeOpacity={0.6}
-              onPress={() =>
-                navigation.navigate('Sign', {
-                  screen: 'SocialLogin',
-                  params: {
-                    provider: 'google',
-                  },
-                })
-              }
-            >
-              <Image source={GoogleIcon} style={styles.snsIcon} />
-            </TouchableOpacity>
-            <TouchableOpacity activeOpacity={0.6}>
-              <Image source={AppleIcon} style={styles.snsIcon} />
-            </TouchableOpacity>
-          </View>
-          <TouchableOpacity activeOpacity={0.6}>
-            <Text style={styles.viewText}>구경만 할래요</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };
@@ -178,12 +189,10 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#1C1C1C',
     justifyContent: 'center',
-    alignItems: 'center',
   },
   content: {
-    width: '90%',
-    padding: 20,
-    justifyContent: 'space-between',
+    ...LAYOUT_PADDING,
+    // justifyContent: 'space-between',
     flex: 1,
   },
   logoContainer: {

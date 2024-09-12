@@ -36,7 +36,7 @@ const DiaryCalendar = () => {
     const selectedDateDateString = selectedDateWithOffset.toISOString().split('T')[0];
     setSelected(selectedDateDateString);
     setSelectedDayInfo(selectedDateWithOffset);
-    const weekOfMonth = `${selectedDateWithOffset.getMonth() + 1}월 ${getWeekOfMonth(selectedDateWithOffset)}째주`;
+    const weekOfMonth = `${selectedDateWithOffset.getMonth() + 1}월 ${getWeekOfMonth(selectedDateWithOffset)}주차`;
     setWeekOfMonth(weekOfMonth);
 
     updateWeekDays(selectedDateWithOffset);
