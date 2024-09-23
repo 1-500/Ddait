@@ -5,6 +5,7 @@ import { TabBar, TabView } from 'react-native-tab-view';
 
 import {
   deleteCompetition,
+  enterCompetition,
   getCompetitionDetail,
   getCompetitionRecordDetail,
   leaveCompetition,
@@ -35,6 +36,7 @@ const CompetitionRoom1VS1 = ({ navigation }) => {
   const [myFriends, setMyFriends] = useState();
   const [progress, setProgress] = useState(false);
   const [isDeleted, setIsDeleted] = useState(false);
+  const [isParticipantState, setIsParticipantState] = useState(isParticipant);
   const [index, setIndex] = useState(0);
   const [routes, setRoutes] = useState([
     { key: 'score1VS1', title: '결과' },
@@ -90,7 +92,7 @@ const CompetitionRoom1VS1 = ({ navigation }) => {
 
   const fetchCompetitionRecordDetail = async () => {
     try {
-      if (isParticipant) {
+      if (isParticipant || isParticipantState) {
         const res = await getCompetitionRecordDetail(competitionId);
         if (res.status === 200) {
           setCompetitionRecordDetail(res.data);
@@ -105,9 +107,11 @@ const CompetitionRoom1VS1 = ({ navigation }) => {
 
   const fetchMyFriendsNotParticipant = async () => {
     try {
-      const res = await getMyFriendsNotParticipant(competitionId);
-      if (res.status === 200) {
-        setMyFriends(res.data);
+      if (isParticipant || isParticipantState) {
+        const res = await getMyFriendsNotParticipant(competitionId);
+        if (res.status === 200) {
+          setMyFriends(res.data);
+        }
       }
     } catch (error) {
       Alert.alert('Error fetching friends:', error.message);
@@ -139,7 +143,7 @@ const CompetitionRoom1VS1 = ({ navigation }) => {
 
   useEffect(() => {
     console.log(progress);
-    if (progress === 'BEFORE' && isParticipant) {
+    if (progress === 'BEFORE' && isParticipantState) {
       setRoutes([
         { key: 'score1VS1', title: '결과' },
         { key: 'myScore', title: '내 점수' },
@@ -151,7 +155,7 @@ const CompetitionRoom1VS1 = ({ navigation }) => {
         { key: 'myScore', title: '내 점수' },
       ]);
     }
-  }, [progress, isParticipant]);
+  }, [progress, isParticipantState]);
 
   const showAlert = (config) => {
     setAlertConfig({ ...config, visible: true });
@@ -159,6 +163,20 @@ const CompetitionRoom1VS1 = ({ navigation }) => {
 
   const hideAlert = () => {
     setAlertConfig((prev) => ({ ...prev, visible: false }));
+  };
+
+  const handleJoin = async () => {
+    try {
+      const res = await enterCompetition(competitionId);
+      if (res.status === 200) {
+        showToast('🎉 새로운 경쟁에 참여하셨습니다!', 'success', 3000, 'top');
+        setIsParticipantState(true);
+        fetchAllData();
+      }
+    } catch (error) {
+      console.log('error: ', error);
+      showToast('🚫 문제 발생! 다시 시도해주세요.', 'error', 3000, 'top');
+    }
   };
 
   const handleLeave = () => {
@@ -232,9 +250,10 @@ const CompetitionRoom1VS1 = ({ navigation }) => {
           <Score1VS1
             data={competitionRecord}
             progress={progress}
-            isParticipant={isParticipant}
-            jumpTo={jumpTo}
+            isParticipant={isParticipantState}
+            onJoin={handleJoin}
             onLeave={handleLeave}
+            jumpTo={jumpTo}
           />
         );
       case 'myScore':

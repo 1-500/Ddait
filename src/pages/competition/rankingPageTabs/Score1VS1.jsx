@@ -14,7 +14,7 @@ const { width } = Dimensions.get('window');
 const dummyProfile = require('../../../assets/images/profile.png');
 const crownImage = require('../../../assets/images/crown.png');
 
-const Score1VS1 = ({ data, progress, isParticipant, onLeave }) => {
+const Score1VS1 = ({ data, progress, isParticipant, onLeave, onJoin }) => {
   const maxGraphWidth = width - 200;
   const minGraphWidth = 10;
 
@@ -143,9 +143,9 @@ const Score1VS1 = ({ data, progress, isParticipant, onLeave }) => {
           <CustomTag size="small" text="vs" style={styles.vsTag} textStyle={styles.vsTagText} />
         </View>
         <View style={{ alignItems: 'center' }}>
-          {progress === 'BEFORE' && isParticipant && (
-            <TouchableOpacity style={styles.actionBtn} onPress={onLeave} activeOpacity={0.6}>
-              <Text style={styles.actionBtnText}>나가기</Text>
+          {progress === 'BEFORE' && (
+            <TouchableOpacity style={styles.actionBtn} onPress={isParticipant ? onLeave : onJoin} activeOpacity={0.6}>
+              <Text style={styles.actionBtnText}>{isParticipant ? '나가기' : '참여하기'}</Text>
             </TouchableOpacity>
           )}
         </View>

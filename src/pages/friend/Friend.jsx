@@ -1,5 +1,5 @@
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
-import { useIsFocused } from '@react-navigation/native';
+import { useIsFocused, useRoute } from '@react-navigation/native';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { SafeAreaView, StyleSheet } from 'react-native';
 import { TabBar, TabView } from 'react-native-tab-view';
@@ -17,6 +17,8 @@ import RequestSent from './friendPageTabs/RequestSent';
 
 const Friend = ({ navigation }) => {
   const isFocused = useIsFocused();
+  const route = useRoute();
+  const initialIndex = route.params?.initialIndex;
   const [myFriends, setMyFriends] = useState([]);
   const [reqSent, setReqSent] = useState([]);
   const [reqReceived, setReqReceived] = useState([]);
@@ -32,7 +34,7 @@ const Friend = ({ navigation }) => {
     onConfirm: null,
     showCancel: true,
   });
-  const [index, setIndex] = useState(0);
+  const [index, setIndex] = useState(initialIndex || 0);
   const [routes] = useState([
     { key: 'myFriends', title: '내 친구' },
     { key: 'reqReceived', title: '받은 신청' },
@@ -76,6 +78,10 @@ const Friend = ({ navigation }) => {
       fetchData();
     }
   }, [fetchData, isFocused]);
+
+  useEffect(() => {
+    setIndex(initialIndex);
+  }, [initialIndex]);
 
   const hideAlert = () => {
     setAlertConfig((prev) => ({ ...prev, visible: false }));

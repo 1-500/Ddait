@@ -8,7 +8,7 @@ const today = new Date();
 const useDiaryCalendarStore = create((set) => ({
   weekDays: [],
   selected: today.toISOString().split('T')[0],
-  weekOfMonth: `${today.getMonth() + 1}월 ${getWeekOfMonth(today)}째주`,
+  weekOfMonth: `${today.getMonth() + 1}월 ${getWeekOfMonth(today)}주차`,
   selectedDayInfo: today,
   selectedDate: today,
 

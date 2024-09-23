@@ -7,10 +7,10 @@ const TestPage = () => {
   const { showToast } = useToastMessageStore();
 
   const showTopToast = () => {
-    showToast('This is a success message!', 'success', 1000, 'top', 80);
+    showToast('This is a success message!', 'success', 1000, 'top');
   };
   const showBottomToast = (message) => {
-    showToast(message, 'error', 1000, 'bottom', 120);
+    showToast(message, 'error', 1000, 'bottom');
   };
 
   return (

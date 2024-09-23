@@ -1,6 +1,6 @@
 import { useIsFocused } from '@react-navigation/native'; // useIsFocused 훅을 import 합니다
 import React, { useEffect, useState } from 'react';
-import { Alert, Image, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Image, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { getMyCompetition } from '../../apis/competition/index';
 import HeaderComponents from '../../components/HeaderComponents';
@@ -14,6 +14,7 @@ import { RADIUS } from '../../constants/radius';
 import { ELEMENT_VERTICAL_MARGIN, LAYOUT_PADDING, SPACING } from '../../constants/space';
 import { useCompetitionStore } from '../../store/competition';
 import useUserStore from '../../store/sign/login';
+import { useToastMessageStore } from '../../store/toastMessage/toastMessage';
 
 const defaultProfile = require('../../assets/images/default-profile.png');
 const dummyDates = [
@@ -29,6 +30,7 @@ const Home = ({ navigation }) => {
   const isFocused = useIsFocused(); // 현재 화면이 포커스 상태인지 확인
   const { nickname, profileImageUrl, introduce } = useUserStore();
   const { setCompetitionList } = useCompetitionStore();
+  const { showToast } = useToastMessageStore();
 
   const fetchMyCompetitions = async () => {
     try {
@@ -55,7 +57,7 @@ const Home = ({ navigation }) => {
         setCompetition(null);
       }
     } catch (error) {
-      Alert.alert('Error fetching competitions:', error.message);
+      showToast(`Error fetching competitions: ${error.message}`, 'error', 2000, 'top');
     }
   };
   /* eslint-disable */
@@ -76,7 +78,7 @@ const Home = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <HeaderComponents icon="home" />
+      <HeaderComponents icon="home" onRightBtnPress={() => navigation.navigate('Notification')} />
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
         <ProfileSection data={{ nickname, profileImageUrl, introduce }} />
         <SectionTitle title="진행중인 경쟁" showMore={true} navigation={navigation} navigateTo="Competition" />
