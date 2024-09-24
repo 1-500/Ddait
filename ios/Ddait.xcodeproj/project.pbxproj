@@ -32,14 +32,14 @@
 		1406B88F2C7720710093ACAB /* SimpleLineIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1406B87B2C7720710093ACAB /* SimpleLineIcons.ttf */; };
 		1406B8902C7720710093ACAB /* Zocial.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1406B87C2C7720710093ACAB /* Zocial.ttf */; };
 		14DB8FC82C92002500314375 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 14DB8FC72C92002500314375 /* GoogleService-Info.plist */; };
-		2CF0B8FD08FD5293C8367867 /* libPods-Ddait.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6A353D9194BEC19B1263665E /* libPods-Ddait.a */; };
 		507B9384524BD88048DAB5CC /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 44FC95DB09621425A07B7FA2 /* PrivacyInfo.xcprivacy */; };
+		63EC572F0445A3917DD1AAEE /* Pods_Ddait.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0E2929CFD6880D14CDFBD21C /* Pods_Ddait.framework */; };
 		6F028A37B71E4F52B0EE8EC0 /* Pretendard-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = E2A2E92AB80F4912AA434550 /* Pretendard-Regular.ttf */; };
 		6FDCB7FFF3314BC68F9BC88B /* Pretendard-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B636BD93441F4CDE96BA63DE /* Pretendard-Bold.ttf */; };
-		805B47386B124EA91761B55D /* libPods-Ddait-DdaitTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DFF348F2B2D01CA165C1779E /* libPods-Ddait-DdaitTests.a */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		964D9C9035774C35BFB9670B /* Pretendard-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 7A45DF145EBD4EAF9B4A4B66 /* Pretendard-Light.ttf */; };
 		AAD7BC2EF57742548C171237 /* Pretendard-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AB61AD19EC504652861D62E1 /* Pretendard-Medium.ttf */; };
+		EE5B066D4554D7617C3CC236 /* Pods_Ddait_DdaitTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C5DF4E373F7292416FEE1839 /* Pods_Ddait_DdaitTests.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -56,6 +56,7 @@
 		00E356EE1AD99517003FC87E /* DdaitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DdaitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* DdaitTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DdaitTests.m; sourceTree = "<group>"; };
+		0E2929CFD6880D14CDFBD21C /* Pods_Ddait.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Ddait.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07F961A680F5B00A75B9A /* Ddait.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Ddait.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = Ddait/AppDelegate.h; sourceTree = "<group>"; };
 		13B07FB01A68108700A75B9A /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppDelegate.mm; path = Ddait/AppDelegate.mm; sourceTree = "<group>"; };
@@ -86,14 +87,13 @@
 		236C74EA72C1996851C3535C /* Pods-Ddait-DdaitTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Ddait-DdaitTests.release.xcconfig"; path = "Target Support Files/Pods-Ddait-DdaitTests/Pods-Ddait-DdaitTests.release.xcconfig"; sourceTree = "<group>"; };
 		375D8917611F40B09B016AB4 /* Pretendard-SemiBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Pretendard-SemiBold.ttf"; path = "../src/assets/fonts/Pretendard-SemiBold.ttf"; sourceTree = "<group>"; };
 		44FC95DB09621425A07B7FA2 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = Ddait/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
-		6A353D9194BEC19B1263665E /* libPods-Ddait.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Ddait.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		7A45DF145EBD4EAF9B4A4B66 /* Pretendard-Light.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Pretendard-Light.ttf"; path = "../src/assets/fonts/Pretendard-Light.ttf"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = Ddait/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		85FAD05357EE887D16DB936A /* Pods-Ddait-DdaitTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Ddait-DdaitTests.debug.xcconfig"; path = "Target Support Files/Pods-Ddait-DdaitTests/Pods-Ddait-DdaitTests.debug.xcconfig"; sourceTree = "<group>"; };
 		AB61AD19EC504652861D62E1 /* Pretendard-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Pretendard-Medium.ttf"; path = "../src/assets/fonts/Pretendard-Medium.ttf"; sourceTree = "<group>"; };
 		B636BD93441F4CDE96BA63DE /* Pretendard-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Pretendard-Bold.ttf"; path = "../src/assets/fonts/Pretendard-Bold.ttf"; sourceTree = "<group>"; };
+		C5DF4E373F7292416FEE1839 /* Pods_Ddait_DdaitTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Ddait_DdaitTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D27BC91D422FD4924429D2E2 /* Pods-Ddait.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Ddait.release.xcconfig"; path = "Target Support Files/Pods-Ddait/Pods-Ddait.release.xcconfig"; sourceTree = "<group>"; };
-		DFF348F2B2D01CA165C1779E /* libPods-Ddait-DdaitTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Ddait-DdaitTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E2A2E92AB80F4912AA434550 /* Pretendard-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Pretendard-Regular.ttf"; path = "../src/assets/fonts/Pretendard-Regular.ttf"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		F7560A6894F0AFF889D472ED /* Pods-Ddait.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Ddait.debug.xcconfig"; path = "Target Support Files/Pods-Ddait/Pods-Ddait.debug.xcconfig"; sourceTree = "<group>"; };
@@ -104,7 +104,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				805B47386B124EA91761B55D /* libPods-Ddait-DdaitTests.a in Frameworks */,
+				EE5B066D4554D7617C3CC236 /* Pods_Ddait_DdaitTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -112,7 +112,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2CF0B8FD08FD5293C8367867 /* libPods-Ddait.a in Frameworks */,
+				63EC572F0445A3917DD1AAEE /* Pods_Ddait.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -184,8 +184,8 @@
 			isa = PBXGroup;
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				6A353D9194BEC19B1263665E /* libPods-Ddait.a */,
-				DFF348F2B2D01CA165C1779E /* libPods-Ddait-DdaitTests.a */,
+				0E2929CFD6880D14CDFBD21C /* Pods_Ddait.framework */,
+				C5DF4E373F7292416FEE1839 /* Pods_Ddait_DdaitTests.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -699,6 +699,17 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers",
+					"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core",
+					"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon-Samples/ReactCommon_Samples.framework/Headers",
+					"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon-Samples/ReactCommon_Samples.framework/Headers/platform/ios",
+					"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx",
+					"${PODS_CONFIGURATION_BUILD_DIR}/React-NativeModulesApple/React_NativeModulesApple.framework/Headers",
+					"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers",
+					"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios",
+				);
 				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
 				LD = "";
 				LDPLUSPLUS = "";
@@ -775,6 +786,17 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers",
+					"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core",
+					"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon-Samples/ReactCommon_Samples.framework/Headers",
+					"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon-Samples/ReactCommon_Samples.framework/Headers/platform/ios",
+					"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx",
+					"${PODS_CONFIGURATION_BUILD_DIR}/React-NativeModulesApple/React_NativeModulesApple.framework/Headers",
+					"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers",
+					"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios",
+				);
 				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
 				LD = "";
 				LDPLUSPLUS = "";

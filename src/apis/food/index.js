@@ -75,3 +75,15 @@ export const getUserTotalFoodRerord = async (date) => {
     return response.data;
   } catch (error) {}
 };
+export const getUserCustomFoodRecord = async () => {
+  try {
+    const response = await API.get('food/record/customfood');
+    return response.data;
+  } catch (error) {}
+};
+export const getUserBookMarkedFoodRecord = async () => {
+  try {
+    const response = await API.get('food/record/bookmark');
+    return response.data;
+  } catch (error) {}
+};
