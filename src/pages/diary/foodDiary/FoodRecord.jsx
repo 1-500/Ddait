@@ -2,7 +2,7 @@ import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import { Alert, Image, Modal, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import { createCustomFood } from '../../../apis/food/index';
+import { createCustomFood, getUserBookMarkedFoodRecord, getUserCustomFoodRecord } from '../../../apis/food/index';
 import CustomButton from '../../../components/CustomButton';
 import CustomInput from '../../../components/CustomInput';
 import HeaderComponents from '../../../components/HeaderComponents';
@@ -10,12 +10,9 @@ import { BACKGROUND_COLORS, COLORS, TEXT_COLORS } from '../../../constants/color
 import { FONT_SIZES, FONTS } from '../../../constants/font';
 import { RADIUS } from '../../../constants/radius';
 
-const PlusButtonIcon = require('../../../assets/images/dietDiary/PluscircleWhiteButton.png');
-const BookmarkIcon = require('../../../assets/images/dietDiary/bookmarkWhite.png');
-
 const FoodRecord = () => {
-  const [tag, setTag] = useState(['최근', '북마크', '직접등록']);
-  const [activeTag, setActiveTag] = useState('최근');
+  const [tag, setTag] = useState(['북마크', '직접등록']);
+  const [activeTag, setActiveTag] = useState('북마크');
   const [isVisibleModal, setIsVisibleModal] = useState(false);
   const navigation = useNavigation();
   const [customModalFoodNameState, setCustomModalFoodNameState] = useState('');
@@ -24,6 +21,29 @@ const FoodRecord = () => {
   const [customModalFatState, setCustomModalFatState] = useState('');
   const [customModalCaloriesState, setCustomModalCaloriesState] = useState('');
   const [customModalServingSizeState, setCustomModalServingSizeState] = useState('');
+
+  const [userFoodListState, setUserFoodListState] = useState([]);
+
+  useEffect(() => {
+    const fetchUserFood = async () => {
+      try {
+        let response;
+        if (activeTag === '직접등록') {
+          response = await getUserCustomFoodRecord();
+          if (response.status !== 200) {
+            throw new Error('데이터를 가져오지 못했습니다.');
+          }
+        } else if (activeTag === '북마크') {
+          response = await getUserBookMarkedFoodRecord();
+          if (response.status !== 200) {
+            throw new Error('데이터를 가져오지 못했습니다.');
+          }
+        }
+        setUserFoodListState(response.data);
+      } catch (error) {}
+    };
+    fetchUserFood();
+  }, [activeTag, isVisibleModal]);
 
   const handleTag = (type) => {
     setActiveTag(type);
@@ -82,23 +102,19 @@ const FoodRecord = () => {
           ))}
         </View>
         <ScrollView style={styles.foodListContainer}>
-          <View style={styles.foodItem}>
-            <View>
-              <Text style={{ color: 'white', marginBottom: 5, fontSize: FONT_SIZES.sm }}>햇반</Text>
-              <Text style={{ color: COLORS.white }}>100g</Text>
+          {userFoodListState?.length > 0 ? (
+            userFoodListState.map((food) => {
+              return (
+                <FoodItem key={food.id} name={food.name} serving_size={food.serving_size} calories={food.calories} />
+              );
+            })
+          ) : (
+            <View style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+              <Text style={{ fontSize: FONT_SIZES.md, fontFamily: FONTS.PRETENDARD[600], color: 'white' }}>
+                등록된 음식이 없습니다.
+              </Text>
             </View>
-            <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-              <Text style={{ color: 'white', marginRight: 10, fontSize: FONT_SIZES.sm }}>132kcal</Text>
-              <View style={{ display: 'flex', flexDirection: 'row', gap: 5 }}>
-                <TouchableOpacity activeOpacity={0.6}>
-                  <Image source={PlusButtonIcon} style={{ width: 24, height: 24 }} />
-                </TouchableOpacity>
-                <TouchableOpacity activeOpacity={0.6}>
-                  <Image source={BookmarkIcon} style={{ width: 24, height: 24 }} />
-                </TouchableOpacity>
-              </View>
-            </View>
-          </View>
+          )}
         </ScrollView>
 
         <View style={styles.buttonContainer}>
@@ -200,8 +216,19 @@ const FoodRecord = () => {
   );
 };
 
-const FoodCard = () => {};
-
+const FoodItem = ({ name, serving_size, calories }) => {
+  return (
+    <View style={styles.foodItem}>
+      <View>
+        <Text style={{ color: 'white', marginBottom: 5, fontSize: FONT_SIZES.sm }}>{name}</Text>
+        <Text style={{ color: COLORS.white }}>{serving_size}g</Text>
+      </View>
+      <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+        <Text style={{ color: 'white', marginRight: 10, fontSize: FONT_SIZES.sm }}>{calories}kcal</Text>
+      </View>
+    </View>
+  );
+};
 const styles = StyleSheet.create({
   container: {
     flex: 1,
