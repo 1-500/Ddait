@@ -40,25 +40,47 @@ const WorkoutDiary = () => {
     navigation.navigate('WorkoutDiary', { screen: 'StartWorkoutScreen' });
   };
 
-  const renderWorkoutRecord = ({ item }) => (
-    <View style={styles.workoutRecordContainer}>
-      <View style={styles.recordHeader}>
-        <Text style={styles.recordText}>{item.title}</Text>
-        <Text style={styles.recordDurationText}>{item.time}</Text>
-      </View>
-      <View style={styles.recordContainer}>
-        <View>
-          {item.workout_record &&
-            item.workout_record.map((exercise, index) => (
+  const aggregateWorkoutSets = (workout_record) => {
+    const aggregatedRecords = {};
+
+    workout_record.forEach((exercise) => {
+      const { name } = exercise.workout_info;
+
+      if (aggregatedRecords[name]) {
+        aggregatedRecords[name] += 1;
+      } else {
+        aggregatedRecords[name] = 1;
+      }
+    });
+
+    return Object.keys(aggregatedRecords).map((name) => ({
+      name,
+      sets: aggregatedRecords[name],
+    }));
+  };
+
+  const renderWorkoutRecord = ({ item }) => {
+    const aggregatedExercises = aggregateWorkoutSets(item.workout_record);
+
+    return (
+      <View style={styles.workoutRecordContainer}>
+        <View style={styles.recordHeader}>
+          <Text style={styles.recordText}>{item.title}</Text>
+          <Text style={styles.recordDurationText}>{item.time}</Text>
+        </View>
+        <View style={styles.recordContainer}>
+          <View>
+            {aggregatedExercises.map((exercise, index) => (
               <View key={index} style={styles.exerciseContainer}>
-                <Text style={styles.exerciseHeaderText}>{exercise.workout_info.name}</Text>
-                <Text style={styles.exerciseText}>{exercise.set}세트</Text>
+                <Text style={styles.exerciseHeaderText}>{exercise.name}</Text>
+                <Text style={styles.exerciseText}>{exercise.sets}세트</Text>
               </View>
             ))}
+          </View>
         </View>
       </View>
-    </View>
-  );
+    );
+  };
 
   const renderEmptyMessage = () => {
     if (selected === new Date().toISOString().split('T')[0]) {
