@@ -1,11 +1,10 @@
-import { useIsFocused } from '@react-navigation/native';
 import dayjs from 'dayjs';
 import React from 'react';
 import { Dimensions, FlatList, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import { getCompetitionDetail } from '../../apis/competition';
-import { patchNotification } from '../../apis/notification';
+import { deleteNotification, patchNotification } from '../../apis/notification';
 import HeaderComponents from '../../components/HeaderComponents';
 import { COLORS } from '../../constants/colors';
 import { FONT_SIZES, FONTS } from '../../constants/font';
@@ -73,6 +72,20 @@ const Notification = ({ navigation }) => {
     switch (notification.type) {
       case 'competition_invite':
         const competitionDetail = await fetchCompetitionDetail(notification.relation_table_id);
+        if (competitionDetail.error) {
+          showToast(
+            '찾으시는 경쟁방이 없어요 🥹',
+            'error',
+            undefined,
+            undefined,
+            undefined,
+            '알림 데이터를 삭제할게요.',
+          );
+          await deleteNotification(notification.id);
+          setNotificationList(notificationList.filter((element) => element.id !== notification.id));
+          return;
+        }
+
         if (competitionDetail.data.info.max_members === 2) {
           navigation.navigate('CompetitionRoom1VS1', {
             competitionId: notification.relation_table_id,
