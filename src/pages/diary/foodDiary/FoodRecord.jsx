@@ -217,8 +217,14 @@ const FoodRecord = () => {
 };
 
 const FoodItem = ({ name, serving_size, calories }) => {
+  const navigation = useNavigation();
   return (
-    <View style={styles.foodItem}>
+    <TouchableOpacity
+      style={styles.foodItem}
+      onPress={() => {
+        navigation.navigate('FoodInfoScreen', { name, serving_size, calories });
+      }}
+    >
       <View>
         <Text style={{ color: 'white', marginBottom: 5, fontSize: FONT_SIZES.sm }}>{name}</Text>
         <Text style={{ color: COLORS.white }}>{serving_size}g</Text>
@@ -226,7 +232,7 @@ const FoodItem = ({ name, serving_size, calories }) => {
       <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
         <Text style={{ color: 'white', marginRight: 10, fontSize: FONT_SIZES.sm }}>{calories}kcal</Text>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 const styles = StyleSheet.create({
