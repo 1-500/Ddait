@@ -9,6 +9,7 @@ import HeaderComponents from '../../../components/HeaderComponents';
 import { BACKGROUND_COLORS, COLORS, TEXT_COLORS } from '../../../constants/colors';
 import { FONT_SIZES, FONTS } from '../../../constants/font';
 import useDiaryCalendarStore from '../../../store/food/calendar/index';
+import useSelectedFoodsStore from '../../../store/food/selectedFoods/index';
 import useSelectedFoodTimeStore from '../../../store/index';
 import { debounce } from '../../../utils/foodDiary/debounce';
 
@@ -20,10 +21,11 @@ const BookmarkOnIcon = require('../../../assets/images/dietDiary/bookmark.png');
 const FoodSearch = () => {
   const [searchText, setSearchText] = useState('');
   const [foodSearchListState, setFoodSearchListState] = useState([]);
-  const [checkedFoodsState, setCheckedFoodsState] = useState([]);
   const { time } = useSelectedFoodTimeStore();
   const { selected } = useDiaryCalendarStore();
   const navigation = useNavigation();
+
+  const { foodList, removeFood } = useSelectedFoodsStore();
 
   const handleSearchInput = debounce(async (text) => {
     try {
@@ -40,14 +42,20 @@ const FoodSearch = () => {
     }
   }, 300);
   const handleCheckedFoods = (food) => {
-    setCheckedFoodsState((prev) => {
-      const isChecked = prev.some((item) => item.id === food.id);
-      if (isChecked) {
-        return prev.filter((item) => item.id !== food.id);
-      } else {
-        return [...prev, food];
-      }
-    });
+    const isChecked = foodList.some((item) => item.id === food.id);
+    if (isChecked) {
+      removeFood(food.id);
+    } else {
+      navigation.navigate('FoodInfoScreen', {
+        id: food.id,
+        name: food.name,
+        serving_size: food.serving_size,
+        calories: food.calories,
+        carbs: food.carbs,
+        protein: food.protein,
+        fat: food.fat,
+      });
+    }
   };
   const handleBookmarkFoods = async (food) => {
     const newFoodSearchListState = foodSearchListState.map((element) => {
@@ -69,23 +77,24 @@ const FoodSearch = () => {
   };
   const handleRecordButton = async () => {
     try {
-      const response = await createFoodRecordByTime({
-        foodItems: checkedFoodsState,
-        meal_time: time,
-        date: selected,
-      });
-      if (response.status === 200) {
-        Alert.alert(response.message);
-      } else {
-        throw new Error('음식을 기록하는데 실패하였습니다.');
-      }
+      // console.log(checkedFoodsState);
+      // const response = await createFoodRecordByTime({
+      //   foodItems: checkedFoodsState,
+      //   meal_time: time,
+      //   date: selected,
+      // });
+      // if (response.status === 200) {
+      //   Alert.alert(response.message);
+      // } else {
+      //   throw new Error('음식을 기록하는데 실패하였습니다.');
+      // }
     } catch (error) {
       Alert.alert(error.message);
     }
 
-    navigation.navigate('FoodDiary', {
-      screen: 'FoodDetailScreen',
-    });
+    // navigation.navigate('FoodDiary', {
+    //   screen: 'FoodDetailScreen',
+    // });
   };
 
   return (
@@ -103,7 +112,7 @@ const FoodSearch = () => {
         </View>
         <ScrollView style={styles.foodListContainer}>
           {foodSearchListState?.map((food) => {
-            const isChecked = checkedFoodsState.some((item) => item.id === food.id);
+            const isChecked = foodList.some((item) => item.id === food.id);
             return (
               <FoodInfoCard
                 key={food.id}
@@ -120,7 +129,7 @@ const FoodSearch = () => {
         </ScrollView>
 
         <View style={styles.buttonContainer}>
-          <CustomButton size="large" text={`${checkedFoodsState.length}개 선택됨`} theme="secondary" />
+          <CustomButton size="large" text={`${foodList.length}개 선택됨`} theme="secondary" />
           <CustomButton size="large" text="기록하기" theme="primary" onPress={handleRecordButton} />
         </View>
       </View>
@@ -138,7 +147,7 @@ const FoodInfoCard = ({
   isCheckedBookmark,
 }) => {
   return (
-    <View style={styles.foodItem}>
+    <TouchableOpacity style={styles.foodItem}>
       <View>
         <Text style={{ color: 'white', marginBottom: 5, fontSize: FONT_SIZES.sm }}>{name}</Text>
         <Text style={{ color: COLORS.white }}>{serving_size}g</Text>
@@ -154,7 +163,7 @@ const FoodInfoCard = ({
           </TouchableOpacity>
         </View>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 

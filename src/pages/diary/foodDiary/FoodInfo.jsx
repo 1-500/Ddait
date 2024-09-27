@@ -1,4 +1,4 @@
-import { useRoute } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { useState } from 'react';
 import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
 
@@ -7,19 +7,23 @@ import CustomInput from '../../../components/CustomInput';
 import HeaderComponents from '../../../components/HeaderComponents';
 import { COLORS } from '../../../constants/colors';
 import { FONT_SIZES, FONTS } from '../../../constants/font';
+import useSelectedFoodsStore from '../../../store/food/selectedFoods/index';
 import { calculateFoodNutrition } from '../../../utils/foodDiary/index';
 
 const FoodInfo = ({ navigation }) => {
   const route = useRoute();
-  const { name, calories, serving_size, carbs, protein, fat } = route.params;
+  const { name, calories, serving_size, carbs, protein, fat, id } = route.params;
   const [foodInfoState, setFoodInfoState] = useState({
+    id,
     name,
     calories,
     carbs: carbs.toFixed(1),
     protein: protein.toFixed(1),
     fat: fat.toFixed(1),
     serving_size,
+    amount: Number(serving_size),
   });
+  const { addFood } = useSelectedFoodsStore();
 
   const handleServingSizeInput = (element) => {
     const foodNutrition = {
@@ -34,11 +38,16 @@ const FoodInfo = ({ navigation }) => {
 
     setFoodInfoState((prev) => ({
       ...prev,
+      amount: Number(element),
       calories: food.calories,
       carbs: food.carbs,
       protein: food.protein,
       fat: food.fat,
     }));
+  };
+  const handleAddButton = () => {
+    addFood(foodInfoState);
+    navigation.goBack();
   };
 
   return (
@@ -74,7 +83,7 @@ const FoodInfo = ({ navigation }) => {
           </View>
         </View>
         <View style={{ marginVertical: 20 }}>
-          <CustomButton theme="primary" size="large" text="추가하기" />
+          <CustomButton theme="primary" size="large" text="추가하기" onPress={handleAddButton} />
         </View>
       </View>
     </SafeAreaView>

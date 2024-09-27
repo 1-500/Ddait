@@ -107,6 +107,7 @@ const FoodRecord = () => {
               return (
                 <FoodItem
                   key={food.id}
+                  id={food.id}
                   name={food.name}
                   serving_size={food.serving_size}
                   calories={food.calories}
@@ -224,13 +225,13 @@ const FoodRecord = () => {
   );
 };
 
-const FoodItem = ({ name, serving_size, calories, carbs, protein, fat }) => {
+const FoodItem = ({ id, name, serving_size, calories, carbs, protein, fat }) => {
   const navigation = useNavigation();
   return (
     <TouchableOpacity
       style={styles.foodItem}
       onPress={() => {
-        navigation.navigate('FoodInfoScreen', { name, serving_size, calories, carbs, protein, fat });
+        navigation.navigate('FoodInfoScreen', { id, name, serving_size, calories, carbs, protein, fat });
       }}
     >
       <View>
