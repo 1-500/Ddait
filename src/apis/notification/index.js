@@ -42,11 +42,24 @@ export const patchNotification = async (notification_id, read) => {
       read,
     });
 
-    console.log('patch response: ', response);
     if (response.status === 200) {
       console.log('Notification updated successfully');
     } else {
       console.error('Failed to update notification');
+    }
+  } catch (error) {
+    console.error('Error:', error);
+  }
+};
+
+export const deleteNotification = async (notification_id) => {
+  try {
+    const response = await API.delete(`/notification?notificationId=${notification_id}`);
+
+    if (response.status === 200) {
+      console.log('Notification deleted successfully');
+    } else {
+      console.error('Failed to delete notification');
     }
   } catch (error) {
     console.error('Error:', error);

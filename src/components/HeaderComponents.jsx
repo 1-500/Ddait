@@ -19,10 +19,17 @@ const appLogoImage = require('../assets/images/app-logo.png');
  * title: string
  * onRightBtnPress: () => void;
  * onDatePress: () => void;
+ * hasUnreadNotification: boolean
  * }} param0
  */
 
-const HeaderComponents = ({ icon = 'none', title = '', onRightBtnPress = () => {}, onDatePress = () => {} }) => {
+const HeaderComponents = ({
+  icon = 'none',
+  title = '',
+  onRightBtnPress = () => {},
+  onDatePress = () => {},
+  hasUnreadNotification,
+}) => {
   const navigation = useNavigation();
 
   const getRightBtn = () => {
@@ -30,7 +37,11 @@ const HeaderComponents = ({ icon = 'none', title = '', onRightBtnPress = () => {
       case 'home':
         return (
           <TouchableOpacity style={styles.btnWrapper} onPress={onRightBtnPress} activeOpacity={0.6}>
-            <MaterialCommunityIcons name="bell" size={24} color={COLORS.white} />
+            <MaterialCommunityIcons
+              name={hasUnreadNotification ? 'bell-badge' : 'bell'}
+              size={24}
+              color={COLORS.white}
+            />
           </TouchableOpacity>
         );
       case 'btn':

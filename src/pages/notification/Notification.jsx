@@ -1,15 +1,15 @@
-import { useIsFocused } from '@react-navigation/native';
 import dayjs from 'dayjs';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Dimensions, FlatList, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import { getCompetitionDetail } from '../../apis/competition';
-import { getNotification, patchNotification } from '../../apis/notification';
+import { deleteNotification, patchNotification } from '../../apis/notification';
 import HeaderComponents from '../../components/HeaderComponents';
 import { COLORS } from '../../constants/colors';
 import { FONT_SIZES, FONTS } from '../../constants/font';
 import { LAYOUT_PADDING, SPACING } from '../../constants/space';
+import { useNotificationStore } from '../../store/notification';
 import { useToastMessageStore } from '../../store/toastMessage/toastMessage';
 
 /* eslint-disable */
@@ -56,23 +56,8 @@ dayjs.updateLocale('ko', {
 const { width } = Dimensions.get('window');
 
 const Notification = ({ navigation }) => {
-  const isFocused = useIsFocused();
   const { showToast } = useToastMessageStore();
-
-  const [notification, setNotification] = useState([]);
-
-  useEffect(() => {
-    fetchNotification();
-  }, [isFocused]);
-
-  const fetchNotification = async () => {
-    try {
-      const result = await getNotification();
-      setNotification(result.data);
-    } catch (error) {
-      showToast(`알림 정보 조회 실패: ${error.message}`, 'error');
-    }
-  };
+  const { notificationList, setNotificationList } = useNotificationStore();
 
   const fetchCompetitionDetail = async (id) => {
     try {
@@ -87,6 +72,20 @@ const Notification = ({ navigation }) => {
     switch (notification.type) {
       case 'competition_invite':
         const competitionDetail = await fetchCompetitionDetail(notification.relation_table_id);
+        if (competitionDetail.error) {
+          showToast(
+            '찾으시는 경쟁방이 없어요 🥹',
+            'error',
+            undefined,
+            undefined,
+            undefined,
+            '알림 데이터를 삭제할게요.',
+          );
+          await deleteNotification(notification.id);
+          setNotificationList(notificationList.filter((element) => element.id !== notification.id));
+          return;
+        }
+
         if (competitionDetail.data.info.max_members === 2) {
           navigation.navigate('CompetitionRoom1VS1', {
             competitionId: notification.relation_table_id,
@@ -106,9 +105,18 @@ const Notification = ({ navigation }) => {
 
     if (!notification.read) {
       await patchNotification(notification.id, true);
-      if (notification.type === 'null') {
-        fetchNotification();
-      }
+      setNotificationList(
+        notificationList.map((element) => {
+          if (element.id === notification.id) {
+            return {
+              ...element,
+              read: true,
+            };
+          } else {
+            return element;
+          }
+        }),
+      );
     }
   };
 
@@ -173,7 +181,7 @@ const Notification = ({ navigation }) => {
         <FlatList
           style={{ flex: 1 }}
           keyExtractor={(item, index) => index}
-          data={notification}
+          data={notificationList}
           renderItem={renderNotificationItem}
           ListFooterComponent={<View style={{ height: 30 }} />}
           ListEmptyComponent={<Text style={styles.emptyText}>아직 알림이 없어요..</Text>}

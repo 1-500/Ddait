@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Image, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { getMyCompetition } from '../../apis/competition/index';
+import { getNotification } from '../../apis/notification';
 import HeaderComponents from '../../components/HeaderComponents';
 import HeatmapCalendar from '../../components/HeatMapCalendar';
 import MyCompetitionItem from '../../components/MyCompetitionItem';
@@ -13,6 +14,7 @@ import { FONT_SIZES, FONTS, HEADER_FONT_SIZES } from '../../constants/font';
 import { RADIUS } from '../../constants/radius';
 import { ELEMENT_VERTICAL_MARGIN, LAYOUT_PADDING, SPACING } from '../../constants/space';
 import { useCompetitionStore } from '../../store/competition';
+import { useNotificationStore } from '../../store/notification';
 import useUserStore from '../../store/sign/login';
 import { useToastMessageStore } from '../../store/toastMessage/toastMessage';
 
@@ -29,6 +31,7 @@ const Home = ({ navigation }) => {
   const [competition, setCompetition] = useState();
   const isFocused = useIsFocused(); // 현재 화면이 포커스 상태인지 확인
   const { nickname, profileImageUrl, introduce } = useUserStore();
+  const { notificationList, setNotificationList } = useNotificationStore();
   const { setCompetitionList } = useCompetitionStore();
   const { showToast } = useToastMessageStore();
 
@@ -60,10 +63,21 @@ const Home = ({ navigation }) => {
       showToast(`Error fetching competitions: ${error.message}`, 'error', 2000, 'top');
     }
   };
+
+  const fetchNotification = async () => {
+    try {
+      const result = await getNotification();
+      setNotificationList(result.data);
+    } catch (error) {
+      showToast(`알림 정보 조회 실패: ${error.message}`, 'error');
+    }
+  };
+
   /* eslint-disable */
   useEffect(() => {
     if (isFocused) {
       fetchMyCompetitions();
+      fetchNotification();
     }
   }, [isFocused]);
   /* eslint-enable */
@@ -78,7 +92,11 @@ const Home = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <HeaderComponents icon="home" onRightBtnPress={() => navigation.navigate('Notification')} />
+      <HeaderComponents
+        icon="home"
+        onRightBtnPress={() => navigation.navigate('Notification')}
+        hasUnreadNotification={notificationList.filter((notification) => notification.read === false).length > 0}
+      />
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
         <ProfileSection data={{ nickname, profileImageUrl, introduce }} />
         <SectionTitle title="진행중인 경쟁" showMore={true} navigation={navigation} navigateTo="Competition" />

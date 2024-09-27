@@ -39,7 +39,7 @@ export const useToastMessageStore = create((set) => ({
    * showToast('오류가 발생했습니다.', 'error', 2000, 'bottom', 100);
    */
 
-  showToast: (message, type = 'default', duration = 2000, position = 'top', offSetValue) => {
+  showToast: (message, type = 'default', duration = 2000, position = 'top', offSetValue, subMessage) => {
     let toastConfig = {
       type: type, // 'success', 'error'
       text1: message, // 메인 텍스트
@@ -51,6 +51,10 @@ export const useToastMessageStore = create((set) => ({
       toastConfig.topOffset = offSetValue || getTopOffset();
     } else {
       toastConfig.bottomOffset = offSetValue || getBottomOffset();
+    }
+
+    if (subMessage) {
+      toastConfig.text2 = subMessage;
     }
 
     Toast.show(toastConfig);
