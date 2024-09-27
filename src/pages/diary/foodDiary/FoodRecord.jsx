@@ -9,6 +9,9 @@ import HeaderComponents from '../../../components/HeaderComponents';
 import { BACKGROUND_COLORS, COLORS, TEXT_COLORS } from '../../../constants/colors';
 import { FONT_SIZES, FONTS } from '../../../constants/font';
 import { RADIUS } from '../../../constants/radius';
+import useSelectedFoodsStore from '../../../store/food/selectedFoods/index';
+const PlusIcon = require('../../../assets/images/dietDiary/PluscircleWhiteButton.png');
+const checkIcon = require('../../../assets/images/dietDiary/checkIcon.png');
 
 const FoodRecord = () => {
   const [tag, setTag] = useState(['북마크', '직접등록']);
@@ -23,6 +26,7 @@ const FoodRecord = () => {
   const [customModalServingSizeState, setCustomModalServingSizeState] = useState('');
 
   const [userFoodListState, setUserFoodListState] = useState([]);
+  const { foodList, removeFood } = useSelectedFoodsStore();
 
   useEffect(() => {
     const fetchUserFood = async () => {
@@ -44,6 +48,23 @@ const FoodRecord = () => {
     };
     fetchUserFood();
   }, [activeTag, isVisibleModal]);
+
+  const handleCheckedFoods = (food) => {
+    const isChecked = foodList.some((item) => item.id === food.id);
+    if (isChecked) {
+      removeFood(food.id);
+    } else {
+      navigation.navigate('FoodInfoScreen', {
+        id: food.id,
+        name: food.name,
+        serving_size: food.serving_size,
+        calories: food.calories,
+        carbs: food.carbs,
+        protein: food.protein,
+        fat: food.fat,
+      });
+    }
+  };
 
   const handleTag = (type) => {
     setActiveTag(type);
@@ -104,6 +125,8 @@ const FoodRecord = () => {
         <ScrollView style={styles.foodListContainer}>
           {userFoodListState?.length > 0 ? (
             userFoodListState.map((food) => {
+              const isChecked = foodList.some((item) => item.id === food.id);
+
               return (
                 <FoodItem
                   key={food.id}
@@ -112,8 +135,10 @@ const FoodRecord = () => {
                   serving_size={food.serving_size}
                   calories={food.calories}
                   carbs={food.carbs}
+                  onHandleCheckedFoods={() => handleCheckedFoods(food)}
                   protein={food.protein}
                   fat={food.fat}
+                  isCheckFood={isChecked}
                 />
               );
             })
@@ -125,15 +150,17 @@ const FoodRecord = () => {
             </View>
           )}
         </ScrollView>
-
-        <View style={styles.buttonContainer}>
+        <View style={{ display: 'flex', gap: 10 }}>
+          <CustomButton size="large" text={`${foodList.length}개 선택됨`} theme="secondary" onPress={handleModal} />
           {activeTag === '직접등록' ? (
-            <>
+            <View style={styles.buttonContainer}>
               <CustomButton size="medium" text="직접 등록하기" theme="secondary" onPress={handleModal} />
               <CustomButton size="medium" text="기록하기" theme="primary" />
-            </>
+            </View>
           ) : (
-            <CustomButton size="large" text="기록하기" theme="primary" />
+            <>
+              <CustomButton size="large" text="기록하기" theme="primary" />
+            </>
           )}
         </View>
       </View>
@@ -225,21 +252,19 @@ const FoodRecord = () => {
   );
 };
 
-const FoodItem = ({ id, name, serving_size, calories, carbs, protein, fat }) => {
+const FoodItem = ({ id, name, serving_size, calories, carbs, protein, fat, isCheckFood, onHandleCheckedFoods }) => {
   const navigation = useNavigation();
   return (
-    <TouchableOpacity
-      style={styles.foodItem}
-      onPress={() => {
-        navigation.navigate('FoodInfoScreen', { id, name, serving_size, calories, carbs, protein, fat });
-      }}
-    >
+    <TouchableOpacity style={styles.foodItem}>
       <View>
         <Text style={{ color: 'white', marginBottom: 5, fontSize: FONT_SIZES.sm }}>{name}</Text>
         <Text style={{ color: COLORS.white }}>{serving_size}g</Text>
       </View>
       <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
         <Text style={{ color: 'white', marginRight: 10, fontSize: FONT_SIZES.sm }}>{calories}kcal</Text>
+        <TouchableOpacity activeOpacity={0.6} onPress={onHandleCheckedFoods}>
+          <Image source={isCheckFood ? checkIcon : PlusIcon} style={{ width: 24, height: 24 }} />
+        </TouchableOpacity>
       </View>
     </TouchableOpacity>
   );
