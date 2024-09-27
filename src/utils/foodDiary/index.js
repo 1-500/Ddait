@@ -80,3 +80,14 @@ export function calculateTotalNutrition(mealNutritionInfo) {
 
   return totalNutrition;
 }
+
+export function calculateFoodNutrition(foodNutrition) {
+  const ratio = foodNutrition.amount / foodNutrition.serving_size; // 입력된 총량에 대한 비율
+
+  return {
+    carbs: (foodNutrition.carbs * ratio).toFixed(1), // 소수점 1자리까지
+    protein: (foodNutrition.protein * ratio).toFixed(1),
+    fat: (foodNutrition.fat * ratio).toFixed(1),
+    calories: Math.round(foodNutrition.calories * ratio),
+  };
+}

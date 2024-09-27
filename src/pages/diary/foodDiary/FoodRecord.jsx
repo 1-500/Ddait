@@ -105,7 +105,15 @@ const FoodRecord = () => {
           {userFoodListState?.length > 0 ? (
             userFoodListState.map((food) => {
               return (
-                <FoodItem key={food.id} name={food.name} serving_size={food.serving_size} calories={food.calories} />
+                <FoodItem
+                  key={food.id}
+                  name={food.name}
+                  serving_size={food.serving_size}
+                  calories={food.calories}
+                  carbs={food.carbs}
+                  protein={food.protein}
+                  fat={food.fat}
+                />
               );
             })
           ) : (
@@ -216,13 +224,13 @@ const FoodRecord = () => {
   );
 };
 
-const FoodItem = ({ name, serving_size, calories }) => {
+const FoodItem = ({ name, serving_size, calories, carbs, protein, fat }) => {
   const navigation = useNavigation();
   return (
     <TouchableOpacity
       style={styles.foodItem}
       onPress={() => {
-        navigation.navigate('FoodInfoScreen', { name, serving_size, calories });
+        navigation.navigate('FoodInfoScreen', { name, serving_size, calories, carbs, protein, fat });
       }}
     >
       <View>
