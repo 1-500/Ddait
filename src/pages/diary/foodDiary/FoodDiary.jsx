@@ -250,19 +250,19 @@ const FoodDiary = () => {
               <Text style={styles.macroLabel}>탄</Text>
               <Text
                 style={styles.macroValue}
-              >{`${totalNutrition.totalCarbs}/${calculateCarbsCalories(userState.macroRatio.carbs, userState.totalCalories)}g`}</Text>
+              >{`${totalNutrition.totalCarbs}g/${calculateCarbsCalories(userState.macroRatio.carbs, userState.totalCalories)}g`}</Text>
             </View>
             <View style={styles.macroItem}>
               <Text style={styles.macroLabel}>단</Text>
               <Text
                 style={styles.macroValue}
-              >{`${totalNutrition.totalProtein}/${calculateProteinCalories(userState.macroRatio.protein, userState.totalCalories)}g`}</Text>
+              >{`${totalNutrition.totalProtein}g/${calculateProteinCalories(userState.macroRatio.protein, userState.totalCalories)}g`}</Text>
             </View>
             <View style={styles.macroItem}>
               <Text style={styles.macroLabel}>지</Text>
               <Text
                 style={styles.macroValue}
-              >{`${totalNutrition.totalFat}/${calculateFatCalories(userState.macroRatio.fat, userState.totalCalories)}g`}</Text>
+              >{`${totalNutrition.totalFat}g/${calculateFatCalories(userState.macroRatio.fat, userState.totalCalories)}g`}</Text>
             </View>
           </View>
           <View style={{ marginTop: 10 }}>
@@ -279,7 +279,7 @@ const FoodDiary = () => {
               {`${totalNutrition.totalCalories}kcal / ${userState.totalCalories}kcal`}
             </Text>
             <Text style={styles.calorieInfoText}>
-              {remainingCalories}
+              {remainingCalories < 0 ? 0 : remainingCalories}
               kcal 남음
             </Text>
           </View>
