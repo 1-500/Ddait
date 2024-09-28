@@ -87,3 +87,9 @@ export const getUserBookMarkedFoodRecord = async () => {
     return response.data;
   } catch (error) {}
 };
+export const deleteUserRecordFoodById = async (id) => {
+  try {
+    const response = await API.post(`food/record/delete?id=${id}`);
+    return response.data;
+  } catch (error) {}
+};
