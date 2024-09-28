@@ -25,7 +25,7 @@ const FoodSearch = () => {
   const { selected } = useDiaryCalendarStore();
   const navigation = useNavigation();
 
-  const { foodList, removeFood } = useSelectedFoodsStore();
+  const { foodList, removeFood, clearFoodNutrition } = useSelectedFoodsStore();
 
   const handleSearchInput = debounce(async (text) => {
     try {
@@ -77,24 +77,24 @@ const FoodSearch = () => {
   };
   const handleRecordButton = async () => {
     try {
-      // console.log(checkedFoodsState);
-      // const response = await createFoodRecordByTime({
-      //   foodItems: checkedFoodsState,
-      //   meal_time: time,
-      //   date: selected,
-      // });
-      // if (response.status === 200) {
-      //   Alert.alert(response.message);
-      // } else {
-      //   throw new Error('음식을 기록하는데 실패하였습니다.');
-      // }
+      const response = await createFoodRecordByTime({
+        foodItems: foodList,
+        meal_time: time,
+        date: selected,
+      });
+      if (response.status === 200) {
+        Alert.alert(response.message);
+      } else {
+        throw new Error('음식을 기록하는데 실패하였습니다.');
+      }
     } catch (error) {
       Alert.alert(error.message);
     }
 
-    // navigation.navigate('FoodDiary', {
-    //   screen: 'FoodDetailScreen',
-    // });
+    clearFoodNutrition();
+    navigation.navigate('FoodDiary', {
+      screen: 'FoodDetailScreen',
+    });
   };
 
   return (

@@ -2,14 +2,21 @@ import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import { Alert, Image, Modal, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import { createCustomFood, getUserBookMarkedFoodRecord, getUserCustomFoodRecord } from '../../../apis/food/index';
+import {
+  createCustomFood,
+  createFoodRecordByTime,
+  getUserBookMarkedFoodRecord,
+  getUserCustomFoodRecord,
+} from '../../../apis/food/index';
 import CustomButton from '../../../components/CustomButton';
 import CustomInput from '../../../components/CustomInput';
 import HeaderComponents from '../../../components/HeaderComponents';
 import { BACKGROUND_COLORS, COLORS, TEXT_COLORS } from '../../../constants/colors';
 import { FONT_SIZES, FONTS } from '../../../constants/font';
 import { RADIUS } from '../../../constants/radius';
+import useDiaryCalendarStore from '../../../store/food/calendar/index';
 import useSelectedFoodsStore from '../../../store/food/selectedFoods/index';
+import useSelectedFoodTimeStore from '../../../store/index';
 const PlusIcon = require('../../../assets/images/dietDiary/PluscircleWhiteButton.png');
 const checkIcon = require('../../../assets/images/dietDiary/checkIcon.png');
 
@@ -25,8 +32,11 @@ const FoodRecord = () => {
   const [customModalCaloriesState, setCustomModalCaloriesState] = useState('');
   const [customModalServingSizeState, setCustomModalServingSizeState] = useState('');
 
+  const { time } = useSelectedFoodTimeStore();
+  const { selected } = useDiaryCalendarStore();
+
   const [userFoodListState, setUserFoodListState] = useState([]);
-  const { foodList, removeFood } = useSelectedFoodsStore();
+  const { foodList, removeFood, clearFoodNutrition } = useSelectedFoodsStore();
 
   useEffect(() => {
     const fetchUserFood = async () => {
@@ -97,6 +107,27 @@ const FoodRecord = () => {
     return;
   };
 
+  const handleRecordButton = async () => {
+    try {
+      const response = await createFoodRecordByTime({
+        foodItems: foodList,
+        meal_time: time,
+        date: selected,
+      });
+      if (response.status === 200) {
+        Alert.alert(response.message);
+      } else {
+        throw new Error('음식을 기록하는데 실패하였습니다.');
+      }
+    } catch (error) {
+      Alert.alert(error.message);
+    }
+
+    clearFoodNutrition();
+    navigation.navigate('FoodDiary', {
+      screen: 'FoodDetailScreen',
+    });
+  };
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.darkBackground }}>
       <HeaderComponents title="음식 기록" />
@@ -155,11 +186,11 @@ const FoodRecord = () => {
           {activeTag === '직접등록' ? (
             <View style={styles.buttonContainer}>
               <CustomButton size="medium" text="직접 등록하기" theme="secondary" onPress={handleModal} />
-              <CustomButton size="medium" text="기록하기" theme="primary" />
+              <CustomButton size="medium" text="기록하기" theme="primary" onPress={handleRecordButton} />
             </View>
           ) : (
             <>
-              <CustomButton size="large" text="기록하기" theme="primary" />
+              <CustomButton size="large" text="기록하기" theme="primary" onPress={handleRecordButton} />
             </>
           )}
         </View>
