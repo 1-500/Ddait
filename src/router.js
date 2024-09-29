@@ -117,7 +117,7 @@ const Router = () => {
   }, [navigation, showToast]);
 
   return (
-    <Stack.Navigator initialRouteName="Test" screenOptions={{ headerShown: false }}>
+    <Stack.Navigator initialRouteName="Splash" screenOptions={{ headerShown: false }}>
       <Stack.Screen name="Splash" component={Splash} />
       <Stack.Screen name="Sign" component={SignStack} />
       <Stack.Screen name="MainTab" component={MainTab} />
