@@ -34,7 +34,7 @@ const CompetitionRecordDetail = ({ navigation, route }) => {
         keyExtractor={(item, index) => `${index}|${item.created_at}`}
         renderItem={renderDiary}
         ListFooterComponent={<Text style={styles.scoreText}>점수: {score_detail.score}</Text>}
-        ListEmptyComponent={<Text style={styles.scoreText}>아직 기록이 없어요..</Text>}
+        ListEmptyComponent={<Text style={styles.emptyText}>아직 기록이 없어요..</Text>}
         showsVerticalScrollIndicator={false}
       />
     </SafeAreaView>
@@ -58,6 +58,12 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.PRETENDARD[600],
     color: COLORS.white,
     paddingTop: 10,
+  },
+  emptyText: {
+    fontSize: FONT_SIZES.md,
+    fontFamily: FONTS.PRETENDARD[500],
+    color: COLORS.white,
+    paddingTop: 20,
   },
   diaryWrapper: {
     paddingVertical: 20,
