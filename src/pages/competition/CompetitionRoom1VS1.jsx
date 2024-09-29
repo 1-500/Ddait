@@ -260,7 +260,7 @@ const CompetitionRoom1VS1 = ({ navigation }) => {
         return loadingStates.recordDetail ? (
           <SkeletonLoader type="myScore" />
         ) : (
-          <MyScore data={competitionRecordDetail} />
+          <MyScore data={competitionRecordDetail} navigation={navigation} />
         );
       case 'invite':
         return <Invite competitionId={competitionId} friends={myFriends} jumpTo={jumpTo} />;
@@ -272,7 +272,7 @@ const CompetitionRoom1VS1 = ({ navigation }) => {
       {loadingStates.details ? (
         <SkeletonLoader type="header" />
       ) : (
-        competitionData && <CompetitionRoomHeader data={competitionData} onDelete={handleDelete} />
+        competitionData && <CompetitionRoomHeader data={competitionData} progress={progress} onDelete={handleDelete} />
       )}
       <TabView
         renderTabBar={(props) => (
