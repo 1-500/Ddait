@@ -1,46 +1,34 @@
-import React from 'react';
-import { Button, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import appleAuth, { AppleButton } from '@invertase/react-native-apple-authentication';
 
-import { useToastMessageStore } from '../store/toastMessage/toastMessage';
+async function handleSignInApple() {
+  // performs login request
+  const appleAuthRequestResponse = await appleAuth.performRequest({
+    requestedOperation: appleAuth.Operation.LOGIN,
+    // Note: it appears putting FULL_NAME first is important, see issue #293
+    requestedScopes: [appleAuth.Scope.FULL_NAME, appleAuth.Scope.EMAIL],
+  });
+  // get current authentication state for user
+  // /!\ This method must be tested on a real device. On the iOS simulator it always throws an error.
+  const credentialState = await appleAuth.getCredentialStateForUser(appleAuthRequestResponse.user);
 
-const TestPage = () => {
-  const { showToast } = useToastMessageStore();
+  // use credentialState response to ensure the user is authenticated
+  if (credentialState === appleAuth.State.AUTHORIZED) {
+    // user is authenticated
+  }
+}
 
-  const showTopToast = () => {
-    showToast('This is a success message!', 'success', 1000, 'top');
-  };
-  const showBottomToast = (message) => {
-    showToast(message, 'error', 1000, 'bottom');
-  };
-
+function AppleLogin() {
   return (
-    <SafeAreaView style={styles.container}>
-      <View>
-        <Text>테스트 페이지</Text>
-        <Button title="Show Top Toast" onPress={showTopToast} />
-        <Button title="Show Bottom Toast" onPress={() => showBottomToast('아아아아아')} />
-      </View>
-    </SafeAreaView>
+    <AppleButton
+      buttonStyle={AppleButton.Style.WHITE}
+      buttonType={AppleButton.Type.SIGN_IN}
+      style={{
+        width: '100%', // You must specify a width
+        height: 45, // You must specify a height
+      }}
+      onPress={handleSignInApple}
+    />
   );
-};
+}
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
-  },
-  section: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginVertical: 20,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    marginBottom: 10,
-  },
-});
-
-export default TestPage;
+export default AppleLogin;
