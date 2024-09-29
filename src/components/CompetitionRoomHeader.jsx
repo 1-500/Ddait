@@ -12,7 +12,7 @@ import { RADIUS } from '../constants/radius';
 import { SPACING } from '../constants/space';
 import CustomTag from './CustomTag';
 
-const CompetitionRoomHeader = ({ data, onDelete }) => {
+const CompetitionRoomHeader = ({ data, progress, onDelete }) => {
   const navigation = useNavigation();
   const startDate = dayjs(data.date.start_date);
   const endDate = dayjs(data.date.end_date);
@@ -59,7 +59,18 @@ const CompetitionRoomHeader = ({ data, onDelete }) => {
       </View>
       <View style={styles.periodWrapper}>
         <Text style={styles.periodText}>{`${startDate.format('YY.MM.DD')}~${endDate.format('YY.MM.DD')}`}</Text>
-        <Text style={styles.periodText}>{`🔥 D-${endDate.diff(dayjs(), 'days')}`}</Text>
+        <Text style={styles.periodText}>
+          {(() => {
+            switch (progress) {
+              case 'BEFORE':
+                return `🗓️ 시작 D-${startDate.diff(dayjs(), 'days')}`;
+              case 'IN_PROGRESS':
+                return `🔥 종료 D-${endDate.diff(dayjs(), 'days')}`;
+              case 'AFTER':
+                return '🎉 종료';
+            }
+          })()}
+        </Text>
       </View>
 
       <Modal transparent visible={showDropdown} onRequestClose={() => setShowDropdown(false)}>
