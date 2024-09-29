@@ -1,9 +1,9 @@
 import React, { useEffect, useRef } from 'react';
 import { Animated, StyleSheet, View } from 'react-native';
 
-import { COLORS } from '../../../constants/colors';
-import { RADIUS } from '../../../constants/radius';
-import { SPACING } from '../../../constants/space';
+import { COLORS } from '../constants/colors';
+import { RADIUS } from '../constants/radius';
+import { SPACING } from '../constants/space';
 
 const SkeletonLoader = ({ type }) => {
   const fadeAnim = useRef(new Animated.Value(0.3)).current;
@@ -74,6 +74,26 @@ const SkeletonLoader = ({ type }) => {
     </View>
   );
 
+  const renderCompetitionItem = () => (
+    <View style={styles.competitionContainer}>
+      <View style={{ gap: SPACING.xs }}>
+        <View style={styles.titleContainer}>
+          <AnimatedBlock style={{ width: 150, height: 24 }} />
+          <AnimatedBlock style={{ width: 30, height: 24 }} />
+        </View>
+        <View style={{ flexDirection: 'row', gap: SPACING.xxs }}>
+          <AnimatedBlock style={{ width: 60, height: 24 }} />
+          <AnimatedBlock style={{ width: 60, height: 24 }} />
+          <AnimatedBlock style={{ width: 60, height: 24 }} />
+        </View>
+        <AnimatedBlock style={{ width: 120, height: 20 }} />
+      </View>
+      <View style={styles.competitionMemberContainer}>
+        <AnimatedBlock style={{ width: 40, height: 24 }} />
+      </View>
+    </View>
+  );
+
   switch (type) {
     case 'header':
       return renderHeader();
@@ -81,6 +101,8 @@ const SkeletonLoader = ({ type }) => {
       return renderRankList();
     case 'myScore':
       return renderMyScore();
+    case 'competitionItem':
+      return renderCompetitionItem();
     default:
       return null;
   }
@@ -140,6 +162,24 @@ const styles = StyleSheet.create({
   },
   scoreItem: {
     marginBottom: 16,
+  },
+  competitionContainer: {
+    backgroundColor: COLORS.darkGrey,
+    paddingHorizontal: SPACING.lg,
+    paddingVertical: SPACING.md,
+    borderRadius: RADIUS.large,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  titleContainer: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    gap: SPACING.xs,
+  },
+  competitionMemberContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.xs,
   },
 });
 

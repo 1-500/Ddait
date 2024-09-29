@@ -14,6 +14,7 @@ import {
 import { getMyFriendsNotParticipant } from '../../apis/friend';
 import CompetitionRoomHeader from '../../components/CompetitionRoomHeader';
 import CustomAlert from '../../components/CustomAlert';
+import SkeletonLoader from '../../components/SkeletonLoader';
 import { COLORS } from '../../constants/colors';
 import { FONT_SIZES, FONTS } from '../../constants/font';
 import { useToastMessageStore } from '../../store/toastMessage/toastMessage';
@@ -21,7 +22,6 @@ import { getCompetitionProgress } from '../../utils/competition';
 import Invite from './rankingPageTabs/Invite';
 import MyScore from './rankingPageTabs/MyScore';
 import RankList from './rankingPageTabs/RankList';
-import SkeletonLoader from './rankingPageTabs/SkeletonLoader';
 
 /* eslint-disable */
 
