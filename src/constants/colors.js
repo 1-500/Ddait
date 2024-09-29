@@ -16,6 +16,8 @@ export const COLORS = {
   lightPurple: '#8B8BFF',
   lightGreen: '#4BD995',
 
+  darkBorder: '#303030',
+
   placeholder: '#888888',
 
   // Background colors
