@@ -2,7 +2,7 @@ import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import React, { useCallback, useState } from 'react';
 import { Alert, Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import { getFoodRecordByTime } from '../../../apis/food/index';
+import { deleteUserRecordFoodById, getFoodRecordByTime } from '../../../apis/food/index';
 import CustomButton from '../../../components/CustomButton';
 import HeaderComponents from '../../../components/HeaderComponents';
 import { COLORS } from '../../../constants/colors';
@@ -43,6 +43,21 @@ const FoodRecordDetail = () => {
   );
 
   const macroRatio = calculateNutrientRatios(foodRecordListState);
+
+  const handleDeleteFood = async (id) => {
+    try {
+      const response = await deleteUserRecordFoodById(id);
+      if (response.status === 200) {
+        const updatedList = foodRecordListState.filter((item) => item.id !== id);
+        setFoodRecordListState(updatedList);
+        Alert.alert(response.message);
+      } else {
+        throw new Error('음식을 삭제하지 못하였습니다.');
+      }
+    } catch (error) {
+      Alert.alert(error.message);
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -96,11 +111,13 @@ const FoodRecordDetail = () => {
           {foodRecordListState?.length > 0 ? (
             foodRecordListState.map((food) => {
               return (
-                <FoodInfoCard
+                <FoodItem
                   key={food.id}
+                  id={food.id}
                   name={food.name}
                   serving_size={food.serving_size}
                   calories={food.calories}
+                  onHandleDeleteFood={handleDeleteFood}
                 />
               );
             })
@@ -126,7 +143,7 @@ const FoodRecordDetail = () => {
   );
 };
 
-const FoodInfoCard = ({ name, calories, serving_size }) => {
+const FoodItem = ({ id, name, calories, serving_size, onHandleDeleteFood }) => {
   return (
     <View style={styles.foodItem}>
       <View>
@@ -135,7 +152,7 @@ const FoodInfoCard = ({ name, calories, serving_size }) => {
       </View>
       <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
         <Text style={styles.foodCalories}>{calories}kcal</Text>
-        <TouchableOpacity activeOpacity={0.6}>
+        <TouchableOpacity activeOpacity={0.6} onPress={() => onHandleDeleteFood(id)}>
           <Image source={MinusButtonIcon} style={{ width: 20, height: 20 }} />
         </TouchableOpacity>
       </View>

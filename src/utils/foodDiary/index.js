@@ -1,20 +1,20 @@
 export function calculateCarbsCalories(carbsPercentage, totalCalories) {
   const carbs = (carbsPercentage / 100) * totalCalories;
-  return Math.floor(carbs / 4); // 탄수화물의 그램 수 (정수로 변환)
+  return Math.round(carbs / 4); // 탄수화물의 그램 수 (정수로 변환)
 }
 
 export function calculateProteinCalories(proteinPercentage, totalCalories) {
   const protein = (proteinPercentage / 100) * totalCalories;
-  return Math.floor(protein / 4); // 단백질의 그램 수 (정수로 변환)
+  return Math.round(protein / 4); // 단백질의 그램 수 (정수로 변환)
 }
 
 export function calculateFatCalories(fatPercentage, totalCalories) {
   const fat = (fatPercentage / 100) * totalCalories;
-  return Math.floor(fat / 9); // 지방의 그램 수 (정수로 변환)
+  return Math.round(fat / 9); // 지방의 그램 수 (정수로 변환)
 }
 
 export function calculateTotalCalories(carbsGrams, proteinGrams, fatGrams) {
-  return Math.floor(carbsGrams * 4 + proteinGrams * 4 + fatGrams * 9); // 총 칼로리 (정수로 변환)
+  return Math.round(carbsGrams * 4 + proteinGrams * 4 + fatGrams * 9); // 총 칼로리 (정수로 변환)
 }
 
 export function getFormattedDate() {
@@ -31,10 +31,12 @@ export const getTotal = (array, key) => {
   if (!Array.isArray(array)) {
     return 0;
   }
-  return array.reduce((sum, item) => {
+  const total = array.reduce((sum, item) => {
     const value = item[key];
     return sum + (typeof value === 'number' ? value : 0);
   }, 0);
+
+  return parseFloat(total.toFixed(1));
 };
 export const calculateNutrientRatios = (array) => {
   if (!Array.isArray(array)) {
@@ -78,5 +80,21 @@ export function calculateTotalNutrition(mealNutritionInfo) {
     totalNutrition.totalFat += mealNutritionInfo[meal].totalFat || 0;
   }
 
+  // 각 총합을 반올림하여 소수점 없는 정수로 변환
+  totalNutrition.totalCalories = Math.round(totalNutrition.totalCalories);
+  totalNutrition.totalCarbs = Math.round(totalNutrition.totalCarbs);
+  totalNutrition.totalProtein = Math.round(totalNutrition.totalProtein);
+  totalNutrition.totalFat = Math.round(totalNutrition.totalFat);
+
   return totalNutrition;
+}
+export function calculateFoodNutrition(foodNutrition) {
+  const ratio = foodNutrition.amount / foodNutrition.serving_size; // 입력된 총량에 대한 비율
+
+  return {
+    carbs: Math.round(foodNutrition.carbs * ratio), // 정수로 반올림
+    protein: Math.round(foodNutrition.protein * ratio),
+    fat: Math.round(foodNutrition.fat * ratio),
+    calories: Math.round(foodNutrition.calories * ratio), // 칼로리도 정수로 반올림
+  };
 }

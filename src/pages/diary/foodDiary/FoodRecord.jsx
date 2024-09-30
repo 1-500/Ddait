@@ -2,13 +2,23 @@ import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import { Alert, Image, Modal, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import { createCustomFood, getUserBookMarkedFoodRecord, getUserCustomFoodRecord } from '../../../apis/food/index';
+import {
+  createCustomFood,
+  createFoodRecordByTime,
+  getUserBookMarkedFoodRecord,
+  getUserCustomFoodRecord,
+} from '../../../apis/food/index';
 import CustomButton from '../../../components/CustomButton';
 import CustomInput from '../../../components/CustomInput';
 import HeaderComponents from '../../../components/HeaderComponents';
 import { BACKGROUND_COLORS, COLORS, TEXT_COLORS } from '../../../constants/colors';
 import { FONT_SIZES, FONTS } from '../../../constants/font';
 import { RADIUS } from '../../../constants/radius';
+import useDiaryCalendarStore from '../../../store/food/calendar/index';
+import useSelectedFoodsStore from '../../../store/food/selectedFoods/index';
+import useSelectedFoodTimeStore from '../../../store/index';
+const PlusIcon = require('../../../assets/images/dietDiary/PluscircleWhiteButton.png');
+const checkIcon = require('../../../assets/images/dietDiary/checkIcon.png');
 
 const FoodRecord = () => {
   const [tag, setTag] = useState(['북마크', '직접등록']);
@@ -22,7 +32,11 @@ const FoodRecord = () => {
   const [customModalCaloriesState, setCustomModalCaloriesState] = useState('');
   const [customModalServingSizeState, setCustomModalServingSizeState] = useState('');
 
+  const { time } = useSelectedFoodTimeStore();
+  const { selected } = useDiaryCalendarStore();
+
   const [userFoodListState, setUserFoodListState] = useState([]);
+  const { foodList, removeFood, clearFoodNutrition } = useSelectedFoodsStore();
 
   useEffect(() => {
     const fetchUserFood = async () => {
@@ -44,6 +58,23 @@ const FoodRecord = () => {
     };
     fetchUserFood();
   }, [activeTag, isVisibleModal]);
+
+  const handleCheckedFoods = (food) => {
+    const isChecked = foodList.some((item) => item.id === food.id);
+    if (isChecked) {
+      removeFood(food.id);
+    } else {
+      navigation.navigate('FoodInfoScreen', {
+        id: food.id,
+        name: food.name,
+        serving_size: food.serving_size,
+        calories: food.calories,
+        carbs: food.carbs,
+        protein: food.protein,
+        fat: food.fat,
+      });
+    }
+  };
 
   const handleTag = (type) => {
     setActiveTag(type);
@@ -76,6 +107,27 @@ const FoodRecord = () => {
     return;
   };
 
+  const handleRecordButton = async () => {
+    try {
+      const response = await createFoodRecordByTime({
+        foodItems: foodList,
+        meal_time: time,
+        date: selected,
+      });
+      if (response.status === 200) {
+        Alert.alert(response.message);
+      } else {
+        throw new Error('음식을 기록하는데 실패하였습니다.');
+      }
+    } catch (error) {
+      Alert.alert(error.message);
+    }
+
+    clearFoodNutrition();
+    navigation.navigate('FoodDiary', {
+      screen: 'FoodDetailScreen',
+    });
+  };
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.darkBackground }}>
       <HeaderComponents title="음식 기록" />
@@ -104,8 +156,21 @@ const FoodRecord = () => {
         <ScrollView style={styles.foodListContainer}>
           {userFoodListState?.length > 0 ? (
             userFoodListState.map((food) => {
+              const isChecked = foodList.some((item) => item.id === food.id);
+
               return (
-                <FoodItem key={food.id} name={food.name} serving_size={food.serving_size} calories={food.calories} />
+                <FoodItem
+                  key={food.id}
+                  id={food.id}
+                  name={food.name}
+                  serving_size={food.serving_size}
+                  calories={food.calories}
+                  carbs={food.carbs}
+                  onHandleCheckedFoods={() => handleCheckedFoods(food)}
+                  protein={food.protein}
+                  fat={food.fat}
+                  isCheckFood={isChecked}
+                />
               );
             })
           ) : (
@@ -116,15 +181,17 @@ const FoodRecord = () => {
             </View>
           )}
         </ScrollView>
-
-        <View style={styles.buttonContainer}>
+        <View style={{ display: 'flex', gap: 10 }}>
+          <CustomButton size="large" text={`${foodList.length}개 선택됨`} theme="secondary" onPress={handleModal} />
           {activeTag === '직접등록' ? (
-            <>
+            <View style={styles.buttonContainer}>
               <CustomButton size="medium" text="직접 등록하기" theme="secondary" onPress={handleModal} />
-              <CustomButton size="medium" text="기록하기" theme="primary" />
-            </>
+              <CustomButton size="medium" text="기록하기" theme="primary" onPress={handleRecordButton} />
+            </View>
           ) : (
-            <CustomButton size="large" text="기록하기" theme="primary" />
+            <>
+              <CustomButton size="large" text="기록하기" theme="primary" onPress={handleRecordButton} />
+            </>
           )}
         </View>
       </View>
@@ -216,17 +283,21 @@ const FoodRecord = () => {
   );
 };
 
-const FoodItem = ({ name, serving_size, calories }) => {
+const FoodItem = ({ id, name, serving_size, calories, carbs, protein, fat, isCheckFood, onHandleCheckedFoods }) => {
+  const navigation = useNavigation();
   return (
-    <View style={styles.foodItem}>
+    <TouchableOpacity style={styles.foodItem}>
       <View>
         <Text style={{ color: 'white', marginBottom: 5, fontSize: FONT_SIZES.sm }}>{name}</Text>
         <Text style={{ color: COLORS.white }}>{serving_size}g</Text>
       </View>
       <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
         <Text style={{ color: 'white', marginRight: 10, fontSize: FONT_SIZES.sm }}>{calories}kcal</Text>
+        <TouchableOpacity activeOpacity={0.6} onPress={onHandleCheckedFoods}>
+          <Image source={isCheckFood ? checkIcon : PlusIcon} style={{ width: 24, height: 24 }} />
+        </TouchableOpacity>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 const styles = StyleSheet.create({
