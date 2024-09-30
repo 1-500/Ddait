@@ -93,5 +93,7 @@
 	<string>앨범 접근을 위해 권한이 필요합니다.</string>
 	<key>NSCameraUsageDescription</key>
 	<string>카메라 접근을 위해 권한이 필요합니다.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>사진을 저장하려고 합니다.</string>
 </dict>
 </plist>
