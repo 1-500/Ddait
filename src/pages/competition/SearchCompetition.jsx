@@ -14,6 +14,7 @@ import { COLORS } from '../../constants/colors';
 import { FONT_SIZES, FONTS } from '../../constants/font';
 import { RADIUS } from '../../constants/radius';
 import { LAYOUT_PADDING, SPACING } from '../../constants/space';
+import { getCompetitionProgress } from '../../utils/competition';
 import { formDate } from '../../utils/date';
 
 // 경쟁방 아이템 컴포넌트
@@ -73,7 +74,8 @@ const SearchCompetition = ({ navigation }) => {
     const fetchCompetitions = async () => {
       try {
         const result = await getAllCompetitions();
-        setCompetitions(result.data);
+        const activeCompetitions = result.data.filter((data) => getCompetitionProgress(data) !== 'AFTER');
+        setCompetitions(activeCompetitions);
       } catch (error) {
         Alert.alert('전체 경쟁방 목록을 불러오는데 실패했습니다', error.message);
       }
