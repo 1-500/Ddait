@@ -5,14 +5,18 @@ import { COLORS } from '../../../constants/colors';
 import { FONT_SIZES, FONTS } from '../../../constants/font';
 import { LAYOUT_PADDING, SPACING } from '../../../constants/space';
 
-const MyScore = ({ data }) => {
+const MyScore = ({ data, navigation }) => {
   const renderScoreItem = ({ item, index }) => {
     return (
-      <TouchableOpacity style={styles.scoreItemWrapper} activeOpacity={0.6}>
+      <TouchableOpacity
+        style={styles.scoreItemWrapper}
+        activeOpacity={0.6}
+        onPress={() => navigation.navigate('CompetitionRecordDetail', { score_detail: item })}
+      >
         <Text style={styles.exerciseNameText}>{item.name}</Text>
         <View style={{ gap: 4 }}>
           {item.diary[item.diary.length - 1]?.record.map((e, i) => (
-            <View style={styles.recordWrapper}>
+            <View style={styles.recordWrapper} key={`${index}|${e.set}`}>
               <Text style={styles.recordText}>{e.set}</Text>
               <Text style={styles.recordText}>{`${e.weight}kg × ${e.reps}회`}</Text>
             </View>
@@ -42,7 +46,7 @@ const MyScore = ({ data }) => {
           )
         }
         ListFooterComponent={<View style={{ height: 30 }} />}
-        ListEmptyComponent={<Text style={styles.emptyText}>아직 참가하지 않아 내 점수가 없어요..</Text>}
+        ListEmptyComponent={<Text style={styles.emptyText}>아직 내 점수가 없어요..</Text>}
         showsVerticalScrollIndicator={false}
       />
     </View>

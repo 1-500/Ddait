@@ -205,7 +205,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: SPACING.sm,
     borderBottomWidth: 1,
-    borderBottomColor: '#303030',
+    borderBottomColor: COLORS.darkBorder,
   },
   notificationWrapper: {
     flexDirection: 'row',

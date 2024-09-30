@@ -169,7 +169,7 @@ const RankList = ({ data, competitionData, progress, onJoin, onLeave }) => {
   };
 
   const renderRankItem = ({ item, index }) => {
-    if (progress === 'IN_PROGRESS') {
+    if (['IN_PROGRESS', 'AFTER'].includes(progress)) {
       return (
         <TouchableOpacity
           style={[
@@ -203,7 +203,7 @@ const RankList = ({ data, competitionData, progress, onJoin, onLeave }) => {
           )}
         </TouchableOpacity>
       );
-    } else if (progress === 'BEFORE') {
+    } else {
       return (
         <View
           style={[

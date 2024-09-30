@@ -7,6 +7,7 @@ import { setupFirebaseMessaging } from '../firebaseConfig';
 import BottomTab from './components/BottomTab';
 import Competition from './pages/competition/Competition';
 import CompetitionCreation from './pages/competition/CompetitionCreation/CompetitionCreation';
+import CompetitionRecordDetail from './pages/competition/CompetitionRecordDetail';
 import CompetitionRoom1VS1 from './pages/competition/CompetitionRoom1VS1';
 import CompetitionRoomRanking from './pages/competition/CompetitionRoomRanking';
 import SearchCompetition from './pages/competition/SearchCompetition';
@@ -132,6 +133,7 @@ const Router = () => {
       <Stack.Screen name="CompetitionCreation" component={CompetitionCreation} />
       <Stack.Screen name="CompetitionRoom1VS1" component={CompetitionRoom1VS1} />
       <Stack.Screen name="CompetitionRoomRanking" component={CompetitionRoomRanking} />
+      <Stack.Screen name="CompetitionRecordDetail" component={CompetitionRecordDetail} />
       <Stack.Screen name="FriendSearch" component={FriendSearch} />
       <Stack.Screen name="Test" component={Test} />
     </Stack.Navigator>
