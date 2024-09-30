@@ -1,6 +1,7 @@
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import React, { useCallback, useState } from 'react';
 import { Alert, Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { launchImageLibrary } from 'react-native-image-picker';
 
 import { deleteUserRecordFoodById, getFoodRecordByTime } from '../../../apis/food/index';
 import CustomButton from '../../../components/CustomButton';
@@ -20,6 +21,8 @@ const FoodRecordDetail = () => {
   const [foodRecordListState, setFoodRecordListState] = useState([]);
   const { time } = useSelectedFoodTimeStore();
   const { selected } = useDiaryCalendarStore();
+
+  const [images, setImages] = useState([]);
 
   useFocusEffect(
     useCallback(() => {
@@ -59,14 +62,29 @@ const FoodRecordDetail = () => {
     }
   };
 
+  const selectImages = () => {
+    launchImageLibrary({ mediaType: 'photo', selectionLimit: 0 }, (response) => {
+      if (response.didCancel) {
+        // console.log('사용자가 선택을 취소했습니다.');
+      } else if (response.error) {
+        // console.log('이미지 선택 중 오류 발생:', response.error);
+      } else {
+        const selectedImages = response.assets.map((asset) => asset.uri);
+        setImages(selectedImages);
+        // selectedImages.forEach(uri => uploadImage(uri)); // 서버에 업로드
+      }
+    });
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <HeaderComponents title={time} />
       <View style={styles.mainContainer}>
         <View style={styles.header}>
-          <TouchableOpacity activeOpacity={0.6}>
+          <TouchableOpacity activeOpacity={0.6} onPress={selectImages}>
             <Image source={PlusButtonIcon} style={styles.addButton} />
           </TouchableOpacity>
+
           <Text style={styles.addPhoto}>사진을 업로드하세요.</Text>
         </View>
 
