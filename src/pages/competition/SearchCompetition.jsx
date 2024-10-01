@@ -10,6 +10,7 @@ import CustomButton from '../../components/CustomButton';
 import CustomTag from '../../components/CustomTag';
 import DropdownModal from '../../components/DropdownModal';
 import HeaderComponents from '../../components/HeaderComponents';
+import SkeletonLoader from '../../components/SkeletonLoader';
 import { COLORS } from '../../constants/colors';
 import { FONT_SIZES, FONTS } from '../../constants/font';
 import { RADIUS } from '../../constants/radius';
@@ -69,15 +70,19 @@ const SearchCompetition = ({ navigation }) => {
   const [sortBy, setSortBy] = useState('');
   const [selectedTag, setSelectedTag] = useState('');
   const isFocused = useIsFocused();
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchCompetitions = async () => {
+      setIsLoading(true);
       try {
         const result = await getAllCompetitions();
         const activeCompetitions = result.data.filter((data) => getCompetitionProgress(data) !== 'AFTER');
         setCompetitions(activeCompetitions);
       } catch (error) {
         Alert.alert('전체 경쟁방 목록을 불러오는데 실패했습니다', error.message);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -171,6 +176,31 @@ const SearchCompetition = ({ navigation }) => {
     [navigation],
   );
 
+  const renderContent = () => {
+    if (isLoading) {
+      return (
+        <FlatList
+          data={[1]}
+          renderItem={() => <SkeletonLoader type="competitionItem" />}
+          keyExtractor={(item, index) => index.toString()}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ gap: SPACING.md, paddingBottom: 90 }}
+        />
+      );
+    }
+
+    return (
+      <FlatList
+        data={sortedCompetitions}
+        renderItem={renderCompetitions}
+        keyExtractor={(item) => item.id}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ gap: SPACING.md, paddingBottom: 90 }}
+        ListEmptyComponent={ListEmpty}
+      />
+    );
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <HeaderComponents title="경쟁 찾기" />
@@ -198,14 +228,7 @@ const SearchCompetition = ({ navigation }) => {
           />
         </View>
         {/* 경쟁 목록 */}
-        <FlatList
-          data={sortedCompetitions}
-          renderItem={renderCompetitions}
-          keyExtractor={(item) => item.id}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ gap: SPACING.md, paddingBottom: 90 }}
-          ListEmptyComponent={ListEmpty}
-        />
+        {renderContent()}
       </View>
     </SafeAreaView>
   );
