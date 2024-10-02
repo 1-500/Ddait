@@ -24,6 +24,7 @@ import Friend from './pages/friend/Friend';
 import FriendSearch from './pages/friend/FriendSearch';
 import Home from './pages/home/Home';
 import LoginPage from './pages/login/LoginPage';
+import FAQ from './pages/mypage/FAQ';
 import MyPage from './pages/mypage/MyPage';
 import ProfileEdit from './pages/mypage/ProfileEdit';
 import ProfilePrivacy from './pages/mypage/ProfilePrivacy';
@@ -137,6 +138,7 @@ const Router = () => {
       <Stack.Screen name="CompetitionRoomRanking" component={CompetitionRoomRanking} />
       <Stack.Screen name="CompetitionRecordDetail" component={CompetitionRecordDetail} />
       <Stack.Screen name="FriendSearch" component={FriendSearch} />
+      <Stack.Screen name="FAQ" component={FAQ} />
       <Stack.Screen name="Test" component={Test} />
     </Stack.Navigator>
   ); // 라우팅
