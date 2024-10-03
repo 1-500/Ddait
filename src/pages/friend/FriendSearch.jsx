@@ -5,10 +5,9 @@ import { searchUser } from '../../apis/friend/index';
 import FriendOptionBottomSheet from '../../components/BottomSheet/FriendOptionBottomSheet';
 import CustomAlert from '../../components/CustomAlert';
 import CustomButton from '../../components/CustomButton';
-import RecommendedFriends from '../../components/Friend/RecommendedFriends';
+import RecommendedFriends from '../../components/friend/RecommendedFriends';
 import SearchHeader from '../../components/Header/SearchHeader';
 import MemberProfileItem from '../../components/MemberProfileItem';
-import SectionTitle from '../../components/SectionTitle';
 import { COLORS } from '../../constants/colors';
 import { FONT_SIZES, FONTS } from '../../constants/font';
 import { ELEMENT_VERTICAL_MARGIN, LAYOUT_PADDING, SPACING } from '../../constants/space';
@@ -21,7 +20,7 @@ const FriendSearch = ({ navigation }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [error, setError] = useState('');
   const [selectedMemberData, setSelectedMemberData] = useState(null);
-  const [alertVisible, setAlertVisible] = useState(false);
+  const [, setAlertVisible] = useState(false);
   const [alertConfig, setAlertConfig] = useState({
     visible: false,
     title: '',
@@ -77,7 +76,6 @@ const FriendSearch = ({ navigation }) => {
               <Text style={styles.mdText}>주변에 있는 따잇러도 찾아보시지 않으실래요?</Text>
               <CustomButton style={styles.btnLayout} theme="primary" size="medium" text="지도에서 따잇러 찾기" />
             </View>
-            <SectionTitle title="추천 친구" />
             <RecommendedFriends onOpenOptions={handleOpenOptions} />
           </ScrollView>
         ) : (
