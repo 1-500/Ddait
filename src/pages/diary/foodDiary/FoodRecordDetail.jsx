@@ -1,5 +1,5 @@
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import React, { useCallback, useRef, useState } from 'react';
+import { useNavigation } from '@react-navigation/native';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Alert,
   Dimensions,
@@ -14,13 +14,14 @@ import {
 import { launchImageLibrary } from 'react-native-image-picker';
 import Carousel from 'react-native-reanimated-carousel';
 
-import { deleteUserRecordFoodById, getFoodRecordByTime } from '../../../apis/food/index';
+import { createFoodRecordByTime, getFoodRecordByTime } from '../../../apis/food/index';
 import CustomButton from '../../../components/CustomButton';
 import HeaderComponents from '../../../components/HeaderComponents';
 import { COLORS } from '../../../constants/colors';
 import { FONT_SIZES, FONTS } from '../../../constants/font';
 import { RADIUS } from '../../../constants/radius';
 import useDiaryCalendarStore from '../../../store/food/calendar/index';
+import useSelectedFoodsStore from '../../../store/food/selectedFoods/index';
 import useSelectedFoodTimeStore from '../../../store/index';
 import { calculateNutrientRatios, getTotal } from '../../../utils/foodDiary/index';
 
@@ -31,7 +32,8 @@ const width = Dimensions.get('window').width;
 
 const FoodRecordDetail = () => {
   const navigation = useNavigation();
-  const [foodRecordListState, setFoodRecordListState] = useState([]);
+
+  const { foodList, setFoodList } = useSelectedFoodsStore();
   const { time } = useSelectedFoodTimeStore();
   const { selected } = useDiaryCalendarStore();
 
@@ -39,38 +41,44 @@ const FoodRecordDetail = () => {
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const carouselRef = useRef(null);
 
-  useFocusEffect(
-    useCallback(() => {
-      const fetchFoodRecord = async () => {
-        try {
-          const result = await getFoodRecordByTime({
-            date: selected,
-            mealTime: time,
-          });
-          if (result.error) {
-            throw new Error(result.error);
-          }
-          setFoodRecordListState(result.data);
-        } catch (error) {
-          Alert.alert(error.message);
+  useEffect(() => {
+    const fetchFoodRecord = async () => {
+      try {
+        const result = await getFoodRecordByTime({
+          date: selected,
+          mealTime: time,
+        });
+        if (result.error) {
+          throw new Error(result.error);
         }
-      };
+        setFoodList(result.data);
+      } catch (error) {
+        Alert.alert(error.message);
+      }
+    };
 
-      fetchFoodRecord();
-    }, [selected, time]),
-  );
+    fetchFoodRecord();
+  }, [selected, time, setFoodList]);
 
-  const macroRatio = calculateNutrientRatios(foodRecordListState);
+  const macroRatio = useMemo(() => {
+    return calculateNutrientRatios(foodList);
+  }, [foodList]);
 
   const handleDeleteFood = async (id) => {
+    const updatedList = foodList.filter((item) => item.id !== id);
+    setFoodList(updatedList);
+  };
+  const handleConfirmButton = async () => {
     try {
-      const response = await deleteUserRecordFoodById(id);
+      const response = await createFoodRecordByTime({
+        foodItems: foodList,
+        meal_time: time,
+        date: selected,
+      });
       if (response.status === 200) {
-        const updatedList = foodRecordListState.filter((item) => item.id !== id);
-        setFoodRecordListState(updatedList);
         Alert.alert(response.message);
       } else {
-        throw new Error('음식을 삭제하지 못하였습니다.');
+        throw new Error('음식을 기록하는데 실패하였습니다.');
       }
     } catch (error) {
       Alert.alert(error.message);
@@ -149,13 +157,13 @@ const FoodRecordDetail = () => {
         <View style={styles.contentContainer}>
           <View style={styles.calorieContainer}>
             <Text style={styles.calorieText}>총 열량</Text>
-            <Text style={styles.calorieText}>{getTotal(foodRecordListState, 'calories')} kcal</Text>
+            <Text style={styles.calorieText}>{getTotal(foodList, 'calories')} kcal</Text>
           </View>
 
           <View style={styles.macroInfo}>
             {['carbs', 'protein', 'fat'].map((key, index) => (
               <Text key={key} style={styles.macroText}>
-                {index === 0 ? '탄' : index === 1 ? '단' : '지'} {getTotal(foodRecordListState, key)}g
+                {index === 0 ? '탄' : index === 1 ? '단' : '지'} {getTotal(foodList, key)}g
               </Text>
             ))}
           </View>
@@ -184,14 +192,14 @@ const FoodRecordDetail = () => {
           <View style={{ marginVertical: 10 }}>
             <Text style={styles.foodListTitle}>{time}</Text>
           </View>
-          {foodRecordListState?.length > 0 ? (
-            foodRecordListState?.map((food) => {
+          {Array.isArray(foodList) && foodList.length > 0 ? (
+            foodList.map((food) => {
               return (
                 <FoodItem
                   key={food.id}
                   id={food.id}
                   name={food.name}
-                  serving_size={food.serving_size}
+                  amount={food.amount || food.serving_size}
                   calories={food.calories}
                   onHandleDeleteFood={handleDeleteFood}
                 />
@@ -211,18 +219,18 @@ const FoodRecordDetail = () => {
           theme="primary"
           onPress={() => navigation.navigate('FoodDiary', { screen: 'FoodRecordScreen' })}
         />
-        <CustomButton size="medium" text="확인" theme="secondary" />
+        <CustomButton size="medium" text="확인" theme="secondary" onPress={handleConfirmButton} />
       </View>
     </SafeAreaView>
   );
 };
 
-const FoodItem = ({ id, name, calories, serving_size, onHandleDeleteFood }) => {
+const FoodItem = ({ id, name, calories, amount, onHandleDeleteFood }) => {
   return (
     <View style={styles.foodItem}>
       <View>
         <Text style={{ color: 'white', marginBottom: 5 }}>{name}</Text>
-        <Text style={{ color: COLORS.white }}>{serving_size}g</Text>
+        <Text style={{ color: COLORS.white }}>{amount}g</Text>
       </View>
       <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
         <Text style={styles.foodCalories}>{calories}kcal</Text>

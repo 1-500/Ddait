@@ -36,7 +36,7 @@ const FoodRecord = () => {
   const { selected } = useDiaryCalendarStore();
 
   const [userFoodListState, setUserFoodListState] = useState([]);
-  const { foodList, removeFood, clearFoodNutrition } = useSelectedFoodsStore();
+  const { foodList, removeFood } = useSelectedFoodsStore();
 
   useEffect(() => {
     const fetchUserFood = async () => {
@@ -60,7 +60,7 @@ const FoodRecord = () => {
   }, [activeTag, isVisibleModal]);
 
   const handleCheckedFoods = (food) => {
-    const isChecked = foodList.some((item) => item.id === food.id);
+    const isChecked = Array.isArray(foodList) && foodList.some((item) => item.id === food.id);
     if (isChecked) {
       removeFood(food.id);
     } else {
@@ -108,22 +108,6 @@ const FoodRecord = () => {
   };
 
   const handleRecordButton = async () => {
-    try {
-      const response = await createFoodRecordByTime({
-        foodItems: foodList,
-        meal_time: time,
-        date: selected,
-      });
-      if (response.status === 200) {
-        Alert.alert(response.message);
-      } else {
-        throw new Error('음식을 기록하는데 실패하였습니다.');
-      }
-    } catch (error) {
-      Alert.alert(error.message);
-    }
-
-    clearFoodNutrition();
     navigation.navigate('FoodDiary', {
       screen: 'FoodDetailScreen',
     });
@@ -154,10 +138,9 @@ const FoodRecord = () => {
           ))}
         </View>
         <ScrollView style={styles.foodListContainer}>
-          {userFoodListState?.length > 0 ? (
+          {Array.isArray(userFoodListState) && userFoodListState.length > 0 ? (
             userFoodListState.map((food) => {
-              const isChecked = foodList.some((item) => item.id === food.id);
-
+              const isChecked = Array.isArray(foodList) && foodList.some((item) => item.id === food.id);
               return (
                 <FoodItem
                   key={food.id}
