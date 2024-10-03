@@ -17,7 +17,7 @@ import RequestSent from './friendPageTabs/RequestSent';
 const Friend = ({ navigation }) => {
   const isFocused = useIsFocused();
   const route = useRoute();
-  const initialIndex = route.params?.initialIndex;
+  const initialIndex = route.params?.initialIndex || 0;
   const [myFriends, setMyFriends] = useState([]);
   const [reqSent, setReqSent] = useState([]);
   const [reqReceived, setReqReceived] = useState([]);
@@ -33,7 +33,7 @@ const Friend = ({ navigation }) => {
     onConfirm: null,
     showCancel: true,
   });
-  const [index, setIndex] = useState(initialIndex || 0);
+  const [index, setIndex] = useState(initialIndex);
   const [routes] = useState([
     { key: 'myFriends', title: '내 친구' },
     { key: 'reqReceived', title: '받은 신청' },
