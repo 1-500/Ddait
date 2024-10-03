@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Dimensions, FlatList, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
@@ -8,30 +8,34 @@ import { FONT_SIZES, FONTS } from '../../constants/font';
 
 const { width } = Dimensions.get('window');
 
-const data = [
-  {
-    question:
-      '질문 1 질문 1 질문 1 질문 1 질문 1 질문 1 질문 1 질문 1 질문 1 질문 1 질문 1 질문 1 질문 1 질문 1 질문 1 ',
-    answer: '답변 1 답변 1 답변 1 답변 1 답변 1 답변 1 답변 1 답변 1 답변 1 답변 1 답변 1 답변 1 답변 1 답변 1 답변 1 ',
-  },
-  {
-    question: '질문 2',
-    answer: '답변 2',
-  },
-  {
-    question: '질문 3',
-    answer: '답변 3',
-  },
-];
-
 const FAQ = () => {
-  const [isItemOpen, setIsItemOpen] = useState([Array.from({ length: data.length }, () => false)]);
+  const data = useMemo(
+    () => [
+      {
+        question:
+          '질문 1 질문 1 질문 1 질문 1 질문 1 질문 1 질문 1 질문 1 질문 1 질문 1 질문 1 질문 1 질문 1 질문 1 질문 1 ',
+        answer:
+          '답변 1 답변 1 답변 1 답변 1 답변 1 답변 1 답변 1 답변 1 답변 1 답변 1 답변 1 답변 1 답변 1 답변 1 답변 1 ',
+      },
+      {
+        question: '질문 2',
+        answer: '답변 2',
+      },
+      {
+        question: '질문 3',
+        answer: '답변 3',
+      },
+    ],
+    [],
+  );
 
-  // useEffect(() => {
-  //   if (data) {
-  //     setIsItemOpen(Array.from({ length: data.length }, () => false));
-  //   }
-  // }, [data]);
+  const [isItemOpen, setIsItemOpen] = useState([]);
+
+  useEffect(() => {
+    if (data) {
+      setIsItemOpen(Array.from({ length: data.length }, () => false));
+    }
+  }, [data]);
 
   const renderQuestionItem = ({ item, index }) => {
     return (
