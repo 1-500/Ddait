@@ -1,9 +1,9 @@
 import React, { useEffect, useRef } from 'react';
 import { Animated, StyleSheet, View } from 'react-native';
 
-import { COLORS } from '../../../constants/colors';
-import { RADIUS } from '../../../constants/radius';
-import { SPACING } from '../../../constants/space';
+import { COLORS } from '../../constants/colors';
+import { RADIUS } from '../../constants/radius';
+import { SPACING } from '../../constants/space';
 
 const SkeletonLoader = ({ type }) => {
   const fadeAnim = useRef(new Animated.Value(0.3)).current;
@@ -61,17 +61,24 @@ const SkeletonLoader = ({ type }) => {
 
   const renderRankList = () => (
     <View style={styles.rankList}>
-      <AnimatedBlock style={[styles.rankItem, { height: 160 }]} borderRadius={RADIUS.large} />
-      <AnimatedBlock style={[styles.rankItem, { height: 70 }]} borderRadius={RADIUS.large} />
+      <AnimatedBlock style={[styles.listItem, { height: 160 }]} borderRadius={RADIUS.large} />
+      <AnimatedBlock style={[styles.listItem, { height: 70 }]} borderRadius={RADIUS.large} />
     </View>
   );
 
   const renderMyScore = () => (
     <View style={styles.myScore}>
-      <AnimatedBlock style={[styles.scoreItem, { height: 100 }]} borderRadius={RADIUS.large} />
-      <AnimatedBlock style={[styles.scoreItem, { height: 100 }]} borderRadius={RADIUS.large} />
-      <AnimatedBlock style={[styles.scoreItem, { height: 100 }]} borderRadius={RADIUS.large} />
+      <AnimatedBlock style={[styles.listItem, { height: 100 }]} borderRadius={RADIUS.large} />
+      <AnimatedBlock style={[styles.listItem, { height: 100 }]} borderRadius={RADIUS.large} />
+      <AnimatedBlock style={[styles.listItem, { height: 100 }]} borderRadius={RADIUS.large} />
     </View>
+  );
+  const renderList = () => (
+    <>
+      <AnimatedBlock style={[styles.listItem, { height: 80 }]} borderRadius={RADIUS.large} />
+      <AnimatedBlock style={[styles.listItem, { height: 80 }]} borderRadius={RADIUS.large} />
+      <AnimatedBlock style={[styles.listItem, { height: 80 }]} borderRadius={RADIUS.large} />
+    </>
   );
 
   switch (type) {
@@ -81,6 +88,8 @@ const SkeletonLoader = ({ type }) => {
       return renderRankList();
     case 'myScore':
       return renderMyScore();
+    case 'list':
+      return renderList();
     default:
       return null;
   }
@@ -130,15 +139,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     marginTop: 30,
   },
-  rankItem: {
-    marginBottom: 16,
-  },
   myScore: {
     paddingHorizontal: 20,
     marginTop: 30,
     padding: 16,
   },
-  scoreItem: {
+  listItem: {
     marginBottom: 16,
   },
 });

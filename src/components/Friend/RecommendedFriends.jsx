@@ -5,6 +5,8 @@ import { getRecommendFriend } from '../../apis/friend/index';
 import { COLORS } from '../../constants/colors';
 import { FONT_SIZES, FONTS } from '../../constants/font';
 import { useToastMessageStore } from '../../store/toastMessage/toastMessage';
+import SectionTitle from '../common/SectionTitle';
+import SkeletonLoader from '../common/SkeletonLoader';
 import MemberProfileItem from '../MemberProfileItem';
 
 const RecommendedFriends = ({ onOpenOptions }) => {
@@ -47,7 +49,8 @@ const RecommendedFriends = ({ onOpenOptions }) => {
 
   return (
     <View style={styles.container}>
-      {loading && <Text style={styles.loadingText}>로딩 중...</Text>}
+      <SectionTitle title="추천 친구" />
+      {loading && <SkeletonLoader type="list" />}
       <FlatList
         data={recommendFriends}
         renderItem={renderItem}

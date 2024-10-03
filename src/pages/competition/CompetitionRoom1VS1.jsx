@@ -12,6 +12,7 @@ import {
 } from '../../apis/competition';
 import { getCompetitionRecord } from '../../apis/competition';
 import { getMyFriendsNotParticipant } from '../../apis/friend';
+import SkeletonLoader from '../../components/common/SkeletonLoader';
 import CompetitionRoomHeader from '../../components/CompetitionRoomHeader';
 import CustomAlert from '../../components/CustomAlert';
 import { COLORS } from '../../constants/colors';
@@ -21,7 +22,6 @@ import { getCompetitionProgress } from '../../utils/competition';
 import Invite from './rankingPageTabs/Invite';
 import MyScore from './rankingPageTabs/MyScore';
 import Score1VS1 from './rankingPageTabs/Score1VS1';
-import SkeletonLoader from './rankingPageTabs/SkeletonLoader';
 
 /* eslint-disable */
 

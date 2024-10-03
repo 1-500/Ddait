@@ -25,7 +25,7 @@ const Friend = ({ navigation }) => {
   const [selectedRelation, setSelectedRelation] = useState(null);
   const bottomSheetRef = useRef(null);
   const { showToast } = useToastMessageStore();
-  const [alertVisible, setAlertVisible] = useState(false); // Alert 표시 여부
+  const [, setAlertVisible] = useState(false); // Alert 표시 여부
   const [alertConfig, setAlertConfig] = useState({
     visible: false,
     title: '',
