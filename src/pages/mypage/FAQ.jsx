@@ -1,35 +1,36 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import { useIsFocused } from '@react-navigation/native';
+import React, { useEffect, useState } from 'react';
 import { Dimensions, FlatList, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
+import { getFAQ } from '../../apis/faq';
 import HeaderComponents from '../../components/HeaderComponents';
 import { COLORS } from '../../constants/colors';
 import { FONT_SIZES, FONTS } from '../../constants/font';
+import { useToastMessageStore } from '../../store/toastMessage/toastMessage';
+
+/* eslint-disable */
 
 const { width } = Dimensions.get('window');
 
 const FAQ = () => {
-  const data = useMemo(
-    () => [
-      {
-        question:
-          '질문 1 질문 1 질문 1 질문 1 질문 1 질문 1 질문 1 질문 1 질문 1 질문 1 질문 1 질문 1 질문 1 질문 1 질문 1 ',
-        answer:
-          '답변 1 답변 1 답변 1 답변 1 답변 1 답변 1 답변 1 답변 1 답변 1 답변 1 답변 1 답변 1 답변 1 답변 1 답변 1 ',
-      },
-      {
-        question: '질문 2',
-        answer: '답변 2',
-      },
-      {
-        question: '질문 3',
-        answer: '답변 3',
-      },
-    ],
-    [],
-  );
-
+  const { showToast } = useToastMessageStore();
+  const isFocused = useIsFocused();
+  const [data, setData] = useState();
   const [isItemOpen, setIsItemOpen] = useState([]);
+
+  useEffect(() => {
+    const fetchFAQ = async () => {
+      try {
+        const result = await getFAQ();
+        setData(result.data);
+      } catch (error) {
+        showToast('FAQ 정보 조회 실패', 'error');
+      }
+    };
+
+    fetchFAQ();
+  }, [isFocused]);
 
   useEffect(() => {
     if (data) {
@@ -64,6 +65,7 @@ const FAQ = () => {
         data={data}
         keyExtractor={(item, index) => index}
         renderItem={renderQuestionItem}
+        ListEmptyComponent={<Text style={styles.emptyText}>아직 질문이 없어요..</Text>}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ gap: 16 }}
       />
@@ -103,5 +105,10 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.darkGreyBackground,
     padding: 16,
     borderRadius: 8,
+  },
+  emptyText: {
+    fontSize: FONT_SIZES.md,
+    fontFamily: FONTS.PRETENDARD[600],
+    color: COLORS.white,
   },
 });
