@@ -1,4 +1,3 @@
-import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { useIsFocused, useRoute } from '@react-navigation/native';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { SafeAreaView, StyleSheet } from 'react-native';
@@ -62,11 +61,13 @@ const Friend = ({ navigation }) => {
 
   const fetchData = useCallback(async () => {
     try {
-      const friends = await getMyFriends();
+      const [friends, sentRequests, receivedRequests] = await Promise.all([
+        getMyFriends(),
+        getReqSent(),
+        getReqReceived(),
+      ]);
       setMyFriends(friends.data);
-      const sentRequests = await getReqSent();
       setReqSent(sentRequests.data);
-      const receivedRequests = await getReqReceived();
       setReqReceived(receivedRequests.data);
     } catch (error) {
       showToast('🚫 문제 발생! 다시 시도해주세요.', 'error', 'top');
@@ -86,6 +87,7 @@ const Friend = ({ navigation }) => {
   const hideAlert = () => {
     setAlertConfig((prev) => ({ ...prev, visible: false }));
   };
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <HeaderComponents icon="search" title="친구 목록" onRightBtnPress={() => navigation.navigate('FriendSearch')} />
