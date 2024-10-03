@@ -10,9 +10,11 @@ import { FONT_SIZES, FONTS, HEADER_FONT_SIZES } from '../../constants/font';
 import { RADIUS } from '../../constants/radius';
 import { LAYOUT_PADDING, SPACING } from '../../constants/space';
 import useUserStore from '../../store/sign/login';
+import { getCompetitionProgress } from '../../utils/competition';
 
 const Competition = ({ navigation }) => {
   const [myCompetitions, setMyCompetitions] = useState([]);
+  const [activeCompetitions, setActiveCompetitions] = useState([]);
   const nickname = useUserStore((state) => state.nickname);
   const isFocused = useIsFocused();
 
@@ -21,6 +23,9 @@ const Competition = ({ navigation }) => {
       try {
         const result = await getMyCompetition();
         setMyCompetitions(result.data);
+
+        const active = result.data.filter((data) => getCompetitionProgress(data) !== 'AFTER');
+        setActiveCompetitions(active);
       } catch (error) {
         Alert.alert('내 경쟁방 목록을 불러오는데 실패했습니다', error.message);
       }
@@ -97,12 +102,12 @@ const Competition = ({ navigation }) => {
       <View style={{ ...LAYOUT_PADDING }}>
         <FlatList
           ListHeaderComponent={ListHeader}
-          data={myCompetitions}
+          data={activeCompetitions}
           renderItem={renderCompetitions}
           keyExtractor={(item) => item.id}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ gap: SPACING.md }}
-          ListFooterComponent={myCompetitions.length > 0 ? ListFooter : null}
+          ListFooterComponent={activeCompetitions.length > 0 ? ListFooter : null}
           ListEmptyComponent={ListEmpty}
         />
       </View>
