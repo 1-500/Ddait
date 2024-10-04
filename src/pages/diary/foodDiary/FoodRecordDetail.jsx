@@ -4,6 +4,7 @@ import {
   Alert,
   Dimensions,
   Image,
+  Platform,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -13,13 +14,15 @@ import {
 } from 'react-native';
 import { launchImageLibrary } from 'react-native-image-picker';
 import Carousel from 'react-native-reanimated-carousel';
+import uuid from 'react-native-uuid';
 
-import { createFoodRecordByTime, getFoodRecordByTime } from '../../../apis/food/index';
+import { createFoodRecordByTime, getFoodRecordByTime, postUserRecordImages } from '../../../apis/food/index';
 import CustomButton from '../../../components/CustomButton';
 import HeaderComponents from '../../../components/HeaderComponents';
 import { COLORS } from '../../../constants/colors';
 import { FONT_SIZES, FONTS } from '../../../constants/font';
 import { RADIUS } from '../../../constants/radius';
+import { supabase } from '../../../lib/supabaseClient';
 import useDiaryCalendarStore from '../../../store/food/calendar/index';
 import useSelectedFoodsStore from '../../../store/food/selectedFoods/index';
 import useSelectedFoodTimeStore from '../../../store/index';
@@ -39,6 +42,7 @@ const FoodRecordDetail = () => {
 
   const [images, setImages] = useState([]);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [foodRecordId, setFoodRecordId] = useState(undefined);
   const carouselRef = useRef(null);
 
   useEffect(() => {
@@ -52,6 +56,7 @@ const FoodRecordDetail = () => {
           throw new Error(result.error);
         }
         setFoodList(result.data);
+        setFoodRecordId(result.id);
       } catch (error) {
         Alert.alert(error.message);
       }
@@ -68,8 +73,18 @@ const FoodRecordDetail = () => {
     const updatedList = foodList.filter((item) => item.id !== id);
     setFoodList(updatedList);
   };
+
   const handleConfirmButton = async () => {
     try {
+      if (images.length > 0) {
+        const uploadPromises = images.map((uri) => uploadImage(uri));
+        const results = await Promise.all(uploadPromises);
+        const errorMessages = results.filter((message) => !message.includes('성공')); // 성공 메시지가 아닌 경우 필터링
+        if (errorMessages.length > 0) {
+          Alert.alert(errorMessages[0]); // 오류 알림
+          return;
+        }
+      }
       const response = await createFoodRecordByTime({
         foodItems: foodList,
         meal_time: time,
@@ -94,7 +109,6 @@ const FoodRecordDetail = () => {
       } else {
         const selectedImages = response.assets.map((asset) => asset.uri);
         setImages(selectedImages);
-        // selectedImages.forEach(uri => uploadImage(uri)); // 서버에 업로드
       }
     });
   };
@@ -117,6 +131,38 @@ const FoodRecordDetail = () => {
     });
   };
 
+  const uploadImage = async (uri) => {
+    if (foodRecordId === undefined) {
+      return '등록된 음식이 존재하지 않습니다!';
+    }
+    const imageName = uuid.v4(); // 고유한 이미지 이름 생성
+    const uriParts = uri.split('.');
+    const fileType = uriParts[uriParts.length - 1];
+    const filePath = Platform.OS === 'ios' ? uri.replace('file://', '') : uri;
+
+    const file = {
+      uri: filePath,
+      type: `image/${fileType}`,
+      name: `${imageName}.${fileType}`,
+    };
+
+    try {
+      const { data, error } = await supabase.storage.from('food_record_images').upload(`images/${imageName}`, file, {
+        cacheControl: '3600',
+        upsert: false,
+      });
+
+      if (error) {
+        throw new Error('이미지 업로드에 실패했습니다.');
+      }
+      // 이미지 업로드 성공 하면 테이블에 이미지 이름 저장 하는 API 요청
+
+      return '이미지 업로드 성공';
+    } catch (error) {
+      Alert.alert(error.message);
+      return error.message;
+    }
+  };
   return (
     <SafeAreaView style={styles.container}>
       <HeaderComponents title={time} />
