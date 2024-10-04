@@ -1,126 +1,181 @@
 import { useNavigation } from '@react-navigation/native';
-import React, { useEffect, useState } from 'react';
-import { SafeAreaView, ScrollView, StyleSheet, View } from 'react-native';
+import React, { useState } from 'react';
+import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
 
 import { emailAccountId } from '../../apis/signup/index';
+import CustomAlert from '../../components/CustomAlert';
 import CustomButton from '../../components/CustomButton';
 import HeaderComponents from '../../components/HeaderComponents';
-import BirthDayRegisterForm from '../../components/signup/BirthDayRegisterForm';
-import CompleteRegisterForm from '../../components/signup/CompleteRegisterForm';
-import EmailRegisterForm from '../../components/signup/EmailRegisterForm';
-import GenderRegisterForm from '../../components/signup/GenderRegisterForm';
-import MyPositionRegisterForm from '../../components/signup/MyPositionRegisterForm';
-import NicknameRegisterForm from '../../components/signup/NicknameRegisterForm';
-import PreferedSportRegisterForm from '../../components/signup/PreferedSportRegisterForm';
+import EmailForm from '../../components/signup/EmailForm';
+import NicknameForm from '../../components/signup/NicknameForm';
+import PasswordForm from '../../components/signup/PasswordForm';
+import TosForm from '../../components/signup/TosForm';
 import StepIndicator from '../../components/StepIndicator';
-import { BACKGROUND_COLORS } from '../../constants/colors';
-import useUserStore from '../../store/sign/login';
+import { BACKGROUND_COLORS, COLORS } from '../../constants/colors';
+import { FONT_SIZES, FONTS } from '../../constants/font';
+import { ELEMENT_VERTICAL_MARGIN, LAYOUT_PADDING } from '../../constants/space';
 import useUserFormStore from '../../store/sign/signup';
 
-const registrationForms = {
-  1: {
-    component: <EmailRegisterForm />,
-    title: '이메일 회원가입',
+const steps = [
+  {
+    step: 1,
+    component: EmailForm,
+    title: '따잇에서 사용할 \n이메일을 입력해 주세요',
+    subTitle: '로그인에 사용될 정확한 이메일을 입력해주세요',
   },
-  2: {
-    component: <NicknameRegisterForm />,
-    title: '닉네임 입력',
+  { step: 2, component: PasswordForm, title: '비밀번호를 입력하세요!' },
+  {
+    step: 3,
+    component: NicknameForm,
+    title: '어떻게 불러드릴까요?',
+    subTitle: '앱에서 사용할 닉네임을 알려주세요.',
   },
-  3: {
-    component: <BirthDayRegisterForm />,
-    title: '생년월일 입력',
+  {
+    step: 4,
+    component: TosForm,
+    title: '원활한 서비스 이용을 위해\n약관에 동의해주세요.',
+    subTitle: '회원가입의 마지막단계입니다.',
   },
-  4: {
-    component: <MyPositionRegisterForm />,
-    title: '사용자 위치',
-  },
-  5: {
-    component: <PreferedSportRegisterForm />,
-    title: '선호 운동',
-  },
-  6: {
-    component: <GenderRegisterForm />,
-    title: '성별 선택',
-  },
-  7: {
-    component: <CompleteRegisterForm />,
-    title: '따잇',
-  },
-};
+];
 
 const SignUpPage = () => {
-  const [step, setStep] = useState(1);
-
+  const [currentStep, setCurrentStep] = useState(1);
   const navigation = useNavigation();
+  const [alertConfig, setAlertConfig] = useState({
+    visible: false,
+    title: '',
+    message: '',
+    onConfirm: null,
+    showCancel: true,
+  });
 
-  const handleStepChange = (newStep) => {
-    setStep(newStep);
+  const hideAlert = () => {
+    setAlertConfig((prev) => ({ ...prev, visible: false }));
   };
 
-  const handleNextStep = async () => {
-    if (step < 7) {
-      setStep(step + 1);
+  const { email, password, nickname, tosAgreement, setTosAgreement } = useUserFormStore((state) => ({
+    email: state.email,
+    password: state.password,
+    nickname: state.nickname,
+    tosAgreement: state.tosAgreement,
+    setTosAgreement: state.setTosAgreement,
+  }));
+
+  const currentStepData = steps.find((step) => step.step === currentStep);
+  const CurrentStepComponent = currentStepData.component;
+
+  const goToPrevStep = () => setCurrentStep((prev) => Math.max(prev - 1, 1));
+  const goToNextStep = () => setCurrentStep((prev) => Math.min(prev + 1, steps.length));
+  const handleStepChange = (newStep) => setCurrentStep(newStep);
+
+  const handleSubmit = async () => {
+    if (!tosAgreement) {
+      setAlertConfig({
+        visible: true,
+        title: '오류 발생',
+        message: '모든 약관에 동의해주세요.',
+        onConfirm: hideAlert,
+        showCancel: false,
+      });
+      return;
+    }
+
+    try {
+      const response = await emailAccountId({ email, password, nickname, tosAgreement });
+
+      if (response.status === 200) {
+        navigation.navigate('Sign', { screen: 'Login' });
+      }
+    } catch (error) {
+      setAlertConfig({
+        visible: true,
+        title: '오류 발생',
+        message: '회원가입 중 오류가 발생했습니다. 다시 시도해주세요.',
+        onConfirm: hideAlert,
+        showCancel: false,
+      });
     }
   };
 
-  const handlePrevStep = () => {
-    if (step > 1) {
-      setStep(step - 1);
-    }
+  const handleTosSubmit = (agreement) => {
+    setTosAgreement(agreement); // tosAgreement 상태 업데이트
+    goToNextStep();
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <HeaderComponents title={registrationForms[step].title} />
-      <ScrollView contentContainerStyle={styles.scrollView}>
-        <View style={styles.content}>
-          <StepIndicator currentStep={step} steps={7} onPress={handleStepChange} />
-          {registrationForms[step].component}
+    <SafeAreaView style={styles.safeAreaView}>
+      <HeaderComponents title="경쟁 생성하기" />
+
+      <View style={styles.container}>
+        <StepIndicator currentStep={currentStep} steps={steps.length} onPress={handleStepChange} />
+
+        <View style={styles.headerContainer}>
+          <Text style={styles.titleText}>
+            {typeof currentStepData.title === 'function' ? currentStepData.title(nickname) : currentStepData.title}
+          </Text>
+          {currentStepData.subTitle && <Text style={styles.subTitleText}>{currentStepData.subTitle}</Text>}
         </View>
-      </ScrollView>
-      <View style={styles.buttonContainer}>
-        {step !== 7 ? (
-          <>
-            <CustomButton theme="secondary" size="medium" text="이전" onPress={handlePrevStep} />
-            <CustomButton theme="primary" size="medium" text="다음" onPress={handleNextStep} />
-          </>
+
+        <CurrentStepComponent onSubmit={handleTosSubmit} />
+
+        {currentStep < steps.length ? (
+          <View style={styles.btnWrapper}>
+            <CustomButton theme="secondary" size="medium" text="이전" onPress={goToPrevStep} />
+            <CustomButton theme="primary" size="medium" text="다음" onPress={goToNextStep} />
+          </View>
         ) : (
-          <CustomButton
-            theme="primary"
-            size="large"
-            text="바로 따잇하러 가기"
-            onPress={() =>
-              navigation.navigate('Sign', {
-                screen: 'Login',
-              })
-            }
-          />
+          <View style={styles.btnWrapper}>
+            <CustomButton
+              theme={tosAgreement ? 'primary' : 'block'} // 약관 동의 여부에 따른 버튼 상태 변경
+              size="large"
+              text="따잇 시작하기"
+              onPress={handleSubmit}
+            />
+          </View>
         )}
+
+        <CustomAlert
+          visible={alertConfig.visible}
+          title={alertConfig.title}
+          message={alertConfig.message}
+          onConfirm={alertConfig.onConfirm}
+          onCancel={hideAlert}
+          showCancel={alertConfig.showCancel !== false}
+          goBackOnConfirm={alertConfig.goBackOnConfirm}
+        />
       </View>
     </SafeAreaView>
   );
 };
-
 const styles = StyleSheet.create({
-  container: {
+  safeAreaView: {
     flex: 1,
     backgroundColor: BACKGROUND_COLORS.dark,
   },
-
-  scrollView: {
-    flexGrow: 1,
-  },
-  content: {
+  container: {
     flex: 1,
-    paddingHorizontal: '5%',
-    paddingTop: '10%',
-    paddingBottom: '5%',
+    ...LAYOUT_PADDING,
+    ...ELEMENT_VERTICAL_MARGIN,
   },
-  buttonContainer: {
+  headerContainer: {
+    marginVertical: 28,
+    gap: 10,
+  },
+  titleText: {
+    color: COLORS.white,
+    fontSize: FONT_SIZES.xl,
+    fontFamily: FONTS.PRETENDARD[500],
+  },
+  subTitleText: {
+    color: COLORS.semiLightGrey,
+    fontSize: 16,
+    fontFamily: FONTS.PRETENDARD[400],
+  },
+  btnWrapper: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingHorizontal: '5%',
-    paddingVertical: '5%',
+    marginTop: 'auto',
+    gap: 10,
   },
 });
 
