@@ -14,6 +14,7 @@ import {
 import { emailLogin } from '../../apis/login/index';
 import CustomButton from '../../components/CustomButton';
 import CustomInput from '../../components/CustomInput';
+import AppleLogin from '../../components/Login/AppleLogin';
 import { COLORS } from '../../constants/colors';
 import { FONT_SIZES, FONTS, HEADER_FONT_SIZES } from '../../constants/font';
 import { LAYOUT_PADDING } from '../../constants/space';
@@ -170,9 +171,7 @@ const LoginPage = () => {
               >
                 <Image source={GoogleIcon} style={styles.snsIcon} />
               </TouchableOpacity>
-              <TouchableOpacity activeOpacity={0.6}>
-                <Image source={AppleIcon} style={styles.snsIcon} />
-              </TouchableOpacity>
+              <AppleLogin />
             </View>
             <TouchableOpacity activeOpacity={0.6}>
               <Text style={styles.viewText}>구경만 할래요</Text>
