@@ -7,7 +7,7 @@ import { FONTS } from '../../constants/font';
 import useUserStore from '../../store/sign/login';
 import useUserFormStore from '../../store/sign/signup';
 
-const CompleteRegisterForm = () => {
+const CompletePage = () => {
   const { email, password, nickname, position, preferredSport, gender, selectedDate, clearForm } = useUserFormStore();
   const { socialEmail } = useUserStore();
   const navigation = useNavigation();
@@ -81,4 +81,4 @@ const styles = StyleSheet.create({
     marginTop: 15,
   },
 });
-export default CompleteRegisterForm;
+export default CompletePage;
