@@ -5,6 +5,8 @@ import axios from 'axios';
 import React from 'react';
 import { Alert, Image, StyleSheet, TouchableOpacity } from 'react-native';
 
+import { postAppleLogin } from '../../apis/socialLogin';
+
 const AppleIcon = require('../../assets/images/login/appleIcon.png');
 
 const AppleLogin = () => {
@@ -22,12 +24,7 @@ const AppleLogin = () => {
       const credentialState = await appleAuth.getCredentialStateForUser(user);
 
       if (credentialState === appleAuth.State.AUTHORIZED) {
-        const response = await axios.post('http://localhost:3000/api/social/login/apple', {
-          identityToken,
-          user,
-          email,
-          fullName,
-        });
+        const response = await postAppleLogin(identityToken, user, email, fullName);
 
         if (response.data.success) {
           navigation.navigate('MainTab', { screen: 'Home' });
