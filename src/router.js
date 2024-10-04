@@ -30,7 +30,6 @@ import Notification from './pages/notification/Notification';
 import SignUpPage from './pages/signup/SignUpPage';
 import SocialLogin from './pages/socialLogin/SocialLogin';
 import Splash from './pages/splash/Splash';
-import Test from './pages/Test';
 import { useToastMessageStore } from './store/toastMessage/toastMessage';
 
 const Stack = createStackNavigator();
@@ -133,7 +132,6 @@ const Router = () => {
       <Stack.Screen name="CompetitionRoom1VS1" component={CompetitionRoom1VS1} />
       <Stack.Screen name="CompetitionRoomRanking" component={CompetitionRoomRanking} />
       <Stack.Screen name="FriendSearch" component={FriendSearch} />
-      <Stack.Screen name="Test" component={Test} />
     </Stack.Navigator>
   ); // 라우팅
 };
