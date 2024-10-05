@@ -103,3 +103,9 @@ export const postUserFoodRecordImage = async (data) => {
     throw error;
   }
 };
+export const getUserFoodRecordImages = async (id) => {
+  try {
+    const response = await API.get(`food/record/image?id=${id}`);
+    return response.data;
+  } catch (error) {}
+};

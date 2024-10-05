@@ -16,7 +16,12 @@ import { launchImageLibrary } from 'react-native-image-picker';
 import Carousel from 'react-native-reanimated-carousel';
 import uuid from 'react-native-uuid';
 
-import { createFoodRecordByTime, getFoodRecordByTime, postUserFoodRecordImage } from '../../../apis/food/index';
+import {
+  createFoodRecordByTime,
+  getFoodRecordByTime,
+  getUserFoodRecordImages,
+  postUserFoodRecordImage,
+} from '../../../apis/food/index';
 import CustomButton from '../../../components/CustomButton';
 import HeaderComponents from '../../../components/HeaderComponents';
 import { COLORS } from '../../../constants/colors';
@@ -47,17 +52,24 @@ const FoodRecordDetail = () => {
   useEffect(() => {
     const fetchFoodRecord = async () => {
       try {
-        const result = await getFoodRecordByTime({
+        let foodRecordId;
+        const foodRecordResult = await getFoodRecordByTime({
           date: selected,
           mealTime: time,
         });
-        if (result.error) {
-          throw new Error(result.error);
+        if (foodRecordResult.error) {
+          throw new Error(foodRecordResult.error);
         }
-        setFoodList(result.data);
-      } catch (error) {
-        Alert.alert(error.message);
-      }
+        setFoodList(foodRecordResult.data);
+        foodRecordId = foodRecordResult.id;
+
+        const foodRecordImageResult = await getUserFoodRecordImages(foodRecordId);
+        if (foodRecordImageResult.status === 200) {
+          setImages(foodRecordImageResult.data);
+          return;
+        }
+        throw new Error(foodRecordImageResult.message);
+      } catch (error) {}
     };
 
     fetchFoodRecord();
@@ -74,15 +86,13 @@ const FoodRecordDetail = () => {
 
   const handleConfirmButton = async () => {
     try {
-      if (!foodList.length) {
-        throw new Error('등록된 음식이 존재하지 않습니다!');
-      }
+      let food_record_id;
+
       const response = await createFoodRecordByTime({
         foodItems: foodList,
         meal_time: time,
         date: selected,
       });
-      let food_record_id;
 
       if (response.status === 200) {
         food_record_id = response.food_record_id;
@@ -90,6 +100,7 @@ const FoodRecordDetail = () => {
       } else {
         throw new Error('음식을 기록하는데 실패하였습니다.');
       }
+
       if (images.length > 0) {
         const uploadPromises = images.map((uri) => uploadImage(uri, food_record_id));
         const results = await Promise.all(uploadPromises);
