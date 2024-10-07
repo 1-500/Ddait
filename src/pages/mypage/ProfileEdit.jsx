@@ -85,7 +85,7 @@ const ProfileEdit = ({ navigation }) => {
       setUserInfo({
         nickname: result.data.nickname,
         introduce: result.data.introduce,
-        profileImageUrl: result.data.profile_image,
+        profileImageUrl: result.data.profile_image || profileImageUrl,
       });
 
       showToast('프로필이 업데이트 되었습니다! 😋', 'success', 2000, 'top');
