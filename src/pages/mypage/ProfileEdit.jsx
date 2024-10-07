@@ -72,6 +72,9 @@ const ProfileEdit = ({ navigation }) => {
       if (newIntroduce !== introduce) {
         updatedData.introduce = newIntroduce;
       }
+      if (newProfileImage) {
+        updatedData.profileImage = newProfileImage;
+      }
 
       if (Object.keys(updatedData).length === 0) {
         showToast('💥 변경된 정보가 없습니다!', 'error', 2000, 'top');
@@ -79,7 +82,11 @@ const ProfileEdit = ({ navigation }) => {
       }
 
       const result = await updateProfile(updatedData);
-      setUserInfo(result.data);
+      setUserInfo({
+        nickname: result.data.nickname,
+        introduce: result.data.introduce,
+        profileImageUrl: result.data.profile_image,
+      });
 
       showToast('프로필이 업데이트 되었습니다! 😋', 'success', 2000, 'top');
       navigation.goBack();
