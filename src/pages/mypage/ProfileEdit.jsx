@@ -1,5 +1,15 @@
 import React, { useState } from 'react';
-import { Image, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import {
+  Image,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
+} from 'react-native';
 import ImagePicker from 'react-native-image-crop-picker';
 
 import { updateProfile } from '../../apis/mypage';
@@ -26,6 +36,7 @@ const ProfileEdit = ({ navigation }) => {
   const [newNickname, setNewNickname] = useState(nickname || '');
   const [newIntroduce, setNewIntroduce] = useState(introduce || '');
   const [newProfileImage, setNewProfileImage] = useState(null);
+  const [showImageOverlay, setShowImageOverlay] = useState(false);
   const { showToast } = useToastMessageStore();
   const [alertConfig, setAlertConfig] = useState({
     visible: false,
@@ -58,9 +69,34 @@ const ProfileEdit = ({ navigation }) => {
       })
       .catch((error) => {
         if (error.code !== 'E_PICKER_CANCELLED') {
-          showToast('이미지 선택 중 오류가 발생했습니다.', 'error', 2000, 'top');
+          showToast('잠시 후 다시 시도해주세요.', 'error', 2000, 'top');
         }
       });
+  };
+
+  const handleImagePress = () => {
+    setShowImageOverlay(!showImageOverlay);
+  };
+
+  const handleOutsidePress = () => {
+    if (showImageOverlay) {
+      setShowImageOverlay(false);
+    }
+  };
+
+  const handleImageDelete = async () => {
+    try {
+      setNewProfileImage(null);
+      setShowImageOverlay(false);
+
+      const result = await updateProfile({ profileImage: null });
+      setUserInfo({
+        ...useUserStore.getState(),
+        profileImageUrl: null,
+      });
+    } catch (error) {
+      showToast('잠시 후 다시 시도해주세요.', 'error', 2000, 'top');
+    }
   };
 
   const handleSave = async () => {
@@ -72,7 +108,7 @@ const ProfileEdit = ({ navigation }) => {
       if (newIntroduce !== introduce) {
         updatedData.introduce = newIntroduce;
       }
-      if (newProfileImage) {
+      if (newProfileImage !== null) {
         updatedData.profileImage = newProfileImage;
       }
 
@@ -114,64 +150,77 @@ const ProfileEdit = ({ navigation }) => {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <HeaderComponents title="회원 정보 수정" icon="save" onRightBtnPress={handleSave} />
-      <ScrollView style={styles.container}>
-        <View style={styles.profileImgWrapper}>
-          <Image
-            source={
-              newProfileImage ? { uri: newProfileImage } : profileImageUrl ? { uri: profileImageUrl } : defaultProfile
-            }
-            style={styles.profileImg}
-          />
-          <CustomButton theme="primary" size="xs" text="이미지 선택" onPress={handleImageUpload} />
-        </View>
-        <View style={styles.sectionWrapper}>
-          <Text style={styles.sectionTitle}>닉네임</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="어떻게 불리고 싶으신가요?"
-            placeholderTextColor={'#7676AC'}
-            value={newNickname}
-            onChangeText={setNewNickname}
-          />
-        </View>
-        <View style={styles.sectionWrapper}>
-          <Text style={styles.sectionTitle}>소개</Text>
-          <TextInput
-            style={[styles.input, styles.multilineInput]}
-            placeholder={'어떤 운동을 좋아하시나요?\n자유롭게 본인을 소개해보세요!'}
-            placeholderTextColor={'#7676AC'}
-            multiline={true}
-            numberOfLines={2}
-            textAlignVertical="top"
-            value={newIntroduce}
-            onChangeText={setNewIntroduce}
-          />
-        </View>
+    <TouchableWithoutFeedback onPress={handleOutsidePress}>
+      <SafeAreaView style={{ flex: 1 }}>
+        <HeaderComponents title="회원 정보 수정" icon="save" onRightBtnPress={handleSave} />
+        <ScrollView style={styles.container}>
+          <View style={styles.profileImgWrapper}>
+            <TouchableOpacity onPress={handleImagePress} activeOpacity={0.9}>
+              <Image
+                source={
+                  newProfileImage
+                    ? { uri: newProfileImage }
+                    : profileImageUrl
+                      ? { uri: profileImageUrl }
+                      : defaultProfile
+                }
+                style={styles.profileImg}
+              />
+              {showImageOverlay && (
+                <TouchableOpacity style={styles.overlay} onPress={handleImageDelete}>
+                  <Text style={styles.overlayText}>삭제</Text>
+                </TouchableOpacity>
+              )}
+            </TouchableOpacity>
+            <CustomButton theme="primary" size="xs" text="이미지 선택" onPress={handleImageUpload} />
+          </View>
+          <View style={styles.sectionWrapper}>
+            <Text style={styles.sectionTitle}>닉네임</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="어떻게 불리고 싶으신가요?"
+              placeholderTextColor={'#7676AC'}
+              value={newNickname}
+              onChangeText={setNewNickname}
+            />
+          </View>
+          <View style={styles.sectionWrapper}>
+            <Text style={styles.sectionTitle}>소개</Text>
+            <TextInput
+              style={[styles.input, styles.multilineInput]}
+              placeholder={'어떤 운동을 좋아하시나요?\n자유롭게 본인을 소개해보세요!'}
+              placeholderTextColor={'#7676AC'}
+              multiline={true}
+              numberOfLines={2}
+              textAlignVertical="top"
+              value={newIntroduce}
+              onChangeText={setNewIntroduce}
+            />
+          </View>
 
-        {/* 선호 운동 */}
-        <View style={[styles.sectionWrapper, { gap: SPACING.sm }]}>
-          <Text style={styles.sectionTitle}>관심 운동</Text>
-          <SetSportsCategory />
-        </View>
+          {/* 선호 운동 */}
+          <View style={[styles.sectionWrapper, { gap: SPACING.sm }]}>
+            <Text style={styles.sectionTitle}>관심 운동</Text>
+            <SetSportsCategory />
+          </View>
 
-        <View style={{ alignItems: 'center', marginVertical: 30 }}>
-          <TouchableOpacity activeOpacity={0.6} onPress={handleDeleteAccount}>
-            <Text style={styles.accountDeleteText}>회원 탈퇴</Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
+          <View style={{ alignItems: 'center', marginVertical: 30 }}>
+            <TouchableOpacity activeOpacity={0.6} onPress={handleDeleteAccount}>
+              <Text style={styles.accountDeleteText}>회원 탈퇴</Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
 
-      <CustomAlert
-        visible={alertConfig.visible}
-        title={alertConfig.title}
-        message={alertConfig.message}
-        onConfirm={alertConfig.onConfirm}
-        onCancel={hideAlert}
-        showCancel={alertConfig.showCancel !== false}
-      />
-    </SafeAreaView>
+        <CustomAlert
+          visible={alertConfig.visible}
+          title={alertConfig.title}
+          message={alertConfig.message}
+          onConfirm={alertConfig.onConfirm}
+          onCancel={hideAlert}
+          showCancel={alertConfig.showCancel !== false}
+        />
+      </SafeAreaView>
+    </TouchableWithoutFeedback>
   );
 };
 
@@ -190,6 +239,18 @@ const styles = StyleSheet.create({
     width: 120,
     height: 120,
     borderRadius: 100,
+  },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 100,
+  },
+  overlayText: {
+    color: COLORS.white,
+    fontSize: FONT_SIZES.lg,
+    fontFamily: FONTS.PRETENDARD[700],
   },
   sectionWrapper: {
     gap: SPACING.xs,
