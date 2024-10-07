@@ -214,6 +214,17 @@ const FoodRecordDetail = () => {
       return error.message;
     }
   };
+  const addImage = () => {
+    launchImageLibrary({ mediaType: 'photo' }, (response) => {
+      if (response.didCancel) {
+      } else if (response.error) {
+        Alert.alert('Error', '이미지 선택 중 오류가 발생했습니다.');
+      } else if (response.assets && response.assets.length > 0) {
+        const newImage = response.assets[0].uri;
+        setImages((prevImages) => [...prevImages, newImage]);
+      }
+    });
+  };
   return (
     <SafeAreaView style={styles.container}>
       <HeaderComponents title={time} />
@@ -240,6 +251,9 @@ const FoodRecordDetail = () => {
                   </View>
                 )}
               />
+              <TouchableOpacity style={styles.addImageButton} onPress={addImage}>
+                <Image source={PlusButtonIcon} style={styles.addButtonImage} />
+              </TouchableOpacity>
             </View>
           ) : (
             <View style={styles.addPhotoContainer}>
@@ -378,6 +392,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   addButton: {
+    width: 40,
+    height: 40,
+  },
+  addImageButton: {
+    position: 'absolute',
+    left: 20,
+    bottom: 20,
+    zIndex: 1,
+  },
+  addButtonImage: {
     width: 40,
     height: 40,
   },
