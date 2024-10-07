@@ -1,3 +1,5 @@
+import RNFS from 'react-native-fs';
+
 import { supabase } from '../../lib/supabaseClient';
 import { API } from '..';
 
@@ -15,6 +17,15 @@ export const postLogout = async () => {
 
 export const updateProfile = async (updatedData) => {
   try {
+    const { data: session, error: sessionError } = await supabase.auth.getSession();
+    if (sessionError) {
+      throw new Error('세션 오류: ' + sessionError.message);
+    }
+    if (!session) {
+      throw new Error('로그인이 필요합니다.');
+    }
+    console.log('Session user:', session.user);
+
     // 빈 객체인 경우 early return
     if (Object.keys(updatedData).length === 0) {
       return { message: '업데이트할 정보가 없습니다.' };
@@ -22,23 +33,40 @@ export const updateProfile = async (updatedData) => {
 
     let profileImageUrl = updatedData.profileImage;
 
-    // 프로필 이미지 변경이 있으면 슈퍼베이스 storage에 업로드
-    if (updatedData.profileImage && updatedData.profileImage.startsWith('file://')) {
+    console.log('Received profile image:', profileImageUrl);
+
+    if (profileImageUrl && typeof profileImageUrl === 'string') {
+      console.log('New profile image detected');
       const fileName = `profile_${Date.now()}.jpg`;
-      const filePath = updatedData.profileImage.replace('file://', '');
-      const { data, error } = await supabase.storage
-        .from('profile-images')
-        .upload(fileName, filePath, { contentType: 'image/jpeg' });
+      const filePath = profileImageUrl;
 
-      if (error) {
-        throw error;
+      console.log('Reading file:', filePath);
+      try {
+        const fileContent = await RNFS.readFile(filePath, 'base64');
+        console.log('File read successfully');
+
+        console.log('Uploading to Supabase');
+        const { data, error } = await supabase.storage
+          .from('profile-images')
+          .upload(fileName, fileContent, { contentType: 'image/jpeg' });
+
+        if (error) {
+          console.error('Supabase upload error:', JSON.stringify(error, null, 2));
+          throw error;
+        }
+
+        console.log('Supabase upload successful:', data);
+
+        const { data: urlData } = supabase.storage.from('profile-images').getPublicUrl(data.path);
+
+        profileImageUrl = urlData.publicUrl;
+        console.log('새 프로필 이미지 url: ', profileImageUrl);
+      } catch (fileError) {
+        console.error('File read or upload error:', fileError);
+        // 파일 읽기나 업로드 실패 시 기존 이미지 URL 유지
       }
-
-      const {
-        data: { publicUrl },
-      } = supabase.storage.from('profile-images').getPublicUrl(data.path);
-
-      profileImageUrl = publicUrl;
+    } else {
+      console.log('No new profile image to upload');
     }
 
     // API 요청 데이터 준비
@@ -55,6 +83,7 @@ export const updateProfile = async (updatedData) => {
   } catch (error) {
     console.error('API 요청 중 error:', error.response || error);
     if (error.response && error.response.status === 400) {
+      console.error('Profile update error:', error);
       throw new Error('프로필 정보 업데이트 실패');
     }
     throw error;
