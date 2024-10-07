@@ -109,3 +109,9 @@ export const getUserFoodRecordImages = async (id) => {
     return response.data;
   } catch (error) {}
 };
+export const deleteUserFoodRecordImages = async (data) => {
+  try {
+    const response = await API.post('food/record/image/delete', data);
+    return response.data;
+  } catch (error) {}
+};

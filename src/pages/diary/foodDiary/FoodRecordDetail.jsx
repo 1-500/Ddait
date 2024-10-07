@@ -18,6 +18,7 @@ import uuid from 'react-native-uuid';
 
 import {
   createFoodRecordByTime,
+  deleteUserFoodRecordImages,
   getFoodRecordByTime,
   getUserFoodRecordImages,
   postUserFoodRecordImage,
@@ -31,7 +32,7 @@ import { supabase } from '../../../lib/supabaseClient';
 import useDiaryCalendarStore from '../../../store/food/calendar/index';
 import useSelectedFoodsStore from '../../../store/food/selectedFoods/index';
 import useSelectedFoodTimeStore from '../../../store/index';
-import { calculateNutrientRatios, getTotal } from '../../../utils/foodDiary/index';
+import { calculateNutrientRatios, getFilePath, getTotal } from '../../../utils/foodDiary/index';
 
 const PlusButtonIcon = require('../../../assets/images/dietDiary/PluscircleButton.png');
 const MinusButtonIcon = require('../../../assets/images/dietDiary/MinusCircleButton.png');
@@ -87,28 +88,41 @@ const FoodRecordDetail = () => {
   const handleConfirmButton = async () => {
     try {
       let food_record_id;
-
-      const response = await createFoodRecordByTime({
-        foodItems: foodList,
-        meal_time: time,
-        date: selected,
-      });
-
-      if (response.status === 200) {
-        food_record_id = response.food_record_id;
-        Alert.alert(response.message);
-      } else {
-        throw new Error('음식을 기록하는데 실패하였습니다.');
+      // 음식 기록
+      if (foodList.length !== 0 && time.length !== 0 && selected.length !== 0) {
+        const response = await createFoodRecordByTime({
+          foodItems: foodList,
+          meal_time: time,
+          date: selected,
+        });
+        if (response.status === 200) {
+          food_record_id = response.food_record_id;
+          Alert.alert(response.message);
+        } else {
+          throw new Error('음식을 기록하는데 실패하였습니다.');
+        }
       }
 
-      if (images.length > 0) {
-        const uploadPromises = images.map((uri) => uploadImage(uri, food_record_id));
+      const foodRecordResult = await getUserFoodRecordImages(food_record_id);
+      if (foodRecordResult.error) {
+        throw new Error(foodRecordResult.error);
+      }
+      const userImagesPaths = getFilePath(foodRecordResult.data);
+      const newImagesPaths = getFilePath(images).filter((url) => !userImagesPaths.includes(url));
+
+      if (newImagesPaths.length > 0) {
+        const newImages = images.filter((url) => !foodRecordResult.data.includes(url));
+        const uploadPromises = newImages.map((uri) => uploadImage(uri, food_record_id));
         const results = await Promise.all(uploadPromises);
         const errorMessages = results.filter((message) => !message.includes('성공')); // 성공 메시지가 아닌 경우 필터링
         if (errorMessages.length > 0) {
           Alert.alert(errorMessages[0]);
           return;
         }
+      }
+      const deleteImages = foodRecordResult.data.filter((url) => !images.includes(url));
+      if (deleteImages.length > 0) {
+        deleteServerImage(deleteImages, food_record_id);
       }
     } catch (error) {
       Alert.alert(error.message);
@@ -145,11 +159,26 @@ const FoodRecordDetail = () => {
       return newImages;
     });
   };
+  const deleteServerImage = async (deleteImages, food_record_id) => {
+    const filePaths = getFilePath(deleteImages);
+    try {
+      const response = await deleteUserFoodRecordImages({
+        images: filePaths,
+        food_record_id,
+      });
+      if (response.status === 200) {
+        setImages(deleteImages);
+        return;
+      }
+      throw new Error(response.message);
+    } catch (error) {}
+  };
 
   const uploadImage = async (uri, food_record_id) => {
     if (food_record_id === undefined) {
       return '등록된 음식이 존재하지 않습니다!';
     }
+
     const imageName = uuid.v4(); // 고유한 이미지 이름 생성
     const uriParts = uri.split('.');
     const fileType = uriParts[uriParts.length - 1];
