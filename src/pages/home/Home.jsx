@@ -17,6 +17,7 @@ import { useCompetitionStore } from '../../store/competition';
 import { useNotificationStore } from '../../store/notification';
 import useUserStore from '../../store/sign/login';
 import { useToastMessageStore } from '../../store/toastMessage/toastMessage';
+import { getCompetitionProgress } from '../../utils/competition';
 
 const defaultProfile = require('../../assets/images/default-profile.png');
 const dummyDates = [
@@ -42,22 +43,30 @@ const Home = ({ navigation }) => {
       if (competitions && competitions.length > 0) {
         const now = new Date(); //현재 날짜
 
-        const closestCompetition = competitions.reduce((closest, current) => {
-          const currentEndDate = new Date(current.end_date);
-          const closestEndDate = new Date(closest.end_date);
+        const activeCompetitions = competitions.filter((data) => getCompetitionProgress(data) !== 'AFTER');
 
-          // 오늘과 종료날짜의 차
-          const currentDifference = Math.abs(currentEndDate - now);
-          const closestDifference = Math.abs(closestEndDate - now);
+        if (activeCompetitions.length > 0) {
+          const closestCompetition = competitions.reduce((closest, current) => {
+            const currentEndDate = new Date(current.end_date);
+            const closestEndDate = new Date(closest.end_date);
 
-          // current의 종료 날짜가 더 가까우면 current return
-          return currentDifference < closestDifference ? current : closest;
-        }, competitions[0]);
+            // 오늘과 종료날짜의 차
+            const currentDifference = Math.abs(currentEndDate - now);
+            const closestDifference = Math.abs(closestEndDate - now);
 
-        setCompetition(closestCompetition);
-        setCompetitionList(competition);
+            // current의 종료 날짜가 더 가까우면 current return
+            return currentDifference < closestDifference ? current : closest;
+          }, activeCompetitions[0]);
+
+          setCompetition(closestCompetition);
+          setCompetitionList(activeCompetitions);
+        } else {
+          setCompetition(null);
+          setCompetitionList([]);
+        }
       } else {
         setCompetition(null);
+        setCompetitionList([]);
       }
     } catch (error) {
       showToast(`Error fetching competitions: ${error.message}`, 'error', 2000, 'top');

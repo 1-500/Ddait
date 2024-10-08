@@ -33,7 +33,6 @@ import Notification from './pages/notification/Notification';
 import SignUpPage from './pages/signup/SignUpPage';
 import SocialLogin from './pages/socialLogin/SocialLogin';
 import Splash from './pages/splash/Splash';
-import Test from './pages/Test';
 import { useToastMessageStore } from './store/toastMessage/toastMessage';
 
 const Stack = createStackNavigator();
