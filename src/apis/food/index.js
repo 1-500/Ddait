@@ -1,3 +1,5 @@
+import axios from 'axios';
+
 import { API } from '..';
 
 export const createFoodDiary = async (date) => {
@@ -90,6 +92,26 @@ export const getUserBookMarkedFoodRecord = async () => {
 export const deleteUserRecordFoodById = async (id) => {
   try {
     const response = await API.post(`food/record/delete?id=${id}`);
+    return response.data;
+  } catch (error) {}
+};
+export const postUserFoodRecordImage = async (data) => {
+  try {
+    const response = await API.post('food/record/image/create', data);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+export const getUserFoodRecordImages = async (id) => {
+  try {
+    const response = await API.get(`food/record/image?id=${id}`);
+    return response.data;
+  } catch (error) {}
+};
+export const deleteUserFoodRecordImages = async (data) => {
+  try {
+    const response = await API.post('food/record/image/delete', data);
     return response.data;
   } catch (error) {}
 };
