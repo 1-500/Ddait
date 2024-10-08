@@ -27,6 +27,7 @@ import CustomInput from '../../../components/CustomInput';
 import CustomTimer from '../../../components/CustomTimer';
 import DropdownModal from '../../../components/DropdownModal';
 import HeaderComponents from '../../../components/HeaderComponents';
+import SkeletonLoader from '../../../components/SkeletonLoader';
 import { BACKGROUND_COLORS, COLORS, TEXT_COLORS } from '../../../constants/colors';
 import { BODY_FONT_SIZES, HEADER_FONT_SIZES } from '../../../constants/font';
 import { FONTS } from '../../../constants/font';
@@ -53,6 +54,7 @@ const StartWorkout = () => {
   });
   const [workoutTitle, setWorkoutTitle] = useState('아침운동');
   const [editWorkoutTitle, setEditWorkoutTitle] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const { showToast } = useToastMessageStore();
   // const { competitionList } = useCompetitionStore.getState();
@@ -64,6 +66,7 @@ const StartWorkout = () => {
   /* eslint-disable */
   useEffect(() => {
     const fetchExerciseData = async () => {
+      setIsLoading(true);
       try {
         const [exerciseRes, bookmarkRes] = await Promise.all([getExerciseList(), getWorkoutInfoBookmark()]);
 
@@ -87,6 +90,8 @@ const StartWorkout = () => {
         }
       } catch (error) {
         console.log('무슨 error? : ', error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -640,20 +645,26 @@ const StartWorkout = () => {
               </TouchableOpacity>
             </View>
             <View>
-              <FlatList
-                data={filteredExerciseList}
-                renderItem={renderExerciseList}
-                showsVerticalScrollIndicator={false}
-                contentContainerStyle={{ paddingBottom: 16, paddingHorizontal: 16 }}
-                keyExtractor={(_, index) => index.toString()}
-              />
-              <CustomButton
-                theme="primary"
-                size="large"
-                states="enabled"
-                onPress={handleSaveSelectedExercises}
-                text="운동 추가하기"
-              />
+              {isLoading ? (
+                <SkeletonLoader type="competitionItem" />
+              ) : (
+                <>
+                  <FlatList
+                    data={filteredExerciseList}
+                    renderItem={renderExerciseList}
+                    showsVerticalScrollIndicator={false}
+                    contentContainerStyle={{ paddingBottom: 16, paddingHorizontal: 16 }}
+                    keyExtractor={(_, index) => index.toString()}
+                  />
+                  <CustomButton
+                    theme="primary"
+                    size="large"
+                    states="enabled"
+                    onPress={handleSaveSelectedExercises}
+                    text="운동 추가하기"
+                  />
+                </>
+              )}
             </View>
           </BottomSheetView>
         </BottomSheetModal>
