@@ -5,7 +5,7 @@ export const emailAccountId = async (data) => {
     const response = await API.post('/accounts', data);
     return response.data;
   } catch (error) {
-    return error;
+    throw error.response.data;
   }
 };
 export const socialLoginAccountId = async (data) => {
@@ -13,6 +13,6 @@ export const socialLoginAccountId = async (data) => {
     const response = await API.post('/social/accounts', data);
     return response.data;
   } catch (error) {
-    return error;
+    throw error;
   }
 };

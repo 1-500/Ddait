@@ -69,19 +69,8 @@ const SignUpPage = () => {
   const handleStepChange = (newStep) => setCurrentStep(newStep);
 
   const handleSubmit = async () => {
-    if (!tosAgreement) {
-      setAlertConfig({
-        visible: true,
-        title: '오류 발생',
-        message: '모든 약관에 동의해주세요.',
-        onConfirm: hideAlert,
-        showCancel: false,
-      });
-      return;
-    }
-
     try {
-      const response = await emailAccountId({ email, password, nickname, tosAgreement });
+      const response = await emailAccountId({ email, password, nickname });
 
       if (response.status === 200) {
         navigation.navigate('Sign', { screen: 'Login' });
@@ -90,7 +79,7 @@ const SignUpPage = () => {
       setAlertConfig({
         visible: true,
         title: '오류 발생',
-        message: '회원가입 중 오류가 발생했습니다. 다시 시도해주세요.',
+        message: error.message || '회원가입 중 오류가 발생했습니다. 다시 시도해주세요.',
         onConfirm: hideAlert,
         showCancel: false,
       });
@@ -98,7 +87,7 @@ const SignUpPage = () => {
   };
 
   const handleTosSubmit = (agreement) => {
-    setTosAgreement(agreement); // tosAgreement 상태 업데이트
+    setTosAgreement(agreement);
     goToNextStep();
   };
 
@@ -126,7 +115,8 @@ const SignUpPage = () => {
         ) : (
           <View style={styles.btnWrapper}>
             <CustomButton
-              theme={tosAgreement ? 'primary' : 'block'} // 약관 동의 여부에 따른 버튼 상태 변경
+              theme={tosAgreement ? 'primary' : 'block'}
+              disabled={tosAgreement ? false : true}
               size="large"
               text="따잇 시작하기"
               onPress={handleSubmit}
