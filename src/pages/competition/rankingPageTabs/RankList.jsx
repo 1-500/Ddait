@@ -206,62 +206,51 @@ const RankList = ({
   };
 
   const renderRankItem = ({ item, index }) => {
-    if (['IN_PROGRESS', 'AFTER'].includes(progress)) {
-      return (
-        <TouchableOpacity
-          style={[
-            styles.rankItemWrapper,
-            item.is_my_record ? { backgroundColor: COLORS.primary } : { backgroundColor: COLORS.darkGreyBackground },
-          ]}
-          onPress={() =>
-            setIsItemOpen(Array.from({ length: isItemOpen.length }, (_, i) => index === i && !isItemOpen[index]))
-          }
-          onLongPress={() => {
-            setSelectedMember(item);
-            bottomSheetRef.current?.present();
-          }}
-          activeOpacity={0.6}
-        >
-          <View style={styles.rankItemHeaderWrapper}>
-            <RankItemContent item={item} index={index} />
-          </View>
-          {isItemOpen[index] && (
-            <View style={styles.innerContentWrapper}>
-              {competitionRecord[0].score_detail.map((e, i) => (
-                <Text
-                  key={`${e.name}_${index}`}
-                  style={styles.scoreText}
-                >{`${e.name}: ${item.score_detail[i].score}점`}</Text>
-              ))}
-              <Text
-                style={[
-                  styles.rankText,
-                  { fontFamily: FONTS.PRETENDARD[600], marginTop: 4 },
-                  item.is_my_record ? { color: COLORS.white } : { color: COLORS.lightPurple },
-                ]}
-              >{`총점: ${item.total_score}점`}</Text>
+    return (
+      <TouchableOpacity
+        style={[
+          styles.rankItemWrapper,
+          !['IN_PROGRESS', 'AFTER'].includes(progress) && styles.rankItemHeaderWrapper,
+          item.is_my_record ? { backgroundColor: COLORS.primary } : { backgroundColor: COLORS.darkGreyBackground },
+        ]}
+        onPress={() =>
+          ['IN_PROGRESS', 'AFTER'].includes(progress) &&
+          setIsItemOpen(Array.from({ length: isItemOpen.length }, (_, i) => index === i && !isItemOpen[index]))
+        }
+        onLongPress={() => {
+          setSelectedMember(item);
+          bottomSheetRef.current?.present();
+        }}
+        activeOpacity={0.6}
+      >
+        {['IN_PROGRESS', 'AFTER'].includes(progress) ? (
+          <>
+            <View style={styles.rankItemHeaderWrapper}>
+              <RankItemContent item={item} index={index} />
             </View>
-          )}
-        </TouchableOpacity>
-      );
-    } else {
-      return (
-        <TouchableOpacity
-          style={[
-            styles.rankItemWrapper,
-            styles.rankItemHeaderWrapper,
-            item.is_my_record ? { backgroundColor: COLORS.primary } : { backgroundColor: COLORS.darkGreyBackground },
-          ]}
-          onLongPress={() => {
-            setSelectedMember(item);
-            bottomSheetRef.current?.present();
-          }}
-          activeOpacity={0.6}
-        >
+            {isItemOpen[index] && (
+              <View style={styles.innerContentWrapper}>
+                {competitionRecord[0].score_detail.map((e, i) => (
+                  <Text
+                    key={`${e.name}_${index}`}
+                    style={styles.scoreText}
+                  >{`${e.name}: ${item.score_detail[i].score}점`}</Text>
+                ))}
+                <Text
+                  style={[
+                    styles.rankText,
+                    { fontFamily: FONTS.PRETENDARD[600], marginTop: 4 },
+                    item.is_my_record ? { color: COLORS.white } : { color: COLORS.lightPurple },
+                  ]}
+                >{`총점: ${item.total_score}점`}</Text>
+              </View>
+            )}
+          </>
+        ) : (
           <RankItemContent item={item} index={index} />
-        </TouchableOpacity>
-      );
-    }
+        )}
+      </TouchableOpacity>
+    );
   };
 
   return (
