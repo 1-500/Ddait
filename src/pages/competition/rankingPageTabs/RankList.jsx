@@ -260,6 +260,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: 80,
     height: 80,
+    borderRadius: 100,
   },
   myRankBtn: {
     paddingHorizontal: SPACING.sm,
@@ -294,6 +295,7 @@ const styles = StyleSheet.create({
   profileImg: {
     width: 40,
     height: 40,
+    borderRadius: 100,
   },
   rankText: {
     fontSize: FONT_SIZES.sm,
