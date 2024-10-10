@@ -1,6 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
-import { Alert, Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { createBookMarkFoods, createFoodRecordByTime, getFoodBySearch } from '../../../apis/food/index';
 import CustomButton from '../../../components/CustomButton';
@@ -11,6 +11,7 @@ import { FONT_SIZES, FONTS } from '../../../constants/font';
 import useDiaryCalendarStore from '../../../store/food/calendar/index';
 import useSelectedFoodsStore from '../../../store/food/selectedFoods/index';
 import useSelectedFoodTimeStore from '../../../store/index';
+import { useToastMessageStore } from '../../../store/toastMessage/toastMessage';
 import { debounce } from '../../../utils/foodDiary/debounce';
 
 const PlusIcon = require('../../../assets/images/dietDiary/PluscircleWhiteButton.png');
@@ -27,18 +28,20 @@ const FoodSearch = () => {
 
   const { foodList, removeFood } = useSelectedFoodsStore();
 
+  const { showToast } = useToastMessageStore();
+
   const handleSearchInput = debounce(async (text) => {
     try {
       let result = await getFoodBySearch(text);
       if (result.error) {
-        throw new Error('서버에서 에러가 발생하여 조회를 실패하였습니다.');
+        throw new Error('서버에서 에러가 발생하여 음식 조회를 실패하였습니다.');
       }
       if (result.data.length) {
         setFoodSearchListState(result.data);
       }
       setSearchText(text);
     } catch (error) {
-      Alert.alert(error.message);
+      showToast(error.message, 'error', 2000, 'top');
     }
   }, 300);
   const handleCheckedFoods = (food) => {
@@ -71,7 +74,7 @@ const FoodSearch = () => {
         }
       }
     } catch (error) {
-      Alert.alert(error.message);
+      showToast(error.message, 'error', 2000, 'top');
     }
     setFoodSearchListState(newFoodSearchListState);
   };

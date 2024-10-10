@@ -1,6 +1,6 @@
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Alert, Image, Modal, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useCallback, useMemo, useState } from 'react';
+import { Image, Modal, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import * as Progress from 'react-native-progress';
 
 import {
@@ -17,6 +17,7 @@ import { FONT_SIZES, FONTS } from '../../../constants/font';
 import { RADIUS } from '../../../constants/radius';
 import useDiaryCalendarStore from '../../../store/food/calendar/index';
 import useSelectedFoodTimeStore from '../../../store/index';
+import { useToastMessageStore } from '../../../store/toastMessage/toastMessage';
 import {
   calculateCarbsCalories,
   calculateFatCalories,
@@ -66,6 +67,7 @@ const FoodDiary = () => {
       },
     },
   });
+  const { showToast } = useToastMessageStore();
 
   const totalNutrition = useMemo(() => {
     return calculateTotalNutrition(userState.mealNutritionInfo);
@@ -95,10 +97,10 @@ const FoodDiary = () => {
         date: selected,
       });
       if (result.status !== 200) {
-        throw new Error('데이터를 반영하지 못했습니다');
+        throw new Error('몸무게 설정을 하는데 에러가 발생하였습니다');
       }
     } catch (error) {
-      Alert.alert(error.message);
+      showToast(error.message, 'error', 2000, 'top');
     }
     setUserState((prevState) => ({
       ...prevState,
@@ -115,10 +117,10 @@ const FoodDiary = () => {
         date: selected,
       });
       if (result.status !== 200) {
-        throw new Error('데이터를 반영하지 못했습니다');
+        throw new Error('몸무게 설정을 하는데 에러가 발생하였습니다');
       }
     } catch (error) {
-      Alert.alert(error.message);
+      showToast(error.message, 'error', 2000, 'top');
     }
     setUserState((prevState) => ({
       ...prevState,
@@ -135,10 +137,10 @@ const FoodDiary = () => {
         date: selected,
       });
       if (result.status !== 200) {
-        throw new Error('데이터를 반영하지 못했습니다');
+        throw new Error('몸무게 설정을 하는데 에러가 발생하였습니다');
       }
     } catch (error) {
-      Alert.alert(error.message);
+      showToast(error.message, 'error', 2000, 'top');
     }
     setUserState((prevState) => ({
       ...prevState,
@@ -159,15 +161,16 @@ const FoodDiary = () => {
           date: selected,
         });
         if (result.status !== 200) {
-          throw new Error();
+          throw new Error('목표 칼로리를 설정하는데 발생하였습니다');
         }
       } catch (error) {
-        Alert.alert('DB에 반영하지 못했습니다.');
+        showToast(error.message, 'error', 2000, 'top');
       }
       setIsVisibleModal(false);
       return;
+    } else {
+      showToast('탄단지 비율을 100으로 두어야합니다.', 'error', 2000, 'top');
     }
-    Alert.alert('탄단지 비율을 100으로 두어야 합니다!');
   };
 
   const handleMealTime = (time) => {
@@ -183,12 +186,12 @@ const FoodDiary = () => {
         try {
           const postResult = await createFoodDiary(selected);
           if (postResult.error) {
-            throw new Error(postResult.error);
+            throw new Error('식단일지를 만드는데 실패하였습니다.');
           }
 
           const foodDiaryResult = await getUserFoodDiary(selected);
           if (foodDiaryResult.error) {
-            throw new Error(foodDiaryResult.error);
+            throw new Error('식단일지를 가져오는데 실패하였습니다.');
           }
 
           if (foodDiaryResult.status === 200) {
@@ -212,12 +215,12 @@ const FoodDiary = () => {
             }));
           }
         } catch (error) {
-          Alert.alert(error.message);
+          showToast(error.message, 'error', 2000, 'top');
         }
       };
 
       handleFoodDiary();
-    }, [selected]),
+    }, [selected, showToast]),
   );
 
   return (

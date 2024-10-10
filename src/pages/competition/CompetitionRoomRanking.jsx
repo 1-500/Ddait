@@ -15,7 +15,6 @@ import { getMyFriendsNotParticipant } from '../../apis/friend';
 import SkeletonLoader from '../../components/common/SkeletonLoader';
 import CompetitionRoomHeader from '../../components/CompetitionRoomHeader';
 import CustomAlert from '../../components/CustomAlert';
-import SkeletonLoader from '../../components/SkeletonLoader';
 import { COLORS } from '../../constants/colors';
 import { FONT_SIZES, FONTS } from '../../constants/font';
 import { useToastMessageStore } from '../../store/toastMessage/toastMessage';

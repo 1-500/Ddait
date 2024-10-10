@@ -1,22 +1,16 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
-import { Alert, Image, Modal, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, Modal, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import {
-  createCustomFood,
-  createFoodRecordByTime,
-  getUserBookMarkedFoodRecord,
-  getUserCustomFoodRecord,
-} from '../../../apis/food/index';
+import { createCustomFood, getUserBookMarkedFoodRecord, getUserCustomFoodRecord } from '../../../apis/food/index';
 import CustomButton from '../../../components/CustomButton';
 import CustomInput from '../../../components/CustomInput';
 import HeaderComponents from '../../../components/HeaderComponents';
-import { BACKGROUND_COLORS, COLORS, TEXT_COLORS } from '../../../constants/colors';
+import { COLORS, TEXT_COLORS } from '../../../constants/colors';
 import { FONT_SIZES, FONTS } from '../../../constants/font';
 import { RADIUS } from '../../../constants/radius';
-import useDiaryCalendarStore from '../../../store/food/calendar/index';
 import useSelectedFoodsStore from '../../../store/food/selectedFoods/index';
-import useSelectedFoodTimeStore from '../../../store/index';
+import { useToastMessageStore } from '../../../store/toastMessage/toastMessage';
 const PlusIcon = require('../../../assets/images/dietDiary/PluscircleWhiteButton.png');
 const checkIcon = require('../../../assets/images/dietDiary/checkIcon.png');
 
@@ -32,11 +26,10 @@ const FoodRecord = () => {
   const [customModalCaloriesState, setCustomModalCaloriesState] = useState('');
   const [customModalServingSizeState, setCustomModalServingSizeState] = useState('');
 
-  const { time } = useSelectedFoodTimeStore();
-  const { selected } = useDiaryCalendarStore();
-
   const [userFoodListState, setUserFoodListState] = useState([]);
   const { foodList, removeFood } = useSelectedFoodsStore();
+
+  const { showToast } = useToastMessageStore();
 
   useEffect(() => {
     const fetchUserFood = async () => {
@@ -45,19 +38,21 @@ const FoodRecord = () => {
         if (activeTag === '직접등록') {
           response = await getUserCustomFoodRecord();
           if (response.status !== 200) {
-            throw new Error('데이터를 가져오지 못했습니다.');
+            throw new Error('직접 등록한 음식의 데이터를 가져오지 못했습니다.');
           }
         } else if (activeTag === '북마크') {
           response = await getUserBookMarkedFoodRecord();
           if (response.status !== 200) {
-            throw new Error('데이터를 가져오지 못했습니다.');
+            throw new Error('북마크한 음식의 데이터를 가져오지 못했습니다.');
           }
         }
         setUserFoodListState(response.data);
-      } catch (error) {}
+      } catch (error) {
+        showToast(error.message, 'error', 2000, 'top');
+      }
     };
     fetchUserFood();
-  }, [activeTag, isVisibleModal]);
+  }, [activeTag, isVisibleModal, showToast]);
 
   const handleCheckedFoods = (food) => {
     const isChecked = Array.isArray(foodList) && foodList.some((item) => item.id === food.id);
@@ -97,11 +92,11 @@ const FoodRecord = () => {
         food,
       });
       if (result.status !== 200) {
-        throw new Error(result.message);
+        throw new Error('직접 만든 음식을 생성하지 못했습니다.');
       }
-      Alert.alert('음식을 생성하였습니다!');
+      showToast('음식을 생성하였습니다!', 'success', 2000, 'top');
     } catch (error) {
-      Alert.alert(error.message);
+      showToast(error.message, 'error', 2000, 'top');
     }
     setIsVisibleModal(false);
     return;
