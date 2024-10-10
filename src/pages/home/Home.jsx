@@ -4,11 +4,11 @@ import { Image, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-n
 
 import { getMyCompetition } from '../../apis/competition/index';
 import { getNotification } from '../../apis/notification';
+import SectionTitle from '../../components/common/SectionTitle';
 import HeaderComponents from '../../components/HeaderComponents';
 import HeatmapCalendar from '../../components/HeatMapCalendar';
 import MyCompetitionItem from '../../components/MyCompetitionItem';
 import NoOngoingCompetitions from '../../components/NoOngoingCompetitions';
-import SectionTitle from '../../components/SectionTitle';
 import { BACKGROUND_COLORS, COLORS } from '../../constants/colors';
 import { FONT_SIZES, FONTS, HEADER_FONT_SIZES } from '../../constants/font';
 import { RADIUS } from '../../constants/radius';
