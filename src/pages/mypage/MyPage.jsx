@@ -130,15 +130,15 @@ const MyPage = ({ navigation }) => {
           />
         </View>
 
-        {/* 도움말 */}
+        {/* 고객 지원 */}
         <View>
-          <Text style={[styles.subTitle, styles.settingTitle]}>도움말</Text>
+          <Text style={[styles.subTitle, styles.settingTitle]}>고객 지원</Text>
           <View style={styles.divider} />
           <SettingItem
             title={'FAQ'}
             description={'자주 묻는 질문'}
             rightBtn="arrow"
-            onPress={() => showToast('아직 준비 중인 기능이에요! 💪', 'error', 2000, 'bottom')}
+            onPress={() => navigation.navigate('FAQ')}
           />
         </View>
       </ScrollView>

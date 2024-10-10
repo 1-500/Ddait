@@ -98,3 +98,17 @@ export function calculateFoodNutrition(foodNutrition) {
     calories: Math.round(foodNutrition.calories * ratio), // 칼로리도 정수로 반올림
   };
 }
+
+export function getFilePath(images = []) {
+  if (!images.length) {
+    return [];
+  }
+
+  const filePaths = [...images].map((url) => {
+    const parts = url.split('/');
+    const fileName = parts.slice(-1)[0];
+    return `images/${fileName}`;
+  });
+
+  return filePaths;
+}

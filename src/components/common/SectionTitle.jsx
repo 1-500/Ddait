@@ -1,9 +1,9 @@
 import React from 'react';
 import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { COLORS } from '../constants/colors';
-import { FONT_SIZES, FONTS, HEADER_FONT_SIZES } from '../constants/font';
-import { ELEMENT_VERTICAL_MARGIN } from '../constants/space';
+import { COLORS } from '../../constants/colors';
+import { FONT_SIZES, FONTS, HEADER_FONT_SIZES } from '../../constants/font';
+import { ELEMENT_VERTICAL_MARGIN } from '../../constants/space';
 
 /**
  * '더보기' 버튼을 포함시킬 수 있는 타이틀 컴포넌트입니다.
