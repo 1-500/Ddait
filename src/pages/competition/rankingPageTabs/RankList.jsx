@@ -206,15 +206,17 @@ const RankList = ({
   };
 
   const renderRankItem = ({ item, index }) => {
+    const isNotBefore = ['IN_PROGRESS', 'AFTER'].includes(progress);
+
     return (
       <TouchableOpacity
         style={[
           styles.rankItemWrapper,
-          !['IN_PROGRESS', 'AFTER'].includes(progress) && styles.rankItemHeaderWrapper,
+          !isNotBefore && styles.rankItemHeaderWrapper,
           item.is_my_record ? { backgroundColor: COLORS.primary } : { backgroundColor: COLORS.darkGreyBackground },
         ]}
         onPress={() =>
-          ['IN_PROGRESS', 'AFTER'].includes(progress) &&
+          isNotBefore &&
           setIsItemOpen(Array.from({ length: isItemOpen.length }, (_, i) => index === i && !isItemOpen[index]))
         }
         onLongPress={() => {
@@ -223,7 +225,7 @@ const RankList = ({
         }}
         activeOpacity={0.6}
       >
-        {['IN_PROGRESS', 'AFTER'].includes(progress) ? (
+        {isNotBefore ? (
           <>
             <View style={styles.rankItemHeaderWrapper}>
               <RankItemContent item={item} index={index} />
