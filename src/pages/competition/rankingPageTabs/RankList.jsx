@@ -220,8 +220,10 @@ const RankList = ({
           setIsItemOpen(Array.from({ length: isItemOpen.length }, (_, i) => index === i && !isItemOpen[index]))
         }
         onLongPress={() => {
-          setSelectedMember(item);
-          bottomSheetRef.current?.present();
+          if (!item.is_my_record) {
+            setSelectedMember(item);
+            bottomSheetRef.current?.present();
+          }
         }}
         activeOpacity={0.6}
       >
