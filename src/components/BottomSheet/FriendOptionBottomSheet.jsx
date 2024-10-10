@@ -10,7 +10,7 @@ import CustomButton from '../CustomButton';
 
 const FriendOptionBottomSheet = forwardRef((props, ref) => {
   const { showToast } = useToastMessageStore();
-  const { relation, memberData, onUpdateData, setAlertConfig } = props;
+  const { relation, memberData, onUpdateData, setAlertConfig, isCompetition, competitionRoomId, navigation } = props;
   const snapPoints = [260];
 
   const renderBackdrop = useCallback(
@@ -32,6 +32,9 @@ const FriendOptionBottomSheet = forwardRef((props, ref) => {
       const res = await requestFriend(memberId);
       const nickname = res.data.friend_member_nickname;
       showToast(`${nickname}님에게 친구 요청을 보냈어요.`, 'success', 3000, 'bottom');
+      if (isCompetition) {
+        onUpdateData(res.data);
+      }
       handleClose();
     } catch (error) {
       showAlert({
@@ -90,7 +93,7 @@ const FriendOptionBottomSheet = forwardRef((props, ref) => {
       backdropComponent={renderBackdrop}
     >
       <View style={styles.container}>
-        <CustomButton text="1:1 따잇 걸기!" onPress={() => {}} theme="primary" size="large" />
+        {!isCompetition && <CustomButton text="1:1 따잇 걸기!" onPress={() => {}} theme="primary" size="large" />}
         {relation === 'friend' ? (
           <CustomButton text="차단" onPress={() => handleDelete('block')} theme="error" size="large" />
         ) : relation === 'none' ? (
@@ -98,6 +101,19 @@ const FriendOptionBottomSheet = forwardRef((props, ref) => {
         ) : relation === 'requested' ? (
           <CustomButton text="신청 취소" onPress={() => handleDelete('req')} theme="error" size="large" />
         ) : null}
+        {isCompetition && (
+          <CustomButton
+            text="신고하기"
+            onPress={() =>
+              navigation.navigate('MemberReport', {
+                reported_member: memberData,
+                competition_room_id: competitionRoomId,
+              })
+            }
+            theme="error"
+            size="large"
+          />
+        )}
         <CustomButton text="취소" onPress={handleClose} theme="block" size="large" />
       </View>
     </BottomSheetModal>
