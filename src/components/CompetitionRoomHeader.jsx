@@ -46,7 +46,7 @@ const CompetitionRoomHeader = ({ data, progress, onDelete }) => {
             <Octicons name="unlock" size={24} color={COLORS.primary} />
           )}
         </View>
-        {(!data.user_status.is_host || progress === 'AFTER') && (
+        {(!data.user_status.is_host || progress === 'BEFORE') && (
           <TouchableOpacity onPress={toggleDropdown} activeOpacity={0.6}>
             <Feather name="more-horizontal" size={24} color={COLORS.white} />
           </TouchableOpacity>
