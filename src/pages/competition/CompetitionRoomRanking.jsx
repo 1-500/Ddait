@@ -12,6 +12,7 @@ import {
   leaveCompetition,
 } from '../../apis/competition';
 import { getMyFriendsNotParticipant } from '../../apis/friend';
+import SkeletonLoader from '../../components/common/SkeletonLoader';
 import CompetitionRoomHeader from '../../components/CompetitionRoomHeader';
 import CustomAlert from '../../components/CustomAlert';
 import SkeletonLoader from '../../components/SkeletonLoader';
