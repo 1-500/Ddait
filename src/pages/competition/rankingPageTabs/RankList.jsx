@@ -8,6 +8,7 @@ import CustomAlert from '../../../components/CustomAlert';
 import { COLORS } from '../../../constants/colors';
 import { FONT_SIZES, FONTS } from '../../../constants/font';
 import { LAYOUT_PADDING, SPACING } from '../../../constants/space';
+import { getFriendRelation } from '../../../utils/competition';
 import { calculateDday } from '../../../utils/date';
 
 const podiumImage = require('../../../assets/images/podium.png');
@@ -60,6 +61,28 @@ const RankList = ({
 
   const hideAlert = () => {
     setAlertConfig((prev) => ({ ...prev, visible: false }));
+  };
+
+  const onUpdateData = (friendInfo) => {
+    setCompetitionRecord(
+      competitionRecord.map((e, i) => {
+        if (e.member_info.id === selectedMember?.member_info?.id) {
+          if (selectedMember?.friend_info?.status === 'none') {
+            return {
+              ...e,
+              friend_info: friendInfo,
+            };
+          } else {
+            return {
+              ...e,
+              friend_info: { status: 'none' },
+            };
+          }
+        } else {
+          return e;
+        }
+      }),
+    );
   };
 
   const Podium = () => {
@@ -272,38 +295,9 @@ const RankList = ({
       />
       <FriendOptionBottomSheet
         ref={bottomSheetRef}
-        relation={(() => {
-          switch (selectedMember?.friend_info?.status) {
-            case '대기':
-              return 'requested';
-            case '승인':
-              return 'friend';
-            default:
-              return 'none';
-          }
-        })()}
+        relation={() => getFriendRelation(selectedMember?.friend_info?.status)}
         memberData={{ ...selectedMember?.member_info, table_id: selectedMember?.friend_info?.id }}
-        onUpdateData={(friendInfo) => {
-          setCompetitionRecord(
-            competitionRecord.map((e, i) => {
-              if (e.member_info.id === selectedMember?.member_info?.id) {
-                if (selectedMember?.friend_info?.status === 'none') {
-                  return {
-                    ...e,
-                    friend_info: friendInfo,
-                  };
-                } else {
-                  return {
-                    ...e,
-                    friend_info: { status: 'none' },
-                  };
-                }
-              } else {
-                return e;
-              }
-            }),
-          );
-        }}
+        onUpdateData={onUpdateData}
         setAlertVisible={setAlertVisible}
         setAlertConfig={setAlertConfig}
         isCompetition={true}
