@@ -1,11 +1,12 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
-import { Image, Modal, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { FlatList, Image, Modal, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { createCustomFood, getUserBookMarkedFoodRecord, getUserCustomFoodRecord } from '../../../apis/food/index';
 import CustomButton from '../../../components/CustomButton';
 import CustomInput from '../../../components/CustomInput';
 import HeaderComponents from '../../../components/HeaderComponents';
+import SkeletonLoader from '../../../components/SkeletonLoader';
 import { COLORS, TEXT_COLORS } from '../../../constants/colors';
 import { FONT_SIZES, FONTS } from '../../../constants/font';
 import { RADIUS } from '../../../constants/radius';
@@ -25,6 +26,7 @@ const FoodRecord = () => {
   const [customModalFatState, setCustomModalFatState] = useState('');
   const [customModalCaloriesState, setCustomModalCaloriesState] = useState('');
   const [customModalServingSizeState, setCustomModalServingSizeState] = useState('');
+  const [loading, setLoading] = useState(true);
 
   const [userFoodListState, setUserFoodListState] = useState([]);
   const { foodList, removeFood } = useSelectedFoodsStore();
@@ -36,17 +38,21 @@ const FoodRecord = () => {
       try {
         let response;
         if (activeTag === '직접등록') {
+          setLoading(true);
           response = await getUserCustomFoodRecord();
           if (response.status !== 200) {
             throw new Error('직접 등록한 음식의 데이터를 가져오지 못했습니다.');
           }
         } else if (activeTag === '북마크') {
+          setLoading(true);
+
           response = await getUserBookMarkedFoodRecord();
           if (response.status !== 200) {
             throw new Error('북마크한 음식의 데이터를 가져오지 못했습니다.');
           }
         }
         setUserFoodListState(response.data);
+        setLoading(false);
       } catch (error) {
         showToast(error.message, 'error', 2000, 'top');
       }
@@ -107,6 +113,23 @@ const FoodRecord = () => {
       screen: 'FoodDetailScreen',
     });
   };
+
+  const renderFoodItem = ({ item }) => {
+    const isChecked = Array.isArray(foodList) && foodList.some((food) => food.id === item.id);
+    return (
+      <FoodItem
+        id={item.id}
+        name={item.name}
+        serving_size={item.serving_size}
+        calories={item.calories}
+        carbs={item.carbs}
+        onHandleCheckedFoods={() => handleCheckedFoods(item)}
+        protein={item.protein}
+        fat={item.fat}
+        isCheckFood={isChecked}
+      />
+    );
+  };
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.darkBackground }}>
       <HeaderComponents title="음식 기록" />
@@ -132,33 +155,27 @@ const FoodRecord = () => {
             </TouchableOpacity>
           ))}
         </View>
-        <ScrollView style={styles.foodListContainer}>
-          {Array.isArray(userFoodListState) && userFoodListState.length > 0 ? (
-            userFoodListState.map((food) => {
-              const isChecked = Array.isArray(foodList) && foodList.some((item) => item.id === food.id);
-              return (
-                <FoodItem
-                  key={food.id}
-                  id={food.id}
-                  name={food.name}
-                  serving_size={food.serving_size}
-                  calories={food.calories}
-                  carbs={food.carbs}
-                  onHandleCheckedFoods={() => handleCheckedFoods(food)}
-                  protein={food.protein}
-                  fat={food.fat}
-                  isCheckFood={isChecked}
-                />
-              );
-            })
-          ) : (
-            <View style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-              <Text style={{ fontSize: FONT_SIZES.md, fontFamily: FONTS.PRETENDARD[600], color: 'white' }}>
-                등록된 음식이 없습니다.
-              </Text>
-            </View>
-          )}
-        </ScrollView>
+        {loading ? (
+          <View style={{ marginVertical: 15 }}>
+            <SkeletonLoader type="foodRecordItem" />
+          </View>
+        ) : (
+          <FlatList
+            data={userFoodListState}
+            renderItem={renderFoodItem}
+            keyExtractor={(item) => item.id.toString()}
+            showsVerticalScrollIndicator={false}
+            style={styles.foodListContainer}
+            ListEmptyComponent={() => (
+              <View style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginVertical: 10 }}>
+                <Text style={{ fontSize: FONT_SIZES.md, fontFamily: FONTS.PRETENDARD[600], color: 'white' }}>
+                  등록된 음식이 없습니다.
+                </Text>
+              </View>
+            )}
+          />
+        )}
+
         <View style={{ display: 'flex', gap: 10 }}>
           <CustomButton size="large" text={`${foodList.length}개 선택됨`} theme="secondary" onPress={handleModal} />
           {activeTag === '직접등록' ? (

@@ -24,6 +24,7 @@ import {
 } from '../../../apis/food/index';
 import CustomButton from '../../../components/CustomButton';
 import HeaderComponents from '../../../components/HeaderComponents';
+import SkeletonLoader from '../../../components/SkeletonLoader';
 import { COLORS } from '../../../constants/colors';
 import { FONT_SIZES, FONTS } from '../../../constants/font';
 import { RADIUS } from '../../../constants/radius';
@@ -48,6 +49,8 @@ const FoodRecordDetail = () => {
 
   const [images, setImages] = useState([]);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [loading, setLoading] = useState(true);
+
   const carouselRef = useRef(null);
   const { showToast } = useToastMessageStore();
 
@@ -63,13 +66,20 @@ const FoodRecordDetail = () => {
           throw new Error(foodRecordResult.error);
         }
         setFoodList(foodRecordResult.data);
+        setLoading(false);
+
         foodRecordId = foodRecordResult.id;
+        if (!foodRecordId) {
+          return;
+        }
 
         const foodRecordImageResult = await getUserFoodRecordImages(foodRecordId);
         if (foodRecordImageResult.status === 200) {
           setImages(foodRecordImageResult.data);
+
           return;
         }
+
         throw new Error(foodRecordImageResult.message);
       } catch (error) {
         showToast(error.message, 'error', 2000, 'top');
@@ -227,6 +237,7 @@ const FoodRecordDetail = () => {
       }
     });
   };
+
   return (
     <SafeAreaView style={styles.container}>
       <HeaderComponents title={time} />
@@ -302,10 +313,12 @@ const FoodRecordDetail = () => {
             </View>
           </View>
 
-          <View style={{ marginVertical: 10 }}>
+          <View style={{ marginTop: 10 }}>
             <Text style={styles.foodListTitle}>{time}</Text>
           </View>
-          {Array.isArray(foodList) && foodList.length > 0 ? (
+          {loading && <SkeletonLoader type="foodRecordItem" />}
+
+          {Array.isArray(foodList) && foodList.length > 0 && !loading ? (
             foodList.map((food) => {
               return (
                 <FoodItem

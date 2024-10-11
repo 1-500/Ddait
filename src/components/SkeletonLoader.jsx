@@ -93,6 +93,14 @@ const SkeletonLoader = ({ type }) => {
       </View>
     </View>
   );
+  const renderFoodRecordItem = () => {
+    return (
+      <View style={styles.foodRecordContainer}>
+        <AnimatedBlock style={styles.foodRecordItem} borderRadius={RADIUS.large} />
+        <AnimatedBlock style={styles.foodRecordItem} borderRadius={RADIUS.large} />
+      </View>
+    );
+  };
 
   switch (type) {
     case 'header':
@@ -103,6 +111,9 @@ const SkeletonLoader = ({ type }) => {
       return renderMyScore();
     case 'competitionItem':
       return renderCompetitionItem();
+
+    case 'foodRecordItem':
+      return renderFoodRecordItem();
     default:
       return null;
   }
@@ -180,6 +191,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: SPACING.xs,
+  },
+
+  foodRecordContainer: {
+    height: 300,
+  },
+  foodRecordItem: {
+    padding: 20,
+    marginVertical: 5,
+    height: 80,
   },
 });
 
