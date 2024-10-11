@@ -1,6 +1,15 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
-import { FlatList, Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+  ActivityIndicator,
+  FlatList,
+  Image,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
 import { createBookMarkFoods, getFoodBySearch } from '../../../apis/food/index';
 import CustomButton from '../../../components/CustomButton';
@@ -29,8 +38,10 @@ const FoodSearch = () => {
   const { foodList, removeFood } = useSelectedFoodsStore();
 
   const { showToast } = useToastMessageStore();
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSearchInput = debounce(async (text) => {
+    setIsLoading(true);
     try {
       let result = await getFoodBySearch(text);
       if (result.error) {
@@ -42,8 +53,10 @@ const FoodSearch = () => {
       setSearchText(text);
     } catch (error) {
       showToast(error.message, 'error', 2000, 'top');
+    } finally {
+      setIsLoading(false);
     }
-  }, 300);
+  }, 400);
 
   const handleCheckedFoods = (food) => {
     const isChecked = Array.isArray(foodList) && foodList.some((item) => item.id === food.id);
@@ -115,12 +128,18 @@ const FoodSearch = () => {
             onChangeText={handleSearchInput}
           />
         </View>
-        <FlatList
-          data={foodSearchListState}
-          renderItem={renderFoodItem}
-          keyExtractor={(item) => item.id.toString()}
-          style={styles.foodListContainer}
-        />
+        {isLoading ? (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color={COLORS.primary} />
+          </View>
+        ) : (
+          <FlatList
+            data={foodSearchListState}
+            renderItem={renderFoodItem}
+            keyExtractor={(item) => item.id.toString()}
+            style={styles.foodListContainer}
+          />
+        )}
         <View style={styles.buttonContainer}>
           <CustomButton size="large" text={`${foodList.length}개 선택됨`} theme="secondary" />
           <CustomButton size="large" text="기록하기" theme="primary" onPress={handleRecordButton} />
@@ -188,6 +207,11 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: 'column',
     gap: 10,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 
