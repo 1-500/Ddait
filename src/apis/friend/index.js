@@ -17,6 +17,23 @@ export const searchUser = async (nickname) => {
   }
 };
 
+export const getRecommendFriend = async (page = 1, size = 10) => {
+  try {
+    const response = await API.get('/friends/recommend', {
+      params: { page, size },
+    });
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      console.error('getRecommendFriend Error:', error.response);
+      throw error;
+    } else {
+      console.error('예상치 못한 오류 발생:', error.message);
+      throw error;
+    }
+  }
+};
+
 export const getMyFriends = async () => {
   try {
     const response = await API.get('/friends');

@@ -13,13 +13,14 @@ import { calculateFoodNutrition } from '../../../utils/foodDiary/index';
 const FoodInfo = ({ navigation }) => {
   const route = useRoute();
   const { name, calories, serving_size, carbs, protein, fat, id } = route.params;
+
   const [foodInfoState, setFoodInfoState] = useState({
     id,
     name,
     calories,
-    carbs: carbs.toFixed(1),
-    protein: protein.toFixed(1),
-    fat: fat.toFixed(1),
+    carbs: carbs,
+    protein: protein,
+    fat: fat,
     serving_size,
     amount: Number(serving_size),
   });
