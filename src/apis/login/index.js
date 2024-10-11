@@ -4,8 +4,8 @@ export const emailLogin = async (data) => {
   try {
     const response = await API.post('/login', data);
 
-    return response.data;
+    return response.data.data;
   } catch (error) {
-    return error;
+    throw error.response.data;
   }
 };

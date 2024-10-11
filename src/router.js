@@ -29,6 +29,7 @@ import ProfileEdit from './pages/mypage/ProfileEdit';
 import ProfilePrivacy from './pages/mypage/ProfilePrivacy';
 import Setting from './pages/mypage/Setting';
 import Notification from './pages/notification/Notification';
+import OnBoarding from './pages/onboarding/OnBoarding';
 import SignUpPage from './pages/signup/SignUpPage';
 import SocialLogin from './pages/socialLogin/SocialLogin';
 import Splash from './pages/splash/Splash';
@@ -122,6 +123,7 @@ const Router = () => {
     <Stack.Navigator initialRouteName="Splash" screenOptions={{ headerShown: false }}>
       <Stack.Screen name="Splash" component={Splash} />
       <Stack.Screen name="Sign" component={SignStack} />
+      <Stack.Screen name="OnBoarding" component={OnBoarding} />
       <Stack.Screen name="MainTab" component={MainTab} />
       <Stack.Screen name="Notification" component={Notification} />
       <Stack.Screen name="SignUp" component={SignUpPage} />

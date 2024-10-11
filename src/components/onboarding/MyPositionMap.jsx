@@ -1,11 +1,12 @@
-import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import React from 'react';
+import { SafeAreaView, StyleSheet } from 'react-native';
 import { WebView } from 'react-native-webview';
 
 import { FONTS } from '../../constants/font';
 import useUserFormStore from '../../store/sign/signup';
 
-const MyPositionRegisterForm = () => {
-  const { setPosition, nickName } = useUserFormStore();
+const MyPositionMap = () => {
+  const { setPosition } = useUserFormStore();
 
   const handleMessage = (event) => {
     const { lat, lng } = JSON.parse(event.nativeEvent.data);
@@ -13,15 +14,11 @@ const MyPositionRegisterForm = () => {
   };
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.headerContainer}>
-        <Text style={styles.headerText}>{nickName}님의 위치는 어디신가요?</Text>
-        <Text style={styles.subHeaderText}>주변 유저들을 추천해드릴게요!</Text>
-      </View>
       <WebView
         originWhitelist={['*']}
         scrollEnabled={false}
         source={{ uri: 'https://develop.d1u3k3rakqogc7.amplifyapp.com/myPostion' }}
-        style={{ flex: 1, width: '100%', height: 500 }}
+        style={styles.webViewContainer}
         onMessage={handleMessage}
       />
     </SafeAreaView>
@@ -47,5 +44,10 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.PRETENDARD[600],
     marginTop: 10,
   },
+  webViewContainer: {
+    flex: 1,
+    width: '100%',
+    height: 500,
+  },
 });
-export default MyPositionRegisterForm;
+export default MyPositionMap;
