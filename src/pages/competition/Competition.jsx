@@ -3,9 +3,9 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Alert, FlatList, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 
 import { getMyCompetition } from '../../apis/competition';
+import SkeletonLoader from '../../components/common/SkeletonLoader';
 import CustomButton from '../../components/CustomButton';
 import MyCompetitionItem from '../../components/MyCompetitionItem';
-import SkeletonLoader from '../../components/SkeletonLoader';
 import { COLORS } from '../../constants/colors';
 import { FONT_SIZES, FONTS, HEADER_FONT_SIZES } from '../../constants/font';
 import { RADIUS } from '../../constants/radius';
