@@ -5,7 +5,7 @@ import { searchUser } from '../../apis/friend/index';
 import FriendOptionBottomSheet from '../../components/BottomSheet/FriendOptionBottomSheet';
 import CustomAlert from '../../components/CustomAlert';
 import CustomButton from '../../components/CustomButton';
-import RecommendedFriends from '../../components/friend/RecommendedFriends';
+import RecommendedFriends from '../../components/Friend/RecommendedFriends';
 import SearchHeader from '../../components/Header/SearchHeader';
 import MemberProfileItem from '../../components/MemberProfileItem';
 import { COLORS } from '../../constants/colors';
