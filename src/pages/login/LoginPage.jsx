@@ -62,14 +62,9 @@ const LoginPage = () => {
           nickname: nickname,
           profileImageUrl: profileImageUrl,
           introduce: introduce,
+          userLevel: user_level,
         });
-
-        //userlevel이 1이면 온보딩
-        if (user_level === 1) {
-          navigation.navigate('OnBoarding');
-        } else {
-          navigation.navigate('MainTab', { screen: 'Home' });
-        }
+        navigation.navigate('MainTab', { screen: 'Home' });
       } catch (error) {
         showToast(error.message || '로그인 중 오류가 발생했습니다.', 'error', 2000, 'top');
       }

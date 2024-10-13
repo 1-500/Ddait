@@ -18,34 +18,23 @@ import { ELEMENT_VERTICAL_MARGIN, LAYOUT_PADDING } from '../../constants/space';
 const steps = [
   {
     step: 1,
-    component: () => (
-      <View style={styles.welcomeContainer}>
-        <Text style={styles.welcomeText}>환영합니다! 🎉</Text>
-        <Text style={styles.welcomeSubText}>따잇과 함께 운동 습관을 길러봐요!</Text>
-      </View>
-    ),
-    title: '따잇에 오신 것을 환영합니다!',
-    subTitle: '시작하기 전에 몇 가지 정보를 입력해 주세요.',
-  },
-  {
-    step: 2,
     component: PreferedSportRegisterForm,
     title: '좋아하는 운동을 선택해주세요',
     subTitle: '따잇에서 함께 즐길 운동을 알려주세요.',
   },
   {
-    step: 3,
+    step: 2,
     component: MyPositionRegisterForm,
     title: '나의 위치를 설정해주세요.',
   },
   {
-    step: 4,
+    step: 3,
     component: GenderRegisterForm,
     title: '성별을 선택해주세요.',
     subTitle: '맞춤형 운동 추천을 위해 필요합니다.',
   },
   {
-    step: 5,
+    step: 4,
     component: BirthDayRegisterForm,
     title: '생일을 알려주세요!',
     subTitle: '회원가입의 마지막 단계입니다.',
@@ -76,7 +65,6 @@ const OnBoarding = () => {
   const handleSubmit = async () => {
     try {
       //온보딩 api 연결
-
       navigation.navigate('MainTab', { screen: 'Home' });
     } catch (error) {
       setAlertConfig({
