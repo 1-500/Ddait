@@ -1,4 +1,5 @@
 import { BottomSheetBackdrop, BottomSheetModal } from '@gorhom/bottom-sheet';
+import { useNavigation } from '@react-navigation/native';
 import React, { forwardRef, useCallback } from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
 
@@ -9,12 +10,17 @@ import CustomButton from '../CustomButton';
 const greatImg = require('../../assets/images/great.png');
 const OnboardingBottomSheet = forwardRef((props, ref) => {
   const snapPoints = [320];
+  const navigation = useNavigation();
 
   const renderBackdrop = useCallback(
     (prop) => <BottomSheetBackdrop {...prop} appearsOnIndex={0} disappearsOnIndex={-1} pressBehavior="close" />,
     [],
   );
 
+  const onPressBtn = () => {
+    navigation.navigate('OnBoarding');
+    ref.current?.close();
+  };
   return (
     <BottomSheetModal
       ref={ref}
@@ -30,7 +36,7 @@ const OnboardingBottomSheet = forwardRef((props, ref) => {
           <Text style={styles.welcomeSubText}> 간단한 정보만 입력하고 바로 시작해요!</Text>
           <Image source={greatImg} />
         </View>
-        <CustomButton text="시작하기" theme="primary" size="large" />
+        <CustomButton text="시작하기" theme="primary" size="large" onPress={onPressBtn} />
       </View>
     </BottomSheetModal>
   );

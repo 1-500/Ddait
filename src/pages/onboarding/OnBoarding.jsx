@@ -2,6 +2,7 @@ import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
 
+import { postOnboarding } from '../../apis/onboarding';
 import CustomAlert from '../../components/CustomAlert';
 import CustomButton from '../../components/CustomButton';
 import HeaderComponents from '../../components/HeaderComponents';
@@ -13,7 +14,7 @@ import StepIndicator from '../../components/StepIndicator';
 import { BACKGROUND_COLORS, COLORS } from '../../constants/colors';
 import { FONT_SIZES, FONTS } from '../../constants/font';
 import { ELEMENT_VERTICAL_MARGIN, LAYOUT_PADDING } from '../../constants/space';
-// import useOnboardingStore from '../../store/onboarding';
+import useUserFormStore from '../../store/sign/signup';
 
 const steps = [
   {
@@ -26,6 +27,7 @@ const steps = [
     step: 2,
     component: MyPositionRegisterForm,
     title: '나의 위치를 설정해주세요.',
+    subTitle: '함께 운동할 친구들을 찾을 수 있어요.',
   },
   {
     step: 3,
@@ -37,7 +39,7 @@ const steps = [
     step: 4,
     component: BirthDayRegisterForm,
     title: '생일을 알려주세요!',
-    subTitle: '회원가입의 마지막 단계입니다.',
+    subTitle: '필수 정보는 아니에요.',
   },
 ];
 
@@ -51,6 +53,11 @@ const OnBoarding = () => {
     onConfirm: null,
     showCancel: true,
   });
+
+  const { preferredSport, position, gender, selectedDate } = useUserFormStore();
+  const showAlert = (config) => {
+    setAlertConfig({ ...config, visible: true });
+  };
   const hideAlert = () => {
     setAlertConfig((prev) => ({ ...prev, visible: false }));
   };
@@ -63,11 +70,21 @@ const OnBoarding = () => {
   const handleStepChange = (newStep) => setCurrentStep(newStep);
 
   const handleSubmit = async () => {
+    const { day, month, year } = selectedDate;
+    const birthdate = new Date(`${year}-${month}-${day}`);
+    const positionString = `${position.latitude},${position.longitude}`;
     try {
-      //온보딩 api 연결
-      navigation.navigate('MainTab', { screen: 'Home' });
+      const res = await postOnboarding({
+        preferredSport,
+        location: positionString,
+        gender,
+        birthdate,
+      });
+      if (res.status === 200) {
+        navigation.navigate('MainTab', { screen: 'Home' });
+      }
     } catch (error) {
-      setAlertConfig({
+      showAlert({
         visible: true,
         title: '오류 발생',
         message: error.message || '정보 저장 중 오류가 발생했습니다. 다시 시도해주세요.',
@@ -76,7 +93,6 @@ const OnBoarding = () => {
       });
     }
   };
-
   return (
     <SafeAreaView style={styles.safeAreaView}>
       <HeaderComponents title="온보딩" />
@@ -85,9 +101,7 @@ const OnBoarding = () => {
         <StepIndicator currentStep={currentStep} steps={steps.length} onPress={handleStepChange} />
 
         <View style={styles.headerContainer}>
-          <Text style={styles.titleText}>
-            {typeof currentStepData.title === 'function' ? currentStepData.title() : currentStepData.title}
-          </Text>
+          <Text style={styles.titleText}>{currentStepData.title}</Text>
           {currentStepData.subTitle && <Text style={styles.subTitleText}>{currentStepData.subTitle}</Text>}
         </View>
 
