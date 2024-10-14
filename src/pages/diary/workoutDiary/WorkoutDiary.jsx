@@ -5,6 +5,7 @@ import { FlatList, StyleSheet, Text, View } from 'react-native';
 
 import { getDiaryList } from '../../../apis/diary';
 import CustomButton from '../../../components/CustomButton';
+import SkeletonLoader from '../../../components/SkeletonLoader';
 import { BACKGROUND_COLORS, BUTTON_COLORS, COLORS, TEXT_COLORS } from '../../../constants/colors';
 import { FONT_SIZES, FONTS } from '../../../constants/font';
 import { RADIUS } from '../../../constants/radius';
@@ -17,17 +18,21 @@ const WorkoutDiary = () => {
   const { selected } = useDiaryCalendarStore();
   const [workoutRecords, setWorkoutRecords] = useState([]);
   const { showToast } = useToastMessageStore();
+  const [isLoading, setIsLoading] = useState(true);
 
   /* eslint-disable */
   useFocusEffect(
     useCallback(() => {
       const fetchWorkout = async () => {
+        setIsLoading(true);
         try {
           const res = await getDiaryList(selected);
           setWorkoutRecords(res);
         } catch (error) {
           console.log('error: ', error);
           showToast(`에러메세지 : ${error}`, 'error', 1000, 'top', 80);
+        } finally {
+          setIsLoading(false);
         }
       };
 
@@ -110,7 +115,9 @@ const WorkoutDiary = () => {
 
   return (
     <View style={styles.workoutContainer}>
-      {workoutRecords.length === 0 ? (
+      {isLoading ? (
+        <SkeletonLoader type="rankList" /> // 로딩 중 스켈레톤 UI 표시
+      ) : workoutRecords.length === 0 ? (
         renderEmptyMessage()
       ) : (
         <FlatList data={workoutRecords} renderItem={renderWorkoutRecord} keyExtractor={(item) => item.id.toString()} />

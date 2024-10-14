@@ -140,7 +140,7 @@ const Router = () => {
       <Stack.Screen name="FriendSearch" component={FriendSearch} />
       <Stack.Screen name="MemberReport" component={MemberReport} />
       <Stack.Screen name="FAQ" component={FAQ} />
-      <Stack.Screen name="Test" component={Test} />
+      {/* <Stack.Screen name="Test" component={Test} /> */}
     </Stack.Navigator>
   ); // 라우팅
 };
