@@ -138,7 +138,7 @@ const Router = () => {
       <Stack.Screen name="CompetitionRecordDetail" component={CompetitionRecordDetail} />
       <Stack.Screen name="FriendSearch" component={FriendSearch} />
       <Stack.Screen name="FAQ" component={FAQ} />
-      <Stack.Screen name="Test" component={Test} />
+      {/* <Stack.Screen name="Test" component={Test} /> */}
     </Stack.Navigator>
   ); // 라우팅
 };
