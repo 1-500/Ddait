@@ -2,14 +2,14 @@ import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
 
-import { emailAccountId } from '../../apis/signup/index';
+import { postOnboarding } from '../../apis/onboarding';
 import CustomAlert from '../../components/CustomAlert';
 import CustomButton from '../../components/CustomButton';
 import HeaderComponents from '../../components/HeaderComponents';
-import EmailForm from '../../components/signup/EmailForm';
-import NicknameForm from '../../components/signup/NicknameForm';
-import PasswordForm from '../../components/signup/PasswordForm';
-import TosForm from '../../components/signup/TosForm';
+import BirthDayRegisterForm from '../../components/onboarding/BirthForm';
+import GenderRegisterForm from '../../components/onboarding/GenderForm';
+import MyPositionRegisterForm from '../../components/onboarding/MyPositionMap';
+import PreferedSportRegisterForm from '../../components/onboarding/PreferedSportForm';
 import StepIndicator from '../../components/StepIndicator';
 import { BACKGROUND_COLORS, COLORS } from '../../constants/colors';
 import { FONT_SIZES, FONTS } from '../../constants/font';
@@ -19,26 +19,31 @@ import useUserFormStore from '../../store/sign/signup';
 const steps = [
   {
     step: 1,
-    component: EmailForm,
-    title: '따잇에서 사용할 \n이메일을 입력해 주세요',
-    subTitle: '로그인에 사용될 정확한 이메일을 입력해주세요',
+    component: PreferedSportRegisterForm,
+    title: '좋아하는 운동을 선택해주세요',
+    subTitle: '따잇에서 함께 즐길 운동을 알려주세요.',
   },
-  { step: 2, component: PasswordForm, title: '비밀번호를 입력하세요!' },
+  {
+    step: 2,
+    component: MyPositionRegisterForm,
+    title: '나의 위치를 설정해주세요.',
+    subTitle: '함께 운동할 친구들을 찾을 수 있어요.',
+  },
   {
     step: 3,
-    component: NicknameForm,
-    title: '어떻게 불러드릴까요?',
-    subTitle: '앱에서 사용할 닉네임을 알려주세요.',
+    component: GenderRegisterForm,
+    title: '성별을 선택해주세요.',
+    subTitle: '맞춤형 운동 추천을 위해 필요합니다.',
   },
   {
     step: 4,
-    component: TosForm,
-    title: '원활한 서비스 이용을 위해\n약관에 동의해주세요.',
-    subTitle: '회원가입의 마지막단계입니다.',
+    component: BirthDayRegisterForm,
+    title: '생일을 알려주세요!',
+    subTitle: '필수 정보는 아니에요.',
   },
 ];
 
-const SignUpPage = () => {
+const OnBoarding = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const navigation = useNavigation();
   const [alertConfig, setAlertConfig] = useState({
@@ -49,17 +54,13 @@ const SignUpPage = () => {
     showCancel: true,
   });
 
+  const { preferredSport, position, gender, selectedDate } = useUserFormStore();
+  const showAlert = (config) => {
+    setAlertConfig({ ...config, visible: true });
+  };
   const hideAlert = () => {
     setAlertConfig((prev) => ({ ...prev, visible: false }));
   };
-
-  const { email, password, nickname, tosAgreement, setTosAgreement } = useUserFormStore((state) => ({
-    email: state.email,
-    password: state.password,
-    nickname: state.nickname,
-    tosAgreement: state.tosAgreement,
-    setTosAgreement: state.setTosAgreement,
-  }));
 
   const currentStepData = steps.find((step) => step.step === currentStep);
   const CurrentStepComponent = currentStepData.component;
@@ -69,43 +70,42 @@ const SignUpPage = () => {
   const handleStepChange = (newStep) => setCurrentStep(newStep);
 
   const handleSubmit = async () => {
+    const { day, month, year } = selectedDate;
+    const birthdate = new Date(`${year}-${month}-${day}`);
+    const positionString = `${position.latitude},${position.longitude}`;
     try {
-      const response = await emailAccountId({ email, password, nickname });
-
-      if (response.status === 200) {
-        navigation.navigate('Sign', { screen: 'Login' });
+      const res = await postOnboarding({
+        preferredSport,
+        location: positionString,
+        gender,
+        birthdate,
+      });
+      if (res.status === 200) {
+        navigation.navigate('MainTab', { screen: 'Home' });
       }
     } catch (error) {
-      setAlertConfig({
+      showAlert({
         visible: true,
         title: '오류 발생',
-        message: error.message || '회원가입 중 오류가 발생했습니다. 다시 시도해주세요.',
+        message: error.message || '정보 저장 중 오류가 발생했습니다. 다시 시도해주세요.',
         onConfirm: hideAlert,
         showCancel: false,
       });
     }
   };
-
-  const handleTosSubmit = (agreement) => {
-    setTosAgreement(agreement);
-    goToNextStep();
-  };
-
   return (
     <SafeAreaView style={styles.safeAreaView}>
-      <HeaderComponents title="경쟁 생성하기" />
+      <HeaderComponents title="온보딩" />
 
       <View style={styles.container}>
         <StepIndicator currentStep={currentStep} steps={steps.length} onPress={handleStepChange} />
 
         <View style={styles.headerContainer}>
-          <Text style={styles.titleText}>
-            {typeof currentStepData.title === 'function' ? currentStepData.title(nickname) : currentStepData.title}
-          </Text>
+          <Text style={styles.titleText}>{currentStepData.title}</Text>
           {currentStepData.subTitle && <Text style={styles.subTitleText}>{currentStepData.subTitle}</Text>}
         </View>
 
-        <CurrentStepComponent onSubmit={handleTosSubmit} />
+        <CurrentStepComponent />
 
         {currentStep < steps.length ? (
           <View style={styles.btnWrapper}>
@@ -114,13 +114,7 @@ const SignUpPage = () => {
           </View>
         ) : (
           <View style={styles.btnWrapper}>
-            <CustomButton
-              theme={tosAgreement ? 'primary' : 'block'}
-              disabled={tosAgreement ? false : true}
-              size="large"
-              text="따잇 시작하기"
-              onPress={handleSubmit}
-            />
+            <CustomButton theme="primary" size="large" text="따잇 시작하기" onPress={handleSubmit} />
           </View>
         )}
 
@@ -131,12 +125,12 @@ const SignUpPage = () => {
           onConfirm={alertConfig.onConfirm}
           onCancel={hideAlert}
           showCancel={alertConfig.showCancel !== false}
-          goBackOnConfirm={alertConfig.goBackOnConfirm}
         />
       </View>
     </SafeAreaView>
   );
 };
+
 const styles = StyleSheet.create({
   safeAreaView: {
     flex: 1,
@@ -169,4 +163,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SignUpPage;
+export default OnBoarding;

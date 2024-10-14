@@ -1,9 +1,10 @@
 import { useIsFocused } from '@react-navigation/native'; // useIsFocused 훅을 import 합니다
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Image, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { getMyCompetition } from '../../apis/competition/index';
 import { getNotification } from '../../apis/notification';
+import OnboardingBottomSheet from '../../components/BottomSheet/OnboardingBottomSheet';
 import SectionTitle from '../../components/common/SectionTitle';
 import HeaderComponents from '../../components/HeaderComponents';
 import HeatmapCalendar from '../../components/HeatMapCalendar';
@@ -31,10 +32,11 @@ const dummyDates = [
 const Home = ({ navigation }) => {
   const [competition, setCompetition] = useState();
   const isFocused = useIsFocused(); // 현재 화면이 포커스 상태인지 확인
-  const { nickname, profileImageUrl, introduce } = useUserStore();
+  const { nickname, profileImageUrl, introduce, userLevel } = useUserStore();
   const { notificationList, setNotificationList } = useNotificationStore();
   const { setCompetitionList } = useCompetitionStore();
   const { showToast } = useToastMessageStore();
+  const bottomSheetRef = useRef(null);
 
   const fetchMyCompetitions = async () => {
     try {
@@ -82,6 +84,12 @@ const Home = ({ navigation }) => {
     }
   };
 
+  useEffect(() => {
+    if (userLevel === 1) {
+      bottomSheetRef.current?.present();
+    }
+  }, [userLevel]);
+
   /* eslint-disable */
   useEffect(() => {
     if (isFocused) {
@@ -119,6 +127,7 @@ const Home = ({ navigation }) => {
         <SectionTitle title="운동 요약" showMore={true} navigation={navigation} navigateTo="Mypage" />
         <ExerciseSummary data={dummyDates} />
       </ScrollView>
+      <OnboardingBottomSheet ref={bottomSheetRef} />
     </SafeAreaView>
   );
 };

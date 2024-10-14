@@ -1,4 +1,3 @@
-import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import React, { useCallback, useMemo, useRef } from 'react';
 import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
@@ -8,8 +7,8 @@ import DatePickerBottomSheet from '../BottomSheet/DatePickerBottomSheet';
 
 const windowWidth = Dimensions.get('window').width;
 
-const BirthDayRegisterForm = () => {
-  const { selectedDate, setSelectedDate, nickName } = useUserFormStore();
+const BirthForm = () => {
+  const { selectedDate, setSelectedDate } = useUserFormStore();
 
   const bottomSheetModalRef = useRef(null);
   const snapPoints = useMemo(() => ['70%', '50%'], []);
@@ -19,7 +18,6 @@ const BirthDayRegisterForm = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.topText}>{nickName}님의 생일을 알려주세요!</Text>
       <TouchableOpacity onPress={handlePresentModalPress}>
         <Text style={styles.dateText}>
           {selectedDate.year} / {selectedDate.month} / {selectedDate.day}
@@ -91,4 +89,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default BirthDayRegisterForm;
+export default BirthForm;

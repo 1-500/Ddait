@@ -1,33 +1,6 @@
-import { create } from 'zustand';
+import create from 'zustand';
 
-interface UserFormState {
-  email: string;
-  password: string;
-  confirmPassword: string;
-  nickname: string;
-  position: {
-    latitude: number;
-    longitude: number;
-  };
-  preferredSport: string;
-  gender: string;
-  selectedDate: {
-    month: string;
-    day: string;
-    year: string;
-  };
-  setEmail: (email: string) => void;
-  setPassword: (password: string) => void;
-  setConfirmPassword: (confirmPassword: string) => void;
-  setNickName: (nickname: string) => void;
-  setPosition: (latitude: number, longitude: number) => void;
-  setPreferredSport: (sport: string) => void;
-  setGender: (gender: string) => void;
-  setSelectedDate: (date: { month: string; day: string; year: string }) => void;
-  clearForm: () => void; // 상태를 클리어하는 메서드 추가
-}
-
-const useUserFormStore = create<UserFormState>((set) => ({
+const useUserFormStore = create((set) => ({
   email: '',
   password: '',
   confirmPassword: '',
@@ -36,6 +9,7 @@ const useUserFormStore = create<UserFormState>((set) => ({
   preferredSport: '',
   gender: '',
   selectedDate: { month: '09', day: '17', year: '2021' },
+  tosAgreement: false, // 약관 동의 상태
 
   setEmail: (email) => set({ email }),
   setPassword: (password) => set({ password }),
@@ -45,10 +19,10 @@ const useUserFormStore = create<UserFormState>((set) => ({
   setPreferredSport: (preferredSport) => set({ preferredSport }),
   setGender: (gender) => set({ gender }),
   setSelectedDate: (selectedDate) => set({ selectedDate }),
+  setTosAgreement: (agreement) => set({ tosAgreement: agreement }),
 
   clearForm: () =>
     set({
-      // 상태를 초기값으로 재설정
       email: '',
       password: '',
       confirmPassword: '',
@@ -57,6 +31,7 @@ const useUserFormStore = create<UserFormState>((set) => ({
       preferredSport: '',
       gender: '',
       selectedDate: { month: '09', day: '17', year: '2021' },
+      tosAgreement: false,
     }),
 }));
 

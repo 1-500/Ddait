@@ -1,5 +1,5 @@
 import { useNavigation } from '@react-navigation/native';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
   Image,
   KeyboardAvoidingView,
@@ -45,41 +45,31 @@ const LoginPage = () => {
 
   const handleLoginButton = async () => {
     if (emailInput && passwordInput) {
-      let result = await emailLogin(
-        JSON.stringify({
-          email: emailInput,
-          password: passwordInput,
-        }),
-      );
-      if (result.status === 403) {
-        showToast(result.message, 'error', 2000, 'top');
-        return;
-      } else {
-        if (result.status === 200) {
-          const { access_token, expires_in, refresh_token, user } = result.session;
-          setToken({
-            accessToken: access_token,
-            expiresIn: expires_in,
-            refreshToken: refresh_token,
-          });
-          setUserEmail(user.email);
-          setUserInfo({
-            userEmail: user.email,
-            userId: result.userId,
-            nickname: result.nickname,
-            profileImageUrl: result.profileImageUrl,
-            introduce: result.introduce,
-          });
+      try {
+        const result = await emailLogin({ email: emailInput, password: passwordInput });
+        const { access_token, expires_in, refresh_token } = result.session;
+        const { email, userId, nickname, profileImageUrl, introduce, user_level } = result.user;
 
-          navigation.navigate('MainTab', {
-            screen: 'Home',
-          });
-        } else {
-          showToast(result.message, 'error', 2000, 'top');
-        }
+        setToken({
+          accessToken: access_token,
+          expiresIn: expires_in,
+          refreshToken: refresh_token,
+        });
+        setUserEmail(email);
+        setUserInfo({
+          userEmail: email,
+          userId: userId,
+          nickname: nickname,
+          profileImageUrl: profileImageUrl,
+          introduce: introduce,
+          userLevel: user_level,
+        });
+        navigation.navigate('MainTab', { screen: 'Home' });
+      } catch (error) {
+        showToast(error.message || '로그인 중 오류가 발생했습니다.', 'error', 2000, 'top');
       }
     } else {
-      showToast('이메일 패스워드를 입력하세요!', 'error', 2000, 'top');
+      showToast('이메일과 비밀번호를 입력하세요!', 'error', 2000, 'top');
     }
   };
 

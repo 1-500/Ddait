@@ -1,4 +1,5 @@
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React from 'react';
+import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
 
 import { COLORS } from '../../constants/colors';
 import { FONTS } from '../../constants/font';
@@ -12,8 +13,8 @@ const items = [
   { title: 'female', icon: FemaleIcon },
   { title: 'none', icon: NoneIcon },
 ];
-const GenderRegisterForm = () => {
-  const { setGender, gender, nickName } = useUserFormStore();
+const GenderForm = () => {
+  const { setGender, gender } = useUserFormStore();
 
   const handleCard = (title) => {
     setGender(title);
@@ -21,11 +22,6 @@ const GenderRegisterForm = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.headerContainer}>
-        <Text style={styles.headerText}>{nickName}님의 성별은</Text>
-        <Text style={styles.headerText}>무엇인가요?</Text>
-        <Text style={styles.subHeaderText}>필수정보가 아닙니다!</Text>
-      </View>
       <View style={styles.genderContainer}>
         {items.map((item, index) => (
           <Card key={index} icon={item.icon} onPressIn={handleCard} gender={gender} title={item.title} />
@@ -95,4 +91,4 @@ const styles = StyleSheet.create({
     resizeMode: 'cover',
   },
 });
-export default GenderRegisterForm;
+export default GenderForm;
