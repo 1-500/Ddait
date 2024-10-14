@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Fontisto from 'react-native-vector-icons/Fontisto';
 
@@ -7,6 +7,8 @@ import { COLORS } from '../constants/colors';
 import { FONT_SIZES, FONTS } from '../constants/font';
 import { SPACING } from '../constants/space';
 import Toggle from './Toggle';
+
+const { width } = Dimensions.get('window');
 
 const SettingItem = ({ title, description, leftBtn, rightBtn, onPress, onToggle, isToggled, isRadioActive }) => {
   const renderLeftBtn = () => {
@@ -35,7 +37,7 @@ const SettingItem = ({ title, description, leftBtn, rightBtn, onPress, onToggle,
           {renderLeftBtn()}
           <View style={{ gap: 12 }}>
             <Text style={styles.title}>{title}</Text>
-            <Text style={styles.description}>{description}</Text>
+            {description && <Text style={styles.description}>{description}</Text>}
           </View>
         </View>
         {renderRightBtn()}
@@ -59,9 +61,11 @@ const styles = StyleSheet.create({
     color: COLORS.white,
     fontSize: FONT_SIZES.sm,
     fontFamily: FONTS.PRETENDARD[500],
+    maxWidth: width - 76,
   },
   description: {
     color: COLORS.white,
     fontFamily: FONTS.PRETENDARD[300],
+    maxWidth: width - 76,
   },
 });

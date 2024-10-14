@@ -248,11 +248,14 @@ const CompetitionRoom1VS1 = ({ navigation }) => {
           <SkeletonLoader type="rankList" />
         ) : (
           <Score1VS1
-            data={competitionRecord}
+            competitionRecord={competitionRecord}
+            setCompetitionRecord={setCompetitionRecord}
+            competitionData={competitionData}
             progress={progress}
             isParticipant={isParticipantState}
             onJoin={handleJoin}
             onLeave={handleLeave}
+            navigation={navigation}
             jumpTo={jumpTo}
           />
         );

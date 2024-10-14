@@ -240,12 +240,14 @@ const CompetitionRoomRanking = ({ navigation }) => {
           <SkeletonLoader type="rankList" />
         ) : (
           <RankList
-            data={competitionRecord}
+            competitionRecord={competitionRecord}
+            setCompetitionRecord={setCompetitionRecord}
             competitionData={competitionData}
             progress={progress}
             onJoin={handleJoin}
             onLeave={handleLeave}
             jumpTo={jumpTo}
+            navigation={navigation}
           />
         );
       case 'myScore':
