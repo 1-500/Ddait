@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { Dimensions, ScrollView, StyleSheet, Text, View } from 'react-native';
 
-import DatePickerBottomSheet from '../../../components/BottomSheet/DatePickerBottomSheet';
+import DatePickerBottomSheet from '../../../components/bottomSheet/DatePickerBottomSheet';
 import OptionSelector from '../../../components/competitionCreation/OptionSelector';
 import Toggle from '../../../components/Toggle';
 import { COLORS } from '../../../constants/colors';

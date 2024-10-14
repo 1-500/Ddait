@@ -2,11 +2,11 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { FlatList, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { searchUser } from '../../apis/friend/index';
-import FriendOptionBottomSheet from '../../components/BottomSheet/FriendOptionBottomSheet';
+import FriendOptionBottomSheet from '../../components/bottomSheet/FriendOptionBottomSheet';
 import CustomAlert from '../../components/CustomAlert';
 import CustomButton from '../../components/CustomButton';
 import RecommendedFriends from '../../components/friend/RecommendedFriends';
-import SearchHeader from '../../components/Header/SearchHeader';
+import SearchHeader from '../../components/header/SearchHeader';
 import MemberProfileItem from '../../components/MemberProfileItem';
 import { COLORS } from '../../constants/colors';
 import { FONT_SIZES, FONTS } from '../../constants/font';

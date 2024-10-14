@@ -14,7 +14,7 @@ import {
 import { emailLogin } from '../../apis/login/index';
 import CustomButton from '../../components/CustomButton';
 import CustomInput from '../../components/CustomInput';
-import AppleLogin from '../../components/Login/AppleLogin';
+import AppleLogin from '../../components/login/AppleLogin';
 import { COLORS } from '../../constants/colors';
 import { FONT_SIZES, FONTS, HEADER_FONT_SIZES } from '../../constants/font';
 import { LAYOUT_PADDING } from '../../constants/space';

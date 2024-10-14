@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Dimensions, FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
-import FriendOptionBottomSheet from '../../../components/BottomSheet/FriendOptionBottomSheet';
+import FriendOptionBottomSheet from '../../../components/bottomSheet/FriendOptionBottomSheet';
 import CustomAlert from '../../../components/CustomAlert';
 import { COLORS } from '../../../constants/colors';
 import { FONT_SIZES, FONTS } from '../../../constants/font';

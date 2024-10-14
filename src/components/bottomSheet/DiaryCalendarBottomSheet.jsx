@@ -1,13 +1,12 @@
 /* eslint-disable react/react-in-jsx-scope */
 import { BottomSheetModal, BottomSheetModalProvider, BottomSheetView } from '@gorhom/bottom-sheet';
-import { forwardRef, useCallback, useMemo, useRef } from 'react';
+import { forwardRef, useMemo } from 'react';
 import { Dimensions, StyleSheet, View } from 'react-native';
 import { Calendar } from 'react-native-calendars';
 
-import { BACKGROUND_COLORS, COLORS, TEXT_COLORS } from '../constants/colors';
-import { FONT_SIZES } from '../constants/font';
-import useDiaryCalendarStore from '../store/food/calendar';
-import { getEndOfWeek, getStartOfWeek, getWeekOfMonth } from '../utils/date';
+import { BACKGROUND_COLORS, COLORS } from '../../constants/colors';
+import useDiaryCalendarStore from '../../store/food/calendar';
+import { getEndOfWeek, getStartOfWeek, getWeekOfMonth } from '../../utils/date';
 
 const windowWidth = Dimensions.get('window');
 
