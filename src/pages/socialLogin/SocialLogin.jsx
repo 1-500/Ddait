@@ -6,8 +6,10 @@ import WebView from 'react-native-webview';
 
 import HeaderComponents from '../../components/HeaderComponents';
 import useUserStore from '../../store/sign/login';
+import { useToastMessageStore } from '../../store/toastMessage/toastMessage';
 
 const SocialLogin = ({ route }) => {
+  const { showToast } = useToastMessageStore();
   const { provider } = route.params;
   const isFocused = useIsFocused();
 
@@ -37,7 +39,7 @@ const SocialLogin = ({ route }) => {
     if (user_level === 0) {
       setSocialEmail(socialEmail);
       setUserLevel(user_level); // 온보딩 진행
-      Alert.alert('아직 온보딩을 진행하지 않으셨군요 !');
+      showToast('온보딩 페이지로 이동할게요!', 'success');
 
       navigation.navigate('Sign', {
         screen: 'SignUp',

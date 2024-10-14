@@ -1,10 +1,12 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, Vibration, View } from 'react-native';
+import { StyleSheet, Text, TextInput, TouchableOpacity, Vibration, View } from 'react-native';
 
 import { COLORS, TEXT_COLORS } from '../constants/colors';
 import { BODY_FONT_SIZES } from '../constants/font';
+import { useToastMessageStore } from '../store/toastMessage/toastMessage';
 
 const CustomTimer = ({ time, setTime }) => {
+  const { showToast } = useToastMessageStore();
   const [isRunning, setIsRunning] = useState(false);
   const [inputMinutes, setInputMinutes] = useState('00');
   const [inputSeconds, setInputSeconds] = useState('30');
@@ -17,7 +19,7 @@ const CustomTimer = ({ time, setTime }) => {
       if (minutes === 0 && seconds === 0) {
         clearInterval(intervalId.current);
         intervalId.current = null;
-        Alert.alert('휴식 완료', '휴식 시간이 끝났습니다.');
+        showToast('휴식 시간이 끝났습니다!', 'success');
         Vibration.vibrate(1000);
         setIsSettingMode(false);
 
@@ -28,7 +30,7 @@ const CustomTimer = ({ time, setTime }) => {
         return { ...prevTime, seconds: seconds - 1 };
       }
     });
-  }, [setTime]);
+  }, [setTime, showToast]);
 
   useEffect(() => {
     if (isRunning) {

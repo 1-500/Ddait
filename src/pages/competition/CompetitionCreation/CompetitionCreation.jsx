@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Alert, SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
 
 import { createCompetition, enterCompetition } from '../../../apis/competition/index';
 import CustomAlert from '../../../components/CustomAlert';
@@ -10,6 +10,7 @@ import { BACKGROUND_COLORS, COLORS } from '../../../constants/colors';
 import { FONTS, HEADER_FONT_SIZES } from '../../../constants/font';
 import { ELEMENT_VERTICAL_MARGIN, LAYOUT_PADDING } from '../../../constants/space';
 import useCreateRoomStateStore from '../../../store/competition/index';
+import { useToastMessageStore } from '../../../store/toastMessage/toastMessage';
 import { formatDate_ISO8601 } from '../../../utils/date';
 import SetRoomDetail from '../CompetitionCreation/SetRoomDetail';
 import SetRoomTitle from '../CompetitionCreation/SetRoomTitle';
@@ -26,6 +27,7 @@ const steps = [
 ];
 
 const CompetitionCreation = ({ navigation }) => {
+  const { showToast } = useToastMessageStore();
   const [currentStep, setCurrentStep] = useState(1);
   const [showAlert, setShowAlert] = useState(false);
   const {
@@ -103,7 +105,7 @@ const CompetitionCreation = ({ navigation }) => {
 
   const handleSubmit = async () => {
     if (!isStepValid()) {
-      Alert.alert('경고', '모든 항목을 기입해야 경쟁방을 생성할 수 있어요.');
+      showToast('모든 항목을 기입해야 경쟁방을 생성할 수 있어요.', 'error');
       return;
     }
 
@@ -125,7 +127,7 @@ const CompetitionCreation = ({ navigation }) => {
         throw new Error('room_id가 정의되지 않았습니다');
       }
       await enterCompetition(roomId);
-      Alert.alert('경쟁방 생성', `'${title}' 경쟁방이 생성되었습니다!`);
+      showToast(`'${title}' 경쟁방이 생성되었습니다!`, 'success');
 
       maxMembers === 2
         ? navigation.navigate('CompetitionRoom1VS1', { competitionId: roomId, isParticipant: true })
@@ -133,7 +135,7 @@ const CompetitionCreation = ({ navigation }) => {
 
       resetState();
     } catch (error) {
-      Alert.alert('Error', 'Failed to create competition');
+      showToast('경쟁방을 생성하는데 실패했습니다.', 'error');
     }
   };
 

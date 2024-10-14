@@ -3,13 +3,15 @@ import appleAuth from '@invertase/react-native-apple-authentication';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import React from 'react';
-import { Alert, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { Image, StyleSheet, TouchableOpacity } from 'react-native';
 
 import { postAppleLogin } from '../../apis/socialLogin';
+import { useToastMessageStore } from '../../store/toastMessage/toastMessage';
 
 const AppleIcon = require('../../assets/images/login/appleIcon.png');
 
 const AppleLogin = () => {
+  const { showToast } = useToastMessageStore();
   const navigation = useNavigation();
 
   async function handleSignInApple() {
@@ -36,7 +38,7 @@ const AppleLogin = () => {
       }
     } catch (error) {
       console.error('Apple login error:', error);
-      Alert.alert('로그인 실패', '애플 로그인에 실패했습니다.');
+      showToast('애플 로그인에 실패했습니다.', 'error');
     }
   }
 

@@ -1,6 +1,6 @@
 import { useIsFocused } from '@react-navigation/native';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Alert, FlatList, SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import { FlatList, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 
 import { getMyCompetition } from '../../apis/competition';
 import CustomButton from '../../components/CustomButton';
@@ -10,9 +10,11 @@ import { FONT_SIZES, FONTS, HEADER_FONT_SIZES } from '../../constants/font';
 import { RADIUS } from '../../constants/radius';
 import { LAYOUT_PADDING, SPACING } from '../../constants/space';
 import useUserStore from '../../store/sign/login';
+import { useToastMessageStore } from '../../store/toastMessage/toastMessage';
 import { getCompetitionProgress } from '../../utils/competition';
 
 const Competition = ({ navigation }) => {
+  const { showToast } = useToastMessageStore();
   const [myCompetitions, setMyCompetitions] = useState([]);
   const [activeCompetitions, setActiveCompetitions] = useState([]);
   const nickname = useUserStore((state) => state.nickname);
@@ -27,11 +29,11 @@ const Competition = ({ navigation }) => {
         const active = result.data.filter((data) => getCompetitionProgress(data) !== 'AFTER');
         setActiveCompetitions(active);
       } catch (error) {
-        Alert.alert('내 경쟁방 목록을 불러오는데 실패했습니다', error.message);
+        showToast('내 경쟁방 목록을 불러오는데 실패했습니다', 'error');
       }
     };
     fetchMyCompetitions();
-  }, [isFocused]);
+  }, [isFocused, showToast]);
 
   const handleCompetitionPress = useCallback(
     (item) => {

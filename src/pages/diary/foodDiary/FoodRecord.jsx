@@ -1,26 +1,23 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
-import { Alert, Image, Modal, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, Modal, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import {
-  createCustomFood,
-  createFoodRecordByTime,
-  getUserBookMarkedFoodRecord,
-  getUserCustomFoodRecord,
-} from '../../../apis/food/index';
+import { createCustomFood, getUserBookMarkedFoodRecord, getUserCustomFoodRecord } from '../../../apis/food/index';
 import CustomButton from '../../../components/CustomButton';
 import CustomInput from '../../../components/CustomInput';
 import HeaderComponents from '../../../components/HeaderComponents';
-import { BACKGROUND_COLORS, COLORS, TEXT_COLORS } from '../../../constants/colors';
+import { COLORS, TEXT_COLORS } from '../../../constants/colors';
 import { FONT_SIZES, FONTS } from '../../../constants/font';
 import { RADIUS } from '../../../constants/radius';
 import useDiaryCalendarStore from '../../../store/food/calendar/index';
 import useSelectedFoodsStore from '../../../store/food/selectedFoods/index';
 import useSelectedFoodTimeStore from '../../../store/index';
+import { useToastMessageStore } from '../../../store/toastMessage/toastMessage';
 const PlusIcon = require('../../../assets/images/dietDiary/PluscircleWhiteButton.png');
 const checkIcon = require('../../../assets/images/dietDiary/checkIcon.png');
 
 const FoodRecord = () => {
+  const { showToast } = useToastMessageStore();
   const [tag, setTag] = useState(['북마크', '직접등록']);
   const [activeTag, setActiveTag] = useState('북마크');
   const [isVisibleModal, setIsVisibleModal] = useState(false);
@@ -99,9 +96,9 @@ const FoodRecord = () => {
       if (result.status !== 200) {
         throw new Error(result.message);
       }
-      Alert.alert('음식을 생성하였습니다!');
+      showToast('음식을 생성하였습니다!', 'success');
     } catch (error) {
-      Alert.alert(error.message);
+      showToast(error.message, 'error');
     }
     setIsVisibleModal(false);
     return;
