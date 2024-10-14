@@ -1,6 +1,6 @@
 import { useIsFocused, useRoute } from '@react-navigation/native';
 import React, { useCallback, useEffect, useState } from 'react';
-import { Alert, SafeAreaView, StyleSheet, useWindowDimensions, View } from 'react-native';
+import { Alert, SafeAreaView, StyleSheet, useWindowDimensions } from 'react-native';
 import { TabBar, TabView } from 'react-native-tab-view';
 
 import {
@@ -12,9 +12,9 @@ import {
   leaveCompetition,
 } from '../../apis/competition';
 import { getMyFriendsNotParticipant } from '../../apis/friend';
+import SkeletonLoader from '../../components/common/SkeletonLoader';
 import CompetitionRoomHeader from '../../components/CompetitionRoomHeader';
 import CustomAlert from '../../components/CustomAlert';
-import SkeletonLoader from '../../components/SkeletonLoader';
 import { COLORS } from '../../constants/colors';
 import { FONT_SIZES, FONTS } from '../../constants/font';
 import { useToastMessageStore } from '../../store/toastMessage/toastMessage';

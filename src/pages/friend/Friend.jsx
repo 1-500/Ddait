@@ -1,4 +1,3 @@
-import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { useIsFocused, useRoute } from '@react-navigation/native';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { SafeAreaView, StyleSheet } from 'react-native';
@@ -18,7 +17,7 @@ import RequestSent from './friendPageTabs/RequestSent';
 const Friend = ({ navigation }) => {
   const isFocused = useIsFocused();
   const route = useRoute();
-  const initialIndex = route.params?.initialIndex;
+  const initialIndex = route.params?.initialIndex || 0;
   const [myFriends, setMyFriends] = useState([]);
   const [reqSent, setReqSent] = useState([]);
   const [reqReceived, setReqReceived] = useState([]);
@@ -26,7 +25,7 @@ const Friend = ({ navigation }) => {
   const [selectedRelation, setSelectedRelation] = useState(null);
   const bottomSheetRef = useRef(null);
   const { showToast } = useToastMessageStore();
-  const [alertVisible, setAlertVisible] = useState(false); // Alert 표시 여부
+  const [, setAlertVisible] = useState(false); // Alert 표시 여부
   const [alertConfig, setAlertConfig] = useState({
     visible: false,
     title: '',
@@ -34,7 +33,7 @@ const Friend = ({ navigation }) => {
     onConfirm: null,
     showCancel: true,
   });
-  const [index, setIndex] = useState(initialIndex || 0);
+  const [index, setIndex] = useState(initialIndex);
   const [routes] = useState([
     { key: 'myFriends', title: '내 친구' },
     { key: 'reqReceived', title: '받은 신청' },
@@ -62,11 +61,13 @@ const Friend = ({ navigation }) => {
 
   const fetchData = useCallback(async () => {
     try {
-      const friends = await getMyFriends();
+      const [friends, sentRequests, receivedRequests] = await Promise.all([
+        getMyFriends(),
+        getReqSent(),
+        getReqReceived(),
+      ]);
       setMyFriends(friends.data);
-      const sentRequests = await getReqSent();
       setReqSent(sentRequests.data);
-      const receivedRequests = await getReqReceived();
       setReqReceived(receivedRequests.data);
     } catch (error) {
       showToast('🚫 문제 발생! 다시 시도해주세요.', 'error', 'top');
@@ -86,6 +87,7 @@ const Friend = ({ navigation }) => {
   const hideAlert = () => {
     setAlertConfig((prev) => ({ ...prev, visible: false }));
   };
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <HeaderComponents icon="search" title="친구 목록" onRightBtnPress={() => navigation.navigate('FriendSearch')} />

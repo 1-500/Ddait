@@ -25,7 +25,7 @@ const FoodSearch = () => {
   const { selected } = useDiaryCalendarStore();
   const navigation = useNavigation();
 
-  const { foodList, removeFood, clearFoodNutrition } = useSelectedFoodsStore();
+  const { foodList, removeFood } = useSelectedFoodsStore();
 
   const handleSearchInput = debounce(async (text) => {
     try {
@@ -42,7 +42,7 @@ const FoodSearch = () => {
     }
   }, 300);
   const handleCheckedFoods = (food) => {
-    const isChecked = foodList.some((item) => item.id === food.id);
+    const isChecked = Array.isArray(foodList) && foodList.some((item) => item.id === food.id);
     if (isChecked) {
       removeFood(food.id);
     } else {
@@ -76,22 +76,6 @@ const FoodSearch = () => {
     setFoodSearchListState(newFoodSearchListState);
   };
   const handleRecordButton = async () => {
-    try {
-      const response = await createFoodRecordByTime({
-        foodItems: foodList,
-        meal_time: time,
-        date: selected,
-      });
-      if (response.status === 200) {
-        Alert.alert(response.message);
-      } else {
-        throw new Error('음식을 기록하는데 실패하였습니다.');
-      }
-    } catch (error) {
-      Alert.alert(error.message);
-    }
-
-    clearFoodNutrition();
     navigation.navigate('FoodDiary', {
       screen: 'FoodDetailScreen',
     });
@@ -112,7 +96,7 @@ const FoodSearch = () => {
         </View>
         <ScrollView style={styles.foodListContainer}>
           {foodSearchListState?.map((food) => {
-            const isChecked = foodList.some((item) => item.id === food.id);
+            const isChecked = Array.isArray(foodList) && foodList.some((item) => item.id === food.id);
             return (
               <FoodInfoCard
                 key={food.id}
