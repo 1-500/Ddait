@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import React, { useCallback, useMemo, useRef } from 'react';
 import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
@@ -20,14 +21,13 @@ const BirthDayRegisterForm = () => {
     <View style={styles.container}>
       <Text style={styles.topText}>{nickName}님의 생일을 알려주세요!</Text>
       <TouchableOpacity onPress={handlePresentModalPress}>
-        <Text style={styles.dateText}>
-          {selectedDate.year} / {selectedDate.month} / {selectedDate.day}
-        </Text>
+        <Text style={styles.dateText}>{dayjs(selectedDate).format('YYYY/MM/DD')}</Text>
       </TouchableOpacity>
       <DatePickerBottomSheet
         selectedDate={selectedDate}
         setSelectedDate={setSelectedDate}
-        title="생년월일 입력해주세요"
+        maximumDate={new Date()}
+        title="생년월일을 입력해주세요"
         ref={bottomSheetModalRef}
         snapPoints={snapPoints}
       />

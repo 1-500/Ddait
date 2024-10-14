@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef } from 'react';
+import React, { useCallback, useMemo, useRef } from 'react';
 import { Dimensions, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import DatePickerBottomSheet from '../../../components/bottomSheet/DatePickerBottomSheet';
@@ -41,23 +41,6 @@ const SetRoomDetail = () => {
     endDateBottomSheetRef.current?.present();
   }, []);
 
-  // 임시 코드입니다 - 날짜 선택 오늘 날짜 기준으로
-  useEffect(() => {
-    const today = new Date();
-    const formattedDate = {
-      year: today.getFullYear().toString(),
-      month: (today.getMonth() + 1).toString().padStart(2, '0'),
-      day: today.getDate().toString().padStart(2, '0'),
-    };
-
-    if (!startDate.year) {
-      setStartDate(formattedDate);
-    }
-    if (!endDate.year) {
-      setEndDate(formattedDate);
-    }
-  }, [endDate.year, setEndDate, setStartDate, startDate.year]);
-
   const menuItems = [
     {
       title: '비공개 설정',
@@ -87,8 +70,6 @@ const SetRoomDetail = () => {
           onPressEndInput={openEndDatePicker}
           startDate={startDate}
           endDate={endDate}
-          onStartDateChange={setStartDate}
-          onEndDateChange={setEndDate}
         />
       ),
     },
@@ -109,6 +90,7 @@ const SetRoomDetail = () => {
         ref={startDateBottomSheetRef}
         selectedDate={startDate}
         setSelectedDate={setStartDate}
+        minimumDate={new Date()}
         title="시작 날짜를 선택하세요"
         snapPoints={snapPoints}
       />
@@ -116,6 +98,7 @@ const SetRoomDetail = () => {
         ref={endDateBottomSheetRef}
         selectedDate={endDate}
         setSelectedDate={setEndDate}
+        minimumDate={new Date()}
         title="종료 날짜를 선택하세요"
         snapPoints={snapPoints}
       />
@@ -148,7 +131,7 @@ const styles = StyleSheet.create({
   },
   flexColumn: {
     flexDirection: 'column',
-    alignItems: 'flex-start',
+    alignItems: 'stretch',
   },
   lastMenuItem: {
     borderBottomWidth: 1,
