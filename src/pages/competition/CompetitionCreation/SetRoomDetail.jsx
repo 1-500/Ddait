@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { Dimensions, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import DatePickerBottomSheet from '../../../components/bottomSheet/DatePickerBottomSheet';
@@ -27,6 +27,12 @@ const SetRoomDetail = () => {
     setStartDate,
     setEndDate,
   } = useCreateRoomStateStore();
+
+  useEffect(() => {
+    if (startDate > endDate) {
+      setEndDate(startDate);
+    }
+  }, [startDate, endDate, setEndDate]);
 
   // 바텀 시트
   const snapPoints = useMemo(() => ['70%', '50%'], []);
@@ -98,7 +104,7 @@ const SetRoomDetail = () => {
         ref={endDateBottomSheetRef}
         selectedDate={endDate}
         setSelectedDate={setEndDate}
-        minimumDate={new Date()}
+        minimumDate={startDate}
         title="종료 날짜를 선택하세요"
         snapPoints={snapPoints}
       />
