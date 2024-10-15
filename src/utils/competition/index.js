@@ -12,3 +12,14 @@ export const getCompetitionProgress = (roomData) => {
     return 'AFTER';
   }
 };
+
+export const getFriendRelation = (status) => {
+  switch (status) {
+    case '대기':
+      return 'requested';
+    case '승인':
+      return 'friend';
+    default:
+      return 'none';
+  }
+};

@@ -4,7 +4,7 @@ import { SafeAreaView, StyleSheet } from 'react-native';
 import { TabBar, TabView } from 'react-native-tab-view';
 
 import { getMyFriends, getReqReceived, getReqSent } from '../../apis/friend';
-import FriendOptionBottomSheet from '../../components/BottomSheet/FriendOptionBottomSheet';
+import FriendOptionBottomSheet from '../../components/bottomSheet/FriendOptionBottomSheet';
 import CustomAlert from '../../components/CustomAlert';
 import HeaderComponents from '../../components/HeaderComponents';
 import { COLORS } from '../../constants/colors';

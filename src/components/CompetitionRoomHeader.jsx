@@ -46,9 +46,9 @@ const CompetitionRoomHeader = ({ data, progress, onDelete }) => {
             <Octicons name="unlock" size={24} color={COLORS.primary} />
           )}
         </View>
-        {data.user_status.is_host && dayjs(data.date.start_date).isAfter(dayjs(), 'day') && (
+        {(!data.user_status.is_host || progress === 'BEFORE') && (
           <TouchableOpacity onPress={toggleDropdown} activeOpacity={0.6}>
-            <Feather name="more-horizontal" size={28} color={COLORS.white} />
+            <Feather name="more-horizontal" size={24} color={COLORS.white} />
           </TouchableOpacity>
         )}
       </View>
@@ -77,9 +77,25 @@ const CompetitionRoomHeader = ({ data, progress, onDelete }) => {
         <TouchableWithoutFeedback onPress={() => setShowDropdown(false)}>
           <View style={styles.modalOverlay}>
             <View style={styles.dropdown}>
-              <TouchableOpacity style={styles.dropdownItem} onPress={handleDeletePress}>
-                <Text style={styles.dropdownText}>삭제하기</Text>
-              </TouchableOpacity>
+              {!data.user_status.is_host && (
+                <TouchableOpacity
+                  style={styles.dropdownItem}
+                  onPress={() =>
+                    navigation.navigate('MemberReport', {
+                      reported_member: data.host_info,
+                      competition_room_id: data.id,
+                    })
+                  }
+                  activeOpacity={0.6}
+                >
+                  <Text style={styles.dropdownText}>신고하기</Text>
+                </TouchableOpacity>
+              )}
+              {data.user_status.is_host && (
+                <TouchableOpacity style={styles.dropdownItem} onPress={handleDeletePress} activeOpacity={0.6}>
+                  <Text style={styles.dropdownText}>삭제하기</Text>
+                </TouchableOpacity>
+              )}
             </View>
           </View>
         </TouchableWithoutFeedback>
@@ -140,17 +156,16 @@ const styles = StyleSheet.create({
   dropdown: {
     alignItems: 'center',
     position: 'absolute',
-    padding: SPACING.xs,
     backgroundColor: COLORS.darkBackground,
     borderRadius: RADIUS.large,
     borderColor: COLORS.red,
     borderWidth: 1,
-    top: 110,
+    top: 60,
     right: SPACING.lg,
   },
   dropdownItem: {
-    paddingVertical: SPACING.xs,
-    paddingHorizontal: SPACING.sm,
+    paddingVertical: SPACING.sm,
+    paddingHorizontal: SPACING.md,
   },
   dropdownText: {
     color: COLORS.red,

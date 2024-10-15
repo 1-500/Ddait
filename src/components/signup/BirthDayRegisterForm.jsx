@@ -1,10 +1,9 @@
-import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import React, { useCallback, useMemo, useRef } from 'react';
 import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { FONTS, HEADER_FONT_SIZES } from '../../constants/font';
 import useUserFormStore from '../../store/sign/signup';
-import DatePickerBottomSheet from '../BottomSheet/DatePickerBottomSheet';
+import DatePickerBottomSheet from '../bottomSheet/DatePickerBottomSheet';
 
 const windowWidth = Dimensions.get('window').width;
 
