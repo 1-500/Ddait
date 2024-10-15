@@ -1,11 +1,11 @@
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useRef } from 'react';
 import { SafeAreaView, StyleSheet, View } from 'react-native';
 
+import DiaryCalendarBottomSheet from '../../components/bottomSheet/DiaryCalendarBottomSheet';
 import DiaryCalendar from '../../components/DiaryCalendar';
-import DiaryCalendarBottomSheet from '../../components/DiaryCalendarBottomSheet';
 import DiaryTypePicker from '../../components/DiaryTypePicker';
 import HeaderComponents from '../../components/HeaderComponents';
-import { BACKGROUND_COLORS, BUTTON_COLORS, COLORS, TEXT_COLORS } from '../../constants/colors';
+import { BACKGROUND_COLORS, COLORS } from '../../constants/colors';
 import { LAYOUT_PADDING } from '../../constants/space';
 import useDiaryCalendarStore from '../../store/food/calendar/index';
 import FoodDiary from './foodDiary/FoodDiary';

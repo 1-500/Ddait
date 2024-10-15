@@ -1,11 +1,14 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import { Dimensions, FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
+import FriendOptionBottomSheet from '../../../components/bottomSheet/FriendOptionBottomSheet';
+import CustomAlert from '../../../components/CustomAlert';
 import CustomTag from '../../../components/CustomTag';
 import { COLORS } from '../../../constants/colors';
 import { FONT_SIZES, FONTS } from '../../../constants/font';
 import { RADIUS } from '../../../constants/radius';
 import { LAYOUT_PADDING, SPACING } from '../../../constants/space';
+import { getFriendRelation } from '../../../utils/competition';
 
 /* eslint-disable */
 
@@ -14,9 +17,34 @@ const { width } = Dimensions.get('window');
 const dummyProfile = require('../../../assets/images/profile.png');
 const crownImage = require('../../../assets/images/crown.png');
 
-const Score1VS1 = ({ data, progress, isParticipant, onLeave, onJoin }) => {
+const Score1VS1 = ({
+  competitionRecord,
+  setCompetitionRecord,
+  competitionData,
+  progress,
+  isParticipant,
+  onLeave,
+  onJoin,
+  navigation,
+}) => {
+  const [selectedMember, setSelectedMember] = useState();
+  const [alertVisible, setAlertVisible] = useState(false);
+  const [alertConfig, setAlertConfig] = useState({
+    visible: false,
+    title: '',
+    message: '',
+    onConfirm: null,
+    showCancel: true,
+  });
+
+  const bottomSheetRef = useRef();
+
   const maxGraphWidth = width - 200;
   const minGraphWidth = 10;
+
+  const hideAlert = () => {
+    setAlertConfig((prev) => ({ ...prev, visible: false }));
+  };
 
   const getResult = (data1, data2) => {
     if (data1.total_score > data2.total_score) {
@@ -28,45 +56,90 @@ const Score1VS1 = ({ data, progress, isParticipant, onLeave, onJoin }) => {
     }
   };
 
+  const onUpdateData = (friendInfo) => {
+    setCompetitionRecord(
+      competitionRecord.map((e, i) => {
+        if (e.member_info.id === selectedMember?.member_info?.id) {
+          if (selectedMember?.friend_info?.status === 'none') {
+            return {
+              ...e,
+              friend_info: friendInfo,
+            };
+          } else {
+            return {
+              ...e,
+              friend_info: { status: 'none' },
+            };
+          }
+        } else {
+          return e;
+        }
+      }),
+    );
+  };
+
   const CompetitionProfile = ({ record, result, color, style }) => {
+    const innerContainer = record && (
+      <>
+        <Image
+          style={{ width: 80, height: 80 }}
+          source={record.member_info.profile_image ? { uri: record.member_info.profile_image } : dummyProfile}
+        />
+        <View>
+          <View style={styles.profileTextWrapper}>
+            <Text style={styles.profileText}>{record.member_info.nickname}</Text>
+            <Text style={styles.profileTailText}>님</Text>
+          </View>
+          <Text style={[styles.profileText, { color: color }]}>{record.total_score}</Text>
+        </View>
+        {progress === 'AFTER' && (
+          <>
+            <View
+              style={[
+                styles.resultTag,
+                result === 'Win'
+                  ? { backgroundColor: color }
+                  : {
+                      borderWidth: 2,
+                      borderColor: color,
+                    },
+              ]}
+            >
+              <Text style={styles.resultTagText}>{result}</Text>
+            </View>
+            {result === 'Win' && <Image style={styles.crownImage} source={crownImage} />}
+          </>
+        )}
+      </>
+    );
+
     return (
-      <View style={[styles.profileWrapper, progress === 'AFTER' && { marginTop: 15 }, style]}>
+      <>
         {record ? (
           <>
-            <Image
-              style={{ width: 80, height: 80 }}
-              source={record.member_info.profile_image ? { uri: record.member_info.profile_image } : dummyProfile}
-            />
-            <View>
-              <View style={styles.profileTextWrapper}>
-                <Text style={styles.profileText}>{record.member_info.nickname}</Text>
-                <Text style={styles.profileTailText}>님</Text>
+            {!record.is_my_record ? (
+              <TouchableOpacity
+                style={[styles.profileWrapper, progress === 'AFTER' && { marginTop: 15 }, style]}
+                onLongPress={() => {
+                  setSelectedMember(record);
+                  bottomSheetRef.current?.present();
+                }}
+                activeOpacity={0.6}
+              >
+                {innerContainer}
+              </TouchableOpacity>
+            ) : (
+              <View style={[styles.profileWrapper, progress === 'AFTER' && { marginTop: 15 }, style]}>
+                {innerContainer}
               </View>
-              <Text style={[styles.profileText, { color: color }]}>{record.total_score}</Text>
-            </View>
-            {progress === 'AFTER' && (
-              <>
-                <View
-                  style={[
-                    styles.resultTag,
-                    result === 'Win'
-                      ? { backgroundColor: color }
-                      : {
-                          borderWidth: 2,
-                          borderColor: color,
-                        },
-                  ]}
-                >
-                  <Text style={styles.resultTagText}>{result}</Text>
-                </View>
-                {result === 'Win' && <Image style={styles.crownImage} source={crownImage} />}
-              </>
             )}
           </>
         ) : (
-          <Text style={[styles.profileTailText, { color: COLORS.white }]}>아직 상대방이 참여하지 않았어요..</Text>
+          <View style={[styles.profileWrapper, progress === 'AFTER' && { marginTop: 15 }, style]}>
+            <Text style={[styles.profileTailText, { color: COLORS.white }]}>아직 상대방이 참여하지 않았어요..</Text>
+          </View>
         )}
-      </View>
+      </>
     );
   };
 
@@ -167,31 +240,37 @@ const Score1VS1 = ({ data, progress, isParticipant, onLeave, onJoin }) => {
               <View
                 style={[
                   styles.graph,
-                  data[1] && {
+                  competitionRecord[1] && {
                     backgroundColor: COLORS.primary,
                     width:
                       minGraphWidth +
-                      (maxGraphWidth * data[0].score_detail[index].score) /
-                        (Math.max(data[1].score_detail[index].score, data[0].score_detail[index].score) || 1),
+                      (maxGraphWidth * competitionRecord[0].score_detail[index].score) /
+                        (Math.max(
+                          competitionRecord[1].score_detail[index].score,
+                          competitionRecord[0].score_detail[index].score,
+                        ) || 1),
                   },
                 ]}
               />
-              <Text style={styles.scoreText}>{data[0].score_detail[index].score}</Text>
+              <Text style={styles.scoreText}>{competitionRecord[0].score_detail[index].score}</Text>
             </View>
             <View style={styles.graphWrapper}>
               <View
                 style={[
                   styles.graph,
-                  data[1] && {
+                  competitionRecord[1] && {
                     backgroundColor: COLORS.secondary,
                     width:
                       minGraphWidth +
-                      (maxGraphWidth * data[1].score_detail[index].score) /
-                        (Math.max(data[0].score_detail[index].score, data[1].score_detail[index].score) || 1),
+                      (maxGraphWidth * competitionRecord[1].score_detail[index].score) /
+                        (Math.max(
+                          competitionRecord[0].score_detail[index].score,
+                          competitionRecord[1].score_detail[index].score,
+                        ) || 1),
                   },
                 ]}
               />
-              <Text style={styles.scoreText}>{data[1].score_detail[index].score}</Text>
+              <Text style={styles.scoreText}>{competitionRecord[1]?.score_detail[index].score}</Text>
             </View>
           </View>
         </View>
@@ -201,17 +280,36 @@ const Score1VS1 = ({ data, progress, isParticipant, onLeave, onJoin }) => {
 
   return (
     <View style={[{ paddingTop: 30 }, LAYOUT_PADDING]}>
-      {data && (
+      {competitionRecord && (
         <FlatList
-          data={data[0].score_detail}
+          data={competitionRecord[0].score_detail}
           keyExtractor={(item, index) => item.name}
           renderItem={renderScoreItem}
-          ListHeaderComponent={<Competition1VS1Header data={data} />}
+          ListHeaderComponent={<Competition1VS1Header data={competitionRecord} />}
           ListFooterComponent={<View style={{ height: 30 }} />}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ gap: 10 }}
         />
       )}
+      <FriendOptionBottomSheet
+        ref={bottomSheetRef}
+        relation={() => getFriendRelation(selectedMember?.friend_info?.status)}
+        memberData={{ ...selectedMember?.member_info, table_id: selectedMember?.friend_info?.id }}
+        onUpdateData={onUpdateData}
+        setAlertVisible={setAlertVisible}
+        setAlertConfig={setAlertConfig}
+        isCompetition={true}
+        competitionRoomId={competitionData?.id}
+        navigation={navigation}
+      />
+      <CustomAlert
+        visible={alertConfig.visible}
+        title={alertConfig.title}
+        message={alertConfig.message}
+        onConfirm={alertConfig.onConfirm}
+        onCancel={hideAlert}
+        showCancel={alertConfig.showCancel}
+      />
     </View>
   );
 };

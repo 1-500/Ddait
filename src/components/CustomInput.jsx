@@ -87,6 +87,7 @@ const SearchIcon = () => (
  * isSuccess: boolean;
  * onPressShowPassword?: () => {};
  * onPress?: () => {};
+ * multiline: boolean;
  * autoFocus: boolean;
  * ref?: React.LegacyRef<null>;
  * isPassword: boolean;
@@ -115,6 +116,7 @@ const CustomInput = ({
   value,
   editable = true,
   onChangeText,
+  multiline = false,
   autoFocus = false,
   secureTextEntry = false,
   isPassword = false,
@@ -163,6 +165,7 @@ const CustomInput = ({
         value={value}
         defaultValue={defaultValue}
         onChangeText={onChangeText}
+        multiline={multiline}
         allowFontScaling={false}
         editable={editable}
         textContentType={textContentType}

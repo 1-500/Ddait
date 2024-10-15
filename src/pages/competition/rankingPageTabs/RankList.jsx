@@ -1,11 +1,14 @@
 import dayjs from 'dayjs';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Dimensions, FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
+import FriendOptionBottomSheet from '../../../components/bottomSheet/FriendOptionBottomSheet';
+import CustomAlert from '../../../components/CustomAlert';
 import { COLORS } from '../../../constants/colors';
 import { FONT_SIZES, FONTS } from '../../../constants/font';
 import { LAYOUT_PADDING, SPACING } from '../../../constants/space';
+import { getFriendRelation } from '../../../utils/competition';
 import { calculateDday } from '../../../utils/date';
 
 const podiumImage = require('../../../assets/images/podium.png');
@@ -15,12 +18,30 @@ const dummyProfile = require('../../../assets/images/profile.png');
 
 const { width: screenWidth } = Dimensions.get('window');
 
-const RankList = ({ data, competitionData, progress, onJoin, onLeave }) => {
+const RankList = ({
+  competitionRecord,
+  setCompetitionRecord,
+  competitionData,
+  progress,
+  onJoin,
+  onLeave,
+  navigation,
+}) => {
   const [podiumImageSize, setPodiumImageSize] = useState({ width: 0, height: 0 });
   const [spotlightImageSize, setSpotlightImageSize] = useState({ width: 0, height: 0 });
   const [isItemOpen, setIsItemOpen] = useState([]);
+  const [selectedMember, setSelectedMember] = useState();
+  const [alertVisible, setAlertVisible] = useState(false);
+  const [alertConfig, setAlertConfig] = useState({
+    visible: false,
+    title: '',
+    message: '',
+    onConfirm: null,
+    showCancel: true,
+  });
 
   const rankListRef = useRef();
+  const bottomSheetRef = useRef();
 
   useEffect(() => {
     const podiumAssetSource = Image.resolveAssetSource(podiumImage);
@@ -33,15 +54,41 @@ const RankList = ({ data, competitionData, progress, onJoin, onLeave }) => {
   }, []);
 
   useEffect(() => {
-    if (data) {
-      setIsItemOpen(Array.from({ length: data.length }, () => false));
+    if (competitionRecord) {
+      setIsItemOpen(Array.from({ length: competitionRecord.length }, () => false));
     }
-  }, [data]);
+  }, [competitionRecord]);
+
+  const hideAlert = () => {
+    setAlertConfig((prev) => ({ ...prev, visible: false }));
+  };
+
+  const onUpdateData = (friendInfo) => {
+    setCompetitionRecord(
+      competitionRecord.map((e, i) => {
+        if (e.member_info.id === selectedMember?.member_info?.id) {
+          if (selectedMember?.friend_info?.status === 'none') {
+            return {
+              ...e,
+              friend_info: friendInfo,
+            };
+          } else {
+            return {
+              ...e,
+              friend_info: { status: 'none' },
+            };
+          }
+        } else {
+          return e;
+        }
+      }),
+    );
+  };
 
   const Podium = () => {
     return (
       <View>
-        {data && (
+        {competitionRecord && (
           <View style={{ alignItems: 'center' }}>
             <View style={styles.podiumWrapper}>
               {progress === 'AFTER' && (
@@ -54,7 +101,7 @@ const RankList = ({ data, competitionData, progress, onJoin, onLeave }) => {
                 />
               )}
               <Image style={{ width: podiumImageSize.width, height: podiumImageSize.height }} source={podiumImage} />
-              {data[0] && (
+              {competitionRecord[0] && (
                 <>
                   <Image
                     style={[
@@ -64,7 +111,9 @@ const RankList = ({ data, competitionData, progress, onJoin, onLeave }) => {
                       },
                     ]}
                     source={
-                      data[0].member_info.profile_image ? { uri: data[0].member_info.profile_image } : dummyProfile
+                      competitionRecord[0].member_info.profile_image
+                        ? { uri: competitionRecord[0].member_info.profile_image }
+                        : dummyProfile
                     }
                   />
                   {progress === 'AFTER' && (
@@ -75,7 +124,7 @@ const RankList = ({ data, competitionData, progress, onJoin, onLeave }) => {
                   )}
                 </>
               )}
-              {data[1] && (
+              {competitionRecord[1] && (
                 <Image
                   style={[
                     styles.rankerProfile,
@@ -84,10 +133,14 @@ const RankList = ({ data, competitionData, progress, onJoin, onLeave }) => {
                       left: 16 + 0.05 * podiumImageSize.width,
                     },
                   ]}
-                  source={data[1].member_info.profile_image ? { uri: data[1].member_info.profile_image } : dummyProfile}
+                  source={
+                    competitionRecord[1].member_info.profile_image
+                      ? { uri: competitionRecord[1].member_info.profile_image }
+                      : dummyProfile
+                  }
                 />
               )}
-              {data[2] && (
+              {competitionRecord[2] && (
                 <Image
                   style={[
                     styles.rankerProfile,
@@ -96,14 +149,21 @@ const RankList = ({ data, competitionData, progress, onJoin, onLeave }) => {
                       right: 16 + 0.05 * podiumImageSize.width,
                     },
                   ]}
-                  source={data[2].member_info.profile_image ? { uri: data[2].member_info.profile_image } : dummyProfile}
+                  source={
+                    competitionRecord[2].member_info.profile_image
+                      ? { uri: competitionRecord[2].member_info.profile_image }
+                      : dummyProfile
+                  }
                 />
               )}
             </View>
             <TouchableOpacity
               style={styles.myRankBtn}
               onPress={() => {
-                rankListRef.current.scrollToIndex({ animated: true, index: data.findIndex((e) => e.is_my_record) });
+                rankListRef.current.scrollToIndex({
+                  animated: true,
+                  index: competitionRecord.findIndex((e) => e.is_my_record),
+                });
               }}
               activeOpacity={0.6}
             >
@@ -169,53 +229,55 @@ const RankList = ({ data, competitionData, progress, onJoin, onLeave }) => {
   };
 
   const renderRankItem = ({ item, index }) => {
-    if (['IN_PROGRESS', 'AFTER'].includes(progress)) {
-      return (
-        <TouchableOpacity
-          style={[
-            styles.rankItemWrapper,
-            item.is_my_record ? { backgroundColor: COLORS.primary } : { backgroundColor: COLORS.darkGreyBackground },
-          ]}
-          onPress={() =>
-            setIsItemOpen(Array.from({ length: isItemOpen.length }, (_, i) => index === i && !isItemOpen[index]))
+    const isNotBefore = ['IN_PROGRESS', 'AFTER'].includes(progress);
+
+    return (
+      <TouchableOpacity
+        style={[
+          styles.rankItemWrapper,
+          !isNotBefore && styles.rankItemHeaderWrapper,
+          item.is_my_record ? { backgroundColor: COLORS.primary } : { backgroundColor: COLORS.darkGreyBackground },
+        ]}
+        onPress={() =>
+          isNotBefore &&
+          setIsItemOpen(Array.from({ length: isItemOpen.length }, (_, i) => index === i && !isItemOpen[index]))
+        }
+        onLongPress={() => {
+          if (!item.is_my_record) {
+            setSelectedMember(item);
+            bottomSheetRef.current?.present();
           }
-          activeOpacity={0.6}
-        >
-          <View style={styles.rankItemHeaderWrapper}>
-            <RankItemContent item={item} index={index} />
-          </View>
-          {isItemOpen[index] && (
-            <View style={styles.innerContentWrapper}>
-              {data[0].score_detail.map((e, i) => (
-                <Text
-                  key={`${e.name}_${index}`}
-                  style={styles.scoreText}
-                >{`${e.name}: ${item.score_detail[i].score}점`}</Text>
-              ))}
-              <Text
-                style={[
-                  styles.rankText,
-                  { fontFamily: FONTS.PRETENDARD[600], marginTop: 4 },
-                  item.is_my_record ? { color: COLORS.white } : { color: COLORS.lightPurple },
-                ]}
-              >{`총점: ${item.total_score}점`}</Text>
+        }}
+        activeOpacity={0.6}
+      >
+        {isNotBefore ? (
+          <>
+            <View style={styles.rankItemHeaderWrapper}>
+              <RankItemContent item={item} index={index} />
             </View>
-          )}
-        </TouchableOpacity>
-      );
-    } else {
-      return (
-        <View
-          style={[
-            styles.rankItemWrapper,
-            styles.rankItemHeaderWrapper,
-            item.is_my_record ? { backgroundColor: COLORS.primary } : { backgroundColor: COLORS.darkGreyBackground },
-          ]}
-        >
+            {isItemOpen[index] && (
+              <View style={styles.innerContentWrapper}>
+                {competitionRecord[0].score_detail.map((e, i) => (
+                  <Text
+                    key={`${e.name}_${index}`}
+                    style={styles.scoreText}
+                  >{`${e.name}: ${item.score_detail[i].score}점`}</Text>
+                ))}
+                <Text
+                  style={[
+                    styles.rankText,
+                    { fontFamily: FONTS.PRETENDARD[600], marginTop: 4 },
+                    item.is_my_record ? { color: COLORS.white } : { color: COLORS.lightPurple },
+                  ]}
+                >{`총점: ${item.total_score}점`}</Text>
+              </View>
+            )}
+          </>
+        ) : (
           <RankItemContent item={item} index={index} />
-        </View>
-      );
-    }
+        )}
+      </TouchableOpacity>
+    );
   };
 
   return (
@@ -224,12 +286,31 @@ const RankList = ({ data, competitionData, progress, onJoin, onLeave }) => {
         style={{ flex: 1 }}
         ref={rankListRef}
         keyExtractor={(item, index) => index}
-        data={data}
+        data={competitionRecord}
         renderItem={renderRankItem}
         ListHeaderComponent={progress === 'BEFORE' ? Preview : Podium}
         ListFooterComponent={<View style={{ height: 30 }} />}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ gap: 10 }}
+      />
+      <FriendOptionBottomSheet
+        ref={bottomSheetRef}
+        relation={() => getFriendRelation(selectedMember?.friend_info?.status)}
+        memberData={{ ...selectedMember?.member_info, table_id: selectedMember?.friend_info?.id }}
+        onUpdateData={onUpdateData}
+        setAlertVisible={setAlertVisible}
+        setAlertConfig={setAlertConfig}
+        isCompetition={true}
+        competitionRoomId={competitionData?.id}
+        navigation={navigation}
+      />
+      <CustomAlert
+        visible={alertConfig.visible}
+        title={alertConfig.title}
+        message={alertConfig.message}
+        onConfirm={alertConfig.onConfirm}
+        onCancel={hideAlert}
+        showCancel={alertConfig.showCancel}
       />
     </View>
   );

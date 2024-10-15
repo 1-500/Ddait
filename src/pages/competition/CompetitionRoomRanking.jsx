@@ -1,6 +1,6 @@
 import { useIsFocused, useRoute } from '@react-navigation/native';
 import React, { useCallback, useEffect, useState } from 'react';
-import { Alert, SafeAreaView, StyleSheet, useWindowDimensions, View } from 'react-native';
+import { Alert, SafeAreaView, StyleSheet, useWindowDimensions } from 'react-native';
 import { TabBar, TabView } from 'react-native-tab-view';
 
 import {
@@ -240,12 +240,14 @@ const CompetitionRoomRanking = ({ navigation }) => {
           <SkeletonLoader type="rankList" />
         ) : (
           <RankList
-            data={competitionRecord}
+            competitionRecord={competitionRecord}
+            setCompetitionRecord={setCompetitionRecord}
             competitionData={competitionData}
             progress={progress}
             onJoin={handleJoin}
             onLeave={handleLeave}
             jumpTo={jumpTo}
+            navigation={navigation}
           />
         );
       case 'myScore':
