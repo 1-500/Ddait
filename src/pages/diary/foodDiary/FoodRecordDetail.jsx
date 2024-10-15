@@ -145,9 +145,9 @@ const FoodRecordDetail = () => {
   const selectImages = () => {
     launchImageLibrary({ mediaType: 'photo', selectionLimit: 0 }, (response) => {
       if (response.didCancel) {
-        showToast('사용자가 선택을 취소했습니다.', 'error', 2000, 'top');
+        showToast('사진 선택을 취소했습니다.', 'error', 2000, 'top');
       } else if (response.error) {
-        showToast(response.error, 'error', 2000, 'top');
+        showToast('에러가 발생하였습니다.', 'error', 2000, 'top');
       } else {
         const selectedImages = response.assets.map((asset) => asset.uri);
         setImages(selectedImages);

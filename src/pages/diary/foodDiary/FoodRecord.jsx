@@ -93,7 +93,12 @@ const FoodRecord = () => {
     });
   };
 
-  const handleRecordButton = async () => {
+  const handleRecordButton = () => {
+    navigation.navigate('FoodDiary', {
+      screen: 'FoodDetailScreen',
+    });
+  };
+  const handleSelectedButton = () => {
     navigation.navigate('FoodDiary', {
       screen: 'FoodDetailScreen',
     });
@@ -162,7 +167,12 @@ const FoodRecord = () => {
         )}
 
         <View style={{ display: 'flex', gap: 10 }}>
-          <CustomButton size="large" text={`${foodList.length}개 선택됨`} theme="secondary" />
+          <CustomButton
+            size="large"
+            text={`${foodList.length}개 선택됨`}
+            theme="secondary"
+            onPress={handleSelectedButton}
+          />
           {activeTag === '직접등록' ? (
             <View style={styles.buttonContainer}>
               <CustomButton size="medium" text="직접 등록하기" theme="secondary" onPress={handleCustomRecordButton} />
