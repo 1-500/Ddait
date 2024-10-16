@@ -101,8 +101,7 @@ const FoodRecordDetail = () => {
   const handleConfirmButton = async () => {
     try {
       let food_record_id;
-      // 음식 기록
-      if (foodList.length !== 0 && time.length !== 0 && selected.length !== 0) {
+      if (time.length !== 0 && selected.length !== 0) {
         const response = await createFoodRecordByTime({
           foodItems: foodList,
           meal_time: time,
@@ -115,8 +114,12 @@ const FoodRecordDetail = () => {
           throw new Error('음식을 기록하는데 실패하였습니다.');
         }
       }
+      if (!food_record_id) {
+        return;
+      }
 
       const foodRecordResult = await getUserFoodRecordImages(food_record_id);
+
       if (foodRecordResult.error) {
         throw new Error(foodRecordResult.error);
       }
@@ -137,6 +140,7 @@ const FoodRecordDetail = () => {
       if (deleteImages.length > 0) {
         deleteServerImage(deleteImages, food_record_id);
       }
+      navigation.navigate('DiaryMain');
     } catch (error) {
       showToast(error.message, 'error', 2000, 'top');
     }
@@ -188,7 +192,7 @@ const FoodRecordDetail = () => {
   };
 
   const uploadImage = async (uri, food_record_id) => {
-    if (food_record_id === undefined) {
+    if (!food_record_id) {
       return '등록된 음식이 존재하지 않습니다!';
     }
 

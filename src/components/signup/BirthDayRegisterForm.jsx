@@ -3,8 +3,7 @@ import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-nati
 
 import { FONTS, HEADER_FONT_SIZES } from '../../constants/font';
 import useUserFormStore from '../../store/sign/signup';
-import DatePickerBottomSheet from '../bottomSheet/DatePickerBottomSheet';
-
+import DatePickerBottomSheet from '../BottomSheet/DatePickerBottomSheet';
 const windowWidth = Dimensions.get('window').width;
 
 const BirthDayRegisterForm = () => {
