@@ -78,6 +78,7 @@ const styles = StyleSheet.create({
   profileImage: {
     width: 60,
     height: 60,
+    borderRadius: 100,
   },
   nicknameText: {
     fontSize: FONT_SIZES.sm,

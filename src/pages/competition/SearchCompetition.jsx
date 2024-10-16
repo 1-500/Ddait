@@ -6,11 +6,11 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import Octicons from 'react-native-vector-icons/Octicons';
 
 import { getAllCompetitions } from '../../apis/competition';
+import SkeletonLoader from '../../components/common/SkeletonLoader';
 import CustomButton from '../../components/CustomButton';
 import CustomTag from '../../components/CustomTag';
 import DropdownModal from '../../components/DropdownModal';
 import HeaderComponents from '../../components/HeaderComponents';
-import SkeletonLoader from '../../components/SkeletonLoader';
 import { COLORS } from '../../constants/colors';
 import { FONT_SIZES, FONTS } from '../../constants/font';
 import { RADIUS } from '../../constants/radius';

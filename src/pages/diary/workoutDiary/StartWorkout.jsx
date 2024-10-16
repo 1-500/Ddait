@@ -22,12 +22,12 @@ import {
   postWorkoutInfoBookmark,
   postWorkoutRecord,
 } from '../../../apis/diary';
+import SkeletonLoader from '../../../components/common/SkeletonLoader';
 import CustomButton from '../../../components/CustomButton';
 import CustomInput from '../../../components/CustomInput';
 import CustomTimer from '../../../components/CustomTimer';
 import DropdownModal from '../../../components/DropdownModal';
 import HeaderComponents from '../../../components/HeaderComponents';
-import SkeletonLoader from '../../../components/SkeletonLoader';
 import { BACKGROUND_COLORS, COLORS, TEXT_COLORS } from '../../../constants/colors';
 import { BODY_FONT_SIZES, HEADER_FONT_SIZES } from '../../../constants/font';
 import { FONTS } from '../../../constants/font';

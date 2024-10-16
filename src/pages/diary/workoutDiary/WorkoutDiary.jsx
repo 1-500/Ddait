@@ -4,8 +4,8 @@ import React, { useCallback, useState } from 'react';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
 
 import { getDiaryList } from '../../../apis/diary';
+import SkeletonLoader from '../../../components/common/SkeletonLoader';
 import CustomButton from '../../../components/CustomButton';
-import SkeletonLoader from '../../../components/SkeletonLoader';
 import { BACKGROUND_COLORS, BUTTON_COLORS, COLORS, TEXT_COLORS } from '../../../constants/colors';
 import { FONT_SIZES, FONTS } from '../../../constants/font';
 import { RADIUS } from '../../../constants/radius';
