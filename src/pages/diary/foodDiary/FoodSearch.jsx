@@ -1,16 +1,26 @@
 import { useNavigation } from '@react-navigation/native';
-import React, { useEffect, useState } from 'react';
-import { Alert, Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useState } from 'react';
+import {
+  ActivityIndicator,
+  FlatList,
+  Image,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
-import { createBookMarkFoods, createFoodRecordByTime, getFoodBySearch } from '../../../apis/food/index';
+import { createBookMarkFoods, getFoodBySearch } from '../../../apis/food/index';
 import CustomButton from '../../../components/CustomButton';
 import CustomInput from '../../../components/CustomInput';
 import HeaderComponents from '../../../components/HeaderComponents';
-import { BACKGROUND_COLORS, COLORS, TEXT_COLORS } from '../../../constants/colors';
+import { COLORS } from '../../../constants/colors';
 import { FONT_SIZES, FONTS } from '../../../constants/font';
 import useDiaryCalendarStore from '../../../store/food/calendar/index';
 import useSelectedFoodsStore from '../../../store/food/selectedFoods/index';
 import useSelectedFoodTimeStore from '../../../store/index';
+import { useToastMessageStore } from '../../../store/toastMessage/toastMessage';
 import { debounce } from '../../../utils/foodDiary/debounce';
 
 const PlusIcon = require('../../../assets/images/dietDiary/PluscircleWhiteButton.png');
@@ -27,20 +37,27 @@ const FoodSearch = () => {
 
   const { foodList, removeFood } = useSelectedFoodsStore();
 
+  const { showToast } = useToastMessageStore();
+  const [isLoading, setIsLoading] = useState(false);
+
   const handleSearchInput = debounce(async (text) => {
+    setIsLoading(true);
     try {
       let result = await getFoodBySearch(text);
       if (result.error) {
-        throw new Error('서버에서 에러가 발생하여 조회를 실패하였습니다.');
+        throw new Error('서버에서 에러가 발생하여 음식 조회를 실패하였습니다.');
       }
       if (result.data.length) {
         setFoodSearchListState(result.data);
       }
       setSearchText(text);
     } catch (error) {
-      Alert.alert(error.message);
+      showToast(error.message, 'error', 2000, 'top');
+    } finally {
+      setIsLoading(false);
     }
-  }, 300);
+  }, 400);
+
   const handleCheckedFoods = (food) => {
     const isChecked = Array.isArray(foodList) && foodList.some((item) => item.id === food.id);
     if (isChecked) {
@@ -57,6 +74,7 @@ const FoodSearch = () => {
       });
     }
   };
+
   const handleBookmarkFoods = async (food) => {
     const newFoodSearchListState = foodSearchListState.map((element) => {
       return element.id === food.id ? { ...element, isBookMarked: !element.isBookMarked } : { ...element };
@@ -71,14 +89,30 @@ const FoodSearch = () => {
         }
       }
     } catch (error) {
-      Alert.alert(error.message);
+      showToast(error.message, 'error', 2000, 'top');
     }
     setFoodSearchListState(newFoodSearchListState);
   };
+
   const handleRecordButton = async () => {
     navigation.navigate('FoodDiary', {
       screen: 'FoodDetailScreen',
     });
+  };
+
+  const renderFoodItem = ({ item }) => {
+    const isChecked = Array.isArray(foodList) && foodList.some((food) => food.id === item.id);
+    return (
+      <FoodInfoCard
+        name={item.name}
+        serving_size={item.serving_size}
+        calories={item.calories}
+        isCheckFood={isChecked}
+        isCheckedBookmark={item.isBookMarked}
+        onHandleCheckedFoods={() => handleCheckedFoods(item)}
+        onHandleBookmarkFoods={() => handleBookmarkFoods(item)}
+      />
+    );
   };
 
   return (
@@ -94,24 +128,18 @@ const FoodSearch = () => {
             onChangeText={handleSearchInput}
           />
         </View>
-        <ScrollView style={styles.foodListContainer}>
-          {foodSearchListState?.map((food) => {
-            const isChecked = Array.isArray(foodList) && foodList.some((item) => item.id === food.id);
-            return (
-              <FoodInfoCard
-                key={food.id}
-                name={food.name}
-                serving_size={food.serving_size}
-                calories={food.calories}
-                isCheckFood={isChecked}
-                isCheckedBookmark={food.isBookMarked}
-                onHandleCheckedFoods={() => handleCheckedFoods(food)}
-                onHandleBookmarkFoods={() => handleBookmarkFoods(food)}
-              />
-            );
-          })}
-        </ScrollView>
-
+        {isLoading ? (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color={COLORS.primary} />
+          </View>
+        ) : (
+          <FlatList
+            data={foodSearchListState}
+            renderItem={renderFoodItem}
+            keyExtractor={(item) => item.id.toString()}
+            style={styles.foodListContainer}
+          />
+        )}
         <View style={styles.buttonContainer}>
           <CustomButton size="large" text={`${foodList.length}개 선택됨`} theme="secondary" />
           <CustomButton size="large" text="기록하기" theme="primary" onPress={handleRecordButton} />
@@ -157,7 +185,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#222',
     padding: 20,
   },
-
   foodListContainer: {
     marginVertical: 15,
     height: 150,
@@ -181,5 +208,11 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     gap: 10,
   },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 });
+
 export default FoodSearch;

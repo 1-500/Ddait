@@ -1,6 +1,6 @@
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Alert, Image, Modal, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
+import { Image, Modal, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import * as Progress from 'react-native-progress';
 
 import {
@@ -17,6 +17,7 @@ import { FONT_SIZES, FONTS } from '../../../constants/font';
 import { RADIUS } from '../../../constants/radius';
 import useDiaryCalendarStore from '../../../store/food/calendar/index';
 import useSelectedFoodTimeStore from '../../../store/index';
+import { useToastMessageStore } from '../../../store/toastMessage/toastMessage';
 import {
   calculateCarbsCalories,
   calculateFatCalories,
@@ -26,6 +27,7 @@ import {
 
 const PlusButtonIcon = require('../../../assets/images/dietDiary/PluscircleButton.png');
 const MinusButtonIcon = require('../../../assets/images/dietDiary/MinusCircleButton.png');
+import { BottomSheetModal, BottomSheetModalProvider, BottomSheetView } from '@gorhom/bottom-sheet';
 
 const items = [
   { name: '아침', title: '400kcal', icon: require('../../../assets/images/sun-horizon.png') },
@@ -36,7 +38,6 @@ const items = [
 ];
 
 const FoodDiary = () => {
-  const [isVisibleModal, setIsVisibleModal] = useState(false);
   const [userState, setUserState] = useState({
     weight: 70,
     totalCalories: 0,
@@ -66,6 +67,7 @@ const FoodDiary = () => {
       },
     },
   });
+  const { showToast } = useToastMessageStore();
 
   const totalNutrition = useMemo(() => {
     return calculateTotalNutrition(userState.mealNutritionInfo);
@@ -77,12 +79,10 @@ const FoodDiary = () => {
 
   const { setTime } = useSelectedFoodTimeStore();
   const { selected } = useDiaryCalendarStore();
-
   const navigation = useNavigation();
 
-  const handleModal = () => {
-    setIsVisibleModal(!isVisibleModal);
-  };
+  const bottomSheetRef = useRef();
+  const snapPoints = useMemo(() => ['80%', '80%'], []);
 
   const handleWeightInput = async (text) => {
     let newUserweight = parseFloat(text);
@@ -95,10 +95,10 @@ const FoodDiary = () => {
         date: selected,
       });
       if (result.status !== 200) {
-        throw new Error('데이터를 반영하지 못했습니다');
+        throw new Error('몸무게 설정을 하는데 에러가 발생하였습니다');
       }
     } catch (error) {
-      Alert.alert(error.message);
+      showToast(error.message, 'error', 2000, 'top');
     }
     setUserState((prevState) => ({
       ...prevState,
@@ -115,10 +115,10 @@ const FoodDiary = () => {
         date: selected,
       });
       if (result.status !== 200) {
-        throw new Error('데이터를 반영하지 못했습니다');
+        throw new Error('몸무게 설정을 하는데 에러가 발생하였습니다');
       }
     } catch (error) {
-      Alert.alert(error.message);
+      showToast(error.message, 'error', 2000, 'top');
     }
     setUserState((prevState) => ({
       ...prevState,
@@ -135,10 +135,10 @@ const FoodDiary = () => {
         date: selected,
       });
       if (result.status !== 200) {
-        throw new Error('데이터를 반영하지 못했습니다');
+        throw new Error('몸무게 설정을 하는데 에러가 발생하였습니다');
       }
     } catch (error) {
-      Alert.alert(error.message);
+      showToast(error.message, 'error', 2000, 'top');
     }
     setUserState((prevState) => ({
       ...prevState,
@@ -159,15 +159,16 @@ const FoodDiary = () => {
           date: selected,
         });
         if (result.status !== 200) {
-          throw new Error();
+          throw new Error('목표 칼로리를 설정하는데 발생하였습니다');
         }
+        bottomSheetRef.current?.close();
       } catch (error) {
-        Alert.alert('DB에 반영하지 못했습니다.');
+        showToast(error.message, 'error', 2000, 'top');
       }
-      setIsVisibleModal(false);
       return;
+    } else {
+      showToast('탄단지 비율을 100으로 두어야합니다.', 'error', 2000, 'top');
     }
-    Alert.alert('탄단지 비율을 100으로 두어야 합니다!');
   };
 
   const handleMealTime = (time) => {
@@ -183,12 +184,12 @@ const FoodDiary = () => {
         try {
           const postResult = await createFoodDiary(selected);
           if (postResult.error) {
-            throw new Error(postResult.error);
+            throw new Error('식단일지를 만드는데 실패하였습니다.');
           }
 
           const foodDiaryResult = await getUserFoodDiary(selected);
           if (foodDiaryResult.error) {
-            throw new Error(foodDiaryResult.error);
+            throw new Error('식단일지를 가져오는데 실패하였습니다.');
           }
 
           if (foodDiaryResult.status === 200) {
@@ -212,13 +213,17 @@ const FoodDiary = () => {
             }));
           }
         } catch (error) {
-          Alert.alert(error.message);
+          showToast(error.message, 'error', 2000, 'top');
         }
       };
 
       handleFoodDiary();
-    }, [selected]),
+    }, [selected, showToast]),
   );
+
+  const handleTargetCalorieButton = useCallback(() => {
+    bottomSheetRef.current?.present();
+  }, []);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -285,7 +290,7 @@ const FoodDiary = () => {
           </View>
 
           <View style={styles.buttonContainer}>
-            <CustomButton theme="primary" size="large" text="목표 칼로리 설정" onPress={handleModal} />
+            <CustomButton theme="primary" size="large" text="목표 칼로리 설정" onPress={handleTargetCalorieButton} />
           </View>
         </View>
         <View style={styles.mealItemsContainer}>
@@ -302,9 +307,14 @@ const FoodDiary = () => {
           ))}
         </View>
       </ScrollView>
-      <Modal visible={isVisibleModal} animationType="slide" transparent={true} onRequestClose={handleModal}>
-        <View style={styles.modalBackground}>
-          <View style={styles.modalContainer}>
+      <BottomSheetModalProvider>
+        <BottomSheetModal
+          ref={bottomSheetRef}
+          enablePanDownToClose
+          snapPoints={snapPoints}
+          backgroundComponent={({ style }) => <View style={[style, styles.pickerContainer]} />}
+        >
+          <BottomSheetView style={styles.bottomSheetContainer}>
             <View style={styles.modalButtonContainer}>
               <View style={{ display: 'flex', gap: 10 }}>
                 <Text style={styles.modalText}>탄수화물</Text>
@@ -389,9 +399,9 @@ const FoodDiary = () => {
               </Text>
             </View>
             <CustomButton theme="primary" size="large" text="설정 완료" onPress={handleModalConfirmButton} />
-          </View>
-        </View>
-      </Modal>
+          </BottomSheetView>
+        </BottomSheetModal>
+      </BottomSheetModalProvider>
     </SafeAreaView>
   );
 };
@@ -401,7 +411,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.darkBackground,
   },
-
+  pickerContainer: {
+    backgroundColor: COLORS.darkBackground,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    padding: 20,
+  },
   diaryContentContainer: {
     flex: 1,
     padding: 20,
@@ -508,21 +523,14 @@ const styles = StyleSheet.create({
     fontSize: FONT_SIZES.xxs,
     fontFamily: FONTS.PRETENDARD[600],
   },
-  modalBackground: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-  },
+
   modalText: {
     color: COLORS.white,
     fontSize: FONT_SIZES.lg,
     fontFamily: FONTS.PRETENDARD[600],
   },
-  modalContainer: {
+  bottomSheetContainer: {
     width: '100%',
-    backgroundColor: COLORS.darkBackground,
-    borderRadius: RADIUS.large,
     padding: 24,
     alignItems: 'center',
   },

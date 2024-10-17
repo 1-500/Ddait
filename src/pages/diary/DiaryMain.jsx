@@ -1,7 +1,7 @@
 import React, { useCallback, useRef } from 'react';
 import { SafeAreaView, StyleSheet, View } from 'react-native';
 
-import DiaryCalendarBottomSheet from '../../components/bottomSheet/DiaryCalendarBottomSheet';
+import DiaryCalendarBottomSheet from '../../components/BottomSheet/DiaryCalendarBottomSheet';
 import DiaryCalendar from '../../components/DiaryCalendar';
 import DiaryTypePicker from '../../components/DiaryTypePicker';
 import HeaderComponents from '../../components/HeaderComponents';

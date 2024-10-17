@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { Dimensions, ScrollView, StyleSheet, Text, View } from 'react-native';
 
-import DatePickerBottomSheet from '../../../components/bottomSheet/DatePickerBottomSheet';
 import OptionSelector from '../../../components/competitionCreation/OptionSelector';
 import Toggle from '../../../components/Toggle';
 import { COLORS } from '../../../constants/colors';
@@ -9,6 +8,7 @@ import { FONT_SIZES, FONTS } from '../../../constants/font';
 
 const { width } = Dimensions.get('window');
 
+import DatePickerBottomSheet from '../../../components/BottomSheet/DatePickerBottomSheet';
 import PeroidSelector from '../../../components/competitionCreation/PeroidSelector';
 import useCreateRoomStateStore from '../../../store/competition/index';
 const maxMembersOptions = [2, 5, 10, 20];
