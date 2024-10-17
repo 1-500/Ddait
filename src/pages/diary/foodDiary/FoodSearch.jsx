@@ -87,6 +87,7 @@ const FoodSearch = () => {
         if (result.error) {
           throw new Error('서버 오류로 인해 북마크한 데이터가 반영되지 않았습니다');
         }
+        showToast('북마크를 반영하였습니다', 'success', 2000, 'top');
       }
     } catch (error) {
       showToast(error.message, 'error', 2000, 'top');
