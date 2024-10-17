@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import React, { useEffect, useState } from 'react';
 import { Alert, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 
@@ -10,7 +11,6 @@ import { BACKGROUND_COLORS, COLORS } from '../../../constants/colors';
 import { FONTS, HEADER_FONT_SIZES } from '../../../constants/font';
 import { ELEMENT_VERTICAL_MARGIN, LAYOUT_PADDING } from '../../../constants/space';
 import useCreateRoomStateStore from '../../../store/competition/index';
-import { formatDate_ISO8601 } from '../../../utils/date';
 import SetRoomDetail from '../CompetitionCreation/SetRoomDetail';
 import SetRoomTitle from '../CompetitionCreation/SetRoomTitle';
 import SetSportsCategory from '../CompetitionCreation/SetSportsCategory';
@@ -46,14 +46,7 @@ const CompetitionCreation = ({ navigation }) => {
 
   useEffect(() => {
     const hasExistingData =
-      title ||
-      maxMembers ||
-      competitionType ||
-      competitionTheme ||
-      startDate.year ||
-      endDate.year ||
-      isPrivate ||
-      hasSmartWatch;
+      title || maxMembers || competitionType || competitionTheme || startDate || endDate || isPrivate || hasSmartWatch;
 
     if (hasExistingData) {
       setShowAlert(true);
@@ -83,17 +76,7 @@ const CompetitionCreation = ({ navigation }) => {
       case 3:
         return !!theme;
       case 4:
-        return (
-          maxMembers > 0 &&
-          isPrivate &&
-          hasSmartWatch &&
-          startDate.year &&
-          startDate.month &&
-          startDate.day &&
-          endDate.year &&
-          endDate.month &&
-          endDate.day
-        );
+        return maxMembers > 0 && isPrivate && hasSmartWatch && startDate && endDate;
       case 5:
         return !!competitionTheme;
       default:
@@ -112,8 +95,8 @@ const CompetitionCreation = ({ navigation }) => {
       max_members: maxMembers,
       competition_type: competitionType,
       competition_theme: competitionTheme,
-      start_date: formatDate_ISO8601(startDate),
-      end_date: formatDate_ISO8601(endDate, true),
+      start_date: dayjs(startDate).startOf('day').toDate(),
+      end_date: dayjs(endDate).endOf('day').toDate(),
       is_private: isPrivate,
       smartwatch: hasSmartWatch,
     };

@@ -10,7 +10,7 @@ import { FONT_SIZES, FONTS } from '../../constants/font';
 import CustomButton from '../CustomButton';
 
 const DatePickerBottomSheet = forwardRef(
-  ({ snapPoints, title, selectedDate, setSelectedDate, minimumDate, maximumDate }, ref) => {
+  ({ snapPoints, title, selectedDate, setSelectedDate, minimumDate, maximumDate, onDateChange = () => {} }, ref) => {
     const snapPointsValue = useMemo(() => snapPoints, [snapPoints]);
     const handleCloseModal = () => ref.current?.close();
 
@@ -33,7 +33,10 @@ const DatePickerBottomSheet = forwardRef(
                 minimumDate={minimumDate}
                 maximumDate={maximumDate}
                 date={selectedDate}
-                onDateChange={setSelectedDate}
+                onDateChange={(date) => {
+                  setSelectedDate(date);
+                  onDateChange(date);
+                }}
               />
             </View>
             <View style={{ marginTop: 10 }}>

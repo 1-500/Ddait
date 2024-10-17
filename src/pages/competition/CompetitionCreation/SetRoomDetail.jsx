@@ -1,19 +1,22 @@
+import dayjs from 'dayjs';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
-import { Dimensions, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Dimensions, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import DatePickerBottomSheet from '../../../components/bottomSheet/DatePickerBottomSheet';
 import OptionSelector from '../../../components/competitionCreation/OptionSelector';
+import PeroidSelector from '../../../components/competitionCreation/PeroidSelector';
 import Toggle from '../../../components/Toggle';
 import { COLORS } from '../../../constants/colors';
 import { FONT_SIZES, FONTS } from '../../../constants/font';
+import useCreateRoomStateStore from '../../../store/competition/index';
+import { useToastMessageStore } from '../../../store/toastMessage/toastMessage';
 
 const { width } = Dimensions.get('window');
 
-import PeroidSelector from '../../../components/competitionCreation/PeroidSelector';
-import useCreateRoomStateStore from '../../../store/competition/index';
 const maxMembersOptions = [2, 5, 10, 20];
 
 const SetRoomDetail = () => {
+  const { showToast } = useToastMessageStore();
   const {
     isPrivate,
     hasSmartWatch,
@@ -28,14 +31,8 @@ const SetRoomDetail = () => {
     setEndDate,
   } = useCreateRoomStateStore();
 
-  useEffect(() => {
-    if (startDate > endDate) {
-      setEndDate(startDate);
-    }
-  }, [startDate, endDate, setEndDate]);
-
   // 바텀 시트
-  const snapPoints = useMemo(() => ['70%', '50%'], []);
+  const snapPoints = useMemo(() => (Platform.OS === 'ios' ? ['70%', '60%'] : ['70%', '50%']), []);
   const startDateBottomSheetRef = useRef(null);
   const endDateBottomSheetRef = useRef(null);
 
@@ -96,7 +93,18 @@ const SetRoomDetail = () => {
         ref={startDateBottomSheetRef}
         selectedDate={startDate}
         setSelectedDate={setStartDate}
-        minimumDate={new Date()}
+        onDateChange={(date) => {
+          const minimumStartDate = dayjs().add(1, 'day').toDate();
+          const minimumEndDate = dayjs(date).add(7, 'day').toDate();
+          if (date && minimumStartDate > date) {
+            showToast('경쟁은 최소 하루 뒤부터 시작할 수 있습니다.', 'error');
+            setStartDate(minimumStartDate);
+          }
+          if (endDate && minimumEndDate > endDate) {
+            setEndDate(minimumEndDate);
+          }
+        }}
+        minimumDate={dayjs().add(1, 'day').toDate()}
         title="시작 날짜를 선택하세요"
         snapPoints={snapPoints}
       />
@@ -104,7 +112,14 @@ const SetRoomDetail = () => {
         ref={endDateBottomSheetRef}
         selectedDate={endDate}
         setSelectedDate={setEndDate}
-        minimumDate={startDate}
+        onDateChange={(date) => {
+          const minimumEndDate = dayjs(startDate).add(7, 'day').toDate();
+          if (date && minimumEndDate > date) {
+            showToast('경쟁 기간은 최소 일주일이어야 합니다.', 'error');
+            setEndDate(minimumEndDate);
+          }
+        }}
+        minimumDate={dayjs().add(1, 'day').toDate()}
         title="종료 날짜를 선택하세요"
         snapPoints={snapPoints}
       />
