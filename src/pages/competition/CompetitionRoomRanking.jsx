@@ -1,6 +1,6 @@
 import { useIsFocused, useRoute } from '@react-navigation/native';
 import React, { useCallback, useEffect, useState } from 'react';
-import { Alert, SafeAreaView, StyleSheet, useWindowDimensions } from 'react-native';
+import { SafeAreaView, StyleSheet, useWindowDimensions } from 'react-native';
 import { TabBar, TabView } from 'react-native-tab-view';
 
 import {
@@ -62,7 +62,7 @@ const CompetitionRoomRanking = ({ navigation }) => {
       setProgress(getCompetitionProgress(result.data));
       setCompetitionData(result.data);
     } catch (error) {
-      Alert.alert('경쟁방 상세 정보 조회 실패', error.message);
+      showToast('경쟁방 상세 정보 조회 실패', 'error');
     } finally {
       setLoadingStates((prev) => ({ ...prev, details: false }));
     }
@@ -76,7 +76,7 @@ const CompetitionRoomRanking = ({ navigation }) => {
         setCompetitionRecord(res.data);
       }
     } catch (error) {
-      console.log('경쟁방 기록 조회 실패: ', error);
+      showToast('경쟁방 기록 조회 실패', 'error');
     } finally {
       setLoadingStates((prev) => ({ ...prev, record: false }));
     }
@@ -91,7 +91,7 @@ const CompetitionRoomRanking = ({ navigation }) => {
         }
       }
     } catch (error) {
-      console.log('경쟁방 기록 상세 조회 실패: ', error);
+      showToast('경쟁방 기록 상세 조회 실패', 'error');
     } finally {
       setLoadingStates((prev) => ({ ...prev, recordDetail: false }));
     }
@@ -106,7 +106,7 @@ const CompetitionRoomRanking = ({ navigation }) => {
         }
       }
     } catch (error) {
-      Alert.alert('Error fetching friends:', error.message);
+      showToast('친구 목록 조회 실패', 'error');
     }
   };
 
@@ -121,7 +121,7 @@ const CompetitionRoomRanking = ({ navigation }) => {
         fetchMyFriendsNotParticipant(),
       ]);
     } catch (error) {
-      Alert.alert('Error fetching friends:', error.message);
+      showToast('데이터 조회 실패', 'error');
     }
   }, [competitionId, isDeleted]);
 

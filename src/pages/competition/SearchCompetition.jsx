@@ -1,6 +1,6 @@
 import { useIsFocused } from '@react-navigation/native';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Alert, FlatList, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { FlatList, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Octicons from 'react-native-vector-icons/Octicons';
@@ -15,6 +15,7 @@ import { COLORS } from '../../constants/colors';
 import { FONT_SIZES, FONTS } from '../../constants/font';
 import { RADIUS } from '../../constants/radius';
 import { LAYOUT_PADDING, SPACING } from '../../constants/space';
+import { useToastMessageStore } from '../../store/toastMessage/toastMessage';
 import { getCompetitionProgress } from '../../utils/competition';
 import { formDate } from '../../utils/date';
 
@@ -66,6 +67,7 @@ const CompetitionItem = React.memo(({ item, onPress }) => {
 });
 
 const SearchCompetition = ({ navigation }) => {
+  const { showToast } = useToastMessageStore();
   const [competitions, setCompetitions] = useState([]);
   const [sortBy, setSortBy] = useState('');
   const [selectedTag, setSelectedTag] = useState('');
@@ -80,14 +82,14 @@ const SearchCompetition = ({ navigation }) => {
         const activeCompetitions = result.data.filter((data) => getCompetitionProgress(data) !== 'AFTER');
         setCompetitions(activeCompetitions);
       } catch (error) {
-        Alert.alert('전체 경쟁방 목록을 불러오는데 실패했습니다', error.message);
+        showToast('전체 경쟁방 목록을 불러오는데 실패했습니다', 'error');
       } finally {
         setIsLoading(false);
       }
     };
 
     fetchCompetitions();
-  }, [isFocused]);
+  }, [isFocused, showToast]);
 
   const handleCompetitionPress = useCallback(
     (item) => {

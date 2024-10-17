@@ -1,7 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
-  Alert,
   Dimensions,
   Image,
   Platform,
@@ -32,6 +31,7 @@ import { supabase } from '../../../lib/supabaseClient';
 import useDiaryCalendarStore from '../../../store/food/calendar/index';
 import useSelectedFoodsStore from '../../../store/food/selectedFoods/index';
 import useSelectedFoodTimeStore from '../../../store/index';
+import { useToastMessageStore } from '../../../store/toastMessage/toastMessage';
 import { calculateNutrientRatios, getFilePath, getTotal } from '../../../utils/foodDiary/index';
 
 const PlusButtonIcon = require('../../../assets/images/dietDiary/PluscircleButton.png');
@@ -40,6 +40,7 @@ const MinusButtonIcon = require('../../../assets/images/dietDiary/MinusCircleBut
 const width = Dimensions.get('window').width;
 
 const FoodRecordDetail = () => {
+  const { showToast } = useToastMessageStore();
   const navigation = useNavigation();
 
   const { foodList, setFoodList } = useSelectedFoodsStore();
@@ -97,7 +98,7 @@ const FoodRecordDetail = () => {
         });
         if (response.status === 200) {
           food_record_id = response.food_record_id;
-          Alert.alert(response.message);
+          showToast(response.message, 'success');
         } else {
           throw new Error('음식을 기록하는데 실패하였습니다.');
         }
@@ -116,7 +117,7 @@ const FoodRecordDetail = () => {
         const results = await Promise.all(uploadPromises);
         const errorMessages = results.filter((message) => !message.includes('성공')); // 성공 메시지가 아닌 경우 필터링
         if (errorMessages.length > 0) {
-          Alert.alert(errorMessages[0]);
+          showToast(errorMessages[0], 'error');
           return;
         }
       }
@@ -125,7 +126,7 @@ const FoodRecordDetail = () => {
         deleteServerImage(deleteImages, food_record_id);
       }
     } catch (error) {
-      Alert.alert(error.message);
+      showToast(error.message, 'error');
     }
   };
 
@@ -210,7 +211,7 @@ const FoodRecordDetail = () => {
 
       return '이미지 업로드 성공';
     } catch (error) {
-      Alert.alert(error.message);
+      showToast(error.message, 'error');
       return error.message;
     }
   };
@@ -218,7 +219,7 @@ const FoodRecordDetail = () => {
     launchImageLibrary({ mediaType: 'photo' }, (response) => {
       if (response.didCancel) {
       } else if (response.error) {
-        Alert.alert('Error', '이미지 선택 중 오류가 발생했습니다.');
+        showToast('이미지 선택 중 오류가 발생했습니다.', 'error');
       } else if (response.assets && response.assets.length > 0) {
         const newImage = response.assets[0].uri;
         setImages((prevImages) => [...prevImages, newImage]);

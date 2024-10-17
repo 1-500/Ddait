@@ -1,6 +1,6 @@
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Alert, Image, Modal, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useCallback, useMemo, useState } from 'react';
+import { Image, Modal, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import * as Progress from 'react-native-progress';
 
 import {
@@ -17,6 +17,7 @@ import { FONT_SIZES, FONTS } from '../../../constants/font';
 import { RADIUS } from '../../../constants/radius';
 import useDiaryCalendarStore from '../../../store/food/calendar/index';
 import useSelectedFoodTimeStore from '../../../store/index';
+import { useToastMessageStore } from '../../../store/toastMessage/toastMessage';
 import {
   calculateCarbsCalories,
   calculateFatCalories,
@@ -36,6 +37,7 @@ const items = [
 ];
 
 const FoodDiary = () => {
+  const { showToast } = useToastMessageStore();
   const [isVisibleModal, setIsVisibleModal] = useState(false);
   const [userState, setUserState] = useState({
     weight: 70,
@@ -98,7 +100,7 @@ const FoodDiary = () => {
         throw new Error('데이터를 반영하지 못했습니다');
       }
     } catch (error) {
-      Alert.alert(error.message);
+      showToast(error.message, 'error');
     }
     setUserState((prevState) => ({
       ...prevState,
@@ -118,7 +120,7 @@ const FoodDiary = () => {
         throw new Error('데이터를 반영하지 못했습니다');
       }
     } catch (error) {
-      Alert.alert(error.message);
+      showToast(error.message, 'error');
     }
     setUserState((prevState) => ({
       ...prevState,
@@ -138,7 +140,7 @@ const FoodDiary = () => {
         throw new Error('데이터를 반영하지 못했습니다');
       }
     } catch (error) {
-      Alert.alert(error.message);
+      showToast(error.message, 'error');
     }
     setUserState((prevState) => ({
       ...prevState,
@@ -162,12 +164,12 @@ const FoodDiary = () => {
           throw new Error();
         }
       } catch (error) {
-        Alert.alert('DB에 반영하지 못했습니다.');
+        showToast('DB에 반영하지 못했습니다.', 'error');
       }
       setIsVisibleModal(false);
       return;
     }
-    Alert.alert('탄단지 비율을 100으로 두어야 합니다!');
+    showToast('탄단지 비율을 100으로 두어야 합니다!', 'error');
   };
 
   const handleMealTime = (time) => {
@@ -212,12 +214,12 @@ const FoodDiary = () => {
             }));
           }
         } catch (error) {
-          Alert.alert(error.message);
+          showToast(error.message, 'error');
         }
       };
 
       handleFoodDiary();
-    }, [selected]),
+    }, [selected, showToast]),
   );
 
   return (

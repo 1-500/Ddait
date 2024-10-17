@@ -1,16 +1,17 @@
 import { useNavigation } from '@react-navigation/native';
-import React, { useEffect, useState } from 'react';
-import { Alert, Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useState } from 'react';
+import { Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import { createBookMarkFoods, createFoodRecordByTime, getFoodBySearch } from '../../../apis/food/index';
+import { createBookMarkFoods, getFoodBySearch } from '../../../apis/food/index';
 import CustomButton from '../../../components/CustomButton';
 import CustomInput from '../../../components/CustomInput';
 import HeaderComponents from '../../../components/HeaderComponents';
-import { BACKGROUND_COLORS, COLORS, TEXT_COLORS } from '../../../constants/colors';
+import { COLORS } from '../../../constants/colors';
 import { FONT_SIZES, FONTS } from '../../../constants/font';
 import useDiaryCalendarStore from '../../../store/food/calendar/index';
 import useSelectedFoodsStore from '../../../store/food/selectedFoods/index';
 import useSelectedFoodTimeStore from '../../../store/index';
+import { useToastMessageStore } from '../../../store/toastMessage/toastMessage';
 import { debounce } from '../../../utils/foodDiary/debounce';
 
 const PlusIcon = require('../../../assets/images/dietDiary/PluscircleWhiteButton.png');
@@ -19,6 +20,7 @@ const checkIcon = require('../../../assets/images/dietDiary/checkIcon.png');
 const BookmarkOnIcon = require('../../../assets/images/dietDiary/bookmark.png');
 
 const FoodSearch = () => {
+  const { showToast } = useToastMessageStore();
   const [searchText, setSearchText] = useState('');
   const [foodSearchListState, setFoodSearchListState] = useState([]);
   const { time } = useSelectedFoodTimeStore();
@@ -38,7 +40,7 @@ const FoodSearch = () => {
       }
       setSearchText(text);
     } catch (error) {
-      Alert.alert(error.message);
+      showToast(error.message, 'error');
     }
   }, 300);
   const handleCheckedFoods = (food) => {
@@ -71,7 +73,7 @@ const FoodSearch = () => {
         }
       }
     } catch (error) {
-      Alert.alert(error.message);
+      showToast(error.message, 'error');
     }
     setFoodSearchListState(newFoodSearchListState);
   };
