@@ -4,6 +4,7 @@ import { Dimensions, FlatList, SafeAreaView, StyleSheet, Text, TouchableOpacity,
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 import { getFAQ } from '../../apis/faq';
+import SkeletonLoader from '../../components/common/SkeletonLoader';
 import HeaderComponents from '../../components/HeaderComponents';
 import { COLORS } from '../../constants/colors';
 import { FONT_SIZES, FONTS } from '../../constants/font';
@@ -18,6 +19,7 @@ const FAQ = () => {
   const isFocused = useIsFocused();
   const [data, setData] = useState();
   const [isItemOpen, setIsItemOpen] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchFAQ = async () => {
@@ -26,6 +28,8 @@ const FAQ = () => {
         setData(result.data);
       } catch (error) {
         showToast('FAQ 정보 조회 실패', 'error');
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -60,15 +64,21 @@ const FAQ = () => {
   return (
     <SafeAreaView style={styles.pageContainer}>
       <HeaderComponents icon="none" title="FAQ" />
-      <FlatList
-        style={{ paddingTop: 20, paddingHorizontal: 20 }}
-        data={data}
-        keyExtractor={(item, index) => index}
-        renderItem={renderQuestionItem}
-        ListEmptyComponent={<Text style={styles.emptyText}>아직 질문이 없어요..</Text>}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ gap: 16 }}
-      />
+      {loading ? (
+        <View style={{ padding: 20 }}>
+          <SkeletonLoader type="list" />
+        </View>
+      ) : (
+        <FlatList
+          style={{ paddingTop: 20, paddingHorizontal: 20 }}
+          data={data}
+          keyExtractor={(item, index) => index}
+          renderItem={renderQuestionItem}
+          ListEmptyComponent={<Text style={styles.emptyText}>아직 질문이 없어요..</Text>}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ gap: 16 }}
+        />
+      )}
     </SafeAreaView>
   );
 };
