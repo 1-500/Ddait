@@ -1,19 +1,22 @@
+import dayjs from 'dayjs';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
-import { Dimensions, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Dimensions, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import DatePickerBottomSheet from '../../../components/bottomSheet/DatePickerBottomSheet';
 import OptionSelector from '../../../components/competitionCreation/OptionSelector';
+import PeroidSelector from '../../../components/competitionCreation/PeroidSelector';
 import Toggle from '../../../components/Toggle';
 import { COLORS } from '../../../constants/colors';
 import { FONT_SIZES, FONTS } from '../../../constants/font';
+import useCreateRoomStateStore from '../../../store/competition/index';
+import { useToastMessageStore } from '../../../store/toastMessage/toastMessage';
 
 const { width } = Dimensions.get('window');
 
-import PeroidSelector from '../../../components/competitionCreation/PeroidSelector';
-import useCreateRoomStateStore from '../../../store/competition/index';
 const maxMembersOptions = [2, 5, 10, 20];
 
 const SetRoomDetail = () => {
+  const { showToast } = useToastMessageStore();
   const {
     isPrivate,
     hasSmartWatch,
@@ -29,7 +32,7 @@ const SetRoomDetail = () => {
   } = useCreateRoomStateStore();
 
   // 바텀 시트
-  const snapPoints = useMemo(() => ['70%', '50%'], []);
+  const snapPoints = useMemo(() => (Platform.OS === 'ios' ? ['70%', '60%'] : ['70%', '50%']), []);
   const startDateBottomSheetRef = useRef(null);
   const endDateBottomSheetRef = useRef(null);
 
@@ -40,23 +43,6 @@ const SetRoomDetail = () => {
   const openEndDatePicker = useCallback(() => {
     endDateBottomSheetRef.current?.present();
   }, []);
-
-  // 임시 코드입니다 - 날짜 선택 오늘 날짜 기준으로
-  useEffect(() => {
-    const today = new Date();
-    const formattedDate = {
-      year: today.getFullYear().toString(),
-      month: (today.getMonth() + 1).toString().padStart(2, '0'),
-      day: today.getDate().toString().padStart(2, '0'),
-    };
-
-    if (!startDate.year) {
-      setStartDate(formattedDate);
-    }
-    if (!endDate.year) {
-      setEndDate(formattedDate);
-    }
-  }, [endDate.year, setEndDate, setStartDate, startDate.year]);
 
   const menuItems = [
     {
@@ -87,8 +73,6 @@ const SetRoomDetail = () => {
           onPressEndInput={openEndDatePicker}
           startDate={startDate}
           endDate={endDate}
-          onStartDateChange={setStartDate}
-          onEndDateChange={setEndDate}
         />
       ),
     },
@@ -109,6 +93,18 @@ const SetRoomDetail = () => {
         ref={startDateBottomSheetRef}
         selectedDate={startDate}
         setSelectedDate={setStartDate}
+        onDateChange={(date) => {
+          const minimumStartDate = dayjs().add(1, 'day').toDate();
+          const minimumEndDate = dayjs(date).add(7, 'day').toDate();
+          if (date && minimumStartDate > date) {
+            showToast('경쟁은 최소 하루 뒤부터 시작할 수 있습니다.', 'error');
+            setStartDate(minimumStartDate);
+          }
+          if (endDate && minimumEndDate > endDate) {
+            setEndDate(minimumEndDate);
+          }
+        }}
+        minimumDate={dayjs().add(1, 'day').toDate()}
         title="시작 날짜를 선택하세요"
         snapPoints={snapPoints}
       />
@@ -116,6 +112,14 @@ const SetRoomDetail = () => {
         ref={endDateBottomSheetRef}
         selectedDate={endDate}
         setSelectedDate={setEndDate}
+        onDateChange={(date) => {
+          const minimumEndDate = dayjs(startDate).add(7, 'day').toDate();
+          if (date && minimumEndDate > date) {
+            showToast('경쟁 기간은 최소 일주일이어야 합니다.', 'error');
+            setEndDate(minimumEndDate);
+          }
+        }}
+        minimumDate={dayjs().add(1, 'day').toDate()}
         title="종료 날짜를 선택하세요"
         snapPoints={snapPoints}
       />
@@ -148,7 +152,7 @@ const styles = StyleSheet.create({
   },
   flexColumn: {
     flexDirection: 'column',
-    alignItems: 'flex-start',
+    alignItems: 'stretch',
   },
   lastMenuItem: {
     borderBottomWidth: 1,

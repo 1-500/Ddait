@@ -1,5 +1,6 @@
+import dayjs from 'dayjs';
 import React, { useCallback, useMemo, useRef } from 'react';
-import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Dimensions, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { FONTS, HEADER_FONT_SIZES } from '../../constants/font';
 import useUserFormStore from '../../store/sign/signup';
@@ -11,7 +12,7 @@ const BirthDayRegisterForm = () => {
   const { selectedDate, setSelectedDate, nickName } = useUserFormStore();
 
   const bottomSheetModalRef = useRef(null);
-  const snapPoints = useMemo(() => ['70%', '50%'], []);
+  const snapPoints = useMemo(() => (Platform.OS === 'ios' ? ['70%', '60%'] : ['70%', '50%']), []);
   const handlePresentModalPress = useCallback(() => {
     bottomSheetModalRef.current?.present();
   }, []);
@@ -20,14 +21,13 @@ const BirthDayRegisterForm = () => {
     <View style={styles.container}>
       <Text style={styles.topText}>{nickName}님의 생일을 알려주세요!</Text>
       <TouchableOpacity onPress={handlePresentModalPress}>
-        <Text style={styles.dateText}>
-          {selectedDate.year} / {selectedDate.month} / {selectedDate.day}
-        </Text>
+        <Text style={styles.dateText}>{dayjs(selectedDate).format('YYYY/MM/DD')}</Text>
       </TouchableOpacity>
       <DatePickerBottomSheet
         selectedDate={selectedDate}
         setSelectedDate={setSelectedDate}
-        title="생년월일 입력해주세요"
+        maximumDate={new Date()}
+        title="생년월일을 입력해주세요"
         ref={bottomSheetModalRef}
         snapPoints={snapPoints}
       />

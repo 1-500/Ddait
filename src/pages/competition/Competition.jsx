@@ -3,6 +3,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FlatList, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 
 import { getMyCompetition } from '../../apis/competition';
+import SkeletonLoader from '../../components/common/SkeletonLoader';
 import CustomButton from '../../components/CustomButton';
 import MyCompetitionItem from '../../components/MyCompetitionItem';
 import { COLORS } from '../../constants/colors';
@@ -17,11 +18,13 @@ const Competition = ({ navigation }) => {
   const { showToast } = useToastMessageStore();
   const [myCompetitions, setMyCompetitions] = useState([]);
   const [activeCompetitions, setActiveCompetitions] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const nickname = useUserStore((state) => state.nickname);
   const isFocused = useIsFocused();
 
   useEffect(() => {
     const fetchMyCompetitions = async () => {
+      setIsLoading(true);
       try {
         const result = await getMyCompetition();
         setMyCompetitions(result.data);
@@ -30,6 +33,8 @@ const Competition = ({ navigation }) => {
         setActiveCompetitions(active);
       } catch (error) {
         showToast('내 경쟁방 목록을 불러오는데 실패했습니다', 'error');
+      } finally {
+        setIsLoading(false);
       }
     };
     fetchMyCompetitions();
@@ -47,8 +52,13 @@ const Competition = ({ navigation }) => {
   );
 
   const renderCompetitions = useCallback(
-    ({ item }) => <MyCompetitionItem item={item} onPress={handleCompetitionPress} />,
-    [handleCompetitionPress],
+    ({ item }) =>
+      isLoading ? (
+        <SkeletonLoader type="competitionItem" />
+      ) : (
+        <MyCompetitionItem item={item} onPress={handleCompetitionPress} />
+      ),
+    [isLoading, handleCompetitionPress],
   );
 
   const ListHeader = useMemo(
@@ -104,9 +114,9 @@ const Competition = ({ navigation }) => {
       <View style={{ ...LAYOUT_PADDING }}>
         <FlatList
           ListHeaderComponent={ListHeader}
-          data={activeCompetitions}
+          data={isLoading ? [...Array(1)] : activeCompetitions}
           renderItem={renderCompetitions}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item, index) => index.toString()}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ gap: SPACING.md }}
           ListFooterComponent={activeCompetitions.length > 0 ? ListFooter : null}
