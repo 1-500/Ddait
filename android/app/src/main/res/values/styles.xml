@@ -8,4 +8,8 @@
         <item name="android:statusBarColor">#1c1c1c</item>
     </style>
 
+    <style name="DatePickerTheme" parent="DatePickerBaseTheme">
+        <item name="android:textSize">20sp</item>
+    </style>
+
 </resources>
