@@ -116,7 +116,7 @@ const WorkoutDiary = () => {
   return (
     <View style={styles.workoutContainer}>
       {isLoading ? (
-        <SkeletonLoader type="rankList" /> // 로딩 중 스켈레톤 UI 표시
+        <SkeletonLoader type="rankList" />
       ) : workoutRecords.length === 0 ? (
         renderEmptyMessage()
       ) : (
