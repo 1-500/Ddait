@@ -73,6 +73,27 @@ const SkeletonLoader = ({ type }) => {
       <AnimatedBlock style={[styles.listItem, { height: 100 }]} borderRadius={RADIUS.large} />
     </View>
   );
+
+  const renderCompetitionItem = () => (
+    <View style={styles.competitionContainer}>
+      <View style={{ gap: SPACING.xs }}>
+        <View style={styles.titleContainer}>
+          <AnimatedBlock style={{ width: 150, height: 24 }} />
+          <AnimatedBlock style={{ width: 30, height: 24 }} />
+        </View>
+        <View style={{ flexDirection: 'row', gap: SPACING.xxs }}>
+          <AnimatedBlock style={{ width: 60, height: 24 }} />
+          <AnimatedBlock style={{ width: 60, height: 24 }} />
+          <AnimatedBlock style={{ width: 60, height: 24 }} />
+        </View>
+        <AnimatedBlock style={{ width: 120, height: 20 }} />
+      </View>
+      <View style={styles.competitionMemberContainer}>
+        <AnimatedBlock style={{ width: 40, height: 24 }} />
+      </View>
+    </View>
+  );
+
   const renderList = () => (
     <>
       <AnimatedBlock style={[styles.listItem, { height: 80 }]} borderRadius={RADIUS.large} />
@@ -88,6 +109,8 @@ const SkeletonLoader = ({ type }) => {
       return renderRankList();
     case 'myScore':
       return renderMyScore();
+    case 'competitionItem':
+      return renderCompetitionItem();
     case 'list':
       return renderList();
     default:
@@ -146,6 +169,24 @@ const styles = StyleSheet.create({
   },
   listItem: {
     marginBottom: 16,
+  },
+  competitionContainer: {
+    backgroundColor: COLORS.darkGrey,
+    paddingHorizontal: SPACING.lg,
+    paddingVertical: SPACING.md,
+    borderRadius: RADIUS.large,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  titleContainer: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    gap: SPACING.xs,
+  },
+  competitionMemberContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.xs,
   },
 });
 
