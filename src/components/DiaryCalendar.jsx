@@ -21,25 +21,28 @@ const DiaryCalendar = () => {
     const days = [];
 
     for (let i = startOfWeek; i <= endOfWeek; i.setDate(i.getDate() + 1)) {
-      days.push(i.getDate()); // 주간 날짜의 '일' 부분만 저장
+      days.push(i.getDate());
     }
     setWeekDays(days);
   };
 
   const handleWeekDayPress = (day) => {
-    // 인자값 day를 기준으로 날짜 객체를 생성
     const today = new Date();
     const selectedDate = new Date(today.getFullYear(), today.getMonth(), day);
-    // 로컬 시간을 기반으로 날짜를 조정
     const selectedDateWithOffset = new Date(selectedDate.getTime() - selectedDate.getTimezoneOffset() * 60 * 1000);
-    // ISO형식 날짜 조정하기 => 2024-08-24 형태로
     const selectedDateDateString = selectedDateWithOffset.toISOString().split('T')[0];
+
     setSelected(selectedDateDateString);
     setSelectedDayInfo(selectedDateWithOffset);
+
     const weekOfMonth = `${selectedDateWithOffset.getMonth() + 1}월 ${getWeekOfMonth(selectedDateWithOffset)}주차`;
     setWeekOfMonth(weekOfMonth);
 
-    updateWeekDays(selectedDateWithOffset);
+    const isLastDayOfWeek = day === weekDays[weekDays.length - 1];
+
+    if (!isLastDayOfWeek) {
+      updateWeekDays(selectedDateWithOffset);
+    }
   };
 
   return (
@@ -47,7 +50,7 @@ const DiaryCalendar = () => {
       {weekDays.map((day, index) => (
         <TouchableOpacity
           key={index}
-          style={new Date(selected).getDate() === day ? styles.activeDay : styles.day} // 선택된 날짜와 비교
+          style={new Date(selected).getDate() === day ? styles.activeDay : styles.day}
           onPress={() => handleWeekDayPress(day)}
         >
           <Text style={new Date(selected).getDate() === day ? styles.activeDayText : styles.dayText}>{day}</Text>

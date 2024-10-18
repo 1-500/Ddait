@@ -57,7 +57,6 @@ const StartWorkout = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const { showToast } = useToastMessageStore();
-  // const { competitionList } = useCompetitionStore.getState();
   const { competitionList } = useCompetitionStore();
 
   const bottomSheetModalRef = useRef(null);
