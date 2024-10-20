@@ -19,9 +19,9 @@ import { COLORS } from '../../constants/colors';
 import { FONT_SIZES, FONTS } from '../../constants/font';
 import { useToastMessageStore } from '../../store/toastMessage/toastMessage';
 import { getCompetitionProgress } from '../../utils/competition';
-import Invite from './rankingPageTabs/Invite';
-import MyScore from './rankingPageTabs/MyScore';
-import RankList from './rankingPageTabs/RankList';
+import Invite from './competitionPageTabs/Invite';
+import MyScore from './competitionPageTabs/MyScore';
+import RankList from './competitionPageTabs/RankList';
 
 /* eslint-disable */
 
