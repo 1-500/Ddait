@@ -293,7 +293,7 @@ const Score1VS1 = ({
       )}
       <FriendOptionBottomSheet
         ref={bottomSheetRef}
-        relation={() => getFriendRelation(selectedMember?.friend_info?.status)}
+        relation={(() => getFriendRelation(selectedMember?.friend_info?.status))()}
         memberData={{ ...selectedMember?.member_info, table_id: selectedMember?.friend_info?.id }}
         onUpdateData={onUpdateData}
         setAlertVisible={setAlertVisible}
