@@ -19,6 +19,7 @@ const dummyProfile = require('../../../assets/images/profile.png');
 const { width: screenWidth } = Dimensions.get('window');
 
 const RankList = ({
+  isParticipantState,
   competitionRecord,
   setCompetitionRecord,
   competitionData,
@@ -189,7 +190,7 @@ const RankList = ({
               )}
             </View>
             <TouchableOpacity
-              style={styles.myRankBtn}
+              style={[styles.myRankBtn, !isParticipantState && { opacity: 0.6 }]}
               onPress={() => {
                 rankListRef.current.scrollToIndex({
                   animated: true,
@@ -197,6 +198,7 @@ const RankList = ({
                 });
               }}
               activeOpacity={0.6}
+              disabled={!isParticipantState}
             >
               <Text style={styles.myRankBtnText}>내 순위 보기</Text>
             </TouchableOpacity>
