@@ -90,7 +90,7 @@ const RankList = ({
       <View>
         {competitionRecord && (
           <View style={{ alignItems: 'center' }}>
-            <View style={styles.podiumWrapper}>
+            <View style={[styles.podiumWrapper, { paddingTop: progress === 'AFTER' ? 150 : 120 }]}>
               {progress === 'AFTER' && (
                 <Image
                   style={[
@@ -122,39 +122,70 @@ const RankList = ({
                       source={crownImage}
                     />
                   )}
+                  <Text
+                    style={[
+                      styles.rankerNicknameText,
+                      { bottom: 0.85 * podiumImageSize.height + (progress === 'IN_PROGRESS' ? 85 : 115) },
+                    ]}
+                    numberOfLines={1}
+                  >
+                    {competitionRecord[0].member_info.nickname}
+                  </Text>
                 </>
               )}
               {competitionRecord[1] && (
-                <Image
-                  style={[
-                    styles.rankerProfile,
-                    {
-                      bottom: 0.63 * podiumImageSize.height,
-                      left: 16 + 0.05 * podiumImageSize.width,
-                    },
-                  ]}
-                  source={
-                    competitionRecord[1].member_info.profile_image
-                      ? { uri: competitionRecord[1].member_info.profile_image }
-                      : dummyProfile
-                  }
-                />
+                <>
+                  <Image
+                    style={[
+                      styles.rankerProfile,
+                      {
+                        bottom: 0.63 * podiumImageSize.height,
+                        left: 16 + 0.05 * podiumImageSize.width,
+                      },
+                    ]}
+                    source={
+                      competitionRecord[1].member_info.profile_image
+                        ? { uri: competitionRecord[1].member_info.profile_image }
+                        : dummyProfile
+                    }
+                  />
+                  <Text
+                    style={[
+                      styles.rankerNicknameText,
+                      { bottom: 0.63 * podiumImageSize.height + 85, left: 16 + 0.05 * podiumImageSize.width },
+                    ]}
+                    numberOfLines={1}
+                  >
+                    {competitionRecord[1].member_info.nickname}
+                  </Text>
+                </>
               )}
               {competitionRecord[2] && (
-                <Image
-                  style={[
-                    styles.rankerProfile,
-                    {
-                      bottom: 0.49 * podiumImageSize.height,
-                      right: 16 + 0.05 * podiumImageSize.width,
-                    },
-                  ]}
-                  source={
-                    competitionRecord[2].member_info.profile_image
-                      ? { uri: competitionRecord[2].member_info.profile_image }
-                      : dummyProfile
-                  }
-                />
+                <>
+                  <Image
+                    style={[
+                      styles.rankerProfile,
+                      {
+                        bottom: 0.49 * podiumImageSize.height,
+                        right: 16 + 0.05 * podiumImageSize.width,
+                      },
+                    ]}
+                    source={
+                      competitionRecord[2].member_info.profile_image
+                        ? { uri: competitionRecord[2].member_info.profile_image }
+                        : dummyProfile
+                    }
+                  />
+                  <Text
+                    style={[
+                      styles.rankerNicknameText,
+                      { bottom: 0.49 * podiumImageSize.height + 85, right: 16 + 0.05 * podiumImageSize.width },
+                    ]}
+                    numberOfLines={1}
+                  >
+                    {competitionRecord[2].member_info.nickname}
+                  </Text>
+                </>
               )}
             </View>
             <TouchableOpacity
@@ -321,7 +352,6 @@ export default RankList;
 const styles = StyleSheet.create({
   podiumWrapper: {
     backgroundColor: COLORS.darkGreyBackground,
-    paddingTop: 120,
     marginTop: 30,
     paddingHorizontal: 16,
     borderRadius: 16,
@@ -336,6 +366,14 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: 50,
     height: 50,
+  },
+  rankerNicknameText: {
+    position: 'absolute',
+    width: 80,
+    textAlign: 'center',
+    fontSize: FONT_SIZES.md,
+    fontFamily: FONTS.PRETENDARD[700],
+    color: COLORS.white,
   },
   rankerProfile: {
     position: 'absolute',
