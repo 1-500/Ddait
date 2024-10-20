@@ -19,7 +19,7 @@ const dummyProfile = require('../../../assets/images/profile.png');
 const { width: screenWidth } = Dimensions.get('window');
 
 const RankList = ({
-  isParticipantState,
+  isParticipant,
   competitionRecord,
   setCompetitionRecord,
   competitionData,
@@ -190,7 +190,7 @@ const RankList = ({
               )}
             </View>
             <TouchableOpacity
-              style={[styles.myRankBtn, !isParticipantState && { opacity: 0.6 }]}
+              style={[styles.myRankBtn, !isParticipant && { opacity: 0.6 }]}
               onPress={() => {
                 rankListRef.current.scrollToIndex({
                   animated: true,
@@ -198,7 +198,7 @@ const RankList = ({
                 });
               }}
               activeOpacity={0.6}
-              disabled={!isParticipantState}
+              disabled={!isParticipant}
             >
               <Text style={styles.myRankBtnText}>내 순위 보기</Text>
             </TouchableOpacity>
@@ -209,7 +209,6 @@ const RankList = ({
   };
 
   const Preview = () => {
-    const isParticipant = competitionData?.user_status?.is_participant;
     const startDate = dayjs(competitionData?.date.start_date);
     const dday = calculateDday(startDate);
 
@@ -276,7 +275,7 @@ const RankList = ({
           setIsItemOpen(Array.from({ length: isItemOpen.length }, (_, i) => index === i && !isItemOpen[index]))
         }
         onLongPress={() => {
-          if (!item.is_my_record) {
+          if (!item.is_my_record && isParticipant) {
             setSelectedMember(item);
             bottomSheetRef.current?.present();
           }

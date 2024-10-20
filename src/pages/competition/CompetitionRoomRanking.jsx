@@ -240,7 +240,7 @@ const CompetitionRoomRanking = ({ navigation }) => {
           <SkeletonLoader type="rankList" />
         ) : (
           <RankList
-            isParticipantState={isParticipantState}
+            isParticipant={isParticipantState}
             competitionRecord={competitionRecord}
             setCompetitionRecord={setCompetitionRecord}
             competitionData={competitionData}

@@ -121,8 +121,10 @@ const Score1VS1 = ({
               <TouchableOpacity
                 style={[styles.profileWrapper, progress === 'AFTER' && { marginTop: 15 }, style]}
                 onLongPress={() => {
-                  setSelectedMember(record);
-                  bottomSheetRef.current?.present();
+                  if (isParticipant) {
+                    setSelectedMember(record);
+                    bottomSheetRef.current?.present();
+                  }
                 }}
                 activeOpacity={0.6}
               >
