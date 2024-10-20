@@ -82,7 +82,7 @@ const Score1VS1 = ({
     const innerContainer = record && (
       <>
         <Image
-          style={{ width: 80, height: 80 }}
+          style={{ width: 80, height: 80, borderRadius: 40 }}
           source={record.member_info.profile_image ? { uri: record.member_info.profile_image } : dummyProfile}
         />
         <View>
