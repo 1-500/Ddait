@@ -2,7 +2,6 @@ import dayjs from 'dayjs';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { Dimensions, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
 
-import DatePickerBottomSheet from '../../../components/bottomSheet/DatePickerBottomSheet';
 import OptionSelector from '../../../components/competitionCreation/OptionSelector';
 import PeroidSelector from '../../../components/competitionCreation/PeroidSelector';
 import Toggle from '../../../components/Toggle';
@@ -13,6 +12,7 @@ import { useToastMessageStore } from '../../../store/toastMessage/toastMessage';
 
 const { width } = Dimensions.get('window');
 
+import DatePickerBottomSheet from '../../../components/BottomSheet/DatePickerBottomSheet';
 const maxMembersOptions = [2, 5, 10, 20];
 
 const SetRoomDetail = () => {
