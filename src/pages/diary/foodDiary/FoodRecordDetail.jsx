@@ -22,9 +22,9 @@ import {
   getUserFoodRecordImages,
   postUserFoodRecordImage,
 } from '../../../apis/food/index';
+import SkeletonLoader from '../../../components/common/SkeletonLoader';
 import CustomButton from '../../../components/CustomButton';
 import HeaderComponents from '../../../components/HeaderComponents';
-import SkeletonLoader from '../../../components/SkeletonLoader';
 import { COLORS } from '../../../constants/colors';
 import { FONT_SIZES, FONTS } from '../../../constants/font';
 import { RADIUS } from '../../../constants/radius';

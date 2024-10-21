@@ -16,7 +16,6 @@ import { getUserBookMarkedFoodRecord, getUserCustomFoodRecord } from '../../../a
 import CustomButton from '../../../components/CustomButton';
 import CustomInput from '../../../components/CustomInput';
 import HeaderComponents from '../../../components/HeaderComponents';
-import SkeletonLoader from '../../../components/SkeletonLoader';
 import { COLORS, TEXT_COLORS } from '../../../constants/colors';
 import { FONT_SIZES, FONTS } from '../../../constants/font';
 import { RADIUS } from '../../../constants/radius';
@@ -25,6 +24,8 @@ import { useToastMessageStore } from '../../../store/toastMessage/toastMessage';
 const PlusIcon = require('../../../assets/images/dietDiary/PluscircleWhiteButton.png');
 const checkIcon = require('../../../assets/images/dietDiary/checkIcon.png');
 import { useFocusEffect } from '@react-navigation/native';
+
+import SkeletonLoader from '../../../components/common/SkeletonLoader';
 
 const FoodRecord = () => {
   const { showToast } = useToastMessageStore();

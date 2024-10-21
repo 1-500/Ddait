@@ -61,16 +61,16 @@ const SkeletonLoader = ({ type }) => {
 
   const renderRankList = () => (
     <View style={styles.rankList}>
-      <AnimatedBlock style={[styles.listItem, { height: 160 }]} borderRadius={RADIUS.large} />
-      <AnimatedBlock style={[styles.listItem, { height: 70 }]} borderRadius={RADIUS.large} />
+      <AnimatedBlock style={[styles.rankItem, { height: 160 }]} borderRadius={RADIUS.large} />
+      <AnimatedBlock style={[styles.rankItem, { height: 70 }]} borderRadius={RADIUS.large} />
     </View>
   );
 
   const renderMyScore = () => (
     <View style={styles.myScore}>
-      <AnimatedBlock style={[styles.listItem, { height: 100 }]} borderRadius={RADIUS.large} />
-      <AnimatedBlock style={[styles.listItem, { height: 100 }]} borderRadius={RADIUS.large} />
-      <AnimatedBlock style={[styles.listItem, { height: 100 }]} borderRadius={RADIUS.large} />
+      <AnimatedBlock style={[styles.scoreItem, { height: 100 }]} borderRadius={RADIUS.large} />
+      <AnimatedBlock style={[styles.scoreItem, { height: 100 }]} borderRadius={RADIUS.large} />
+      <AnimatedBlock style={[styles.scoreItem, { height: 100 }]} borderRadius={RADIUS.large} />
     </View>
   );
 
@@ -93,14 +93,14 @@ const SkeletonLoader = ({ type }) => {
       </View>
     </View>
   );
-
-  const renderList = () => (
-    <>
-      <AnimatedBlock style={[styles.listItem, { height: 80 }]} borderRadius={RADIUS.large} />
-      <AnimatedBlock style={[styles.listItem, { height: 80 }]} borderRadius={RADIUS.large} />
-      <AnimatedBlock style={[styles.listItem, { height: 80 }]} borderRadius={RADIUS.large} />
-    </>
-  );
+  const renderFoodRecordItem = () => {
+    return (
+      <View style={styles.foodRecordContainer}>
+        <AnimatedBlock style={styles.foodRecordItem} borderRadius={RADIUS.large} />
+        <AnimatedBlock style={styles.foodRecordItem} borderRadius={RADIUS.large} />
+      </View>
+    );
+  };
 
   switch (type) {
     case 'header':
@@ -111,8 +111,9 @@ const SkeletonLoader = ({ type }) => {
       return renderMyScore();
     case 'competitionItem':
       return renderCompetitionItem();
-    case 'list':
-      return renderList();
+
+    case 'foodRecordItem':
+      return renderFoodRecordItem();
     default:
       return null;
   }
@@ -162,12 +163,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     marginTop: 30,
   },
+  rankItem: {
+    marginBottom: 16,
+  },
   myScore: {
     paddingHorizontal: 20,
     marginTop: 30,
     padding: 16,
   },
-  listItem: {
+  scoreItem: {
     marginBottom: 16,
   },
   competitionContainer: {
@@ -187,6 +191,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: SPACING.xs,
+  },
+
+  foodRecordContainer: {
+    height: 300,
+  },
+  foodRecordItem: {
+    padding: 20,
+    marginVertical: 5,
+    height: 80,
   },
 });
 
