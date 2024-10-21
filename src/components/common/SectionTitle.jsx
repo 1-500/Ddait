@@ -1,9 +1,10 @@
 import React from 'react';
-import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { COLORS } from '../../constants/colors';
 import { FONT_SIZES, FONTS, HEADER_FONT_SIZES } from '../../constants/font';
 import { ELEMENT_VERTICAL_MARGIN } from '../../constants/space';
+import { useToastMessageStore } from '../../store/toastMessage/toastMessage';
 
 /**
  * '더보기' 버튼을 포함시킬 수 있는 타이틀 컴포넌트입니다.
@@ -16,11 +17,13 @@ import { ELEMENT_VERTICAL_MARGIN } from '../../constants/space';
  * @param {boolean} [props.showMore=true] - '더보기' 버튼 표시 여부
  */
 const SectionTitle = ({ title, navigation, navigateTo, showMore = false }) => {
+  const { showToast } = useToastMessageStore();
+
   const handlePress = () => {
     if (navigateTo) {
       navigation.navigate(navigateTo);
     } else {
-      Alert.alert('아직 준비 중인 기능이에요! 곧 찾아뵐게요 💪');
+      showToast('아직 준비 중인 기능이에요! 곧 찾아뵐게요 💪', 'error');
     }
   };
 

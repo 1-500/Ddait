@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import { create } from 'zustand';
 
 const useCreateRoomStateStore = create((set) => ({
@@ -6,8 +7,8 @@ const useCreateRoomStateStore = create((set) => ({
   theme: '',
   competitionType: '',
   competitionTheme: '',
-  startDate: { year: '', month: '', day: '' },
-  endDate: { year: '', month: '', day: '' },
+  startDate: dayjs().add(1, 'day').toDate(),
+  endDate: dayjs().add(8, 'day').toDate(),
   isPrivate: false,
   hasSmartWatch: false,
 
@@ -29,8 +30,8 @@ const useCreateRoomStateStore = create((set) => ({
       theme: '',
       competitionType: '',
       competitionTheme: '',
-      startDate: { year: '', month: '', day: '' },
-      endDate: { year: '', month: '', day: '' },
+      startDate: dayjs().add(1, 'day').toDate(),
+      endDate: dayjs().add(8, 'day').toDate(),
       isPrivate: false,
       hasSmartWatch: false,
     }),

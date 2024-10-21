@@ -27,13 +27,13 @@ const checkIcon = require('../../../assets/images/dietDiary/checkIcon.png');
 import { useFocusEffect } from '@react-navigation/native';
 
 const FoodRecord = () => {
+  const { showToast } = useToastMessageStore();
   const [tag, setTag] = useState(['북마크', '직접등록']);
   const [activeTag, setActiveTag] = useState('북마크');
   const navigation = useNavigation();
   const [loading, setLoading] = useState(true);
   const [userFoodListState, setUserFoodListState] = useState([]);
   const { foodList, removeFood } = useSelectedFoodsStore();
-  const { showToast } = useToastMessageStore();
 
   useFocusEffect(
     useCallback(() => {

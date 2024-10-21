@@ -29,6 +29,7 @@ const checkIcon = require('../../../assets/images/dietDiary/checkIcon.png');
 const BookmarkOnIcon = require('../../../assets/images/dietDiary/bookmark.png');
 
 const FoodSearch = () => {
+  const { showToast } = useToastMessageStore();
   const [searchText, setSearchText] = useState('');
   const [foodSearchListState, setFoodSearchListState] = useState([]);
   const { time } = useSelectedFoodTimeStore();
@@ -37,7 +38,6 @@ const FoodSearch = () => {
 
   const { foodList, removeFood } = useSelectedFoodsStore();
 
-  const { showToast } = useToastMessageStore();
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSearchInput = debounce(async (text) => {
