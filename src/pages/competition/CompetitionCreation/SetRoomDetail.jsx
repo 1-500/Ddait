@@ -13,6 +13,7 @@ import { useToastMessageStore } from '../../../store/toastMessage/toastMessage';
 const { width } = Dimensions.get('window');
 
 import DatePickerBottomSheet from '../../../components/BottomSheet/DatePickerBottomSheet';
+
 const maxMembersOptions = [2, 5, 10, 20];
 
 const SetRoomDetail = () => {

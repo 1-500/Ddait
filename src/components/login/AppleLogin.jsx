@@ -1,11 +1,11 @@
-/* eslint-disable no-console */
-import appleAuth from '@invertase/react-native-apple-authentication';
+import { appleAuth } from '@invertase/react-native-apple-authentication';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import React from 'react';
 import { Image, StyleSheet, TouchableOpacity } from 'react-native';
 
 import { postAppleLogin } from '../../apis/socialLogin';
+import { supabase } from '../../lib/supabaseClient';
 import { useToastMessageStore } from '../../store/toastMessage/toastMessage';
 
 const AppleIcon = require('../../assets/images/login/appleIcon.png');
@@ -21,24 +21,24 @@ const AppleLogin = () => {
         requestedScopes: [appleAuth.Scope.FULL_NAME, appleAuth.Scope.EMAIL],
       });
 
-      const { user, email, fullName, identityToken } = appleAuthRequestResponse;
+      const { user, identityToken, nonce } = appleAuthRequestResponse;
 
       const credentialState = await appleAuth.getCredentialStateForUser(user);
 
       if (credentialState === appleAuth.State.AUTHORIZED) {
-        const response = await postAppleLogin(identityToken, user, email, fullName);
-
-        if (response.data.success) {
-          navigation.navigate('MainTab', { screen: 'Home' });
+        const response = await postAppleLogin({ identityToken, nonce });
+        if (response.status !== 200) {
+          throw new Error('인증 실패');
         } else {
-          throw new Error('서버 인증 실패');
+          showToast('로그인 하였습니다.', 'success');
+
+          navigation.navigate('MainTab', { screen: 'Home' });
         }
       } else {
         throw new Error('Apple 로그인 인증 실패');
       }
     } catch (error) {
-      console.error('Apple login error:', error);
-      showToast('애플 로그인에 실패했습니다.', 'error');
+      showToast(error.message, 'error');
     }
   }
 
