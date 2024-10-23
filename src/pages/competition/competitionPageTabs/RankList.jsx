@@ -19,6 +19,7 @@ const dummyProfile = require('../../../assets/images/profile.png');
 const { width: screenWidth } = Dimensions.get('window');
 
 const RankList = ({
+  isParticipant,
   competitionRecord,
   setCompetitionRecord,
   competitionData,
@@ -90,7 +91,7 @@ const RankList = ({
       <View>
         {competitionRecord && (
           <View style={{ alignItems: 'center' }}>
-            <View style={styles.podiumWrapper}>
+            <View style={[styles.podiumWrapper, { paddingTop: progress === 'AFTER' ? 150 : 120 }]}>
               {progress === 'AFTER' && (
                 <Image
                   style={[
@@ -122,43 +123,74 @@ const RankList = ({
                       source={crownImage}
                     />
                   )}
+                  <Text
+                    style={[
+                      styles.rankerNicknameText,
+                      { bottom: 0.85 * podiumImageSize.height + (progress === 'IN_PROGRESS' ? 85 : 115) },
+                    ]}
+                    numberOfLines={1}
+                  >
+                    {competitionRecord[0].member_info.nickname}
+                  </Text>
                 </>
               )}
               {competitionRecord[1] && (
-                <Image
-                  style={[
-                    styles.rankerProfile,
-                    {
-                      bottom: 0.63 * podiumImageSize.height,
-                      left: 16 + 0.05 * podiumImageSize.width,
-                    },
-                  ]}
-                  source={
-                    competitionRecord[1].member_info.profile_image
-                      ? { uri: competitionRecord[1].member_info.profile_image }
-                      : dummyProfile
-                  }
-                />
+                <>
+                  <Image
+                    style={[
+                      styles.rankerProfile,
+                      {
+                        bottom: 0.63 * podiumImageSize.height,
+                        left: 16 + 0.05 * podiumImageSize.width,
+                      },
+                    ]}
+                    source={
+                      competitionRecord[1].member_info.profile_image
+                        ? { uri: competitionRecord[1].member_info.profile_image }
+                        : dummyProfile
+                    }
+                  />
+                  <Text
+                    style={[
+                      styles.rankerNicknameText,
+                      { bottom: 0.63 * podiumImageSize.height + 85, left: 16 + 0.05 * podiumImageSize.width },
+                    ]}
+                    numberOfLines={1}
+                  >
+                    {competitionRecord[1].member_info.nickname}
+                  </Text>
+                </>
               )}
               {competitionRecord[2] && (
-                <Image
-                  style={[
-                    styles.rankerProfile,
-                    {
-                      bottom: 0.49 * podiumImageSize.height,
-                      right: 16 + 0.05 * podiumImageSize.width,
-                    },
-                  ]}
-                  source={
-                    competitionRecord[2].member_info.profile_image
-                      ? { uri: competitionRecord[2].member_info.profile_image }
-                      : dummyProfile
-                  }
-                />
+                <>
+                  <Image
+                    style={[
+                      styles.rankerProfile,
+                      {
+                        bottom: 0.49 * podiumImageSize.height,
+                        right: 16 + 0.05 * podiumImageSize.width,
+                      },
+                    ]}
+                    source={
+                      competitionRecord[2].member_info.profile_image
+                        ? { uri: competitionRecord[2].member_info.profile_image }
+                        : dummyProfile
+                    }
+                  />
+                  <Text
+                    style={[
+                      styles.rankerNicknameText,
+                      { bottom: 0.49 * podiumImageSize.height + 85, right: 16 + 0.05 * podiumImageSize.width },
+                    ]}
+                    numberOfLines={1}
+                  >
+                    {competitionRecord[2].member_info.nickname}
+                  </Text>
+                </>
               )}
             </View>
             <TouchableOpacity
-              style={styles.myRankBtn}
+              style={[styles.myRankBtn, !isParticipant && { opacity: 0.6 }]}
               onPress={() => {
                 rankListRef.current.scrollToIndex({
                   animated: true,
@@ -166,6 +198,7 @@ const RankList = ({
                 });
               }}
               activeOpacity={0.6}
+              disabled={!isParticipant}
             >
               <Text style={styles.myRankBtnText}>내 순위 보기</Text>
             </TouchableOpacity>
@@ -176,7 +209,6 @@ const RankList = ({
   };
 
   const Preview = () => {
-    const isParticipant = competitionData?.user_status?.is_participant;
     const startDate = dayjs(competitionData?.date.start_date);
     const dday = calculateDday(startDate);
 
@@ -243,7 +275,7 @@ const RankList = ({
           setIsItemOpen(Array.from({ length: isItemOpen.length }, (_, i) => index === i && !isItemOpen[index]))
         }
         onLongPress={() => {
-          if (!item.is_my_record) {
+          if (!item.is_my_record && isParticipant) {
             setSelectedMember(item);
             bottomSheetRef.current?.present();
           }
@@ -295,7 +327,7 @@ const RankList = ({
       />
       <FriendOptionBottomSheet
         ref={bottomSheetRef}
-        relation={() => getFriendRelation(selectedMember?.friend_info?.status)}
+        relation={(() => getFriendRelation(selectedMember?.friend_info?.status))()}
         memberData={{ ...selectedMember?.member_info, table_id: selectedMember?.friend_info?.id }}
         onUpdateData={onUpdateData}
         setAlertVisible={setAlertVisible}
@@ -321,7 +353,6 @@ export default RankList;
 const styles = StyleSheet.create({
   podiumWrapper: {
     backgroundColor: COLORS.darkGreyBackground,
-    paddingTop: 120,
     marginTop: 30,
     paddingHorizontal: 16,
     borderRadius: 16,
@@ -336,6 +367,14 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: 50,
     height: 50,
+  },
+  rankerNicknameText: {
+    position: 'absolute',
+    width: 80,
+    textAlign: 'center',
+    fontSize: FONT_SIZES.md,
+    fontFamily: FONTS.PRETENDARD[700],
+    color: COLORS.white,
   },
   rankerProfile: {
     position: 'absolute',

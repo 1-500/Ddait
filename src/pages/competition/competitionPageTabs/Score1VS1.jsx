@@ -82,7 +82,7 @@ const Score1VS1 = ({
     const innerContainer = record && (
       <>
         <Image
-          style={{ width: 80, height: 80 }}
+          style={{ width: 80, height: 80, borderRadius: 40 }}
           source={record.member_info.profile_image ? { uri: record.member_info.profile_image } : dummyProfile}
         />
         <View>
@@ -121,8 +121,10 @@ const Score1VS1 = ({
               <TouchableOpacity
                 style={[styles.profileWrapper, progress === 'AFTER' && { marginTop: 15 }, style]}
                 onLongPress={() => {
-                  setSelectedMember(record);
-                  bottomSheetRef.current?.present();
+                  if (isParticipant) {
+                    setSelectedMember(record);
+                    bottomSheetRef.current?.present();
+                  }
                 }}
                 activeOpacity={0.6}
               >
@@ -293,7 +295,7 @@ const Score1VS1 = ({
       )}
       <FriendOptionBottomSheet
         ref={bottomSheetRef}
-        relation={() => getFriendRelation(selectedMember?.friend_info?.status)}
+        relation={(() => getFriendRelation(selectedMember?.friend_info?.status))()}
         memberData={{ ...selectedMember?.member_info, table_id: selectedMember?.friend_info?.id }}
         onUpdateData={onUpdateData}
         setAlertVisible={setAlertVisible}

@@ -114,8 +114,8 @@ const CompetitionCreation = ({ navigation }) => {
       showToast(`'${title}' 경쟁방이 생성되었습니다!`, 'success');
 
       maxMembers === 2
-        ? navigation.navigate('CompetitionRoom1VS1', { competitionId: roomId, isParticipant: true })
-        : navigation.navigate('CompetitionRoomRanking', { competitionId: roomId, isParticipant: true });
+        ? navigation.replace('CompetitionRoom1VS1', { competitionId: roomId, isParticipant: true })
+        : navigation.replace('CompetitionRoomRanking', { competitionId: roomId, isParticipant: true });
 
       resetState();
     } catch (error) {
