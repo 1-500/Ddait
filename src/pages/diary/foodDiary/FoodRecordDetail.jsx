@@ -22,6 +22,7 @@ import {
   getUserFoodRecordImages,
   postUserFoodRecordImage,
 } from '../../../apis/food/index';
+import SkeletonLoader from '../../../components/common/SkeletonLoader';
 import CustomButton from '../../../components/CustomButton';
 import HeaderComponents from '../../../components/HeaderComponents';
 import { COLORS } from '../../../constants/colors';
@@ -40,7 +41,6 @@ const MinusButtonIcon = require('../../../assets/images/dietDiary/MinusCircleBut
 const width = Dimensions.get('window').width;
 
 const FoodRecordDetail = () => {
-  const { showToast } = useToastMessageStore();
   const navigation = useNavigation();
 
   const { foodList, setFoodList } = useSelectedFoodsStore();
@@ -49,7 +49,10 @@ const FoodRecordDetail = () => {
 
   const [images, setImages] = useState([]);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [loading, setLoading] = useState(true);
+
   const carouselRef = useRef(null);
+  const { showToast } = useToastMessageStore();
 
   useEffect(() => {
     const fetchFoodRecord = async () => {
@@ -63,19 +66,28 @@ const FoodRecordDetail = () => {
           throw new Error(foodRecordResult.error);
         }
         setFoodList(foodRecordResult.data);
+        setLoading(false);
+
         foodRecordId = foodRecordResult.id;
+        if (!foodRecordId) {
+          return;
+        }
 
         const foodRecordImageResult = await getUserFoodRecordImages(foodRecordId);
         if (foodRecordImageResult.status === 200) {
           setImages(foodRecordImageResult.data);
+
           return;
         }
+
         throw new Error(foodRecordImageResult.message);
-      } catch (error) {}
+      } catch (error) {
+        showToast(error.message, 'error', 2000, 'top');
+      }
     };
 
     fetchFoodRecord();
-  }, [selected, time, setFoodList]);
+  }, [selected, time, setFoodList, showToast]);
 
   const macroRatio = useMemo(() => {
     return calculateNutrientRatios(foodList);
@@ -89,8 +101,7 @@ const FoodRecordDetail = () => {
   const handleConfirmButton = async () => {
     try {
       let food_record_id;
-      // 음식 기록
-      if (foodList.length !== 0 && time.length !== 0 && selected.length !== 0) {
+      if (time.length !== 0 && selected.length !== 0) {
         const response = await createFoodRecordByTime({
           foodItems: foodList,
           meal_time: time,
@@ -98,13 +109,17 @@ const FoodRecordDetail = () => {
         });
         if (response.status === 200) {
           food_record_id = response.food_record_id;
-          showToast(response.message, 'success');
+          showToast('음식을 반영 하였습니다.', 'success', 2000, 'top');
         } else {
           throw new Error('음식을 기록하는데 실패하였습니다.');
         }
       }
+      if (!food_record_id) {
+        return;
+      }
 
       const foodRecordResult = await getUserFoodRecordImages(food_record_id);
+
       if (foodRecordResult.error) {
         throw new Error(foodRecordResult.error);
       }
@@ -117,7 +132,7 @@ const FoodRecordDetail = () => {
         const results = await Promise.all(uploadPromises);
         const errorMessages = results.filter((message) => !message.includes('성공')); // 성공 메시지가 아닌 경우 필터링
         if (errorMessages.length > 0) {
-          showToast(errorMessages[0], 'error');
+          showToast(errorMessages[0], 'error', 2000, 'top');
           return;
         }
       }
@@ -125,17 +140,18 @@ const FoodRecordDetail = () => {
       if (deleteImages.length > 0) {
         deleteServerImage(deleteImages, food_record_id);
       }
+      navigation.navigate('DiaryMain');
     } catch (error) {
-      showToast(error.message, 'error');
+      showToast(error.message, 'error', 2000, 'top');
     }
   };
 
   const selectImages = () => {
     launchImageLibrary({ mediaType: 'photo', selectionLimit: 0 }, (response) => {
       if (response.didCancel) {
-        // console.log('사용자가 선택을 취소했습니다.');
+        showToast('사진 선택을 취소했습니다.', 'error', 2000, 'top');
       } else if (response.error) {
-        // console.log('이미지 선택 중 오류 발생:', response.error);
+        showToast('에러가 발생하였습니다.', 'error', 2000, 'top');
       } else {
         const selectedImages = response.assets.map((asset) => asset.uri);
         setImages(selectedImages);
@@ -176,7 +192,7 @@ const FoodRecordDetail = () => {
   };
 
   const uploadImage = async (uri, food_record_id) => {
-    if (food_record_id === undefined) {
+    if (!food_record_id) {
       return '등록된 음식이 존재하지 않습니다!';
     }
 
@@ -211,7 +227,6 @@ const FoodRecordDetail = () => {
 
       return '이미지 업로드 성공';
     } catch (error) {
-      showToast(error.message, 'error');
       return error.message;
     }
   };
@@ -219,13 +234,14 @@ const FoodRecordDetail = () => {
     launchImageLibrary({ mediaType: 'photo' }, (response) => {
       if (response.didCancel) {
       } else if (response.error) {
-        showToast('이미지 선택 중 오류가 발생했습니다.', 'error');
+        showToast('이미지 선택 중 오류가 발생했습니다.', 'error', 2000, 'top');
       } else if (response.assets && response.assets.length > 0) {
         const newImage = response.assets[0].uri;
         setImages((prevImages) => [...prevImages, newImage]);
       }
     });
   };
+
   return (
     <SafeAreaView style={styles.container}>
       <HeaderComponents title={time} />
@@ -301,10 +317,12 @@ const FoodRecordDetail = () => {
             </View>
           </View>
 
-          <View style={{ marginVertical: 10 }}>
+          <View style={{ marginTop: 10 }}>
             <Text style={styles.foodListTitle}>{time}</Text>
           </View>
-          {Array.isArray(foodList) && foodList.length > 0 ? (
+          {loading && <SkeletonLoader type="foodRecordItem" />}
+
+          {Array.isArray(foodList) && foodList.length > 0 && !loading ? (
             foodList.map((food) => {
               return (
                 <FoodItem

@@ -114,6 +114,7 @@ const CustomInput = ({
   isError = false,
   isSuccess = false,
   value,
+  editable = true,
   onChangeText,
   multiline = false,
   autoFocus = false,
@@ -166,6 +167,7 @@ const CustomInput = ({
         onChangeText={onChangeText}
         multiline={multiline}
         allowFontScaling={false}
+        editable={editable}
         textContentType={textContentType}
         autoFocus={autoFocus}
         secureTextEntry={secureTextEntry}

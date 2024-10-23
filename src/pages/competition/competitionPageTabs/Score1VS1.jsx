@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { Dimensions, FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import FriendOptionBottomSheet from '../../../components/bottomSheet/FriendOptionBottomSheet';
+import FriendOptionBottomSheet from '../../../components/BottomSheet/FriendOptionBottomSheet';
 import CustomAlert from '../../../components/CustomAlert';
 import CustomTag from '../../../components/CustomTag';
 import { COLORS } from '../../../constants/colors';

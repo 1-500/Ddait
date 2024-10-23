@@ -12,6 +12,7 @@ import CompetitionRoom1VS1 from './pages/competition/CompetitionRoom1VS1';
 import CompetitionRoomRanking from './pages/competition/CompetitionRoomRanking';
 import SearchCompetition from './pages/competition/SearchCompetition';
 import DiaryMain from './pages/diary/DiaryMain';
+import CustomFoodRecord from './pages/diary/foodDiary/CustomFoodRecord';
 import FoodDiary from './pages/diary/foodDiary/FoodDiary';
 import FoodInfo from './pages/diary/foodDiary/FoodInfo';
 import FoodRecord from './pages/diary/foodDiary/FoodRecord';
@@ -84,6 +85,7 @@ const FoodDiaryStack = () => {
       <Stack.Screen name="FoodRecordScreen" component={FoodRecord} />
       <Stack.Screen name="FoodSearchScreen" component={FoodSearch} />
       <Stack.Screen name="FoodInfoScreen" component={FoodInfo} />
+      <Stack.Screen name="CustomFoodRecordScreen" component={CustomFoodRecord} />
     </Stack.Navigator>
   );
 };
