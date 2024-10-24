@@ -13,16 +13,10 @@ export const getUserlevel = async (social_email) => {
     return error;
   }
 };
-export const postAppleLogin = async (identityToken, user, email, fullName) => {
+export const postAppleLogin = async (object) => {
   try {
-    const response = await API.post('/social/login/apple', {
-      identityToken,
-      user,
-      email,
-      fullName,
-    });
-
-    return response;
+    const response = await API.post('/social/login/apple', object);
+    return response.data;
   } catch (error) {
     {
       console.error('apple 로그인시 에러가 발생했습니다.:', error.message);
